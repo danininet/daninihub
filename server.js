@@ -13,6 +13,8 @@ const dashboardRoutes = require('./src/routes/dashboard.routes');
 const entryRoutes = require('./src/routes/entry.routes');
 const addonsRoutes = require('./src/routes/addons.routes');
 const reviewbookRoutes = require('./src/routes/reviewbook.routes');
+const gatesRoutes = require('./src/routes/gates.routes');
+const artifactsRoutes = require('./src/routes/artifacts.routes');
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -30,6 +32,8 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/entry', entryRoutes);
 app.use('/api/addons', addonsRoutes);
 app.use('/api/reviewbook', reviewbookRoutes);
+app.use('/api/gates', gatesRoutes);
+app.use('/api/artifacts', artifactsRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

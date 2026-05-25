@@ -1,0 +1,129 @@
+{
+  "project": "DaniniHub",
+  "domain": "daninihub.com",
+  "status": "V1_STRUCTURE_LOCKED",
+  "donations": false,
+  "entry": {
+    "price": "7 EUR",
+    "type": "one_time",
+    "delivers": [
+      "Gate 0-5 project cycle",
+      "1 active project",
+      "Project Activation Pack PDF",
+      "Email delivery",
+      "Project Mode UI access"
+    ]
+  },
+  "header": [
+    { "label": "Start", "path": "/" },
+    { "label": "Methode", "path": "/methode" },
+    { "label": "Projektmodus", "path": "/projektmodus" },
+    { "label": "Wissen", "path": "/wissen" },
+    { "label": "News & Recht", "path": "/news/regulierung" },
+    { "label": "Community", "path": "/community" },
+    { "label": "Partner", "path": "/partner" },
+    { "label": "Preise", "path": "/preise" },
+    { "label": "Login", "path": "/login" }
+  ],
+  "public_pages": [
+    { "path": "/", "title": "DaniniHub", "purpose": "Central landing and system identity" },
+    { "path": "/start", "title": "Start / ENTRY 7€", "purpose": "Entry activation" },
+    { "path": "/was-ist-daninihub", "title": "Was ist DaniniHub?", "purpose": "System explanation" },
+    { "path": "/methode", "title": "Pitaj AI — AI pita tebe", "purpose": "Core method" },
+    { "path": "/wie-es-funktioniert", "title": "Wie es funktioniert", "purpose": "Gate 0-5 process" },
+    { "path": "/projektmodus", "title": "Projektmodus", "purpose": "Main product page" },
+    { "path": "/preise", "title": "Preise", "purpose": "Pricing tiers" },
+    { "path": "/fuer-wen", "title": "Für wen", "purpose": "Audience fit and exclusions" },
+    { "path": "/wissen", "title": "Wissen", "purpose": "Knowledge hub" },
+    { "path": "/news", "title": "News", "purpose": "System, AI and business updates" },
+    { "path": "/news/regulierung", "title": "Regulierung", "purpose": "GDPR, DSGVO, AI Act and platform regulation updates" },
+    { "path": "/gdpr-dsgvo", "title": "GDPR / DSGVO", "purpose": "Data protection center" },
+    { "path": "/eu-ai-act", "title": "EU AI Act", "purpose": "AI regulation monitoring" },
+    { "path": "/reviewbook", "title": "Reviewbook", "purpose": "Knjiga utisaka" },
+    { "path": "/erfahrungen", "title": "Erfahrungen", "purpose": "User experiences" },
+    { "path": "/community", "title": "Community", "purpose": "Community layer" },
+    { "path": "/support", "title": "Support", "purpose": "AI -> Community -> Mentor -> Admin support flow" },
+    { "path": "/partner", "title": "Partner", "purpose": "Collaborators and partners" },
+    { "path": "/partner-werden", "title": "Partner werden", "purpose": "Partner application" },
+    { "path": "/affiliate-programm", "title": "Affiliate Programm", "purpose": "Internal affiliate program" },
+    { "path": "/affiliate-hinweis", "title": "Affiliate Hinweis", "purpose": "Affiliate disclosure" },
+    { "path": "/transparenz", "title": "Transparenz", "purpose": "System transparency without donations" },
+    { "path": "/systemverfassung", "title": "Systemverfassung", "purpose": "Public constitution principles" },
+    { "path": "/roadmap", "title": "Roadmap", "purpose": "Development roadmap" },
+    { "path": "/security", "title": "Security", "purpose": "Security principles" },
+    { "path": "/audit", "title": "Audit", "purpose": "Audit principles" },
+    { "path": "/kontakt", "title": "Kontakt", "purpose": "Contact" }
+  ],
+  "legal_pages": [
+    { "path": "/impressum", "title": "Impressum" },
+    { "path": "/datenschutz", "title": "Datenschutz" },
+    { "path": "/cookies", "title": "Cookies" },
+    { "path": "/nutzungsbedingungen", "title": "Nutzungsbedingungen" },
+    { "path": "/widerruf", "title": "Widerruf" },
+    { "path": "/ki-transparenz", "title": "KI-Transparenz" },
+    { "path": "/disclaimer", "title": "Disclaimer" },
+    { "path": "/health-disclaimer", "title": "Health Disclaimer" },
+    { "path": "/financial-disclaimer", "title": "Financial Disclaimer" },
+    { "path": "/data-rights", "title": "Data Rights" }
+  ],
+  "member_pages": [
+    { "path": "/dashboard", "title": "Dashboard" },
+    { "path": "/project-mode", "title": "Project Mode" },
+    { "path": "/project-mode/gate-0", "title": "Gate 0 — Fit Check" },
+    { "path": "/project-mode/gate-1", "title": "Gate 1 — Problem Definition" },
+    { "path": "/project-mode/gate-2", "title": "Gate 2 — Market Reality" },
+    { "path": "/project-mode/gate-3", "title": "Gate 3 — Offer Blueprint" },
+    { "path": "/project-mode/gate-4", "title": "Gate 4 — Build Protocol" },
+    { "path": "/project-mode/gate-5", "title": "Gate 5 — Launch & Feedback" },
+    { "path": "/project-mode/report", "title": "Decision Report" },
+    { "path": "/project-log", "title": "Project Log" },
+    { "path": "/downloads", "title": "Downloads" }
+  ],
+  "footer_groups": {
+    "System": [
+      "/was-ist-daninihub",
+      "/methode",
+      "/systemverfassung",
+      "/roadmap",
+      "/transparenz",
+      "/audit",
+      "/security"
+    ],
+    "Projektmodus": [
+      "/start",
+      "/wie-es-funktioniert",
+      "/projektmodus",
+      "/preise",
+      "/login"
+    ],
+    "Wissen & News": [
+      "/wissen",
+      "/news",
+      "/news/regulierung",
+      "/gdpr-dsgvo",
+      "/eu-ai-act"
+    ],
+    "Community": [
+      "/reviewbook",
+      "/erfahrungen",
+      "/community",
+      "/support"
+    ],
+    "Partner": [
+      "/partner",
+      "/partner-werden",
+      "/affiliate-programm",
+      "/affiliate-hinweis"
+    ],
+    "Legal": [
+      "/impressum",
+      "/datenschutz",
+      "/cookies",
+      "/nutzungsbedingungen",
+      "/widerruf",
+      "/ki-transparenz",
+      "/disclaimer",
+      "/data-rights"
+    ]
+  }
+}

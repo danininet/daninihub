@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "system": "DaniniHub",
+  "region_priority": "DACH",
+  "artifact_type": "activation_result",
+  "required_fields": [
+    "run_id",
+    "timestamp",
+    "mode",
+    "input",
+    "agent",
+    "evidence",
+    "result",
+    "risks",
+    "next_step",
+    "controller"
+  ],
+  "artifact": {
+    "run_id": "string",
+    "timestamp": "ISO-8601 string",
+    "mode": "DEV_FIX | STRATEGY_BUILD | RESEARCH_INTEL | LEGAL_COMPLIANCE | CONTENT_STUDIO | SUPPORT_OPS",
+    "input": {
+      "raw": "string",
+      "locale": "de | sr | en",
+      "source": "cli | web | stripe | dashboard"
+    },
+    "agent": {
+      "lead": "string",
+      "support": ["string"]
+    },
+    "evidence": {
+      "used": true,
+      "sources": ["string"],
+      "notes": "string"
+    },
+    "result": {
+      "summary": "string",
+      "sections": {
+        "A_problem": "string",
+        "B_evidence": "string",
+        "C_plan": "string",
+        "D_execution": "string",
+        "E_next": "string"
+      }
+    },
+    "risks": ["string"],
+    "next_step": "string",
+    "controller": {
+      "validated": true,
+      "status": "approved | blocked | needs_more_evidence",
+      "reason": "string"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "daninihub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node server/stripe-webhook.js",
+    "dev": "node server/stripe-webhook.js",
+    "check:syntax": "node --check danini.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",
+    "check:tree": "find . \\( -path './node_modules' -o -path './.git' -o -path './_archive' \\) -prune -o -type f -print | sort",
+    "health": "node scripts/healthcheck.js",
+    "agent": "node danini.js",
+    "agent:dev": "node danini.js --agent dev_cto --task",
+    "agent:controller": "node danini.js --agent controller --task",
+    "snapshot": "npm run check:tree && npm run health",
+    "test:artifact": "node scripts/test-artifact.js",
+    "test:pdf": "node scripts/test-pdf.js",
+    "audit:last": "node scripts/audit-last.js",
+    "audit:last5": "node scripts/audit-last.js 5",
+    "test:email-body": "node scripts/test-email-body.js",
+    "email:send:test": "node scripts/send-latest-email.js",
+    "activation:test": "node scripts/full-activation-test.js",
+    "stripe:checkout:test": "node scripts/stripe-checkout-test.js",
+    "stripe:simulate:completed": "node scripts/simulate-stripe-completed.js",
+    "webhook:stripe": "node server/stripe-webhook.js",
+    "stripe:status": "node scripts/stripe-status.js",
+    "server": "node server.js",
+    "dev:server": "node server.js",
+    "agent:cli": "node danini.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.3",
+    "openai": "^6.35.0",
+    "pdfkit": "^0.18.0",
+    "sib-api-v3-sdk": "^8.5.0",
+    "stripe": "^22.1.0"
+  }
+}

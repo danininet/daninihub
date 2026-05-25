@@ -1,0 +1,671 @@
+=== DATE ===
+2026-05-05T15:01:25+02:00
+
+=== PACKAGE ===
+{
+  "name": "daninihub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node danini.js",
+    "dev": "node danini.js",
+    "check:syntax": "node --check danini.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",
+    "check:tree": "find . \\( -path './node_modules' -o -path './.git' -o -path './_archive' \\) -prune -o -type f -print | sort",
+    "health": "node scripts/healthcheck.js",
+    "agent": "node danini.js",
+    "agent:dev": "node danini.js --agent dev_cto --task",
+    "agent:controller": "node danini.js --agent controller --task",
+    "snapshot": "npm run check:tree && npm run health",
+    "test:artifact": "node scripts/test-artifact.js",
+    "test:pdf": "node scripts/test-pdf.js",
+    "audit:last": "node scripts/audit-last.js",
+    "audit:last5": "node scripts/audit-last.js 5",
+    "test:email-body": "node scripts/test-email-body.js",
+    "email:send:test": "node scripts/send-latest-email.js",
+    "activation:test": "node scripts/full-activation-test.js",
+    "stripe:checkout:test": "node scripts/stripe-checkout-test.js",
+    "stripe:simulate:completed": "node scripts/simulate-stripe-completed.js",
+    "webhook:stripe": "node server/stripe-webhook.js",
+    "stripe:status": "node scripts/stripe-status.js",
+    "server": "node server.js",
+    "dev:server": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.3",
+    "openai": "^6.35.0",
+    "pdfkit": "^0.18.0",
+    "sib-api-v3-sdk": "^8.5.0",
+    "stripe": "^22.1.0"
+  }
+}
+
+=== SYNTAX ===
+
+> daninihub@1.0.0 check:syntax
+> node --check danini.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check
+
+
+=== LAST AUDIT ===
+
+> daninihub@1.0.0 audit:last
+> node scripts/audit-last.js 25
+
+AUDIT_FILE: /home/dragan/daninihub/logs/audit.jsonl
+[
+  {
+    "timestamp": "2026-05-05T08:51:27.856Z",
+    "system": "DaniniHub",
+    "event": "stripe_activation_started",
+    "source": "stripe_webhook",
+    "activation_id": "act_1777971087847_38e459",
+    "stripe_event_id": "evt_1TTehPIzhCzYgnTMyapSr54L",
+    "stripe_session_id": "cs_test_a1vXVUW8nLn0vFHHpBAFKH7vlSSnZhtoN1g6B3v4ferAVbBgP1WpQRuBz6",
+    "customer_email": "stripe@example.com",
+    "locale": "de"
+  },
+  {
+    "timestamp": "2026-05-05T08:51:30.483Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_3TTehOIzhCzYgnTM3Ehbvn4G",
+    "stripe_event_type": "charge.updated"
+  },
+  {
+    "timestamp": "2026-05-05T08:51:30.484Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_ignored",
+    "stripe_event_id": "evt_3TTehOIzhCzYgnTM3Ehbvn4G",
+    "stripe_event_type": "charge.updated"
+  },
+  {
+    "timestamp": "2026-05-05T08:51:48.288Z",
+    "system": "DaniniHub",
+    "event": "controller_success",
+    "run_id": "dh_1777971106736_6d6471",
+    "mode": "STRATEGY_BUILD",
+    "locale": "de",
+    "source": "controller",
+    "lead_agent": "core.meta.commander",
+    "controller_status": "approved",
+    "artifact_path": "artifacts/json/dh_1777971106736_6d6471.json",
+    "pdf_path": "outputs/pdf/dh_1777971106736_6d6471.pdf",
+    "email_html_path": "outputs/email/dh_1777971106736_6d6471.html"
+  },
+  {
+    "timestamp": "2026-05-05T08:51:48.288Z",
+    "system": "DaniniHub",
+    "event": "stripe_activation_completed",
+    "source": "stripe_webhook",
+    "activation_id": "act_1777971087847_38e459",
+    "stripe_event_id": "evt_1TTehPIzhCzYgnTMyapSr54L",
+    "stripe_session_id": "cs_test_a1vXVUW8nLn0vFHHpBAFKH7vlSSnZhtoN1g6B3v4ferAVbBgP1WpQRuBz6",
+    "customer_email": "stripe@example.com",
+    "locale": "de",
+    "run_id": "dh_1777971106736_6d6471",
+    "artifact_path": "artifacts/json/dh_1777971106736_6d6471.json",
+    "pdf_path": "outputs/pdf/dh_1777971106736_6d6471.pdf",
+    "email_html_path": "outputs/email/dh_1777971106736_6d6471.html"
+  },
+  {
+    "timestamp": "2026-05-05T08:51:48.293Z",
+    "system": "DaniniHub",
+    "event": "stripe_activation_email_failed",
+    "source": "stripe_webhook",
+    "activation_id": "act_1777971087847_38e459",
+    "stripe_event_id": "evt_1TTehPIzhCzYgnTMyapSr54L",
+    "stripe_session_id": "cs_test_a1vXVUW8nLn0vFHHpBAFKH7vlSSnZhtoN1g6B3v4ferAVbBgP1WpQRuBz6",
+    "customer_email": "stripe@example.com",
+    "run_id": "dh_1777971106736_6d6471",
+    "error": "Sender email nije definisan. Dodaj BREVO_SENDER_EMAIL u .env."
+  },
+  {
+    "timestamp": "2026-05-05T08:51:48.298Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_fulfilled",
+    "stripe_event_id": "evt_1TTehPIzhCzYgnTMyapSr54L",
+    "stripe_event_type": "checkout.session.completed",
+    "stripe_session_id": "cs_test_a1vXVUW8nLn0vFHHpBAFKH7vlSSnZhtoN1g6B3v4ferAVbBgP1WpQRuBz6",
+    "activation_id": "act_1777971087847_38e459",
+    "run_id": "dh_1777971106736_6d6471",
+    "artifact_path": "artifacts/json/dh_1777971106736_6d6471.json",
+    "pdf_path": "outputs/pdf/dh_1777971106736_6d6471.pdf",
+    "email_html_path": "outputs/email/dh_1777971106736_6d6471.html"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:50.353Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_1TTi4oIzhCzYgnTMYTDjNg3D",
+    "stripe_event_type": "product.created"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:50.356Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_ignored",
+    "stripe_event_id": "evt_1TTi4oIzhCzYgnTMYTDjNg3D",
+    "stripe_event_type": "product.created"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:50.679Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_1TTi4pIzhCzYgnTMnA4Kqi7g",
+    "stripe_event_type": "price.created"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:50.680Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_ignored",
+    "stripe_event_id": "evt_1TTi4pIzhCzYgnTMnA4Kqi7g",
+    "stripe_event_type": "price.created"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.574Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3UZOeAYQ",
+    "stripe_event_type": "charge.succeeded"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.575Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_ignored",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3UZOeAYQ",
+    "stripe_event_type": "charge.succeeded"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.635Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3OeScjD1",
+    "stripe_event_type": "payment_intent.succeeded"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.639Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_ignored",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3OeScjD1",
+    "stripe_event_type": "payment_intent.succeeded"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.754Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+    "stripe_event_type": "checkout.session.completed"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.755Z",
+    "system": "DaniniHub",
+    "event": "stripe_activation_started",
+    "source": "stripe_webhook",
+    "activation_id": "act_1777984073755_8c0c95",
+    "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+    "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+    "customer_email": "stripe@example.com",
+    "locale": "de"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.830Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3lsMjDIJ",
+    "stripe_event_type": "payment_intent.created"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:53.831Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_ignored",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3lsMjDIJ",
+    "stripe_event_type": "payment_intent.created"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:56.327Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_received",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM356tvu11",
+    "stripe_event_type": "charge.updated"
+  },
+  {
+    "timestamp": "2026-05-05T12:27:56.329Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_ignored",
+    "stripe_event_id": "evt_3TTi4rIzhCzYgnTM356tvu11",
+    "stripe_event_type": "charge.updated"
+  },
+  {
+    "timestamp": "2026-05-05T12:28:18.793Z",
+    "system": "DaniniHub",
+    "event": "controller_success",
+    "run_id": "dh_1777984097652_3a66a3",
+    "mode": "STRATEGY_BUILD",
+    "locale": "de",
+    "source": "controller",
+    "lead_agent": "core.meta.commander",
+    "controller_status": "approved",
+    "artifact_path": "artifacts/json/dh_1777984097652_3a66a3.json",
+    "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+    "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html"
+  },
+  {
+    "timestamp": "2026-05-05T12:28:18.794Z",
+    "system": "DaniniHub",
+    "event": "stripe_activation_completed",
+    "source": "stripe_webhook",
+    "activation_id": "act_1777984073755_8c0c95",
+    "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+    "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+    "customer_email": "stripe@example.com",
+    "locale": "de",
+    "run_id": "dh_1777984097652_3a66a3",
+    "artifact_path": "artifacts/json/dh_1777984097652_3a66a3.json",
+    "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+    "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html"
+  },
+  {
+    "timestamp": "2026-05-05T12:28:19.021Z",
+    "system": "DaniniHub",
+    "event": "stripe_activation_email_sent",
+    "source": "stripe_webhook",
+    "activation_id": "act_1777984073755_8c0c95",
+    "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+    "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+    "customer_email": "stripe@example.com",
+    "run_id": "dh_1777984097652_3a66a3",
+    "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html",
+    "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+    "brevo_message_id": "<202605051228.90241847924@smtp-relay.mailin.fr>"
+  },
+  {
+    "timestamp": "2026-05-05T12:28:19.022Z",
+    "system": "DaniniHub",
+    "event": "stripe_webhook_fulfilled",
+    "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+    "stripe_event_type": "checkout.session.completed",
+    "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+    "activation_id": "act_1777984073755_8c0c95",
+    "run_id": "dh_1777984097652_3a66a3",
+    "artifact_path": "artifacts/json/dh_1777984097652_3a66a3.json",
+    "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+    "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html"
+  }
+]
+
+=== STRIPE STATUS ===
+
+> daninihub@1.0.0 stripe:status
+> node scripts/stripe-status.js
+
+{
+  "processed_events_count": 28,
+  "latest_processed_events": [
+    {
+      "file": "evt_1TTi4sIzhCzYgnTMhoncufKr.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_1TTi4sIzhCzYgnTMhoncufKr.json",
+      "mtime": "2026-05-05T12:28:19.022Z",
+      "data": {
+        "processed_at": "2026-05-05T12:28:19.022Z",
+        "stripe_event_type": "checkout.session.completed",
+        "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+        "activation_id": "act_1777984073755_8c0c95",
+        "run_id": "dh_1777984097652_3a66a3",
+        "artifact_path": "artifacts/json/dh_1777984097652_3a66a3.json",
+        "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+        "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html"
+      }
+    },
+    {
+      "file": "evt_3TTi4rIzhCzYgnTM356tvu11.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_3TTi4rIzhCzYgnTM356tvu11.json",
+      "mtime": "2026-05-05T12:27:56.328Z",
+      "data": {
+        "processed_at": "2026-05-05T12:27:56.329Z",
+        "stripe_event_type": "charge.updated",
+        "ignored": true
+      }
+    },
+    {
+      "file": "evt_3TTi4rIzhCzYgnTM3lsMjDIJ.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_3TTi4rIzhCzYgnTM3lsMjDIJ.json",
+      "mtime": "2026-05-05T12:27:53.830Z",
+      "data": {
+        "processed_at": "2026-05-05T12:27:53.831Z",
+        "stripe_event_type": "payment_intent.created",
+        "ignored": true
+      }
+    },
+    {
+      "file": "evt_3TTi4rIzhCzYgnTM3OeScjD1.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_3TTi4rIzhCzYgnTM3OeScjD1.json",
+      "mtime": "2026-05-05T12:27:53.638Z",
+      "data": {
+        "processed_at": "2026-05-05T12:27:53.639Z",
+        "stripe_event_type": "payment_intent.succeeded",
+        "ignored": true
+      }
+    },
+    {
+      "file": "evt_3TTi4rIzhCzYgnTM3UZOeAYQ.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_3TTi4rIzhCzYgnTM3UZOeAYQ.json",
+      "mtime": "2026-05-05T12:27:53.574Z",
+      "data": {
+        "processed_at": "2026-05-05T12:27:53.574Z",
+        "stripe_event_type": "charge.succeeded",
+        "ignored": true
+      }
+    },
+    {
+      "file": "evt_1TTi4pIzhCzYgnTMnA4Kqi7g.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_1TTi4pIzhCzYgnTMnA4Kqi7g.json",
+      "mtime": "2026-05-05T12:27:50.679Z",
+      "data": {
+        "processed_at": "2026-05-05T12:27:50.679Z",
+        "stripe_event_type": "price.created",
+        "ignored": true
+      }
+    },
+    {
+      "file": "evt_1TTi4oIzhCzYgnTMYTDjNg3D.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_1TTi4oIzhCzYgnTMYTDjNg3D.json",
+      "mtime": "2026-05-05T12:27:50.355Z",
+      "data": {
+        "processed_at": "2026-05-05T12:27:50.355Z",
+        "stripe_event_type": "product.created",
+        "ignored": true
+      }
+    },
+    {
+      "file": "evt_1TTehPIzhCzYgnTMyapSr54L.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_1TTehPIzhCzYgnTMyapSr54L.json",
+      "mtime": "2026-05-05T08:51:48.293Z",
+      "data": {
+        "processed_at": "2026-05-05T08:51:48.294Z",
+        "stripe_event_type": "checkout.session.completed",
+        "stripe_session_id": "cs_test_a1vXVUW8nLn0vFHHpBAFKH7vlSSnZhtoN1g6B3v4ferAVbBgP1WpQRuBz6",
+        "activation_id": "act_1777971087847_38e459",
+        "run_id": "dh_1777971106736_6d6471",
+        "artifact_path": "artifacts/json/dh_1777971106736_6d6471.json",
+        "pdf_path": "outputs/pdf/dh_1777971106736_6d6471.pdf",
+        "email_html_path": "outputs/email/dh_1777971106736_6d6471.html"
+      }
+    },
+    {
+      "file": "evt_3TTehOIzhCzYgnTM3Ehbvn4G.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_3TTehOIzhCzYgnTM3Ehbvn4G.json",
+      "mtime": "2026-05-05T08:51:30.483Z",
+      "data": {
+        "processed_at": "2026-05-05T08:51:30.484Z",
+        "stripe_event_type": "charge.updated",
+        "ignored": true
+      }
+    },
+    {
+      "file": "evt_3TTehOIzhCzYgnTM3MFnwhEy.json",
+      "path": "/home/dragan/daninihub/logs/stripe_processed/evt_3TTehOIzhCzYgnTM3MFnwhEy.json",
+      "mtime": "2026-05-05T08:51:27.832Z",
+      "data": {
+        "processed_at": "2026-05-05T08:51:27.833Z",
+        "stripe_event_type": "payment_intent.created",
+        "ignored": true
+      }
+    }
+  ],
+  "latest_stripe_audit_events": [
+    {
+      "timestamp": "2026-05-05T08:51:48.293Z",
+      "system": "DaniniHub",
+      "event": "stripe_activation_email_failed",
+      "source": "stripe_webhook",
+      "activation_id": "act_1777971087847_38e459",
+      "stripe_event_id": "evt_1TTehPIzhCzYgnTMyapSr54L",
+      "stripe_session_id": "cs_test_a1vXVUW8nLn0vFHHpBAFKH7vlSSnZhtoN1g6B3v4ferAVbBgP1WpQRuBz6",
+      "customer_email": "stripe@example.com",
+      "run_id": "dh_1777971106736_6d6471",
+      "error": "Sender email nije definisan. Dodaj BREVO_SENDER_EMAIL u .env."
+    },
+    {
+      "timestamp": "2026-05-05T08:51:48.298Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_fulfilled",
+      "stripe_event_id": "evt_1TTehPIzhCzYgnTMyapSr54L",
+      "stripe_event_type": "checkout.session.completed",
+      "stripe_session_id": "cs_test_a1vXVUW8nLn0vFHHpBAFKH7vlSSnZhtoN1g6B3v4ferAVbBgP1WpQRuBz6",
+      "activation_id": "act_1777971087847_38e459",
+      "run_id": "dh_1777971106736_6d6471",
+      "artifact_path": "artifacts/json/dh_1777971106736_6d6471.json",
+      "pdf_path": "outputs/pdf/dh_1777971106736_6d6471.pdf",
+      "email_html_path": "outputs/email/dh_1777971106736_6d6471.html"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:50.353Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_received",
+      "stripe_event_id": "evt_1TTi4oIzhCzYgnTMYTDjNg3D",
+      "stripe_event_type": "product.created"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:50.356Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_ignored",
+      "stripe_event_id": "evt_1TTi4oIzhCzYgnTMYTDjNg3D",
+      "stripe_event_type": "product.created"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:50.679Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_received",
+      "stripe_event_id": "evt_1TTi4pIzhCzYgnTMnA4Kqi7g",
+      "stripe_event_type": "price.created"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:50.680Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_ignored",
+      "stripe_event_id": "evt_1TTi4pIzhCzYgnTMnA4Kqi7g",
+      "stripe_event_type": "price.created"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.574Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_received",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3UZOeAYQ",
+      "stripe_event_type": "charge.succeeded"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.575Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_ignored",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3UZOeAYQ",
+      "stripe_event_type": "charge.succeeded"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.635Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_received",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3OeScjD1",
+      "stripe_event_type": "payment_intent.succeeded"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.639Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_ignored",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3OeScjD1",
+      "stripe_event_type": "payment_intent.succeeded"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.754Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_received",
+      "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+      "stripe_event_type": "checkout.session.completed"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.755Z",
+      "system": "DaniniHub",
+      "event": "stripe_activation_started",
+      "source": "stripe_webhook",
+      "activation_id": "act_1777984073755_8c0c95",
+      "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+      "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+      "customer_email": "stripe@example.com",
+      "locale": "de"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.830Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_received",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3lsMjDIJ",
+      "stripe_event_type": "payment_intent.created"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:53.831Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_ignored",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM3lsMjDIJ",
+      "stripe_event_type": "payment_intent.created"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:56.327Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_received",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM356tvu11",
+      "stripe_event_type": "charge.updated"
+    },
+    {
+      "timestamp": "2026-05-05T12:27:56.329Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_ignored",
+      "stripe_event_id": "evt_3TTi4rIzhCzYgnTM356tvu11",
+      "stripe_event_type": "charge.updated"
+    },
+    {
+      "timestamp": "2026-05-05T12:28:18.794Z",
+      "system": "DaniniHub",
+      "event": "stripe_activation_completed",
+      "source": "stripe_webhook",
+      "activation_id": "act_1777984073755_8c0c95",
+      "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+      "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+      "customer_email": "stripe@example.com",
+      "locale": "de",
+      "run_id": "dh_1777984097652_3a66a3",
+      "artifact_path": "artifacts/json/dh_1777984097652_3a66a3.json",
+      "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+      "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html"
+    },
+    {
+      "timestamp": "2026-05-05T12:28:19.021Z",
+      "system": "DaniniHub",
+      "event": "stripe_activation_email_sent",
+      "source": "stripe_webhook",
+      "activation_id": "act_1777984073755_8c0c95",
+      "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+      "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+      "customer_email": "stripe@example.com",
+      "run_id": "dh_1777984097652_3a66a3",
+      "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html",
+      "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+      "brevo_message_id": "<202605051228.90241847924@smtp-relay.mailin.fr>"
+    },
+    {
+      "timestamp": "2026-05-05T12:28:19.022Z",
+      "system": "DaniniHub",
+      "event": "stripe_webhook_fulfilled",
+      "stripe_event_id": "evt_1TTi4sIzhCzYgnTMhoncufKr",
+      "stripe_event_type": "checkout.session.completed",
+      "stripe_session_id": "cs_test_a14AAOlswiKOqXdsMwcpr68YhMiLApg4ff5itplLdIZZUGMz82MpxFnbdp",
+      "activation_id": "act_1777984073755_8c0c95",
+      "run_id": "dh_1777984097652_3a66a3",
+      "artifact_path": "artifacts/json/dh_1777984097652_3a66a3.json",
+      "pdf_path": "outputs/pdf/dh_1777984097652_3a66a3.pdf",
+      "email_html_path": "outputs/email/dh_1777984097652_3a66a3.html"
+    }
+  ]
+}
+
+=== LATEST ARTIFACTS ===
+sveukupno 164
+-rw-rw-r-- 1 dragan dragan 2711 Mai  5 14:28 dh_1777984097652_3a66a3.json
+-rw-rw-r-- 1 dragan dragan 2879 Mai  5 10:51 dh_1777971106736_6d6471.json
+-rw-rw-r-- 1 dragan dragan 3612 Mai  5 09:44 dh_1777967066309_d505a9.json
+-rw-rw-r-- 1 dragan dragan 5199 Mai  5 03:00 dh_1777942800564_1218ab.json
+-rw-rw-r-- 1 dragan dragan 2991 Mai  5 02:58 dh_1777942720501_b3d350.json
+-rw-rw-r-- 1 dragan dragan 2729 Mai  5 02:47 dh_1777942028378_7dc1b9.json
+-rw-rw-r-- 1 dragan dragan 3114 Mai  5 02:46 dh_1777941970564_ca6f11.json
+-rw-rw-r-- 1 dragan dragan 2702 Mai  5 02:23 dh_1777940611636_883c6a.json
+-rw-rw-r-- 1 dragan dragan 3673 Mai  5 02:13 dh_1777940016996_fd0ca0.json
+sveukupno 788
+-rw-rw-r-- 1 dragan dragan 34499 Mai  5 14:28 dh_1777984097652_3a66a3.pdf
+-rw-rw-r-- 1 dragan dragan 34373 Mai  5 10:51 dh_1777971106736_6d6471.pdf
+-rw-rw-r-- 1 dragan dragan 34801 Mai  5 09:44 dh_1777967066309_d505a9.pdf
+-rw-rw-r-- 1 dragan dragan 36202 Mai  5 03:00 dh_1777942800564_1218ab.pdf
+-rw-rw-r-- 1 dragan dragan 34469 Mai  5 02:58 dh_1777942720501_b3d350.pdf
+-rw-rw-r-- 1 dragan dragan 34394 Mai  5 02:47 dh_1777942028378_7dc1b9.pdf
+-rw-rw-r-- 1 dragan dragan 34390 Mai  5 02:46 dh_1777941970564_ca6f11.pdf
+-rw-rw-r-- 1 dragan dragan 34406 Mai  5 02:23 dh_1777940611636_883c6a.pdf
+-rw-rw-r-- 1 dragan dragan 34693 Mai  5 02:13 dh_1777940016996_fd0ca0.pdf
+sveukupno 220
+-rw-rw-r-- 1 dragan dragan 4921 Mai  5 14:28 dh_1777984097652_3a66a3.html
+-rw-rw-r-- 1 dragan dragan 5020 Mai  5 10:51 dh_1777971106736_6d6471.html
+-rw-rw-r-- 1 dragan dragan 5287 Mai  5 09:44 dh_1777967066309_d505a9.html
+-rw-rw-r-- 1 dragan dragan 5485 Mai  5 03:00 dh_1777942800564_1218ab.html
+-rw-rw-r-- 1 dragan dragan 5048 Mai  5 02:58 dh_1777942720501_b3d350.html
+-rw-rw-r-- 1 dragan dragan 4847 Mai  5 02:47 dh_1777942028378_7dc1b9.html
+-rw-rw-r-- 1 dragan dragan 5148 Mai  5 02:46 dh_1777941970564_ca6f11.html
+-rw-rw-r-- 1 dragan dragan 4963 Mai  5 02:23 dh_1777940611636_883c6a.html
+-rw-rw-r-- 1 dragan dragan 5370 Mai  5 02:13 dh_1777940016996_fd0ca0.html
+
+=== MILESTONE ===
+# DaniniHub Stripe Activation Flow Stable
+
+Date: 2026-05-05
+
+## Status
+
+STABLE.
+
+## Verified chain
+
+- Stripe event received: checkout.session.completed
+- Activation started
+- Controller approved artifact generation
+- JSON artifact created
+- PDF report created
+- Email HTML created
+- Brevo transactional email sent
+- Webhook fulfilled
+
+## Latest verified run
+
+- run_id: dh_1777984097652_3a66a3
+- artifact_path: artifacts/json/dh_1777984097652_3a66a3.json
+- pdf_path: outputs/pdf/dh_1777984097652_3a66a3.pdf
+- email_html_path: outputs/email/dh_1777984097652_3a66a3.html
+- brevo_message_id: <202605051228.90241847924@smtp-relay.mailin.fr>
+
+## Previous blockers resolved
+
+- saveArtifactEmailHtml is not a function
+- outputs/email/undefined.html
+- artifact.run_id missing
+- customer_email is not defined
+- missing Brevo sender email
+
+## Remaining production checks
+
+- Use verified production sender domain.
+- Test with real recipient email.
+- Confirm production Stripe webhook endpoint.
+- Confirm checkout success page links to generated artifact/download flow.

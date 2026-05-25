@@ -1,0 +1,20 @@
+node_modules/
+.next/
+dist/
+build/
+.env
+.env.*
+*.log
+logs/
+tmp/
+.DS_Store
+
+# private/generated
+docs/private/
+outputs/
+artifacts/
+backups/
+_archive/
+
+# local backups
+*.BACKUP*

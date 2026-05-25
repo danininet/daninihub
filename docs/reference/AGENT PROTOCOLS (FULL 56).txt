@@ -1,0 +1,69 @@
+﻿DANINIHUB MASTER AGENT PROTOCOLS (FULL 56)
+Vlasnik: Dragan Zdravković | Sistem: DaniniHub OS | Metod: „Pitaj AI, AI pita tebe“
+________________
+
+
+🛡️ SEKTOR 1: CORE & ORCHESTRATION (Komanda i Logika)
+1. [ID: core.meta.commander] - Vrhovni autoritet. Nadgleda sve agente. Ako iko skrene sa "Ustava", on ga blokira.
+2. [ID: internal.dev.cto] - Glavni za Node, Stripe, Brevo i WP flow. Zero-hallucination kôd.
+3. [ID: core.orchestrator] - Dirigent. Određuje redosled rada agenata (Research -> Method -> Agent).
+4. [ID: core.guard.zero_hallucination] - Kontrolor izlaza. Svaki podatak mora biti 100% tačan ili se briše.
+5. [ID: core.method.engine] - Izvršava "Cycle-lock". Nema rešenja bez tvoja 3 kontra-pitanja.
+6. [ID: core.registry] - Katalog svih agenata, njihovih prava i nivoa pristupa.
+7. [ID: core.artifact.system] - Standardizuje svaki izlaz u JSON format sa meta-podacima.
+8. [ID: core.artifact.store] - Čuva istoriju verzija. Omogućava Rollback na bilo koju tačku.
+9. [ID: core.audit.log] - Beleži svaki klik i svaku odluku sistema radi kasnije provere.
+10. [ID: core.validator] - Finalna provera pre nego što ti vidiš fajl. Kvalitet iznad svega.
+💰 SEKTOR 2: MONETIZACIJA & FINANSIJE (Stripe & Affiliate)
+11. [ID: monetization.product.manager] - Upravlja nivoima (Start, Builder, Pro, Ultimate).
+12. [ID: monetization.token.engine] - Prati potrošnju tokena i limitira je po korisniku.
+13. [ID: monetization.stripe.webhook] - Obrađuje uplate i šalje signale bazi za aktivaciju.
+14. [ID: monetization.affiliate.scout] - Traži isključivo "Evergreen" affiliate ponude.
+15. [ID: monetization.partner.verifier] - Proverava da li je affiliate mreža poštena ili prevara.
+16. [ID: monetization.evergreen.finder] - Analiza proizvoda koji će se prodavati i za 3 godine.
+17. [ID: monetization.disclosure.guard] - Automatski dodaje pravne napomene uz affiliate linkove.
+18. [ID: monetization.link.hygiene] - Održava zdravlje linkova i prati provizije.
+19. [ID: monetization.donation.module] - Sistem za podršku i donacije unutar hub-a.
+🇩🇪 SEKTOR 3: DACH & LEGAL (Nemačko Tržište)
+20. [ID: legal.linguistic.de] - Pretvara tekst u visoki poslovni nemački (Minhen/Cirih).
+21. [ID: legal.compliance.gdpr] - Osigurava da je sve po DSGVO zakonu.
+22. [ID: legal.impressum.gen] - Pravi Impressum i Datenschutz stranice automatski.
+23. [ID: legal.privacy.protocol] - Protokol za zaštitu podataka korisnika u bazi.
+24. [ID: legal.dach.analyst] - Analizira biznis ideje kroz prizmu nemačke skepse.
+25. [ID: legal.belastbarkeit.auditor] - Testira izdržljivost biznis modela na tržištu.
+✍️ SEKTOR 4: CONTENT, VIDEO & EDUKACIJA
+26. [ID: content.gen.main] - Piše stranice i blog postove na osnovu fakata.
+27. [ID: content.structure.v2] - Pravi hirurški precizne skelete i outline-ove za PDF.
+28. [ID: content.copywriter] - Specijalista za prodajne tekstove koji "vuku" na akciju.
+29. [ID: content.script.video] - Piše skripte za video i audio kurseve.
+30. [ID: content.course.architect] - Planira logički sled edukativnih modula.
+31. [ID: content.ebook.formatter] - Sređuje tekst za Premium PDF izvoz.
+32. [ID: content.template.library] - Upravlja bibliotekom šablona za sajt.
+33. [ID: content.landing.blocks] - Definiše Blocksy sekcije za landing stranice.
+🔍 SEKTOR 5: ANALITIKA & ISTRAŽIVANJE
+34. [ID: research.audience.deep] - Kopa po internetu da nađe šta ljude stvarno boli.
+35. [ID: research.seo.main] - WDF*IDF analiza i korelacija sadržaja.
+36. [ID: research.intel.competitive] - Analiza konkurencije i traženje njihovih grešaka.
+37. [ID: research.analytics.gsc] - Povezuje Google Search Console sa AI strategijom.
+38. [ID: research.trend.scout] - Prati AI inovacije koje Dragan može da iskoristi.
+39. [ID: research.intent.analyst] - Razlučuje šta je korisnik hteo, a šta je napisao.
+🛠️ SEKTOR 6: TEHNIČKA PODRŠKA (Dev & Sync)
+40. [ID: tech.support.diag] - Sam dijagnostikuje greške u kodu i SEO-u.
+41. [ID: tech.qa.console] - Terminal za proveru kvaliteta svake funkcije.
+42. [ID: tech.brevo.sync] - Automatizacija slanja mailova kroz Brevo.
+43. [ID: tech.db.sync] - Sinhronizacija između servera i Hostinger baze.
+44. [ID: tech.env.config] - Čuvar tajnih ključeva i API limita.
+45. [ID: tech.api.fallback] - Ako GPT padne, on prebacuje na drugi model.
+46. [ID: internal.dev.frontend] - Zadužen za Dashboard i UI čistoću.
+47. [ID: internal.dev.backend] - Zadužen za brzinu baze i API rute.
+48. [ID: internal.security.auditor] - Stalno proverava ima li rupa u sistemu.
+🚀 SEKTOR 7: SPECIAL OPS (Dubina i Testiranje)
+49. [ID: special.activation.app] - Aktivira sistem i postavlja početne parametre.
+50. [ID: special.runner] - Izvršava komande koje mu Dragan zada preko konzole.
+51. [ID: special.snapshot] - Pravi "sliku" stanja sistema u svakom trenutku.
+52. [ID: special.vertiefung] - Agent za ekstremno duboko kopanje po jednoj temi.
+53. [ID: special.risk.sim] - Simulira propast biznisa da bi našao rešenje pre problema.
+54. [ID: special.logic.clash] - Traži logičke greške u odgovorima drugih agenata.
+55. [ID: special.clarity.eval] - Ocenjuje jasnoću svake rečenice (X/10).
+56. [ID: special.feedback.loop] - Pamti tvoje ispravke i menja sistem da ne greši opet.
+1.

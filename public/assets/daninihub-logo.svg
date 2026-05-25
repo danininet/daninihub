@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="160" viewBox="0 0 720 160" role="img" aria-label="DaniniHub">
+  <rect width="720" height="160" fill="#080808"/>
+  <g fill="none" stroke="#B99A55" stroke-width="3">
+    <path d="M48 112V48h34c21 0 35 13 35 32s-14 32-35 32H48z"/>
+    <path d="M144 112V48M144 80h54M198 48v64"/>
+    <path d="M232 112h50M232 48h50M232 80h42"/>
+  </g>
+  <text x="320" y="74" fill="#F4F1EA" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" letter-spacing="1.5">DaniniHub</text>
+  <text x="322" y="108" fill="#B99A55" font-family="Arial, Helvetica, sans-serif" font-size="15" letter-spacing="2.6">ASK AI · AI ASKS YOU</text>
+</svg>

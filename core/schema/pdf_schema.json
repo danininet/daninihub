@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "version": "2.0",
+    "region": "DACH_PRIORITY",
+    "watermark": "DANINIHUB_SYSTEM_VERIFIED_2026"
+  },
+  "content": {
+    "dialogue_log": "ARRAY_OF_INTERACTIONS",
+    "professional_analysis": "TEXT_BLOCK",
+    "premium_ebook_outline": "STRATEGIC_OUTLINE",
+    "bonus_pdf_outline": "BONUS_OUTLINE"
+  },
+  "silent_calls": {
+    "community_invite": "LINK_GUESTBOOK",
+    "system_upgrade_cta": "LINK_TIER_UPGRADE",
+    "review_submission": "LINK_CONTROLLER_VALIDATOR"
+  },
+  "legal": {
+    "disclaimer": "Keine Finanz-, Rechts- ili medizinische Beratung.",
+    "gdpr_compliant": true
+  }
+}

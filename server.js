@@ -10,6 +10,7 @@ const healthRoutes = require('./src/routes/health.routes');
 const systemRoutes = require('./src/routes/system.routes');
 const usageRoutes = require('./src/routes/usage.routes');
 const dashboardRoutes = require('./src/routes/dashboard.routes');
+const entryRoutes = require('./src/routes/entry.routes');
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -24,6 +25,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/usage', usageRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/entry', entryRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

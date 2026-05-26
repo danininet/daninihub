@@ -6,6 +6,7 @@ const cors = require('cors');
 const { envSnapshot } = require('./src/config/env');
 const { requestAudit } = require('./src/middleware/requestAudit');
 const { errorHandler } = require('./src/middleware/errorHandler');
+const publicRoutes = require('./src/routes/public.routes');
 const healthRoutes = require('./src/routes/health.routes');
 const systemRoutes = require('./src/routes/system.routes');
 const usageRoutes = require('./src/routes/usage.routes');
@@ -25,6 +26,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(requestAudit);
 
+app.use('/', publicRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/usage', usageRoutes);

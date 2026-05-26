@@ -3,23 +3,30 @@ const {
   submitReview,
   getModerationQueue
 } = require('../services/reviewbook.service');
+const { ok, validationError } = require('../core/response.contract');
 
 const router = express.Router();
 
 router.get('/moderation-queue', (req, res) => {
-  res.json({
+  return res.json(ok({
     queue: getModerationQueue(),
-    moderation: 'AI_ASSISTED_HUMAN_REVIEW'
-  });
+    moderation: 'HUMAN_REVIEW_REQUIRED'
+  }));
 });
 
 router.post('/submit', (req, res) => {
-  const payload = submitReview(req.body);
+  try {
+    const payload = submitReview(req.body);
 
-  res.status(201).json({
-    status: 'submitted',
-    payload
-  });
+    return res.status(201).json(ok({
+      review: payload,
+      publication: 'blocked_until_validation'
+    }));
+  } catch (error) {
+    return res.status(error.status || 500).json(
+      validationError(error.message)
+    );
+  }
 });
 
 module.exports = router;

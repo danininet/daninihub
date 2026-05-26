@@ -19,6 +19,8 @@ const gatesRoutes = require('./src/routes/gates.routes');
 const artifactsRoutes = require('./src/routes/artifacts.routes');
 const legalRoutes = require('./src/routes/legal.routes');
 const localizationRoutes = require('./src/routes/localization.routes');
+const seoRoutes = require('./src/routes/seo.routes');
+const trustRoutes = require('./src/routes/trust.routes');
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
@@ -42,6 +44,8 @@ app.use('/api/gates', gatesRoutes);
 app.use('/api/artifacts', artifactsRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/localization', localizationRoutes);
+app.use('/api/seo', seoRoutes);
+app.use('/api/trust', trustRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

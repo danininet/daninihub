@@ -1,1 +1,23 @@
-{"name":"daninihub","version":"1.0.0","private":true,"description":"DaniniHub Express Node constitutional runtime.","main":"server.js","scripts":{"start":"node server.js","dev":"node --watch server.js","build":"node -c server.js","build:front":"node -c server.js"},"engines":{"node":">=20 <23"},"dependencies":{"cors":"^2.8.5","dotenv":"^16.4.7","express":"4.18.3","helmet":"^8.0.0"}}
+{
+  "name": "daninihub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DaniniHub Express Node constitutional runtime.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build": "node -c server.js",
+    "build:front": "node -c server.js",
+    "check:runtime": "node -c server.js"
+  },
+  "engines": {
+    "node": ">=20 <23"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "4.18.3",
+    "helmet": "^8.0.0"
+  }
+}

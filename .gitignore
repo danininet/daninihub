@@ -18,3 +18,7 @@ _archive/
 
 # local backups
 *.BACKUP*
+
+# Local/private large audio files
+*.m4a
+docs/reference/*.m4a

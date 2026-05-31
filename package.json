@@ -1,12 +1,14 @@
 {
   "name": "daninihub",
   "version": "1.0.0",
-  "description": "",
+  "description": "DaniniHub deploy package.",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
+    "build": "npm run build:front",
+    "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",
     "start": "node server/stripe-webhook.js",
     "dev": "node server/stripe-webhook.js",
     "check:syntax": "node --check danini.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",

@@ -9,8 +9,8 @@
   "scripts": {
     "build": "npm run build:front",
     "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",
-    "start": "node server/stripe-webhook.js",
-    "dev": "node server/stripe-webhook.js",
+    "start": "node server.js",
+    "dev": "node server.js",
     "check:syntax": "node --check danini.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",
     "check:tree": "find . \\( -path './node_modules' -o -path './.git' -o -path './_archive' \\) -prune -o -type f -print | sort",
     "health": "node scripts/healthcheck.js",

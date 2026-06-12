@@ -46,9 +46,12 @@ function getPublicWebLayerPayload(activeRoute = '/') {
 
 function mountPublicWebLayer(app) {
   app.get('/', (req, res) => res.json(getPublicWebLayerPayload('/')));
-  app.get(['/methode', '/projektmodus', '/preise', '/analyse-starten', '/artifacts'], (req, res) => {
-    res.json(getPublicWebLayerPayload(req.path));
-  });
+
+  const publicRoutes = ['/methode', '/projektmodus', '/preise', '/analyse-starten', '/artifacts'];
+  for (const route of publicRoutes) {
+    app.get(route, (req, res) => res.json(getPublicWebLayerPayload(route)));
+  }
+
   app.get('/api/entry/7-eur', (req, res) => {
     res.json({
       status: 'external_checkout_manual_activation_mvp',
@@ -68,6 +71,7 @@ function mountPublicWebLayer(app) {
       ]
     });
   });
+
   app.get('/api/entry/7-eur/checkout', (req, res) => {
     const checkoutUrl = process.env.GUMROAD_ENTRY_URL;
     if (!checkoutUrl) {

@@ -7,7 +7,6 @@ const path = require('path');
 const fs = require('fs');
 
 const { writeAudit } = require('./core/audit');
-const { activateFromStripeSession } = require('./core/activation-from-stripe');
 const { mountPublicWebLayer } = require('./server-public-layer');
 
 const app = express();
@@ -70,6 +69,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
       return res.json({ received: true, ignored: true });
     }
 
+    const { activateFromStripeSession } = require('./core/activation-from-stripe');
     const session = event.data.object;
 
     const result = await activateFromStripeSession({
@@ -212,34 +212,12 @@ app.get('/success', async (req, res) => {
 <head>
   <meta charset="utf-8">
   <title>DaniniHub Activation</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#f4f1ea;color:#111;margin:0;padding:40px}
-    main{max-width:760px;margin:0 auto;background:#fff;padding:34px;border:1px solid #e4dac9}
-    .badge{color:#9b772c;letter-spacing:3px;font-size:12px;text-transform:uppercase}
-    h1{font-weight:400}
-    a.btn{display:inline-block;background:#070707;color:#f6efe3;padding:13px 18px;text-decoration:none;margin:12px 0}
-    dl{display:grid;grid-template-columns:160px 1fr;gap:10px;margin-top:24px}
-    dt{color:#777}
-    dd{margin:0;word-break:break-all}
-    footer{margin-top:30px;color:#777;font-size:12px;line-height:1.6}
-  </style>
 </head>
 <body>
 <main>
-  <div class="badge">DaniniHub · System Verified</div>
   <h1>Ihre Aktivierung ist ${status?.run_id ? 'abgeschlossen' : 'in Bearbeitung'}.</h1>
   <p>Ihr DaniniHub Report wurde erstellt, sobald der Stripe Webhook vollständig verarbeitet wurde.</p>
-  ${runId ? `<p><a class="btn" href="${pdfLink}">PDF Report herunterladen</a></p>` : ''}
-  <dl>
-    <dt>Stripe Session</dt><dd>${sessionId}</dd>
-    <dt>Activation ID</dt><dd>${status?.activation_id || '-'}</dd>
-    <dt>Run ID</dt><dd>${runId || '-'}</dd>
-    <dt>E-Mail Status</dt><dd>${status?.email_sent ? 'Gesendet' : 'Nicht bestätigt'}</dd>
-  </dl>
-  <footer>
-    Hinweis: Dieses Ergebnis ist ein DaniniHub-Systemartefakt. Keine Finanz-, Rechts- oder medizinische Beratung.
-    <br>DaniniHub · DACH-first decision system · AI transparency · GDPR-aware workflow
-  </footer>
+  ${runId ? `<p><a href="${pdfLink}">PDF Report herunterladen</a></p>` : ''}
 </main>
 </body>
 </html>`);

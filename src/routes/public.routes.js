@@ -2,37 +2,106 @@ const express = require('express');
 
 const router = express.Router();
 
-function blockedRoute(route) {
+const PUBLIC_PAGES = Object.freeze([
+  {
+    route: '/',
+    title: 'DaniniHub – Strukturierter KI-Projektmodus',
+    status: 'indexable_public_entry',
+    purpose: 'DACH-first entry into the DaniniHub method, Project Mode and public artifact layer.'
+  },
+  {
+    route: '/methode',
+    title: 'Frage KI – KI fragt dich',
+    status: 'indexable_public_method',
+    purpose: 'Explains the DaniniHub dialogue method without changing the Ustav.'
+  },
+  {
+    route: '/projektmodus',
+    title: 'DaniniHub Project Mode',
+    status: 'indexable_public_system_overview',
+    purpose: 'Explains Gate 0–5, one active project, validation and artifact logic.'
+  },
+  {
+    route: '/preise',
+    title: 'Niveaus, System Power und Add-ons',
+    status: 'indexable_pricing_overview_not_full_checkout',
+    purpose: 'Shows tiers and credits as platform usage units, not financial tokens.'
+  },
+  {
+    route: '/analyse-starten',
+    title: 'ENTRY 7 EUR – Projektaktivierung',
+    status: 'external_checkout_manual_activation_mvp',
+    purpose: 'Payment-first activation before resource-intensive analysis. Gumroad MVP may be used before Stripe automation.'
+  },
+  {
+    route: '/artifacts',
+    title: 'DaniniHub Artifacts',
+    status: 'indexable_artifact_overview',
+    purpose: 'Public overview of approved artifacts such as Operatives Protokoll, DPL and Calije case study.'
+  }
+]);
+
+const ARTIFACTS = Object.freeze([
+  {
+    id: 'operatives-protokoll-der-klarheit',
+    title: 'DaniniHub – Operatives Protokoll der Klarheit',
+    status: 'existing_asset_review_required',
+    route: '/artifacts/operatives-protokoll-der-klarheit'
+  },
+  {
+    id: 'digitale-standortvermarktung-dpl',
+    title: 'Digitale Standortvermarktung / Digitalna prodaja lokacije',
+    status: 'existing_product_delivery_validation_required',
+    route: '/artifacts/digitale-standortvermarktung'
+  },
+  {
+    id: 'calije-park-residence',
+    title: 'Čalije Park Residence',
+    status: 'public_artifact_private_boundary_required',
+    route: '/artifacts/calije-park-residence'
+  }
+]);
+
+function publicPayload(activeRoute = '/') {
   return {
-    route,
-    status: 'blocked',
-    reason: 'not_configured',
-    system: 'DaniniHub',
-    mode: 'constitutional_runtime',
-    message: 'Public modules remain disabled until backend orchestration, validation and compliance layers are operational.'
+    status: 'public_web_layer_ready_for_review',
+    project: 'DaniniHub',
+    architecture: 'Express / Node.js',
+    governance: 'USTAV-first',
+    method: 'Frage KI – KI fragt dich',
+    activeRoute,
+    indexation: {
+      allowed: true,
+      requiresCanonical: true,
+      requiresHreflang: true,
+      requiresStructuredData: true,
+      noFakeMetrics: true,
+      noGuaranteeClaims: true,
+      aiTransparencyVisible: true
+    },
+    entry: {
+      price: { amount: 7, currency: 'EUR' },
+      mode: 'payment_first_before_analysis',
+      checkoutProvider: 'gumroad_mvp_preferred_until_stripe_pipeline_validated',
+      fulfillment: 'manual_or_semiautomatic_until_pdf_email_auth_validated'
+    },
+    pages: PUBLIC_PAGES,
+    artifacts: ARTIFACTS,
+    blockedAutomation: [
+      'stripe_full_automation_until_webhook_validated',
+      'brevo_delivery_until_email_pipeline_validated',
+      'pdf_download_until_artifact_pipeline_validated',
+      'member_dashboard_until_auth_validated'
+    ]
   };
 }
 
 router.get('/', (req, res) => {
-  res.status(503).json({
-    status: 'system_runtime_locked',
-    project: 'DaniniHub',
-    architecture: 'Express / Node.js',
-    publicFrontend: 'disabled',
-    governance: 'USTAV-first',
-    activeModules: {
-      audit: 'active',
-      validation: 'active',
-      routing: 'active'
-    },
-    blockedModules: [
-      blockedRoute('/methode'),
-      blockedRoute('/projektmodus'),
-      blockedRoute('/preise'),
-      blockedRoute('/reviewbook'),
-      blockedRoute('/partner')
-    ]
-  });
+  return res.json(publicPayload('/'));
+});
+
+router.get(['/methode', '/projektmodus', '/preise', '/analyse-starten', '/artifacts'], (req, res) => {
+  return res.json(publicPayload(req.path));
 });
 
 module.exports = router;

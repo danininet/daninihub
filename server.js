@@ -12,7 +12,6 @@ const { mountPublicWebLayer } = require('./server-public-layer');
 
 const app = express();
 app.use(cors());
-require('./core/plasmic-api.js')(app);
 
 const stripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
@@ -114,6 +113,7 @@ app.get('/health', (req, res) => {
     system: 'DaniniHub',
     port: PORT,
     publicWebLayer: 'ready_for_review',
+    plasmic: 'removed_from_runtime_start',
     entry: {
       provider: 'gumroad_mvp',
       configured: Boolean(process.env.GUMROAD_ENTRY_URL)
@@ -248,6 +248,7 @@ app.get('/success', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`DaniniHub server listening on http://localhost:${PORT}`);
   console.log('Public web layer: ready for review');
+  console.log('Plasmic: removed from runtime start');
   console.log(`Stripe automation: ${stripeConfigured ? 'configured' : 'disabled'}`);
   console.log(`Gumroad ENTRY URL: ${process.env.GUMROAD_ENTRY_URL ? 'configured' : 'not configured'}`);
 });

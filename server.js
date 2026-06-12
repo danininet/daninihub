@@ -8,25 +8,35 @@ const fs = require('fs');
 
 const { writeAudit } = require('./core/audit');
 const { activateFromStripeSession } = require('./core/activation-from-stripe');
+const { mountPublicWebLayer } = require('./server-public-layer');
 
 const app = express();
 app.use(cors());
 require('./core/plasmic-api.js')(app);
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const stripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const PORT = Number(process.env.PORT || 4242);
 
+mountPublicWebLayer(app);
+
 if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('SERVER_START_ERROR: STRIPE_SECRET_KEY nije definisan u .env');
-  process.exit(1);
+  console.warn('STRIPE_SECRET_KEY not configured: Stripe automation remains disabled; Gumroad ENTRY MVP can stay public.');
 }
 
 if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  console.error('SERVER_START_ERROR: STRIPE_WEBHOOK_SECRET nije definisan u .env');
-  process.exit(1);
+  console.warn('STRIPE_WEBHOOK_SECRET not configured: Stripe webhook remains disabled; Gumroad ENTRY MVP can stay public.');
 }
 
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  if (!stripeConfigured || !stripe) {
+    return res.status(503).json({
+      status: 'stripe_webhook_not_configured',
+      rule: 'Stripe automation is disabled until STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET are configured and validated.'
+    });
+  }
+
   let event;
 
   try {
@@ -102,7 +112,13 @@ app.get('/health', (req, res) => {
   res.json({
     ok: true,
     system: 'DaniniHub',
-    port: PORT
+    port: PORT,
+    publicWebLayer: 'ready_for_review',
+    entry: {
+      provider: 'gumroad_mvp',
+      configured: Boolean(process.env.GUMROAD_ENTRY_URL)
+    },
+    stripeAutomation: stripeConfigured ? 'configured' : 'disabled'
   });
 });
 
@@ -231,5 +247,7 @@ app.get('/success', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`DaniniHub server listening on http://localhost:${PORT}`);
-  console.log(`Webhook endpoint: http://localhost:${PORT}/webhook`);
+  console.log('Public web layer: ready for review');
+  console.log(`Stripe automation: ${stripeConfigured ? 'configured' : 'disabled'}`);
+  console.log(`Gumroad ENTRY URL: ${process.env.GUMROAD_ENTRY_URL ? 'configured' : 'not configured'}`);
 });

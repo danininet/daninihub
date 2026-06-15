@@ -8,7 +8,7 @@ const fs = require('fs');
 
 const { writeAudit } = require('./core/audit');
 const { mountEntryFlowLayer } = require('./server-entry-flow-layer');
-const { mountPublicLayer } = require('./server-public-layer');
+const { mountPublicRuntime } = require('./server-public-runtime');
 
 const app = express();
 app.use(cors());
@@ -19,7 +19,7 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 const PORT = Number(process.env.PORT || 4242);
 
 mountEntryFlowLayer(app);
-mountPublicLayer(app);
+mountPublicRuntime(app);
 
 if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('STRIPE_SECRET_KEY not configured: Stripe automation remains disabled; Gumroad ENTRY MVP can stay public.');
@@ -49,47 +49,47 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  try {
-    if (event.type === 'checkout.session.completed') {
+  if (event.type === 'checkout.session.completed') {
+    try {
+      const session = event.data.object;
       const { activateFromStripeSession } = require('./core/activation-from-stripe');
-      await activateFromStripeSession(event.data.object);
+      await activateFromStripeSession(session);
+      await writeAudit('stripe.checkout.completed', { sessionId: session.id });
+    } catch (err) {
+      console.error('Activation from Stripe failed:', err);
+      await writeAudit('stripe.activation.failed', { error: err.message });
+      return res.status(500).json({ error: 'activation_failed' });
     }
-  } catch (err) {
-    console.error('Activation failed:', err);
-    return res.status(500).json({ error: 'activation_failed' });
   }
 
   res.json({ received: true });
 });
 
-app.get('/health', (req, res) => res.json({
-  ok: true,
-  system: 'DaniniHub',
-  port: PORT,
-  publicWebLayer: 'ready_for_review',
-  entry: {
-    provider: 'gumroad_mvp',
-    configured: Boolean(process.env.GUMROAD_ENTRY_URL)
-  },
-  stripeAutomation: stripeConfigured ? 'configured' : 'disabled_until_validated'
-}));
-
-app.use(express.static(path.join(__dirname, 'daninihub-front', 'dist')));
+app.get('/health', (req, res) => {
+  res.json({
+    ok: true,
+    system: 'DaniniHub',
+    port: PORT,
+    publicWebLayer: 'stable_runtime',
+    entry: {
+      provider: 'gumroad_mvp',
+      configured: Boolean(process.env.GUMROAD_ENTRY_URL)
+    },
+    stripeAutomation: stripeConfigured ? 'configured' : 'disabled'
+  });
+});
 
 app.get('/success', (req, res) => {
-  res.sendFile(path.join(__dirname, 'daninihub-front', 'dist', 'index.html'));
+  res.send('<h1>DaniniHub activation received</h1><p>Your activation has been received. Please continue through the validated ENTRY flow.</p><p><a href="/">Back to DaniniHub</a></p>');
 });
 
-app.get('/download/:id', (req, res) => {
-  const file = path.join(__dirname, 'artifacts', `${req.params.id}.pdf`);
-  if (!fs.existsSync(file)) return res.status(404).send('Not found');
-  res.download(file);
-});
-
-app.get('/api/admin/leads', (req, res) => {
-  res.json({ leads: [] });
+app.get('/download/:sessionId', async (req, res) => {
+  res.status(503).json({
+    status: 'download_disabled_until_pipeline_validated',
+    message: 'Automated PDF download is disabled until the artifact pipeline is validated.'
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`DaniniHub running on port ${PORT}`);
+  console.log(`DaniniHub server running on port ${PORT}`);
 });

@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { writeAudit } = require('./core/audit');
+const { mountLegalRuntime } = require('./server-legal-runtime');
 const { mountEntryFlowLayer } = require('./server-entry-flow-layer');
 const { mountPublicRuntime } = require('./server-public-runtime');
 
@@ -18,6 +19,7 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 
 const PORT = Number(process.env.PORT || 4242);
 
+mountLegalRuntime(app);
 mountEntryFlowLayer(app);
 mountPublicRuntime(app);
 
@@ -71,6 +73,7 @@ app.get('/health', (req, res) => {
     system: 'DaniniHub',
     port: PORT,
     publicWebLayer: 'stable_runtime',
+    legalRuntime: 'mounted_before_public_routes',
     entry: {
       provider: 'gumroad_mvp',
       configured: Boolean(process.env.GUMROAD_ENTRY_URL)
@@ -79,17 +82,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.get('/success', (req, res) => {
-  res.send('<h1>DaniniHub activation received</h1><p>Your activation has been received. Please continue through the validated ENTRY flow.</p><p><a href="/">Back to DaniniHub</a></p>');
-});
-
-app.get('/download/:sessionId', async (req, res) => {
-  res.status(503).json({
-    status: 'download_disabled_until_pipeline_validated',
-    message: 'Automated PDF download is disabled until the artifact pipeline is validated.'
-  });
-});
-
 app.listen(PORT, () => {
-  console.log(`DaniniHub server running on port ${PORT}`);
+  console.log(`DaniniHub runtime listening on port ${PORT}`);
 });

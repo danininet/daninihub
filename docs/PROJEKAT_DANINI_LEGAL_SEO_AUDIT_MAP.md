@@ -8,7 +8,7 @@ Cilj: uskladiti DaniniHub, DaniniNet, DaniniLans i Calije Park Residence u jedan
 - DaniniHub: operativni AI OS, metodologija, agenti, artifacti, pravila rada.
 - DaniniNet: poslovni i prodajni portal, digitalni proizvodi, affiliate, mini-audit, edukacija.
 - DaniniLans: voda, zdrav stil zivota, rutina, kuhinja, stara znanja, health/water affiliate sloj.
-- Calije Park Residence: DPL Case Study #001, investitorski gateway, poslovni katalog, lokacijski marketing.
+- Calije Park Residence: DPL Case Study, investitorski gateway, poslovni katalog, lokacijski marketing.
 
 ## 2. Metodoloska razlika u odnosu na konkurenciju
 
@@ -57,7 +57,7 @@ Obavezne stranice po sistemu:
 
 ### OpenAI
 - koristiti samo server-side;
-- AI vodiči ne smeju obecavati pravni, medicinski, finansijski, investicioni ili urbanisticki rezultat;
+- AI vodici ne smeju obecavati pravni, medicinski, finansijski, investicioni ili urbanisticki rezultat;
 - korisnik ne sme biti pozvan da unosi poverljive podatke u AI guide;
 - AI Transparency mora biti dostupna iz footera.
 

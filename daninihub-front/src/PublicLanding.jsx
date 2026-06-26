@@ -287,10 +287,8 @@ function KnowledgePage() {
             ['Digital Business', 'Realistična digitalna ponuda, bez guru marketinga.'],
             ['Affiliate & Monetarisierung', 'Etička monetizacija, disclosure i partner vetting.'],
             ['Health & Fokus', 'Održiva radna disciplina bez lažnih medicinskih tvrdnji.'],
-            ['Case Studies', 'Calije, DaniniNet i drugi primeri kao dokaz metodologije.'],
-          ].map(([title, text]) => (
-            <article className="dh-card" key={title}><h3>{title}</h3><p>{text}</p></article>
-          ))}
+            ['Case Studies', 'Calije i drugi projekti kao dokaz metode.'],
+          ].map(([title, text]) => <article className="dh-card" key={title}><h3>{title}</h3><p>{text}</p></article>)}
         </div>
       </section>
     </>
@@ -367,6 +365,9 @@ function PartnerPage() {
         <p className="hero-lead">
           DaniniHub ne promoviše nasumične alate. Partner mora imati vrednost, reputaciju, stabilnost i legalnu čistoću.
         </p>
+        <div className="hero-actions">
+          <a className="btn-primary" href="https://danininet.daninihub.com/sr/blog/poziv-za-saradnike-proizvode-i-partnere">Poziv za saradnike</a>
+        </div>
       </section>
 
       <section className="dh-section">

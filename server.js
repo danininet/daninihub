@@ -14,6 +14,7 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 const app = express();
 app.use(cors());
 
+const DEPLOYMENT_MARKER = 'daninihub-runtime-sr-root-2026-06-26-3f4c3b1';
 const stripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
@@ -30,6 +31,17 @@ if (!process.env.STRIPE_SECRET_KEY) {
 if (!process.env.STRIPE_WEBHOOK_SECRET) {
   console.warn('STRIPE_WEBHOOK_SECRET not configured: Stripe webhook remains disabled; Gumroad ENTRY MVP can stay public.');
 }
+
+app.get('/api/runtime-version', (req, res) => {
+  res.json({
+    ok: true,
+    system: 'DaniniHub',
+    deploymentMarker: DEPLOYMENT_MARKER,
+    publicRoot: 'sr',
+    source: 'server.js + server-public-runtime.js',
+    expectedRoot: 'https://daninihub.com/'
+  });
+});
 
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   if (!stripeConfigured || !stripe) {
@@ -71,6 +83,7 @@ app.get('/health', (req, res) => {
   res.json({
     ok: true,
     system: 'DaniniHub',
+    deploymentMarker: DEPLOYMENT_MARKER,
     port: PORT,
     publicWebLayer: 'stable_runtime',
     legalRuntime: 'mounted_before_public_routes',

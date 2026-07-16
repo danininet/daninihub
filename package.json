@@ -18,6 +18,7 @@
     "agent:dev": "node danini.js --agent dev_cto --task",
     "agent:controller": "node danini.js --agent controller --task",
     "snapshot": "npm run check:tree && npm run health",
+    "test:core": "node scripts/test-agent-execution-contract.js",
     "test:artifact": "node scripts/test-artifact.js",
     "test:pdf": "node scripts/test-pdf.js",
     "audit:last": "node scripts/audit-last.js",

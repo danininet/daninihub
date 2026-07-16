@@ -6,6 +6,9 @@ on:
     paths:
       - 'core/**'
       - 'scripts/test-agent-execution-contract.js'
+      - 'scripts/test-guided-analysis-contract.js'
+      - 'server.js'
+      - 'server-guided-analysis-runtime.js'
       - 'danini.js'
       - 'package.json'
       - '.github/workflows/danini-os-core.yml'
@@ -13,6 +16,9 @@ on:
     paths:
       - 'core/**'
       - 'scripts/test-agent-execution-contract.js'
+      - 'scripts/test-guided-analysis-contract.js'
+      - 'server.js'
+      - 'server-guided-analysis-runtime.js'
       - 'danini.js'
       - 'package.json'
       - '.github/workflows/danini-os-core.yml'
@@ -41,5 +47,5 @@ jobs:
       - name: Syntax check
         run: npm run check:syntax
 
-      - name: Core contract tests
-        run: npm run test:core
+      - name: Danini OS contract tests
+        run: npm run test:os

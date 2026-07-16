@@ -8,6 +8,7 @@ process.env.DANINI_SESSION_SECRET = 'test-secret-which-is-longer-than-thirty-two
 
 const { getProduct, listProducts } = require('../core/product-registry');
 const { createSession, getSession, verifyToken } = require('../core/guided-analysis-service');
+const { buildAccessUrl, renderGuidedPage } = require('../server-guided-analysis-runtime');
 
 function main() {
   const product = getProduct('die-ki-fragt-nach');
@@ -31,6 +32,16 @@ function main() {
   const loaded = getSession(created.accessToken);
   assert.strictEqual(loaded.id, created.session.id);
   assert.strictEqual(loaded.productId, product.id);
+
+  const accessUrl = buildAccessUrl('https://daninihub.com/', created.accessToken);
+  assert.ok(accessUrl.startsWith('https://daninihub.com/analyse#token='));
+  assert.ok(accessUrl.includes(encodeURIComponent(created.accessToken)));
+
+  const page = renderGuidedPage();
+  assert.ok(page.includes('Die KI fragt nach'));
+  assert.ok(page.includes('/api/v1/guided-analysis/session'));
+  assert.ok(page.includes('/api/v1/guided-analysis/answer'));
+  assert.ok(page.includes('sessionStorage'));
 
   const file = path.join(process.cwd(), 'runtime', 'guided-sessions', `${loaded.id}.json`);
   if (fs.existsSync(file)) fs.unlinkSync(file);

@@ -3,10 +3,8 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const controller = require('./controller');
 const { getProduct } = require('./product-registry');
 const { writeAudit } = require('./audit');
-const { sendArtifactEmail } = require('./send-artifact-email');
 
 const STORE_DIR = path.join(process.cwd(), 'runtime', 'guided-sessions');
 
@@ -54,12 +52,11 @@ function signSession(id) {
 
 function verifyToken(token) {
   const [id, signature] = String(token || '').split('.');
-  if (!id || !signature) return null;
+  if (!id || !/^[a-f0-9]{64}$/i.test(signature || '')) return null;
   const expected = crypto.createHmac('sha256', secret()).update(id).digest('hex');
   const a = Buffer.from(signature, 'hex');
   const b = Buffer.from(expected, 'hex');
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
-  return id;
+  return a.length === b.length && crypto.timingSafeEqual(a, b) ? id : null;
 }
 
 function publicSession(session) {
@@ -138,6 +135,8 @@ async function askModel(session, product) {
 }
 
 async function finalize(session, product) {
+  const controller = require('./controller');
+  const { sendArtifactEmail } = require('./send-artifact-email');
   const transcript = session.answers
     .map((entry, index) => `Frage ${index + 1}: ${entry.question}\nAntwort ${index + 1}: ${entry.answer}`)
     .join('\n\n');
@@ -151,9 +150,7 @@ async function finalize(session, product) {
   ].join('\n\n');
 
   const result = await controller.verifyAndExecute(task, session.locale);
-  if (!result || result.success === false) {
-    throw new Error(result?.error || 'FINAL_ANALYSIS_FAILED');
-  }
+  if (!result || result.success === false) throw new Error(result?.error || 'FINAL_ANALYSIS_FAILED');
 
   let delivery = { sent: false, reason: 'email_not_attempted' };
   if (result.email_html_path) {

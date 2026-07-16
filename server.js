@@ -10,11 +10,12 @@ const { writeAudit } = require('./core/audit');
 const { mountLegalRuntime } = require('./server-legal-runtime');
 const { mountEntryFlowLayer } = require('./server-entry-flow-layer');
 const { mountPublicRuntime } = require('./server-public-runtime');
+const { mountGuidedAnalysisRuntime } = require('./server-guided-analysis-runtime');
 
 const app = express();
 app.use(cors());
 
-const DEPLOYMENT_MARKER = 'daninihub-runtime-sr-root-2026-06-26-3f4c3b1';
+const DEPLOYMENT_MARKER = 'danini-os-guided-analysis-mvp-2026-07-17';
 const stripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
@@ -22,6 +23,7 @@ const PORT = Number(process.env.PORT || 4242);
 
 mountLegalRuntime(app);
 mountEntryFlowLayer(app);
+mountGuidedAnalysisRuntime(app);
 mountPublicRuntime(app);
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -35,10 +37,10 @@ if (!process.env.STRIPE_WEBHOOK_SECRET) {
 app.get('/api/runtime-version', (req, res) => {
   res.json({
     ok: true,
-    system: 'DaniniHub',
+    system: 'Danini OS',
     deploymentMarker: DEPLOYMENT_MARKER,
     publicRoot: 'sr',
-    source: 'server.js + server-public-runtime.js',
+    source: 'server.js + guided-analysis-runtime',
     expectedRoot: 'https://daninihub.com/'
   });
 });
@@ -82,11 +84,19 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
-    system: 'DaniniHub',
+    system: 'Danini OS',
     deploymentMarker: DEPLOYMENT_MARKER,
     port: PORT,
     publicWebLayer: 'stable_runtime',
     legalRuntime: 'mounted_before_public_routes',
+    guidedAnalysis: {
+      product: 'die-ki-fragt-nach',
+      price: 12,
+      currency: 'EUR',
+      activationConfigured: Boolean(process.env.DANINI_ACTIVATION_SECRET),
+      sessionSecurityConfigured: Boolean(process.env.DANINI_SESSION_SECRET),
+      modelConfigured: Boolean(process.env.GEMINI_API_KEY)
+    },
     entry: {
       provider: 'gumroad_mvp',
       configured: Boolean(process.env.GUMROAD_ENTRY_URL)
@@ -96,5 +106,5 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`DaniniHub runtime listening on port ${PORT}`);
+  console.log(`Danini OS runtime listening on port ${PORT}`);
 });

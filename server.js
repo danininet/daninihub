@@ -10,12 +10,13 @@ const { mountEntryFlowLayer } = require('./server-entry-flow-layer');
 const { mountPublicRuntime } = require('./server-public-runtime');
 const { mountGuidedAnalysisRuntime } = require('./server-guided-analysis-runtime');
 const { mountGumroadRuntime } = require('./server-gumroad-runtime');
+const { mountAdminRuntime } = require('./server-admin-runtime');
 
 const app = express();
 app.set('trust proxy', 1);
 app.use(cors());
 
-const DEPLOYMENT_MARKER = 'danini-os-gumroad-activation-2026-07-17';
+const DEPLOYMENT_MARKER = 'danini-os-admin-control-center-2026-07-17';
 const stripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 const PORT = Number(process.env.PORT || 4242);
@@ -24,6 +25,7 @@ mountLegalRuntime(app);
 mountEntryFlowLayer(app);
 mountGumroadRuntime(app);
 mountGuidedAnalysisRuntime(app);
+mountAdminRuntime(app);
 mountPublicRuntime(app);
 
 app.get('/api/runtime-version', (req, res) => {
@@ -32,7 +34,7 @@ app.get('/api/runtime-version', (req, res) => {
     system: 'Danini OS',
     deploymentMarker: DEPLOYMENT_MARKER,
     publicRoot: 'sr',
-    source: 'server.js + gumroad + guided-analysis-runtime',
+    source: 'server.js + gumroad + guided-analysis + admin-runtime',
     expectedRoot: process.env.DANINI_PUBLIC_URL || 'https://daninihub.com/'
   });
 });
@@ -78,6 +80,7 @@ app.get('/health', (req, res) => {
     port: PORT,
     publicWebLayer: 'stable_runtime',
     legalRuntime: 'mounted_before_public_routes',
+    adminRuntime: 'mounted',
     guidedAnalysis: {
       product: 'die-ki-fragt-nach',
       price: 12,

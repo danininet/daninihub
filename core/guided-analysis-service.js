@@ -97,6 +97,7 @@ function createSession({ productId, email, locale, orderId }) {
     currentQuestion: 'Welches konkrete Problem oder welche Entscheidung möchtest du heute klären?',
     answers: [],
     result: null,
+    recovery: { attempts: 0, deliveryAttempts: 0 },
     createdAt: now,
     updatedAt: now
   };
@@ -134,9 +135,26 @@ async function askModel(session, product) {
   return parsed.question.trim();
 }
 
+async function deliverResult(session, product, artifacts) {
+  const { sendArtifactEmail } = require('./send-artifact-email');
+  if (!artifacts?.emailHtmlPath) return { sent: false, reason: 'missing_email_html_path' };
+  try {
+    const sent = await sendArtifactEmail({
+      to: session.email,
+      recipient: session.email,
+      runId: artifacts.runId || session.id,
+      emailHtmlPath: artifacts.emailHtmlPath,
+      pdfPath: artifacts.pdfPath,
+      subject: product.finalSubject
+    });
+    return { sent: true, messageId: sent?.messageId || null, sentAt: new Date().toISOString() };
+  } catch (error) {
+    return { sent: false, reason: error.message, attemptedAt: new Date().toISOString() };
+  }
+}
+
 async function finalize(session, product) {
   const controller = require('./controller');
-  const { sendArtifactEmail } = require('./send-artifact-email');
   const transcript = session.answers
     .map((entry, index) => `Frage ${index + 1}: ${entry.question}\nAntwort ${index + 1}: ${entry.answer}`)
     .join('\n\n');
@@ -152,29 +170,50 @@ async function finalize(session, product) {
   const result = await controller.verifyAndExecute(task, session.locale);
   if (!result || result.success === false) throw new Error(result?.error || 'FINAL_ANALYSIS_FAILED');
 
-  let delivery = { sent: false, reason: 'email_not_attempted' };
-  if (result.email_html_path) {
-    try {
-      const sent = await sendArtifactEmail({
-        to: session.email,
-        recipient: session.email,
-        runId: result.artifact?.run_id || session.id,
-        emailHtmlPath: result.email_html_path,
-        pdfPath: result.pdf_path,
-        subject: product.finalSubject
-      });
-      delivery = { sent: true, messageId: sent?.messageId || null };
-    } catch (error) {
-      delivery = { sent: false, reason: error.message };
-    }
-  }
+  const artifacts = {
+    runId: result.artifact?.run_id || session.id,
+    artifactPath: result.artifact_path || null,
+    emailHtmlPath: result.email_html_path || null,
+    pdfPath: result.pdf_path || null
+  };
+  const delivery = await deliverResult(session, product, artifacts);
 
   return {
     summary: result.data?.odgovor || result.artifact?.output?.summary || 'Analyse abgeschlossen.',
     nextStep: result.data?.sledeci_korak || result.artifact?.output?.next_step || null,
     pdfAvailable: Boolean(result.pdf_path),
-    delivery
+    delivery,
+    artifacts
   };
+}
+
+async function completeSession(session, recoveryEvent = null) {
+  const product = getProduct(session.productId);
+  session.status = 'processing';
+  session.currentQuestion = null;
+  session.failure = null;
+  session.updatedAt = new Date().toISOString();
+  writeSession(session);
+
+  try {
+    session.result = await finalize(session, product);
+    session.status = 'completed';
+    session.updatedAt = new Date().toISOString();
+    writeSession(session);
+    writeAudit({
+      event: recoveryEvent || 'guided_session_completed',
+      session_id: session.id,
+      delivery_sent: session.result.delivery.sent
+    });
+    return publicSession(session);
+  } catch (error) {
+    session.status = 'failed';
+    session.failure = { message: error.message, at: new Date().toISOString() };
+    session.updatedAt = new Date().toISOString();
+    writeSession(session);
+    writeAudit({ event: 'guided_session_failed', session_id: session.id, error: error.message });
+    throw error;
+  }
 }
 
 async function submitAnswer(token, answer) {
@@ -213,25 +252,48 @@ async function submitAnswer(token, answer) {
     return publicSession(session);
   }
 
-  session.status = 'processing';
-  session.currentQuestion = null;
-  writeSession(session);
+  return completeSession(session);
+}
 
-  try {
-    session.result = await finalize(session, product);
-    session.status = 'completed';
-    session.updatedAt = new Date().toISOString();
-    writeSession(session);
-    writeAudit({ event: 'guided_session_completed', session_id: id, delivery_sent: session.result.delivery.sent });
-    return publicSession(session);
-  } catch (error) {
-    session.status = 'failed';
-    session.failure = { message: error.message, at: new Date().toISOString() };
-    session.updatedAt = new Date().toISOString();
-    writeSession(session);
-    writeAudit({ event: 'guided_session_failed', session_id: id, error: error.message });
+async function retryFailedSession(id) {
+  const session = readSession(id);
+  if (!['failed', 'processing'].includes(session.status)) {
+    const error = new Error('SESSION_NOT_RECOVERABLE');
+    error.code = 'SESSION_NOT_RECOVERABLE';
     throw error;
   }
+  if (!Array.isArray(session.answers) || session.answers.length < session.maxFollowUps + 1) {
+    const error = new Error('SESSION_ANSWERS_INCOMPLETE');
+    error.code = 'SESSION_ANSWERS_INCOMPLETE';
+    throw error;
+  }
+  session.recovery = session.recovery || { attempts: 0, deliveryAttempts: 0 };
+  session.recovery.attempts += 1;
+  session.recovery.lastAttemptAt = new Date().toISOString();
+  writeAudit({ event: 'guided_session_retry_started', session_id: id, attempt: session.recovery.attempts });
+  return completeSession(session, 'guided_session_recovered');
+}
+
+async function resendSessionDelivery(id) {
+  const session = readSession(id);
+  if (session.status !== 'completed' || !session.result?.artifacts) {
+    const error = new Error('DELIVERY_NOT_AVAILABLE');
+    error.code = 'DELIVERY_NOT_AVAILABLE';
+    throw error;
+  }
+  const product = getProduct(session.productId);
+  session.recovery = session.recovery || { attempts: 0, deliveryAttempts: 0 };
+  session.recovery.deliveryAttempts += 1;
+  session.result.delivery = await deliverResult(session, product, session.result.artifacts);
+  session.updatedAt = new Date().toISOString();
+  writeSession(session);
+  writeAudit({
+    event: session.result.delivery.sent ? 'guided_delivery_resent' : 'guided_delivery_resend_failed',
+    session_id: id,
+    attempt: session.recovery.deliveryAttempts,
+    error: session.result.delivery.reason || null
+  });
+  return publicSession(session);
 }
 
 function getSession(token) {
@@ -244,4 +306,12 @@ function getSession(token) {
   return publicSession(readSession(id));
 }
 
-module.exports = { createSession, getSession, submitAnswer, verifyToken };
+module.exports = {
+  createSession,
+  getSession,
+  readSession,
+  resendSessionDelivery,
+  retryFailedSession,
+  submitAnswer,
+  verifyToken
+};

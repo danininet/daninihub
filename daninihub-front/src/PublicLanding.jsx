@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import './Enhancements.css'
+import LegalKnowledge, { isContentPath } from './LegalKnowledge'
 
 const copy = {
   de: {
@@ -73,6 +74,13 @@ function Logo() {
   return <a className="brand" href="#top" aria-label="DaniniHub"><span className="mark">D<span>•</span></span><strong>DaniniHub<small>TRANSPORT & LOGISTICS</small></strong></a>
 }
 
+function CookieNotice({lang}) {
+  const [visible, setVisible] = useState(() => localStorage.getItem('dh_cookie_notice') !== 'seen')
+  if (!visible) return null
+  const close=()=>{localStorage.setItem('dh_cookie_notice','seen');setVisible(false)}
+  return <aside className="cookie-note"><p>{lang==='sr'?'Sajt trenutno ne koristi analitičke ili marketinške kolačiće. Lokalno se pamti samo da ste pročitali ovo obaveštenje.':'Diese Website verwendet derzeit keine Analyse- oder Marketing-Cookies. Lokal wird nur gespeichert, dass Sie diesen Hinweis gelesen haben.'}</p><a href={lang==='sr'?'/sr/kolacici':'/de/cookies'}>{lang==='sr'?'Detalji':'Details'}</a><button onClick={close}>{lang==='sr'?'Razumem':'Verstanden'}</button></aside>
+}
+
 export default function PublicLanding({ lang, setLang }) {
   const t = copy[lang]
   const [formState, setFormState] = useState('idle')
@@ -80,18 +88,20 @@ export default function PublicLanding({ lang, setLang }) {
   const switchLang = code => { setLang(code); history.replaceState({}, '', code === 'sr' ? '/sr/' : '/de/') }
   const send = async event => {
     event.preventDefault()
+    const form = event.currentTarget
     setFormState('sending')
-    const data = new FormData(event.currentTarget)
+    const data = new FormData(form)
     try {
       const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(data)) })
       if (!response.ok) throw new Error('send_failed')
-      event.currentTarget.reset()
+      form.reset()
       setFormState('success')
     } catch {
       setFormState('error')
     }
   }
-  if (/impressum|datenschutz|privatnost/.test(path)) {
+  if (isContentPath(path)) return <LegalKnowledge lang={lang} path={path}/>
+  if (/impressum/.test(path)) {
     const privacy = /datenschutz|privatnost/.test(path)
     return <main id="top"><header><Logo/><nav><button className="legal-back" onClick={()=>location.href=lang==='sr'?'/sr/':'/de/'}>← {lang==='sr'?'Nazad':'Zurück'}</button></nav></header><section className="section legal-page"><p className="kicker">{lang==='sr'?'PRAVNE INFORMACIJE':'RECHTLICHES'}</p><h2>{privacy?(lang==='sr'?'Zaštita privatnosti':'Datenschutz'):(lang==='sr'?'Impresum':'Impressum')}</h2>{privacy?<><h3>{lang==='sr'?'Odgovorno lice':'Verantwortlicher'}</h3><p>Dragan Zdravković · Fischerstraße 54 · 47055 Duisburg<br/><a href="mailto:info@daninihub.com">info@daninihub.com</a></p><h3>{lang==='sr'?'Kontakt i hosting':'Kontakt und Hosting'}</h3><p>{lang==='sr'?'Podaci iz obrasca koriste se isključivo za obradu upita. Preko servisa Brevo šalju se obaveštenje DaniniHub-u i automatska potvrda pošiljaocu. Podaci se ne koriste za newsletter bez posebne saglasnosti. Hosting provajder može obrađivati tehnički neophodne serverske zapise. Možete tražiti pristup, ispravku, brisanje, ograničenje obrade i uložiti prigovor.':'Die Formulardaten werden ausschließlich zur Bearbeitung der Anfrage verwendet. Über Brevo werden eine Benachrichtigung an DaniniHub und eine automatische Eingangsbestätigung versendet. Ohne gesonderte Einwilligung erfolgt keine Newsletter-Nutzung. Der Hosting-Anbieter kann technisch notwendige Serverprotokolle verarbeiten. Im gesetzlichen Rahmen bestehen Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch.'}</p></>:<><h3>{lang==='sr'?'Pružalac usluge':'Anbieter'}</h3><p>Dragan Zdravković<br/>DaniniHub Transport &amp; Logistics<br/>Fischerstraße 54<br/>47055 Duisburg · Deutschland<br/>+49 157 30916621<br/><a href="mailto:info@daninihub.com">info@daninihub.com</a></p><h3>{lang==='sr'?'Granice usluge':'Leistungsumfang'}</h3><p>{lang==='sr'?'Organizaciona i komunikaciona podrška u transportu. DaniniHub nije prevoznik, špedicija, Verkehrsleiter niti pravno, poresko ili carinsko savetovanje. Pravne odluke ostaju kod naručioca.':'Organisatorische und kommunikative Unterstützung im Transport. DaniniHub ist kein Frachtführer, keine Spedition, kein Verkehrsleiter und keine Rechts-, Steuer- oder Zollberatung. Rechtsverbindliche Entscheidungen verbleiben beim Auftraggeber.'}</p></>}</section></main>
   }
@@ -104,6 +114,6 @@ export default function PublicLanding({ lang, setLang }) {
     <section id="entry" className="section split"><div><p className="kicker">PRAXISEINSTIEG · PRAKTIČAN UVOD</p><h2>{t.entryTitle}</h2></div><div><p className="big">{t.entryText}</p></div></section>
     <section className="section about"><p className="kicker">ERFAHRUNG · ISKUSTVO</p><h2>{t.aboutTitle}</h2><p className="big">{t.aboutText}</p><div className="fact-row">{t.aboutFacts.map(x=><span key={x}>✓ {x}</span>)}</div></section>
     <section id="contact" className="section contact"><div><p className="kicker">DIREKTER KONTAKT</p><h2>{t.contactTitle}</h2><p>{t.contactText}</p><a className="mail" href="mailto:info@daninihub.com">info@daninihub.com</a><p>Duisburg · Nordrhein-Westfalen<br/>+49 157 30916621</p></div><form onSubmit={send}><div className="form-pair"><label>{t.company}<input name="company" required maxLength="120"/></label><label>{t.email}<input name="email" type="email" required maxLength="180"/></label></div><div className="form-pair"><label>{t.phone}<input name="phone" type="tel" maxLength="60"/></label><label>{t.fleet}<input name="fleet" maxLength="60"/></label></div><label>{t.routes}<input name="routes" maxLength="180"/></label><label>{t.interest}<select name="interest">{t.options.map(x=><option key={x}>{x}</option>)}</select></label><label>{t.message}<textarea name="message" required minLength="20" maxLength="3000"/></label><label className="honey" aria-hidden="true">Website<input name="website" tabIndex="-1" autoComplete="off"/></label><label className="consent"><input name="consent" type="checkbox" value="yes" required/>{t.consent}</label><button className="btn" type="submit" disabled={formState==='sending'}>{formState==='sending'?'…':t.send+' →'}</button>{formState==='success'&&<p className="form-success" role="status">{t.success}</p>}{formState==='error'&&<p className="form-error" role="alert">{t.error}</p>}</form></section>
-    <footer><Logo/><p>© 2026 DaniniHub</p><div><a href={lang==='sr'?'/sr/impressum':'/de/impressum'}>{t.legal[0]}</a><a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'}>{t.legal[1]}</a></div></footer>
+    <footer><Logo/><p>© 2026 DaniniHub</p><div><a href={lang==='sr'?'/sr/impressum':'/de/impressum'}>{t.legal[0]}</a><a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'}>{t.legal[1]}</a><a href={lang==='sr'?'/sr/kolacici':'/de/cookies'}>{lang==='sr'?'Kolačići':'Cookies'}</a><a href={lang==='sr'?'/sr/odricanje-odgovornosti':'/de/haftungsausschluss'}>{lang==='sr'?'Odgovornost':'Haftung'}</a><a href={lang==='sr'?'/sr/praksa-propisi':'/de/praxis-wissen'}>{lang==='sr'?'Procedure i propisi':'Praxis & Recht'}</a><a href={lang==='sr'?'/sr/recnik':'/de/glossar'}>{lang==='sr'?'Rečnik':'Glossar'}</a></div></footer><CookieNotice lang={lang}/>
   </main>
 }

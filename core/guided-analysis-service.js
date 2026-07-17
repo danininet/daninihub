@@ -94,7 +94,7 @@ function createSession({ productId, email, locale, orderId }) {
     status: 'awaiting_initial_answer',
     maxFollowUps: product.maxFollowUps,
     followUpsAsked: 0,
-    currentQuestion: 'Welches konkrete Problem oder welche Entscheidung möchtest du heute klären?',
+    currentQuestion: product.initialQuestion,
     answers: [],
     result: null,
     recovery: { attempts: 0, deliveryAttempts: 0 },
@@ -118,7 +118,14 @@ async function askModel(session, product) {
     .map((entry, index) => `Frage ${index + 1}: ${entry.question}\nAntwort ${index + 1}: ${entry.answer}`)
     .join('\n\n');
 
-  const prompt = `${product.systemPurpose}\n\nBisheriger Dialog:\n${transcript}\n\nGib ausschließlich JSON zurück: {"question":"eine präzise Rückfrage"}`;
+  const prompt = [
+    product.systemPurpose,
+    'Formuliere jetzt genau eine kurze Rückfrage auf Deutsch.',
+    'Sie muss einen konkreten Begriff, ein Ziel oder eine Einschränkung aus der letzten Antwort aufgreifen.',
+    'Sie darf nicht mit allgemeinen Formulierungen wie „Was ist dein Ziel?“ oder „Wie fühlst du dich?“ austauschbar sein.',
+    'Gib ausschließlich valides JSON zurück: {"question":"präzise Rückfrage"}',
+    `Bisheriger Dialog:\n${transcript}`
+  ].join('\n\n');
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -162,8 +169,11 @@ async function finalize(session, product) {
   const task = [
     product.systemPurpose,
     'Erstelle jetzt die endgültige persönliche Analyse auf Deutsch.',
-    'Struktur: Ausgangslage, wichtigste Erkenntnisse, mögliche Risiken, konkrete nächste Schritte.',
-    'Der Text muss direkt für den Kunden verständlich sein.',
+    'Verwende nur Informationen aus dem Dialog. Nenne konkrete Details aus den Antworten; allgemeine Ratschläge ohne Bezug sind unzulässig.',
+    'Trenne belegte Aussagen von Annahmen und Unbekanntem.',
+    'Lege eine Entscheidung als GO, REDEFINE oder STOP fest und begründe sie knapp.',
+    'Formuliere mindestens drei priorisierte nächste Schritte: zuerst innerhalb von 72 Stunden, danach innerhalb von 7 Tagen.',
+    'Der Text muss direkt, professionell und ohne interne Systembegriffe für den Kunden verständlich sein.',
     transcript
   ].join('\n\n');
 

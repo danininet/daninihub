@@ -57,6 +57,7 @@ function setupFont(doc) {
 }
 
 function brandHeader(doc, pack) {
+  const headerLabel = pack.locale === 'sr' ? 'LIČNA ANALIZA' : pack.locale === 'en' ? 'PERSONAL ANALYSIS' : 'PERSÖNLICHE ANALYSE';
   doc.rect(0, 0, doc.page.width, 112).fill('#070707');
 
   doc.fillColor('#c9aa68')
@@ -65,7 +66,7 @@ function brandHeader(doc, pack) {
 
   doc.fillColor('#c9aa68')
     .fontSize(8)
-    .text('SYSTEM VERIFIED', 400, 30, { width: 140, align: 'right' });
+    .text(headerLabel, 380, 30, { width: 160, align: 'right' });
 
   doc.fillColor('#f6efe3')
     .fontSize(23)
@@ -79,10 +80,15 @@ function brandHeader(doc, pack) {
 }
 
 function meta(doc, pack) {
+  const metaLabels = pack.locale === 'sr'
+    ? ['REFERENCA', 'DOKUMENT', 'KREIRANO']
+    : pack.locale === 'en'
+      ? ['REFERENCE', 'DOCUMENT', 'CREATED']
+      : ['REFERENZ', 'DOKUMENT', 'ERSTELLT AM'];
   const rows = [
-    ['RUN ID', pack.meta.run_id],
-    ['DOCUMENT TYPE', pack.meta.document_type || 'Verified decision report'],
-    ['TIMESTAMP', pack.meta.timestamp],
+    [metaLabels[0], pack.meta.run_id],
+    [metaLabels[1], pack.meta.document_type || 'Persönliche Analyse'],
+    [metaLabels[2], pack.meta.timestamp],
   ];
 
   doc.fillColor('#111111');
@@ -154,13 +160,18 @@ function outlineSection(doc, title, body) {
 }
 
 function finalDisclaimer(doc, pack) {
+  const footerLabel = pack.locale === 'sr'
+    ? 'DANINIHUB · LIČNA AI ANALIZA'
+    : pack.locale === 'en'
+      ? 'DANINIHUB · PERSONAL AI ANALYSIS'
+      : 'DANINIHUB · PERSÖNLICHE KI-ANALYSE';
   doc.moveDown(1.2);
   doc.strokeColor('#e2d7c5').lineWidth(0.8).moveTo(56, doc.y).lineTo(539, doc.y).stroke();
   doc.moveDown(0.7);
 
   doc.fontSize(8)
     .fillColor('#777777')
-    .text('DANINIHUB SYSTEM VERIFIED', { width: 483 });
+    .text(footerLabel, { width: 483 });
 
   doc.moveDown(0.25);
 

@@ -13,6 +13,8 @@ tmp/
 docs/private/
 outputs/
 artifacts/
+!core/artifacts/
+!core/artifacts/createArtifact.js
 backups/
 _archive/
 

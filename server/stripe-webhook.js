@@ -397,8 +397,8 @@ function renderOwnerEntryPage() {
 <section>
   <header>
     <div class="eyebrow">DaniniHub · Owner Activation Desk</div>
-    <h1>7 € Activation Flow</h1>
-    <p class="lead">Operativna ulazna stranica za checkout, success status, PDF artifact i Brevo isporuku. Interna agent logika ostaje zaključana u audit sloju.</p>
+    <h1>12 € Analyse-Workflow</h1>
+    <p class="lead">Interna kontrolna stranica za checkout, status, PDF i email isporuku.</p>
   </header>
 
   <div class="grid">
@@ -407,7 +407,7 @@ function renderOwnerEntryPage() {
       <p>Ova stranica koristi postojeći Express runtime i poslednji zapis iz audit loga. Namenjena je da odmah vidiš radni tok bez traženja Next frontend strukture koja u ovom folderu ne postoji.</p>
 
       <div class="actions">
-        ${checkoutUrl ? `<a class="btn primary" href="${checkoutUrl}">Otvori 7 € Checkout</a>` : `<a class="btn primary" href="/health">Nema checkout linka</a>`}
+        ${checkoutUrl ? `<a class="btn primary" href="${checkoutUrl}">Otvori 12 € Checkout</a>` : `<a class="btn primary" href="/health">Checkout nije konfigurisan</a>`}
         <a class="btn secondary" href="${statusUrl}">Status</a>
         ${downloadUrl ? `<a class="btn secondary" href="${downloadUrl}">Preuzmi PDF</a>` : ''}
       </div>

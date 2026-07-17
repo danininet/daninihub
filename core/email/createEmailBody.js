@@ -20,42 +20,47 @@ function shortText(value, limit = 900) {
 function emailIntro(locale) {
   if (locale === 'sr') {
     return {
-      headline: 'Vaš DaniniHub Aktivacioni paket je spreman.',
-      intro: 'U prilogu se nalazi PDF sa strukturisanim AI dijalogom, analizom, pozitivnim i negativnim stranama, ekspertskim predlogom, outline-om za premium e-knjigu, bonus PDF outline-om i transparentnim napomenama.',
-      download: 'Ako se PDF ne vidi u prilogu, otvorite success/status stranicu i preuzmite dokument direktno.',
-      cta: 'Sledeći korak možete nastaviti kroz DaniniHub sistem kada budete spremni.',
+      headline: 'Vaša lična AI analiza je spremna.',
+      intro: 'U prilogu je PDF sa polaznom situacijom, ključnim uvidima, otvorenim pretpostavkama, procenom rizika i prioritetnim sledećim koracima — sve zasnovano na vašim odgovorima.',
+      download: 'Ako se PDF ne vidi u prilogu, otvorite stranicu sa rezultatom i preuzmite dokument direktno.',
+      cta: 'Počnite od prvog koraka označenog u analizi; ostale korake radite navedenim redosledom.',
       footer: 'Ovo nije finansijski, pravni, poreski ili medicinski savet. Rezultate po potrebi proverite sa stručnim licem.',
       pdfButton: 'Preuzmi PDF report',
-      statusLink: 'Otvori success/status stranicu'
+      statusLink: 'Otvori stranicu sa rezultatom'
     };
   }
 
   if (locale === 'de') {
     return {
-      headline: 'Ihr DaniniHub Activation Pack ist bereit.',
-      intro: 'Im Anhang finden Sie den PDF-Report mit strukturiertem KI-Dialog, Analyse, positiven und negativen Aspekten, Empfehlung, Premium E-Book Outline, Bonus PDF Outline und transparenten Hinweisen.',
-      download: 'Falls der PDF-Anhang nicht sichtbar ist, öffnen Sie bitte die Success-/Status-Seite und laden Sie den Report dort direkt herunter.',
-      cta: 'Den nächsten strukturierten Schritt können Sie im DaniniHub-System fortsetzen.',
+      headline: 'Ihre persönliche KI-Analyse ist fertig.',
+      intro: 'Im Anhang finden Sie Ihre Analyse mit Ausgangslage, Kernerkenntnissen, offenen Annahmen, Risiken und priorisierten nächsten Schritten — vollständig auf Basis Ihrer Antworten.',
+      download: 'Falls der PDF-Anhang nicht sichtbar ist, öffnen Sie bitte die Ergebnisseite und laden Sie das Dokument dort herunter.',
+      cta: 'Beginnen Sie mit dem in der Analyse markierten ersten Schritt und arbeiten Sie die weiteren Punkte in der angegebenen Reihenfolge ab.',
       footer: 'Keine Finanz-, Rechts-, Steuer- oder medizinische Beratung. Ergebnisse sollten bei Bedarf fachlich geprüft werden.',
       pdfButton: 'PDF Report herunterladen',
-      statusLink: 'Success-/Status-Seite öffnen'
+      statusLink: 'Ergebnisseite öffnen'
     };
   }
 
   return {
-    headline: 'Your DaniniHub Activation Pack is ready.',
-    intro: 'Attached is your DaniniHub PDF report with project snapshot, clarity score, gate status, key contradictions, a 7-day decision plan and transparency notes.',
-    download: 'If the PDF attachment is not visible, open the success/status page and download the report directly.',
-    cta: 'You can continue the next structured step in the DaniniHub system when ready.',
+    headline: 'Your personal AI analysis is ready.',
+    intro: 'Attached is your analysis with the starting point, key insights, open assumptions, risks and prioritized next steps — all based on your answers.',
+    download: 'If the PDF attachment is not visible, open the results page and download the document there.',
+    cta: 'Start with the first action highlighted in the analysis and complete the remaining steps in the stated order.',
     footer: 'This is not financial, legal, tax or medical advice. Results should be reviewed by a qualified expert when needed.',
     pdfButton: 'Download PDF report',
-    statusLink: 'Open success/status page'
+    statusLink: 'Open results page'
   };
 }
 
 function createEmailHtmlFromArtifact(artifact, options = {}) {
   const pack = buildActivationPack(artifact);
   const msg = emailIntro(pack.locale);
+  const metaLabels = pack.locale === 'sr'
+    ? { reference: 'Referenca', date: 'Datum', header: 'LIČNA ANALIZA' }
+    : pack.locale === 'en'
+      ? { reference: 'Reference', date: 'Date', header: 'PERSONAL ANALYSIS' }
+      : { reference: 'Referenz', date: 'Datum', header: 'PERSÖNLICHE ANALYSE' };
 
   const successUrl = options.successUrl || null;
   const downloadUrl = options.downloadUrl || null;
@@ -73,7 +78,7 @@ function createEmailHtmlFromArtifact(artifact, options = {}) {
         <table role="presentation" width="680" cellspacing="0" cellpadding="0" style="background:#ffffff;border:1px solid #e3ddcf;">
           <tr>
             <td style="background:#070707;color:#f6efe3;padding:30px 34px;">
-              <div style="color:#c9aa68;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;">DANINIHUB · SYSTEM VERIFIED</div>
+              <div style="color:#c9aa68;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;">DANINIHUB · ${escapeHtml(metaLabels.header)}</div>
               <h1 style="font-size:28px;line-height:1.2;font-weight:400;margin:0;">${escapeHtml(msg.headline)}</h1>
               <p style="color:#cfc7b8;font-size:14px;line-height:1.7;margin:14px 0 0;">${escapeHtml(pack.meta.subtitle)}</p>
             </td>
@@ -85,15 +90,11 @@ function createEmailHtmlFromArtifact(artifact, options = {}) {
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:22px 0;border-collapse:collapse;">
                 <tr>
-                  <td style="border:1px solid #eee;background:#fafafa;padding:12px;font-size:13px;color:#777;">Run ID</td>
+                  <td style="border:1px solid #eee;background:#fafafa;padding:12px;font-size:13px;color:#777;">${escapeHtml(metaLabels.reference)}</td>
                   <td style="border:1px solid #eee;padding:12px;font-size:13px;">${escapeHtml(pack.meta.run_id)}</td>
                 </tr>
                 <tr>
-                  <td style="border:1px solid #eee;background:#fafafa;padding:12px;font-size:13px;color:#777;">Mode</td>
-                  <td style="border:1px solid #eee;padding:12px;font-size:13px;">${escapeHtml(pack.meta.mode)}</td>
-                </tr>
-                <tr>
-                  <td style="border:1px solid #eee;background:#fafafa;padding:12px;font-size:13px;color:#777;">Timestamp</td>
+                  <td style="border:1px solid #eee;background:#fafafa;padding:12px;font-size:13px;color:#777;">${escapeHtml(metaLabels.date)}</td>
                   <td style="border:1px solid #eee;padding:12px;font-size:13px;">${escapeHtml(pack.meta.timestamp)}</td>
                 </tr>
               </table>
@@ -108,11 +109,6 @@ function createEmailHtmlFromArtifact(artifact, options = {}) {
               ${successUrl ? `<p style="margin:10px 0 22px;"><a href="${escapeHtml(successUrl)}" style="color:#8a6420;text-decoration:underline;">${escapeHtml(msg.statusLink)}</a></p>` : ''}
 
               <p style="font-size:14px;line-height:1.8;color:#555;margin:22px 0;">${escapeHtml(msg.download)}</p>
-
-              <div style="background:#fbf8ef;border:1px solid #dfd2ba;padding:18px;margin:24px 0;">
-                <strong style="color:#9b772c;">${escapeHtml(pack.labels.quietCalls)}</strong>
-                <p style="font-size:14px;line-height:1.8;color:#333;margin:10px 0 0;">${escapeHtml(pack.content.quietCalls)}</p>
-              </div>
 
               <p style="font-size:14px;line-height:1.8;color:#555;">${escapeHtml(msg.cta)}</p>
             </td>
@@ -162,6 +158,10 @@ function saveEmailHtmlFromArtifact(artifact, outputDirOrPath = 'outputs/email', 
 }
 
 function saveArtifactEmailHtml(artifact, outputDirOrPath = 'outputs/email', options = {}) {
+  if (artifact?.artifact) {
+    options = { ...options, pdfPath: artifact.pdf_path || options.pdfPath };
+    artifact = artifact.artifact;
+  }
   return saveEmailHtmlFromArtifact(artifact, outputDirOrPath, options);
 }
 

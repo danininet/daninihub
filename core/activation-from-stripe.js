@@ -31,16 +31,12 @@ async function activateFromStripeSession({
   const locale = metadata.locale || 'de';
   const customerEmail = resolveCustomerEmail(session) || null;
 
-  const task =
-    metadata.task ||
-    [
-      'Erstelle einen kundenseitigen DaniniHub Aktivierungsbericht für den 7 EUR Einstieg.',
-      'Sprache: Deutsch.',
-      'Ziel: klare Projektorientierung, strukturierte Ausgangslage, Risiken, Entscheidung und nächste Schritte.',
-      'Nicht ausgeben: interne Agentenlogik, Core-Orchestrator-Fragen, technische Implementierung, Premium-E-Book-Outline, Preise über den bezahlten Einstieg hinaus.',
-      'Ton: DACH-first, sachlich, seriös, transparent, nicht werblich.',
-      'Format: kurzer professioneller Bericht mit konkretem Nutzen für den Käufer.'
-    ].join(' ');
+  const task = String(metadata.task || '').trim();
+  if (!task) {
+    const error = new Error('STRIPE_GUIDED_DIALOG_REQUIRED');
+    error.code = 'STRIPE_GUIDED_DIALOG_REQUIRED';
+    throw error;
+  }
 
   writeAudit({
     event: 'stripe_activation_started',
@@ -79,7 +75,7 @@ async function activateFromStripeSession({
           runId: result.artifact?.run_id || result.run_id || activationId,
           emailHtmlPath: result.email_html_path,
           pdfPath: result.pdf_path,
-          subject: 'DaniniHub Activation Report'
+          subject: 'Ihre persönliche KI-Analyse ist fertig'
         });
 
         email_send = {

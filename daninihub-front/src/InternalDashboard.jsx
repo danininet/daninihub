@@ -63,7 +63,7 @@ function InternalDashboard() {
         setTerminalText(`❌ SERVER VRATIO GREŠKU:\n${data.message}`);
       }
     } catch (err) {
-      setTerminalText(`❌ GREŠKA U KONEKCIJI: Ne mogu da se povežem sa API serverom na portu 3000.\n\nProveri da li ti je u terminalu upaljen backend sa "node server.js".`);
+      setTerminalText(`❌ GREŠKA U KONEKCIJI: ${err.message || 'API server nije dostupan.'}\n\nProveri da li je backend pokrenut komandom "node server.js".`);
     } finally {
       setIsLoading(false);
       povuciBalans(); // Automatski povuci novi balans nakon što server potroši tokene

@@ -50,7 +50,7 @@ function renderGuidedPage() {
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#08111f;color:#f8fafc;font-family:Inter,Arial,sans-serif}.shell{max-width:820px;margin:auto;padding:28px 18px 60px}.brand{font-weight:850;letter-spacing:.05em;color:#f4d26b}.card{margin-top:28px;padding:26px;border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(255,255,255,.055);box-shadow:0 28px 80px rgba(0,0,0,.25)}.eyebrow{color:#f4d26b;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}h1{font-size:clamp(34px,7vw,58px);line-height:1.02;margin:12px 0 16px}p{color:#cbd5e1;line-height:1.7}.progress{display:flex;gap:8px;margin:22px 0}.dot{height:8px;flex:1;border-radius:999px;background:#243247}.dot.on{background:#d4af37}.question{font-size:24px;line-height:1.35;margin:22px 0}textarea{width:100%;min-height:150px;padding:16px;border-radius:14px;border:1px solid #40506a;background:#0d1728;color:#fff;font:inherit;resize:vertical}button{margin-top:14px;border:0;border-radius:12px;padding:14px 20px;background:#d4af37;color:#111827;font-weight:850;font-size:16px;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.status{min-height:26px;margin-top:14px;color:#f4d26b}.result{white-space:pre-wrap;background:#0d1728;border-radius:14px;padding:18px;margin-top:18px}.hidden{display:none}.small{font-size:13px;color:#94a3b8}
 </style>
 </head>
-<body><main class="shell"><div class="brand">Danini OS</div><section class="card"><div class="eyebrow">Persönliche KI-Analyse</div><h1>Die KI fragt nach</h1><p>Beantworte die Fragen möglichst konkret. Nach drei gezielten Rückfragen erhältst du deine persönliche Analyse und den PDF-Bericht per E-Mail.</p><div id="app"><div id="progress" class="progress"></div><div id="question" class="question">Sitzung wird geladen …</div><textarea id="answer" class="hidden" placeholder="Deine Antwort"></textarea><button id="submit" class="hidden">Antwort senden</button><div id="status" class="status"></div><div id="result" class="result hidden"></div></div><p class="small">Keine Rechts-, Finanz-, Medizin- oder Einkommensgarantie.</p></section></main>
+<body><main class="shell"><div class="brand">DaniniHub</div><section class="card"><div class="eyebrow">Persönliche KI-Analyse</div><h1>Die KI fragt nach</h1><p>Beantworten Sie die Fragen möglichst konkret. Nach drei gezielten Rückfragen erhalten Sie Ihre persönliche Analyse und den PDF-Bericht per E-Mail.</p><div id="app"><div id="progress" class="progress"></div><div id="question" class="question">Sitzung wird geladen …</div><textarea id="answer" class="hidden" placeholder="Ihre Antwort"></textarea><button id="submit" class="hidden">Antwort senden</button><div id="status" class="status"></div><div id="result" class="result hidden"></div></div><p class="small">Keine Rechts-, Finanz-, Medizin- oder Einkommensgarantie.</p></section></main>
 <script>
 (() => {
   const tokenFromHash = new URLSearchParams(location.hash.slice(1)).get('token');
@@ -72,10 +72,10 @@ function renderGuidedPage() {
   function render(session) {
     progress(session);
     if (session.status === 'completed') {
-      q.textContent = 'Deine Analyse ist fertig.';
+      q.textContent = 'Ihre Analyse ist fertig.';
       a.classList.add('hidden'); b.classList.add('hidden');
       r.classList.remove('hidden');
-      r.textContent = [session.result?.summary, session.result?.nextStep ? '\n\nNächster Schritt:\n'+session.result.nextStep : '', session.result?.delivery?.sent ? '\n\nDer PDF-Bericht wurde per E-Mail gesendet.' : '\n\nDie Analyse wurde erstellt. Die E-Mail-Zustellung konnte noch nicht bestätigt werden.'].join('');
+      r.textContent = [session.result?.summary, session.result?.nextStep ? '\n\nNächster Schritt:\n'+session.result.nextStep : '', session.result?.delivery?.sent ? '\n\nDer PDF-Bericht wurde per E-Mail gesendet.' : '\n\nDie Analyse wurde erstellt. Die E-Mail-Zustellung konnte noch nicht bestätigt werden. Bitte versuchen Sie es später erneut oder wenden Sie sich an dragangaganet@gmail.com.'].join('');
       return;
     }
     q.textContent = session.question || 'Bitte fahre fort.';
@@ -90,14 +90,14 @@ function renderGuidedPage() {
   }
 
   async function load() {
-    if (!token) { q.textContent='Kein gültiger Zugangslink gefunden.'; s.textContent='Öffne den persönlichen Link aus deiner Kaufbestätigung.'; return; }
+    if (!token) { q.textContent='Kein gültiger Zugangslink gefunden.'; s.textContent='Öffnen Sie den persönlichen Link aus Ihrer Kaufbestätigung.'; return; }
     try { const data=await api('/api/v1/guided-analysis/session'); render(data.session); }
     catch(error){ q.textContent='Sitzung konnte nicht geladen werden.'; s.textContent=error.message; }
   }
 
   b.addEventListener('click', async () => {
-    const answer=a.value.trim(); if(answer.length<3){s.textContent='Bitte gib eine konkrete Antwort ein.';return;}
-    b.disabled=true; s.textContent='Die KI analysiert deine Antwort …';
+    const answer=a.value.trim(); if(answer.length<3){s.textContent='Bitte geben Sie eine konkrete Antwort ein.';return;}
+    b.disabled=true; s.textContent='Ihre Antwort wird analysiert …';
     try { const data=await api('/api/v1/guided-analysis/answer',{method:'POST',body:JSON.stringify({answer})}); s.textContent=''; render(data.session); }
     catch(error){s.textContent=error.message;} finally {b.disabled=false;}
   });

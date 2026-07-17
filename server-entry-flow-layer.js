@@ -6,12 +6,12 @@ const copy = {
   de: {
     path: '/analyse-starten', title: 'Die KI fragt nach - persönliche Analyse für 12 EUR', method: 'Die KI stellt die richtigen Rückfragen',
     badge: 'Einmalzahlung · drei gezielte Rückfragen · persönlicher PDF-Bericht',
-    lead: 'Beschreibe dein Problem oder deine Entscheidung. Die KI stellt dir drei aufeinander aufbauende Rückfragen und erstellt danach eine persönliche, strukturierte Analyse mit konkreten nächsten Schritten.',
+    lead: 'Beschreiben Sie Ihr Problem oder Ihre Entscheidung. Die KI stellt Ihnen drei aufeinander aufbauende Rückfragen und erstellt danach eine persönliche, strukturierte Analyse mit konkreten nächsten Schritten.',
     cta: 'Analyse für 12 EUR starten', back: 'Zur Startseite',
     steps: ['Sichere Zahlung über Gumroad', 'Persönlichen Zugangslink erhalten', 'Ausgangsfrage beantworten', 'Drei gezielte KI-Rückfragen beantworten', 'Analyse und PDF-Bericht per E-Mail erhalten'],
-    agents: ['Guided Question Engine', 'Analysis Controller', 'PDF Artifact Layer', 'Delivery Audit'],
+    agents: ['Direkt auf deine Antworten bezogen', 'Annahmen klar gekennzeichnet', 'Priorisierte nächste Schritte', 'PDF und E-Mail inklusive'],
     legal: ['KI-Transparenz sichtbar', 'Datenschutz und notwendige Sitzungsdaten', 'Keine Rechts-, Finanz-, Gesundheits- oder Einkommensgarantie'],
-    cookies: 'Im MVP werden nur technisch notwendige Sitzungs- und Aktivierungsinformationen verarbeitet. Die Zahlung erfolgt extern über Gumroad.'
+    cookies: 'Es werden nur die für Zugang, Sitzung, Analyse und Zustellung erforderlichen Informationen verarbeitet. Die Zahlung erfolgt extern über Gumroad.'
   },
   sr: {
     path: '/sr/aktivacija', title: 'AI pita dalje - lična analiza za 12 EUR', method: 'AI postavlja prava podpitanja',
@@ -19,9 +19,9 @@ const copy = {
     lead: 'Opiši problem ili odluku. AI ti zatim postavlja tri povezana podpitanja i na kraju priprema ličnu, strukturisanu analizu sa konkretnim sledećim koracima.',
     cta: 'Pokreni analizu za 12 EUR', back: 'Nazad na početnu',
     steps: ['Sigurno plaćanje preko Gumroad-a', 'Dobijanje ličnog pristupnog linka', 'Odgovor na početno pitanje', 'Odgovor na tri AI podpitanja', 'Analiza i PDF izveštaj na email'],
-    agents: ['Guided Question Engine', 'Analysis Controller', 'PDF Artifact Layer', 'Delivery Audit'],
+    agents: ['Direktno vezano za vaše odgovore', 'Pretpostavke jasno označene', 'Prioritetni sledeći koraci', 'PDF i email uključeni'],
     legal: ['AI transparentnost je vidljiva', 'Privatnost i neophodni podaci sesije', 'Nema pravne, finansijske, medicinske ili garancije zarade'],
-    cookies: 'U MVP verziji obrađuju se samo tehnički neophodni podaci za sesiju i aktivaciju. Plaćanje se obavlja preko Gumroad-a.'
+    cookies: 'Obrađuju se samo podaci potrebni za pristup, sesiju, analizu i isporuku. Plaćanje se obavlja preko Gumroad-a.'
   },
   en: {
     path: '/en/activation', title: 'AI asks further - personal analysis for 12 EUR', method: 'AI asks the questions that matter',
@@ -29,9 +29,9 @@ const copy = {
     lead: 'Describe your problem or decision. AI asks three sequential follow-up questions and then creates a personal structured analysis with concrete next steps.',
     cta: 'Start analysis for 12 EUR', back: 'Back to home',
     steps: ['Secure Gumroad payment', 'Receive a personal access link', 'Answer the opening question', 'Answer three AI follow-up questions', 'Receive the analysis and PDF by email'],
-    agents: ['Guided Question Engine', 'Analysis Controller', 'PDF Artifact Layer', 'Delivery Audit'],
+    agents: ['Tied directly to your answers', 'Assumptions clearly identified', 'Prioritized next steps', 'PDF and email included'],
     legal: ['Visible AI transparency', 'Privacy and required session data', 'No legal, financial, medical or income guarantee'],
-    cookies: 'The MVP processes only technically required session and activation information. Payment is handled externally by Gumroad.'
+    cookies: 'Only information required for access, session, analysis and delivery is processed. Payment is handled externally by Gumroad.'
   }
 };
 
@@ -47,7 +47,7 @@ function renderEntry(lang) {
   const steps = t.steps.map((s, i) => `<li><b>${i + 1}.</b> ${escapeHtml(s)}</li>`).join('');
   const agents = t.agents.map((a) => `<span class="pill">${escapeHtml(a)}</span>`).join('');
   const legal = t.legal.map((l) => `<li>${escapeHtml(l)}</li>`).join('');
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(t.title)} | DaniniHub</title><meta name="description" content="${escapeHtml(t.lead)}"><meta name="robots" content="index,follow"><style>body{margin:0;font-family:Inter,Arial,sans-serif;background:#0b1220;color:#edf2f7}.wrap{max-width:1080px;margin:auto;padding:42px 22px}.logo{font-weight:800;letter-spacing:.04em}.badge,.pill{display:inline-block;border:1px solid rgba(212,175,55,.45);border-radius:999px;padding:8px 12px;color:#f5d477;margin:8px 8px 8px 0}.hero{padding:44px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}.card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px}.cta{display:inline-block;background:#d4af37;color:#111827;padding:14px 18px;border-radius:12px;text-decoration:none;font-weight:800}.secondary{color:#cbd5e1}.muted{color:#aeb8c7;line-height:1.7}li{margin:10px 0}a{color:#f5d477}</style></head><body><main class="wrap"><div class="logo">Danini OS · Die KI fragt nach</div><section class="hero"><span class="badge">${escapeHtml(t.badge)}</span><h1>${escapeHtml(t.title)}</h1><h2>${escapeHtml(t.method)}</h2><p class="muted">${escapeHtml(t.lead)}</p><p><a class="cta" href="${checkout}">${escapeHtml(t.cta)}</a> <a class="secondary" href="${lang==='sr'?'/sr':lang==='en'?'/en':'/'}">${escapeHtml(t.back)}</a></p></section><section class="grid"><div class="card"><h3>Flow</h3><ol>${steps}</ol></div><div class="card"><h3>Danini OS</h3><p class="muted">${agents}</p></div><div class="card"><h3>Trust / Legal</h3><ul>${legal}</ul></div><div class="card"><h3>Datenschutz</h3><p class="muted">${escapeHtml(t.cookies)}</p></div></section></main></body></html>`;
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(t.title)} | DaniniHub</title><meta name="description" content="${escapeHtml(t.lead)}"><meta name="robots" content="index,follow"><style>body{margin:0;font-family:Inter,Arial,sans-serif;background:#0b1220;color:#edf2f7}.wrap{max-width:1080px;margin:auto;padding:42px 22px}.logo{font-weight:800;letter-spacing:.04em}.badge,.pill{display:inline-block;border:1px solid rgba(212,175,55,.45);border-radius:999px;padding:8px 12px;color:#f5d477;margin:8px 8px 8px 0}.hero{padding:44px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}.card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px}.cta{display:inline-block;background:#d4af37;color:#111827;padding:14px 18px;border-radius:12px;text-decoration:none;font-weight:800}.secondary{color:#cbd5e1}.muted{color:#aeb8c7;line-height:1.7}li{margin:10px 0}a{color:#f5d477}</style></head><body><main class="wrap"><div class="logo">DaniniHub · Die KI fragt nach</div><section class="hero"><span class="badge">${escapeHtml(t.badge)}</span><h1>${escapeHtml(t.title)}</h1><h2>${escapeHtml(t.method)}</h2><p class="muted">${escapeHtml(t.lead)}</p><p><a class="cta" href="${checkout}">${escapeHtml(t.cta)}</a> <a class="secondary" href="${lang==='sr'?'/sr':lang==='en'?'/en':'/'}">${escapeHtml(t.back)}</a></p></section><section class="grid"><div class="card"><h3>${lang==='de'?'Ablauf':lang==='sr'?'Kako radi':'How it works'}</h3><ol>${steps}</ol></div><div class="card"><h3>${lang==='de'?'Im Ergebnis enthalten':lang==='sr'?'Šta dobijate':'What you receive'}</h3><p class="muted">${agents}</p></div><div class="card"><h3>${lang==='de'?'Klare Grenzen':lang==='sr'?'Jasne granice':'Clear limits'}</h3><ul>${legal}</ul></div><div class="card"><h3>${lang==='de'?'Datenschutz':lang==='sr'?'Privatnost':'Privacy'}</h3><p class="muted">${escapeHtml(t.cookies)}</p></div></section></main></body></html>`;
 }
 
 function mountEntryFlowLayer(app) {

@@ -1,29 +1,29 @@
 function renderSuccessHtml(lang = 'de') {
   const isSr = lang === 'sr';
   const isEn = lang === 'en';
-  const route = isSr ? '/sr/analyse-starten' : isEn ? '/en/analyse-starten' : '/analyse-starten';
+  const route = isSr ? '/sr/aktivacija' : isEn ? '/en/activation' : '/analyse-starten';
   const text = isSr ? {
-    title: 'DaniniHub ENTRY aktivacija',
-    label: 'DaniniHub - ENTRY 7 EUR',
-    h1: 'ENTRY je aktiviran za sledeci korak.',
-    p1: 'Ako si dosao preko Gumroad kupovine, koristi isti email u nastavku procesa.',
-    p2: 'MVP faza: validacija pristupa i isporuka artifact-a moze biti rucna ili poluautomatska.',
+    title: 'DaniniHub - kupovina je potvrđena',
+    label: 'Die KI fragt nach · 12 EUR',
+    h1: 'Hvala. Vaš pristup je spreman.',
+    p1: 'Lični pristupni link poslali smo na email adresu korišćenu pri kupovini.',
+    p2: 'Otvorite link, odgovorite na početno pitanje i tri podpitanja, a zatim ćete dobiti ličnu analizu i PDF.',
     cta: 'Pokreni analizu',
     disclaimer: 'Bez garancije zarade, investicionog uspeha, pravnog, finansijskog ili medicinskog saveta.'
   } : isEn ? {
-    title: 'DaniniHub ENTRY activation',
-    label: 'DaniniHub - ENTRY 7 EUR',
-    h1: 'ENTRY has been activated for the next step.',
-    p1: 'If you arrived after a Gumroad purchase, use the same email in the next process step.',
-    p2: 'MVP phase: access validation and artifact delivery may be manual or semi-automatic.',
+    title: 'DaniniHub - purchase confirmed',
+    label: 'AI asks further · 12 EUR',
+    h1: 'Thank you. Your access is ready.',
+    p1: 'We sent your personal access link to the email address used for the purchase.',
+    p2: 'Open the link, answer the opening question and three follow-ups, then receive your personal analysis and PDF.',
     cta: 'Start analysis',
     disclaimer: 'No income, investment, legal, financial or medical guarantee.'
   } : {
-    title: 'DaniniHub ENTRY Aktivierung',
-    label: 'DaniniHub - ENTRY 7 EUR',
-    h1: 'ENTRY ist fuer den naechsten Schritt aktiviert.',
-    p1: 'Wenn du ueber einen Gumroad-Kauf kommst, nutze im weiteren Prozess dieselbe E-Mail-Adresse.',
-    p2: 'MVP-Phase: Zugangsvalidierung und Artefakt-Lieferung koennen manuell oder halbautomatisch erfolgen.',
+    title: 'DaniniHub - Kauf bestätigt',
+    label: 'Die KI fragt nach · 12 EUR',
+    h1: 'Vielen Dank. Ihr Zugang ist bereit.',
+    p1: 'Den persönlichen Zugangslink haben wir an die beim Kauf verwendete E-Mail-Adresse gesendet.',
+    p2: 'Öffnen Sie den Link, beantworten Sie die Ausgangsfrage und drei Rückfragen. Danach erhalten Sie Ihre persönliche Analyse und das PDF.',
     cta: 'Analyse starten',
     disclaimer: 'Keine Einkommens-, Investment-, Rechts-, Finanz- oder Gesundheitsgarantie.'
   };

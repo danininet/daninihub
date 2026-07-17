@@ -20,6 +20,10 @@ function safeId(value) {
   return normalize(value).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 120);
 }
 
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
 function requestOrigin(req) {
   const configured = normalize(process.env.DANINI_PUBLIC_URL).replace(/\/$/, '');
   if (configured) return configured;
@@ -71,7 +75,7 @@ function saveSale(key, record) {
 }
 
 function renderAccessEmail(accessUrl) {
-  return `<!doctype html><html lang="de"><body style="font-family:Arial,sans-serif;background:#f4f6f8;padding:24px;color:#172033"><div style="max-width:640px;margin:auto;background:#fff;border-radius:16px;padding:30px"><h1>Deine persönliche KI-Analyse</h1><p>Vielen Dank für deinen Kauf von <strong>Die KI fragt nach</strong>.</p><p>Über den folgenden persönlichen Link startest du deine Analyse. Beantworte die Ausgangsfrage und danach drei gezielte Rückfragen.</p><p style="margin:28px 0"><a href="${accessUrl}" style="background:#d4af37;color:#111827;text-decoration:none;padding:14px 20px;border-radius:10px;font-weight:bold">Analyse starten</a></p><p>Dieser Link ist persönlich. Bitte leite ihn nicht weiter.</p><p style="font-size:13px;color:#68758a">Danini OS · Automatisierte persönliche KI-Analyse</p></div></body></html>`;
+  return `<!doctype html><html lang="de"><body style="font-family:Arial,sans-serif;background:#f4f6f8;padding:24px;color:#172033"><div style="max-width:640px;margin:auto;background:#fff;border-radius:16px;padding:30px"><p style="color:#9b772c;font-weight:bold;letter-spacing:.08em">DANINIHUB</p><h1>Ihre persönliche KI-Analyse</h1><p>Vielen Dank für Ihren Kauf von <strong>Die KI fragt nach</strong>.</p><p>Ihr persönlicher Link führt direkt zum geführten Dialog. Beantworten Sie die Ausgangsfrage und danach drei gezielte Rückfragen möglichst konkret. Anschließend erhalten Sie Ihre Analyse und das PDF per E-Mail.</p><p style="margin:28px 0"><a href="${escapeHtml(accessUrl)}" style="background:#d4af37;color:#111827;text-decoration:none;padding:14px 20px;border-radius:10px;font-weight:bold">Persönliche Analyse starten</a></p><p>Der Link ist nur für Sie bestimmt. Bitte geben Sie ihn nicht weiter.</p><p style="font-size:13px;color:#68758a">DaniniHub · Die KI fragt nach</p></div></body></html>`;
 }
 
 async function sendAccessEmail({ email, accessUrl, saleId }) {

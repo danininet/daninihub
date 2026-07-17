@@ -20,17 +20,28 @@ const controller = {
    * Verifikacija Artifact-a pre nego što izađe iz jezgra.
    */
   validate: (aiResponse) => {
-   if (!aiResponse.odgovor || !aiResponse.podpitanja) {
+   if (!aiResponse || typeof aiResponse.odgovor !== 'string') {
       throw new Error("Neispravan format po Artiklu 7.");
     }
+    aiResponse.podpitanja = Array.isArray(aiResponse.podpitanja)
+      ? aiResponse.podpitanja.filter(Boolean).slice(0, 1)
+      : [];
+    aiResponse.kern_erkenntnisse = Array.isArray(aiResponse.kern_erkenntnisse)
+      ? aiResponse.kern_erkenntnisse.filter(Boolean)
+      : [];
+    aiResponse.offene_annahmen = Array.isArray(aiResponse.offene_annahmen)
+      ? aiResponse.offene_annahmen.filter(Boolean)
+      : [];
+    aiResponse.naechste_schritte = Array.isArray(aiResponse.naechste_schritte)
+      ? aiResponse.naechste_schritte.filter(Boolean)
+      : [];
+    aiResponse.risiken = Array.isArray(aiResponse.risiken)
+      ? aiResponse.risiken.filter(Boolean)
+      : aiResponse.risiken ? [String(aiResponse.risiken)] : [];
+    aiResponse.entscheidung_status = ['GO', 'REDEFINE', 'STOP'].includes(aiResponse.entscheidung_status)
+      ? aiResponse.entscheidung_status
+      : 'REDEFINE';
     console.log(`-> [VALIDATOR] Artifact verifikovan po Artiklu 96.`);
-    if (!Array.isArray(aiResponse.podpitanja)) {
-   aiResponse.podpitanja = [];
-}
-
-if (aiResponse.podpitanja.length > 1) {
-   aiResponse.podpitanja = [aiResponse.podpitanja[0]];
-}
     return aiResponse;
   },
 
@@ -162,19 +173,27 @@ ULOGA:
 Ti si DaniniHub Meta Commander.
 
 PRAVILA:
-1. Korisnik pokreće prvi dijalog.
-2. Nakon odgovora postavi samo jedno parcijalno podpitanje.
-3. Maksimalno 3 podpitanja ukupno.
-4. Ako nema odluke posle trećeg pitanja napiši STOP.
-5. Ne koristi reč kontrapitanja.
+1. Analiziraj samo činjenice iz zadatka; ne izmišljaj kontekst.
+2. Svaka tvrdnja mora biti vezana za konkretan podatak iz korisničkog unosa.
+3. Ne koristi generičke motivacione fraze, šablonske savete ni interne sistemske nazive.
+4. Nepoznato i nepotvrđeno jasno označi kao pretpostavku.
+5. Donesi odluku GO, REDEFINE ili STOP i objasni zašto.
+6. Sledeći koraci moraju biti merljivi, vremenski određeni i prilagođeni ovom slučaju.
+7. Ne koristi reč kontrapitanja.
 
 VRATI ISKLJUČIVO JSON:
 
 {
-  "odgovor":"tekst",
+  "odgovor":"sažeta personalizovana analiza",
+  "ausgangslage":"konkretna polazna situacija iz dijaloga",
+  "kern_erkenntnisse":["konkretna spoznaja"],
+  "offene_annahmen":["nepotvrđena pretpostavka ili nepoznat podatak"],
+  "entscheidung_status":"GO | REDEFINE | STOP",
+  "entscheidung_begruendung":"razlog odluke vezan za korisničke odgovore",
+  "naechste_schritte":["prioritet i rok"],
   "podpitanja":[],
-  "sledeci_korak":"kratko dalje",
-  "rizici":"nema"
+  "sledeci_korak":"jedna prva radnja u naredna 72 sata",
+  "rizici":["konkretan rizik"]
 }`;
 
     try {
@@ -186,8 +205,9 @@ VRATI ISKLJUČIVO JSON:
         })
       });
 
+      if (!response.ok) throw new Error(`MODEL_HTTP_${response.status}`);
       const data = await response.json();
-      let aiText = data.candidates[0].content.parts[0].text;
+      let aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
       
       const jsonMatch = aiText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("Model nije vratio Artifact JSON.");
@@ -210,16 +230,20 @@ VRATI ISKLJUČIVO JSON:
           ? 'Strategic task used loaded constitution context.'
           : 'Non-strategic task used controller system prompt.',
         summary: validatedData.odgovor || '',
-        A_problem: input,
-        B_evidence: isStrategic ? 'Ustav context loaded from system memory.' : 'Controller prompt only.',
-        C_plan: validatedData.sledeci_korak || '',
+        A_problem: validatedData.ausgangslage || input,
+        B_evidence: validatedData.kern_erkenntnisse.join('\n'),
+        C_plan: validatedData.naechste_schritte.join('\n'),
         D_execution: validatedData.odgovor || '',
-        E_next: Array.isArray(validatedData.podpitanja) ? validatedData.podpitanja.join(' | ') : '',
-        risks: validatedData.rizici ? [String(validatedData.rizici)] : [],
+        E_next: validatedData.sledeci_korak || '',
+        decision: validatedData.entscheidung_status,
+        decision_reason: validatedData.entscheidung_begruendung || '',
+        insights: validatedData.kern_erkenntnisse,
+        assumptions: validatedData.offene_annahmen,
+        risks: validatedData.risiken,
         next_step: validatedData.sledeci_korak || '',
         validated: true,
         controller_status: 'approved',
-        controller_reason: 'Legacy controller JSON normalized into DaniniHub artifact contract.'
+        controller_reason: 'Output structure and required customer-facing fields validated.'
       });
 
       const artifact_path = saveArtifact(artifact);

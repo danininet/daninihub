@@ -10,11 +10,13 @@ const PRODUCTS = Object.freeze({
     maxFollowUps: 3,
     status: 'pilot',
     finalSubject: 'Deine persönliche KI-Analyse',
+    initialQuestion: 'Worum geht es konkret, welche Entscheidung steht an und was soll nach dieser Analyse klarer sein?',
     systemPurpose: [
-      'Führe eine strukturierte DACH-orientierte Problemanalyse durch.',
-      'Stelle genau eine konkrete Rückfrage pro Schritt.',
-      'Nutze maximal drei Rückfragen.',
-      'Erstelle danach eine sachliche Abschlussanalyse mit Ausgangslage, Erkenntnissen, Risiken und nächsten Schritten.',
+      'Analysiere ausschließlich den konkreten Fall aus dem Kundendialog.',
+      'Beziehe jede Rückfrage sichtbar auf eine bereits genannte Information und kläre genau eine offene Annahme.',
+      'Wiederhole keine Frage, gib in Rückfragen noch keine Ratschläge und verwende keine austauschbaren Coaching-Floskeln.',
+      'Nach genau drei Rückfragen folgt eine persönliche Abschlussanalyse mit belegter Ausgangslage, Kernerkenntnissen, offenen Annahmen, Risiken, Entscheidung und umsetzbaren nächsten Schritten.',
+      'Nicht belegte Punkte müssen ausdrücklich als Annahme oder unbekannt markiert werden.',
       'Keine Rechts-, Finanz-, Medizin- oder Einkommensgarantie.'
     ].join(' ')
   })

@@ -11,6 +11,7 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 const { mountGuidedAnalysisRuntime } = require('./server-guided-analysis-runtime');
 const { mountGumroadRuntime } = require('./server-gumroad-runtime');
 const { mountAdminRuntime } = require('./server-admin-runtime');
+const { mountSuccessLayer } = require('./server-success-layer');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -23,6 +24,7 @@ const PORT = Number(process.env.PORT || 4242);
 
 mountLegalRuntime(app);
 mountEntryFlowLayer(app);
+mountSuccessLayer(app);
 mountGumroadRuntime(app);
 mountGuidedAnalysisRuntime(app);
 mountAdminRuntime(app);

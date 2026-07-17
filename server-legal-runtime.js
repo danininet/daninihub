@@ -7,6 +7,8 @@ function mountLegalRuntime(app) {
     '/affiliate-hinweis': '/de/affiliate-hinweis',
     '/impressum': '/de/impressum',
     '/datenschutz': '/de/datenschutz',
+    '/nutzungsbedingungen': '/de/nutzungsbedingungen',
+    '/widerruf': '/de/widerruf',
     '/haftungsausschluss': '/de/haftungsausschluss'
   };
 

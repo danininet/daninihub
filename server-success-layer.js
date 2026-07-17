@@ -1,41 +1,19 @@
-function renderSuccessHtml(lang = 'de') {
-  const isSr = lang === 'sr';
-  const isEn = lang === 'en';
-  const route = isSr ? '/sr/aktivacija' : isEn ? '/en/activation' : '/analyse-starten';
-  const text = isSr ? {
-    title: 'DaniniHub - kupovina je potvrđena',
-    label: 'Die KI fragt nach · 12 EUR',
-    h1: 'Hvala. Vaš pristup je spreman.',
-    p1: 'Lični pristupni link poslali smo na email adresu korišćenu pri kupovini.',
-    p2: 'Otvorite link, odgovorite na početno pitanje i tri podpitanja, a zatim ćete dobiti ličnu analizu i PDF.',
-    cta: 'Pokreni analizu',
-    disclaimer: 'Bez garancije zarade, investicionog uspeha, pravnog, finansijskog ili medicinskog saveta.'
-  } : isEn ? {
-    title: 'DaniniHub - purchase confirmed',
-    label: 'AI asks further · 12 EUR',
-    h1: 'Thank you. Your access is ready.',
-    p1: 'We sent your personal access link to the email address used for the purchase.',
-    p2: 'Open the link, answer the opening question and three follow-ups, then receive your personal analysis and PDF.',
-    cta: 'Start analysis',
-    disclaimer: 'No income, investment, legal, financial or medical guarantee.'
-  } : {
-    title: 'DaniniHub - Kauf bestätigt',
-    label: 'Die KI fragt nach · 12 EUR',
-    h1: 'Vielen Dank. Ihr Zugang ist bereit.',
-    p1: 'Den persönlichen Zugangslink haben wir an die beim Kauf verwendete E-Mail-Adresse gesendet.',
-    p2: 'Öffnen Sie den Link, beantworten Sie die Ausgangsfrage und drei Rückfragen. Danach erhalten Sie Ihre persönliche Analyse und das PDF.',
-    cta: 'Analyse starten',
-    disclaimer: 'Keine Einkommens-, Investment-, Rechts-, Finanz- oder Gesundheitsgarantie.'
-  };
+'use strict';
 
-  return `<!doctype html><html lang="${isSr ? 'sr' : isEn ? 'en' : 'de'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${text.title}</title></head><body style="font-family:Arial,sans-serif;margin:0;background:#0b1220;color:#f8fafc"><main style="max-width:760px;margin:0 auto;padding:64px 24px"><p style="color:#93c5fd">${text.label}</p><h1>${text.h1}</h1><p>${text.p1}</p><p>${text.p2}</p><p><a href="${route}" style="display:inline-block;background:#d6b25e;color:#111827;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:bold">${text.cta}</a></p><hr style="border-color:#1f2937"><p style="color:#cbd5e1">${text.disclaimer}</p></main></body></html>`;
+const { SITE_ROUTES, escapeHtml, renderPage } = require('./core/site-ui');
+
+const copy = {
+  de:{title:'Kauf bestätigt',h1:'Vielen Dank. Ihr persönlicher Zugang ist unterwegs.',lead:'Der Zugangslink wird an die beim Kauf verwendete E-Mail-Adresse gesendet.',next:'Öffnen Sie den Link, beantworten Sie die Ausgangsfrage und genau drei Rückfragen. Anschließend erhalten Sie Ihre Analyse und das PDF per E-Mail.',cta:'Zur Analyse',help:'Keine E-Mail erhalten? Prüfen Sie den Spam-Ordner oder kontaktieren Sie uns mit Ihrer Bestellnummer.'},
+  sr:{title:'Kupovina je potvrđena',h1:'Hvala. Vaš lični pristup je na putu.',lead:'Pristupni link stiže na email adresu korišćenu pri kupovini.',next:'Otvorite link, odgovorite na početno pitanje i tačno tri podpitanja. Zatim dobijate analizu i PDF emailom.',cta:'Na analizu',help:'Email nije stigao? Proverite spam folder ili nam pišite uz broj porudžbine.'},
+  en:{title:'Purchase confirmed',h1:'Thank you. Your personal access is on its way.',lead:'The access link is sent to the email address used for purchase.',next:'Open the link, answer the opening question and exactly three follow-ups. The analysis and PDF will then be delivered by email.',cta:'Go to analysis',help:'No email? Check spam or contact us with your order number.'}
+};
+
+function renderSuccessHtml(lang='de') {
+  const l=['de','sr','en'].includes(lang)?lang:'de'; const t=copy[l];
+  const body=`<section class="hero compact"><span class="badge">DaniniHub · 12 EUR</span><h1>${escapeHtml(t.h1)}</h1><p class="lead">${escapeHtml(t.lead)}</p></section><section class="price-panel"><div><span class="eyebrow">${escapeHtml(t.title)}</span><h2>${escapeHtml(t.next)}</h2><p>${escapeHtml(t.help)}</p><p><a href="mailto:dragangaganet@gmail.com">dragangaganet@gmail.com</a></p></div><div class="price-box"><span class="brand-mark" style="width:68px;height:68px;margin-left:auto">✓</span><div class="actions" style="justify-content:flex-end"><a class="button-primary" href="${SITE_ROUTES[l].activation}">${escapeHtml(t.cta)}</a></div></div></section>`;
+  return renderPage({lang:l,pageKey:'activation',title:t.title,description:t.lead,body,robots:'noindex,follow'});
 }
 
-function mountSuccessLayer(app) {
-  app.get('/gumroad-success', (req, res) => {
-    const lang = String(req.query.lang || 'de').toLowerCase();
-    res.type('html').send(renderSuccessHtml(lang));
-  });
-}
+function mountSuccessLayer(app){ app.get('/gumroad-success',(req,res)=>res.type('html').send(renderSuccessHtml(String(req.query.lang||'de').toLowerCase()))); }
 
-module.exports = { mountSuccessLayer };
+module.exports={mountSuccessLayer,renderSuccessHtml};

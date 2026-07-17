@@ -3,6 +3,7 @@
 const express = require('express');
 const { listProducts } = require('./core/product-registry');
 const { createSession, getSession, submitAnswer } = require('./core/guided-analysis-service');
+const { renderPage } = require('./core/site-ui');
 
 function bearerToken(req) {
   const value = String(req.headers.authorization || '');
@@ -39,18 +40,7 @@ function buildAccessUrl(origin, accessToken) {
 }
 
 function renderGuidedPage() {
-  return `<!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>Die KI fragt nach | Danini OS</title>
-<style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#08111f;color:#f8fafc;font-family:Inter,Arial,sans-serif}.shell{max-width:820px;margin:auto;padding:28px 18px 60px}.brand{font-weight:850;letter-spacing:.05em;color:#f4d26b}.card{margin-top:28px;padding:26px;border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(255,255,255,.055);box-shadow:0 28px 80px rgba(0,0,0,.25)}.eyebrow{color:#f4d26b;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}h1{font-size:clamp(34px,7vw,58px);line-height:1.02;margin:12px 0 16px}p{color:#cbd5e1;line-height:1.7}.progress{display:flex;gap:8px;margin:22px 0}.dot{height:8px;flex:1;border-radius:999px;background:#243247}.dot.on{background:#d4af37}.question{font-size:24px;line-height:1.35;margin:22px 0}textarea{width:100%;min-height:150px;padding:16px;border-radius:14px;border:1px solid #40506a;background:#0d1728;color:#fff;font:inherit;resize:vertical}button{margin-top:14px;border:0;border-radius:12px;padding:14px 20px;background:#d4af37;color:#111827;font-weight:850;font-size:16px;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.status{min-height:26px;margin-top:14px;color:#f4d26b}.result{white-space:pre-wrap;background:#0d1728;border-radius:14px;padding:18px;margin-top:18px}.hidden{display:none}.small{font-size:13px;color:#94a3b8}
-</style>
-</head>
-<body><main class="shell"><div class="brand">DaniniHub</div><section class="card"><div class="eyebrow">Persönliche KI-Analyse</div><h1>Die KI fragt nach</h1><p>Beantworten Sie die Fragen möglichst konkret. Nach drei gezielten Rückfragen erhalten Sie Ihre persönliche Analyse und den PDF-Bericht per E-Mail.</p><div id="app"><div id="progress" class="progress"></div><div id="question" class="question">Sitzung wird geladen …</div><textarea id="answer" class="hidden" placeholder="Ihre Antwort"></textarea><button id="submit" class="hidden">Antwort senden</button><div id="status" class="status"></div><div id="result" class="result hidden"></div></div><p class="small">Keine Rechts-, Finanz-, Medizin- oder Einkommensgarantie.</p></section></main>
+  const body = `<section class="analysis-shell"><div class="eyebrow">Persönliche KI-Analyse</div><h1>Die KI fragt nach</h1><p class="lead">Beantworten Sie die Fragen möglichst konkret. Nach genau drei gezielten Rückfragen erhalten Sie Ihre persönliche Analyse und den PDF-Bericht per E-Mail.</p><div class="analysis-card" id="app"><div id="progress" class="progress"></div><div id="question" class="question">Sitzung wird geladen …</div><label class="answer-label hidden" id="answer-label" for="answer">Ihre Antwort</label><textarea id="answer" class="hidden" placeholder="Beschreiben Sie Ihre Situation konkret …"></textarea><button id="submit" class="button-primary hidden">Antwort senden</button><div id="status" class="status" role="status"></div><div id="result" class="result hidden"></div></div><p class="small">Bitte keine sensiblen Daten eingeben. Keine Rechts-, Finanz-, Steuer-, Medizin- oder Einkommensgarantie.</p></section>
 <script>
 (() => {
   const tokenFromHash = new URLSearchParams(location.hash.slice(1)).get('token');
@@ -73,13 +63,13 @@ function renderGuidedPage() {
     progress(session);
     if (session.status === 'completed') {
       q.textContent = 'Ihre Analyse ist fertig.';
-      a.classList.add('hidden'); b.classList.add('hidden');
+      a.classList.add('hidden'); document.getElementById('answer-label').classList.add('hidden'); b.classList.add('hidden');
       r.classList.remove('hidden');
       r.textContent = [session.result?.summary, session.result?.nextStep ? '\n\nNächster Schritt:\n'+session.result.nextStep : '', session.result?.delivery?.sent ? '\n\nDer PDF-Bericht wurde per E-Mail gesendet.' : '\n\nDie Analyse wurde erstellt. Die E-Mail-Zustellung konnte noch nicht bestätigt werden. Bitte versuchen Sie es später erneut oder wenden Sie sich an dragangaganet@gmail.com.'].join('');
       return;
     }
     q.textContent = session.question || 'Bitte fahre fort.';
-    a.value=''; a.classList.remove('hidden'); b.classList.remove('hidden'); a.focus();
+    a.value=''; a.classList.remove('hidden'); document.getElementById('answer-label').classList.remove('hidden'); b.classList.remove('hidden'); a.focus();
   }
 
   async function api(path, options={}) {
@@ -103,7 +93,9 @@ function renderGuidedPage() {
   });
   load();
 })();
-</script></body></html>`;
+</script>`;
+  const extraCss = `.analysis-shell{max-width:840px;margin:auto;padding:62px 0 40px}.analysis-shell h1{font-size:clamp(40px,7vw,64px);line-height:1.04;letter-spacing:-.04em;margin:12px 0 18px}.analysis-card{margin-top:30px;padding:clamp(22px,5vw,38px);border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,var(--panel),#0d192a);box-shadow:var(--shadow)}.progress{display:flex;gap:8px;margin:0 0 28px}.dot{height:7px;flex:1;border-radius:999px;background:#293a52}.dot.on{background:var(--gold)}.question{font-size:clamp(21px,3vw,28px);font-weight:750;line-height:1.4;margin:0 0 22px}.answer-label{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:8px}textarea{width:100%;min-height:170px;padding:17px;border-radius:13px;border:1px solid #425774;background:#07111f;color:#fff;resize:vertical;outline:none}textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(214,178,94,.12)}button.button-primary{border:0;margin-top:14px;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.status{min-height:26px;margin-top:14px;color:var(--gold-2)}.result{white-space:pre-wrap;background:#07111f;border:1px solid var(--line);border-radius:13px;padding:20px;margin-top:18px}.hidden{display:none}.small{font-size:12px;color:#8fa0b4;margin-top:18px}`;
+  return renderPage({ lang:'de', pageKey:'activation', title:'Die KI fragt nach', description:'Persönliche KI-Analyse mit genau drei gezielten Rückfragen.', body, robots:'noindex,nofollow', extraCss });
 }
 
 function mountGuidedAnalysisRuntime(app) {

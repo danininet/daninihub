@@ -37,8 +37,23 @@ export default function PilotCheck({ lang }) {
   const send = async event => {
     event.preventDefault()
     const contact = Object.fromEntries(new FormData(event.currentTarget))
-    const message = keys.map((key,index)=>`${t.labels[index]}: ${result[key] || t.missingText}`).join('\n')
-    const payload = { company:result.company, email:contact.email, phone:contact.phone, fleet:result.fleet, routes:result.routes, interest:lang==='sr'?'Pilot projekat za transportnu firmu':'Pilotprojekt für ein Transportunternehmen', message, consent:contact.consent, website:'' }
+    const payload = {
+      source: 'pilot-check',
+      language: lang,
+      company: result.company,
+      email: contact.email,
+      phone: contact.phone,
+      fleet: result.fleet,
+      routes: result.routes,
+      tasks: result.tasks,
+      availability: result.availability,
+      systems: result.systems,
+      decision: result.decision,
+      interest: lang === 'sr' ? 'Pilot projekat za transportnu firmu' : 'Pilotprojekt für ein Transportunternehmen',
+      message: lang === 'sr' ? 'Strukturisan upit poslat putem DaniniHub provere pilota.' : 'Strukturierte Anfrage über den DaniniHub Pilot-Check.',
+      consent: contact.consent,
+      website: ''
+    }
     setFormState('sending')
     try {
       const response = await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })

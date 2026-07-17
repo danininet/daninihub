@@ -7,16 +7,18 @@ const copy = {
     notice: 'Keine automatische Entscheidung. Die Angaben dienen nur zur Vorbereitung eines unverbindlichen Gesprächs.',
     fields: { company:'Unternehmen / Name', fleet:'Fahrzeuge im relevanten Bereich', routes:'Wichtige Relationen', tasks:'Welche Aufgaben binden aktuell Zeit?', availability:'Wann wird Unterstützung benötigt?', systems:'Welche Systeme werden genutzt?', decision:'Wer darf operative Freigaben erteilen?' },
     placeholders: { company:'Beispiel Spedition GmbH', fleet:'z. B. 8', routes:'z. B. Serbien–Deutschland', tasks:'Statusabfragen, ETA, Fahrerkommunikation, Dokumente …', availability:'z. B. werktags 16–22 Uhr', systems:'TMS, E-Mail, WhatsApp, Telefon …', decision:'Name oder Funktion' },
-    create:'Pilot-Zusammenfassung erstellen', summary:'Vorläufige Pilot-Zusammenfassung', fit:'Grundsätzlich prüfbar', missing:'Vor einem Gespräch ergänzen', contact:'Gespräch anfragen', reset:'Angaben ändern', labels:['Unternehmen','Flotte','Relationen','Zeitfresser','Zeitfenster','Systeme','Freigaben'],
-    missingText:'Nicht angegeben', boundary:'Der endgültige Leistungsrahmen, Erreichbarkeit, Vergütung und die Befugnisse werden ausschließlich schriftlich vereinbart.'
+    create:'Pilot-Zusammenfassung erstellen', summary:'Vorläufige Pilot-Zusammenfassung', fit:'Grundsätzlich prüfbar', contact:'Strukturierte Anfrage senden', reset:'Angaben ändern', labels:['Unternehmen','Flotte','Relationen','Zeitfresser','Zeitfenster','Systeme','Freigaben'],
+    missingText:'Nicht angegeben', boundary:'Der endgültige Leistungsrahmen, Erreichbarkeit, Vergütung und die Befugnisse werden ausschließlich schriftlich vereinbart.',
+    email:'E-Mail', phone:'Telefon (optional)', consent:'Ich bin mit der Verarbeitung meiner Angaben zur Beantwortung der Anfrage einverstanden.', send:'Pilot-Anfrage sicher senden', success:'Vielen Dank. Die strukturierte Pilot-Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error:'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.'
   },
   sr: {
     back: 'Nazad na operativni pult', title: 'Provera pilota', subtitle: 'U nekoliko koraka proverite da li ograničeni DaniniHub pilot odgovara vašoj operativi.',
     notice: 'Nema automatske odluke. Podaci služe samo za pripremu neobavezujućeg razgovora.',
     fields: { company:'Firma / ime', fleet:'Vozila u relevantnom delu poslovanja', routes:'Važne relacije', tasks:'Koji zadaci trenutno oduzimaju vreme?', availability:'Kada je podrška potrebna?', systems:'Koje sisteme koristite?', decision:'Ko može da odobri operativne korake?' },
     placeholders: { company:'Primer Transport d.o.o.', fleet:'npr. 8', routes:'npr. Srbija–Nemačka', tasks:'Statusi, ETA, komunikacija sa vozačima, dokumenta …', availability:'npr. radnim danima 16–22 h', systems:'TMS, e-mail, WhatsApp, telefon …', decision:'Ime ili funkcija' },
-    create:'Kreiraj rezime pilota', summary:'Preliminarni rezime pilota', fit:'Moguće za dalju proveru', missing:'Dopuniti pre razgovora', contact:'Pošalji upit', reset:'Izmeni podatke', labels:['Firma','Flota','Relacije','Zadaci','Vreme podrške','Sistemi','Odobrenja'],
-    missingText:'Nije navedeno', boundary:'Konačan obim usluge, dostupnost, naknada i ovlašćenja dogovaraju se isključivo pisanim putem.'
+    create:'Kreiraj rezime pilota', summary:'Preliminarni rezime pilota', fit:'Moguće za dalju proveru', contact:'Pošaljite strukturisan upit', reset:'Izmeni podatke', labels:['Firma','Flota','Relacije','Zadaci','Vreme podrške','Sistemi','Odobrenja'],
+    missingText:'Nije navedeno', boundary:'Konačan obim usluge, dostupnost, naknada i ovlašćenja dogovaraju se isključivo pisanim putem.',
+    email:'E-mail', phone:'Telefon (opciono)', consent:'Saglasan sam da se moji podaci obrade radi odgovora na upit.', send:'Pošaljite siguran pilot-upit', success:'Hvala. Strukturisan pilot-upit je poslat, a potvrda stiže na vašu e-mail adresu.', error:'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.'
   }
 }
 
@@ -25,13 +27,29 @@ const keys = ['company','fleet','routes','tasks','availability','systems','decis
 export default function PilotCheck({ lang }) {
   const t = copy[lang]
   const [result, setResult] = useState(null)
+  const [formState, setFormState] = useState('idle')
   const submit = event => {
     event.preventDefault()
     setResult(Object.fromEntries(new FormData(event.currentTarget)))
+    setFormState('idle')
     requestAnimationFrame(() => document.getElementById('pilot-check-result')?.scrollIntoView({behavior:'smooth'}))
   }
+  const send = async event => {
+    event.preventDefault()
+    const contact = Object.fromEntries(new FormData(event.currentTarget))
+    const message = keys.map((key,index)=>`${t.labels[index]}: ${result[key] || t.missingText}`).join('\n')
+    const payload = { company:result.company, email:contact.email, phone:contact.phone, fleet:result.fleet, routes:result.routes, interest:lang==='sr'?'Pilot projekat za transportnu firmu':'Pilotprojekt für ein Transportunternehmen', message, consent:contact.consent, website:'' }
+    setFormState('sending')
+    try {
+      const response = await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+      if (!response.ok) throw new Error('send_failed')
+      event.currentTarget.reset()
+      setFormState('success')
+    } catch {
+      setFormState('error')
+    }
+  }
   const home = lang === 'sr' ? '/sr/operativni-pult-demo' : '/de/operations-desk-demo'
-  const contact = lang === 'sr' ? '/sr/?interest=pilot#contact' : '/de/?interest=pilot#contact'
   return <main className="check-shell">
     <header className="check-header"><a href={home}>← {t.back}</a><strong>DaniniHub · PILOT</strong></header>
     <section className="check-page">
@@ -40,7 +58,7 @@ export default function PilotCheck({ lang }) {
         {keys.map((key,index)=><label key={key} className={key==='tasks'?'wide':''}><span>{t.fields[key]}</span>{key==='tasks'?<textarea name={key} placeholder={t.placeholders[key]} required/>:<input name={key} type={key==='fleet'?'number':'text'} min={key==='fleet'?'1':undefined} placeholder={t.placeholders[key]} required={index<4}/>}</label>)}
         <button className="btn" type="submit">{t.create} →</button>
       </form>
-      {result&&<section className="check-result" id="pilot-check-result"><p className="kicker">{t.fit}</p><h2>{t.summary}</h2><div className="check-summary">{keys.map((key,index)=><article key={key}><small>{t.labels[index]}</small><strong>{result[key] || t.missingText}</strong></article>)}</div><p>{t.boundary}</p><div className="check-actions"><a className="btn" href={contact}>{t.contact} →</a><button className="check-reset" type="button" onClick={()=>{setResult(null);scrollTo({top:0,behavior:'smooth'})}}>{t.reset}</button></div></section>}
+      {result&&<section className="check-result" id="pilot-check-result"><p className="kicker">{t.fit}</p><h2>{t.summary}</h2><div className="check-summary">{keys.map((key,index)=><article key={key}><small>{t.labels[index]}</small><strong>{result[key] || t.missingText}</strong></article>)}</div><p>{t.boundary}</p><h3>{t.contact}</h3><form className="check-contact" onSubmit={send}><label><span>{t.email}</span><input name="email" type="email" required maxLength="180"/></label><label><span>{t.phone}</span><input name="phone" type="tel" maxLength="60"/></label><label className="check-consent"><input name="consent" type="checkbox" value="yes" required/><span>{t.consent}</span></label><button className="btn" type="submit" disabled={formState==='sending'}>{formState==='sending'?'…':t.send+' →'}</button>{formState==='success'&&<p className="check-success" role="status">{t.success}</p>}{formState==='error'&&<p className="check-error" role="alert">{t.error}</p>}</form><button className="check-reset" type="button" onClick={()=>{setResult(null);setFormState('idle');scrollTo({top:0,behavior:'smooth'})}}>{t.reset}</button></section>}
     </section>
   </main>
 }

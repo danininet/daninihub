@@ -5,7 +5,7 @@ const content = {
   de: {
     back: 'Zurück zur Pilot-Erklärung', title: 'DaniniHub Operations Desk', subtitle: 'Interaktive Simulation einer fiktiven Tour', notice: 'DEMO-MODUS · Keine realen Unternehmens-, Fahrer- oder Transportdaten · Keine automatische Entscheidung',
     tour: 'Tour', route: 'Novi Sad → Duisburg', cargo: '24 Paletten · Industrieware', client: 'BalkanCargo (fiktiv)', slot: 'Entladeslot', planned: 'Plan-ETA', current: 'Aktuelle ETA', decision: 'Entscheider', decisionPerson: 'Herr Marković', documents: 'Dokumente', complete: 'operativ vollständig', onPlan: 'Im Plan', deviation: '+ 90 Min. Abweichung',
-    timeline: 'Status-Zeitlinie', next: 'Nächsten Schritt anzeigen', reset: 'Simulation neu starten', active: 'Aktueller Vorgang', open: 'Offene Entscheidung', noDecision: 'Keine offene Entscheidung', summary: 'Pilot-Zusammenfassung', evaluation: 'Auswertung', cta: 'Pilot besprechen', language: 'Sprache',
+    timeline: 'Status-Zeitlinie', next: 'Nächsten Schritt anzeigen', reset: 'Simulation neu starten', active: 'Aktueller Vorgang', open: 'Offene Entscheidung', noDecision: 'Keine offene Entscheidung', summary: 'Pilot-Zusammenfassung', evaluation: 'Auswertung', cta: 'Pilot besprechen', check: 'Pilot-Check starten', language: 'Sprache',
     steps: [
       ['13:45', 'Auftrag geprüft', 'Adressen, Referenzen, Fahrzeug und Ansprechpartner operativ vollständig.'],
       ['15:05', 'Beladung abgeschlossen', 'CMR liegt vor. Abfahrt bestätigt. ETA Duisburg: 09:20 Uhr.'],
@@ -23,7 +23,7 @@ const content = {
   sr: {
     back: 'Nazad na objašnjenje pilota', title: 'DaniniHub operativni pult', subtitle: 'Interaktivna simulacija fiktivne ture', notice: 'DEMO REŽIM · Nema stvarnih podataka firme, vozača ili transporta · Nema automatskog odlučivanja',
     tour: 'Tura', route: 'Novi Sad → Duisburg', cargo: '24 palete · industrijska roba', client: 'BalkanCargo (fiktivno)', slot: 'Termin istovara', planned: 'Planirana ETA', current: 'Aktuelna ETA', decision: 'Odgovorna osoba', decisionPerson: 'g. Marković', documents: 'Dokumenti', complete: 'operativno kompletni', onPlan: 'Prema planu', deviation: '+ 90 min. odstupanja',
-    timeline: 'Vremenska linija statusa', next: 'Prikaži sledeći korak', reset: 'Pokreni simulaciju ponovo', active: 'Aktuelni događaj', open: 'Otvorena odluka', noDecision: 'Nema otvorene odluke', summary: 'Rezime pilota', evaluation: 'Evaluacija', cta: 'Razgovor o pilotu', language: 'Jezik',
+    timeline: 'Vremenska linija statusa', next: 'Prikaži sledeći korak', reset: 'Pokreni simulaciju ponovo', active: 'Aktuelni događaj', open: 'Otvorena odluka', noDecision: 'Nema otvorene odluke', summary: 'Rezime pilota', evaluation: 'Evaluacija', cta: 'Razgovor o pilotu', check: 'Pokreni proveru pilota', language: 'Jezik',
     steps: [
       ['13:45', 'Nalog proveren', 'Adrese, reference, vozilo i odgovorna osoba su operativno kompletni.'],
       ['15:05', 'Utovar završen', 'CMR postoji. Polazak potvrđen. ETA Duisburg: 09:20.'],
@@ -49,6 +49,7 @@ export default function OperationsDemo({lang}) {
   const waiting = visible === 4 || visible === 5
   const eta = issue ? '10:50' : '09:20'
   const switchPath = lang === 'sr' ? '/de/operations-desk-demo' : '/sr/operativni-pult-demo'
+  const checkPath = lang === 'sr' ? '/sr/provera-pilota' : '/de/pilot-check'
   return <main className="ops-shell">
     <header className="ops-header">
       <a href={lang==='sr'?'/sr/primer-pilota':'/de/pilot-beispiel'}>← {t.back}</a>
@@ -72,7 +73,7 @@ export default function OperationsDemo({lang}) {
           <button className="ops-reset" onClick={()=>setVisible(1)}>{t.reset}</button>
         </aside>
       </div>
-      {finished&&<section className="ops-result"><p className="kicker">{t.evaluation}</p><h2>{t.summary}</h2><div>{t.metrics.map(([value,label])=><article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><p>{t.boundary}</p><a className="btn" href={lang==='sr'?'/sr/?interest=pilot#contact':'/de/?interest=pilot#contact'}>{t.cta} →</a></section>}
+      {finished&&<section className="ops-result"><p className="kicker">{t.evaluation}</p><h2>{t.summary}</h2><div>{t.metrics.map(([value,label])=><article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><p>{t.boundary}</p><div className="demo-actions"><a className="btn secondary" href={checkPath}>{t.check} →</a><a className="btn" href={lang==='sr'?'/sr/?interest=pilot#contact':'/de/?interest=pilot#contact'}>{t.cta} →</a></div></section>}
     </section>
   </main>
 }

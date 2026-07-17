@@ -8,7 +8,7 @@ function mountPublicRuntime(app) {
   app.use(express.static(front, { index: false }));
 
   const oldPublicRoutes = [
-    '/en', '/en/*', '/de/method', '/de/project-mode', '/de/levels', '/de/artifacts',
+    '/en', /^\/en(?:\/.*)?$/, '/de/method', '/de/project-mode', '/de/levels', '/de/artifacts',
     '/sr/metoda', '/sr/projektni-rezim', '/sr/nivoi', '/sr/artefakti',
     '/api/entry/12-eur/checkout'
   ];

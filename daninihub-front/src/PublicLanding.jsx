@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import './Enhancements.css'
 import LegalKnowledge from './LegalKnowledge'
@@ -90,6 +90,13 @@ export default function PublicLanding({ lang, setLang }) {
   const t = copy[lang]
   const [formState, setFormState] = useState('idle')
   const path = location.pathname
+  const pilotSelected = new URLSearchParams(location.search).get('interest') === 'pilot'
+  const pilotOption = t.options[0]
+  useEffect(() => {
+    const interest = document.querySelector('select[name="interest"]')
+    if (pilotSelected && interest) interest.value = pilotOption
+    if (location.hash === '#contact') requestAnimationFrame(() => document.getElementById('contact')?.scrollIntoView())
+  }, [pilotOption, pilotSelected])
   const switchLang = code => { setLang(code); history.replaceState({}, '', code === 'sr' ? '/sr/' : '/de/') }
   const send = async event => {
     event.preventDefault()

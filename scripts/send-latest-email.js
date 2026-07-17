@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+const { BrevoClient } = require('@getbrevo/brevo');
 const { writeAudit } = require('../core/audit');
 
 const recipient = process.argv[2];
@@ -39,22 +39,20 @@ const htmlContent = fs.readFileSync(emailPath, 'utf8');
 const pdfPath = path.join(pdfDir, `${runId}.pdf`);
 const hasPdf = fs.existsSync(pdfPath);
 
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+const apiInstance = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY
+}).transactionalEmails;
 
 async function send() {
-  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-
-  sendSmtpEmail.subject = `DaniniHub Report ${runId}`;
-  sendSmtpEmail.htmlContent = htmlContent;
-  sendSmtpEmail.sender = {
-    name: 'DaniniHub',
-    email: process.env.BREVO_SENDER_EMAIL || 'info@daninihub.com'
+  const sendSmtpEmail = {
+    subject: `DaniniHub Report ${runId}`,
+    htmlContent,
+    sender: {
+      name: 'DaniniHub',
+      email: process.env.BREVO_SENDER_EMAIL || 'info@daninihub.com'
+    },
+    to: [{ email: recipient }]
   };
-  sendSmtpEmail.to = [{ email: recipient }];
 
   if (hasPdf) {
     const pdfBase64 = fs.readFileSync(pdfPath).toString('base64');

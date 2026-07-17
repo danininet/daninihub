@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+const { BrevoClient } = require('@getbrevo/brevo');
 const { assertCustomerFacingSafe } = require('./customer-facing-gate');
 
 function createBrevoClient() {
@@ -10,11 +10,7 @@ function createBrevoClient() {
     throw new Error('BREVO_API_KEY nije definisan u .env.');
   }
 
-  const defaultClient = SibApiV3Sdk.ApiClient.instance;
-  const apiKey = defaultClient.authentications['api-key'];
-  apiKey.apiKey = process.env.BREVO_API_KEY;
-
-  return new SibApiV3Sdk.TransactionalEmailsApi();
+  return new BrevoClient({ apiKey: process.env.BREVO_API_KEY }).transactionalEmails;
 }
 
 function resolveSender() {
@@ -67,11 +63,12 @@ async function sendArtifactEmail({
 
   assertCustomerFacingSafe(htmlContent, `email-html:${runId || 'unknown'}`);
 
-  const message = new SibApiV3Sdk.SendSmtpEmail();
-  message.sender = resolveSender();
-  message.to = [{ email: recipientEmail }];
-  message.subject = subject || 'DaniniHub Activation Report';
-  message.htmlContent = htmlContent;
+  const message = {
+    sender: resolveSender(),
+    to: [{ email: recipientEmail }],
+    subject: subject || 'DaniniHub Activation Report',
+    htmlContent
+  };
 
   if (pdfPath) {
     const absolutePdfPath = path.isAbsolute(pdfPath)

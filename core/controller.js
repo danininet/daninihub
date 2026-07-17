@@ -1,18 +1,16 @@
 const db = require('./db');
 const tools = require('./tools');
 const { loadConstitution, systemCache } = require('./memory');
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+const { BrevoClient } = require('@getbrevo/brevo');
 const { normalizeArtifact, saveArtifact } = require('./artifacts/createArtifact');
 const { generatePDFFromArtifact } = require('./pdf_generator');
 const { writeAudit } = require('./audit');
 const { saveEmailHtmlFromArtifact } = require('./email/createEmailBody');
 
 // INICIJALIZACIJA (Sektor 6: Tech Support - Artikl 42)
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+const apiInstance = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY
+}).transactionalEmails;
 
 loadConstitution();
 
@@ -269,11 +267,12 @@ VRATI ISKLJUČIVO JSON:
    */
   sendArtifact: async (email, subject, content) => {
     try {
-      const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-      sendSmtpEmail.subject = subject;
-      sendSmtpEmail.htmlContent = content;
-      sendSmtpEmail.sender = { name: "DaniniHub", email: "info@daninihub.com" };
-      sendSmtpEmail.to = [{ email: email }];
+      const sendSmtpEmail = {
+        subject,
+        htmlContent: content,
+        sender: { name: "DaniniHub", email: "info@daninihub.com" },
+        to: [{ email }]
+      };
       return await apiInstance.sendTransacEmail(sendSmtpEmail);
     } catch (error) {
       console.error("Brevo greška:", error);

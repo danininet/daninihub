@@ -67,11 +67,16 @@ function Logo() {
 
 export default function PublicLanding({ lang, setLang }) {
   const t = copy[lang]
+  const path = location.pathname
   const switchLang = code => { setLang(code); history.replaceState({}, '', code === 'sr' ? '/sr/' : '/de/') }
   const send = event => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
     location.href = `mailto:info@daninihub.com?subject=${encodeURIComponent('DaniniHub – ' + data.get('interest'))}&body=${encodeURIComponent(data.get('company') + '\n\n' + data.get('message'))}`
+  }
+  if (/impressum|datenschutz|privatnost/.test(path)) {
+    const privacy = /datenschutz|privatnost/.test(path)
+    return <main id="top"><header><Logo/><nav><button className="legal-back" onClick={()=>location.href=lang==='sr'?'/sr/':'/de/'}>← {lang==='sr'?'Nazad':'Zurück'}</button></nav></header><section className="section legal-page"><p className="kicker">{lang==='sr'?'PRAVNE INFORMACIJE':'RECHTLICHES'}</p><h2>{privacy?(lang==='sr'?'Zaštita privatnosti':'Datenschutz'):(lang==='sr'?'Impresum':'Impressum')}</h2>{privacy?<><h3>{lang==='sr'?'Odgovorno lice':'Verantwortlicher'}</h3><p>Dragan Zdravković · Fischerstraße 54 · 47055 Duisburg<br/><a href="mailto:info@daninihub.com">info@daninihub.com</a></p><h3>{lang==='sr'?'Kontakt i hosting':'Kontakt und Hosting'}</h3><p>{lang==='sr'?'Kontakt obrazac otvara e-mail program i sajt ne čuva unos. Hosting provajder može obrađivati tehnički neophodne serverske zapise. Možete tražiti pristup, ispravku, brisanje, ograničenje obrade i uložiti prigovor.':'Das Kontaktformular öffnet das E-Mail-Programm; die Website speichert die Eingaben nicht. Der Hosting-Anbieter kann technisch notwendige Serverprotokolle verarbeiten. Im gesetzlichen Rahmen bestehen Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch.'}</p></>:<><h3>{lang==='sr'?'Pružalac usluge':'Anbieter'}</h3><p>Dragan Zdravković<br/>DaniniHub Transport &amp; Logistics<br/>Fischerstraße 54<br/>47055 Duisburg · Deutschland<br/>+49 157 30916621<br/><a href="mailto:info@daninihub.com">info@daninihub.com</a></p><h3>{lang==='sr'?'Granice usluge':'Leistungsumfang'}</h3><p>{lang==='sr'?'Organizaciona i komunikaciona podrška u transportu. DaniniHub nije prevoznik, špedicija, Verkehrsleiter niti pravno, poresko ili carinsko savetovanje. Pravne odluke ostaju kod naručioca.':'Organisatorische und kommunikative Unterstützung im Transport. DaniniHub ist kein Frachtführer, keine Spedition, kein Verkehrsleiter und keine Rechts-, Steuer- oder Zollberatung. Rechtsverbindliche Entscheidungen verbleiben beim Auftraggeber.'}</p></>}</section></main>
   }
   return <main id="top">
     <header><Logo/><nav>{t.nav.map((n,i)=><a key={n} href={['#services','#scope','#entry','#contact'][i]}>{n}</a>)}<div className="langs"><button className={lang==='de'?'active':''} onClick={()=>switchLang('de')}>DE</button><button className={lang==='sr'?'active':''} onClick={()=>switchLang('sr')}>SR</button></div></nav></header>

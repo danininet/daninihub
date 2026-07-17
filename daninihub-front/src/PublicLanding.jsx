@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import './Enhancements.css'
 import LegalKnowledge from './LegalKnowledge'
+import OperationsDemo from './OperationsDemo'
 import { isContentPath } from './ContentRoutes'
 
 const copy = {
@@ -112,6 +113,7 @@ export default function PublicLanding({ lang, setLang }) {
       setFormState('error')
     }
   }
+  if (/operations-desk-demo|operativni-pult-demo/.test(path)) return <OperationsDemo lang={lang}/>
   if (isContentPath(path)) return <LegalKnowledge lang={lang} path={path}/>
   if (/impressum/.test(path)) {
     const privacy = /datenschutz|privatnost/.test(path)

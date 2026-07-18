@@ -143,14 +143,20 @@ function mountPublicRuntime(app) {
   });
   app.use(express.static(front, { index: false }));
 
-  const oldPublicRoutes = [
-    '/en', /^\/en(?:\/.*)?$/, '/de/method', '/de/project-mode', '/de/levels', '/de/artifacts',
+  app.get(/^\/en\/?$/, (req, res) => res.redirect(308, '/de/'));
+
+  const legacyGoneRoutes = [
+    /^\/en\/.+$/, '/analyse-starten', '/de/method', '/de/project-mode', '/de/levels', '/de/artifacts',
     '/de/trust', '/de/activation', '/de/ki-transparenz', '/de/affiliate-hinweis',
     '/sr/metoda', '/sr/projektni-rezim', '/sr/nivoi', '/sr/artefakti', '/sr/poverenje',
-    '/sr/aktivacija', '/sr/ai-transparentnost', '/sr/affiliate-napomena',
+    '/sr/aktivacija', '/sr/ai-transparentnost', '/sr/affiliate-napomena', '/sr/projektni-mod',
+    '/sr/centar-poverenja',
     '/api/entry/12-eur/checkout'
   ];
-  oldPublicRoutes.forEach(route => app.get(route, (req, res) => res.redirect(308, '/de/')));
+  legacyGoneRoutes.forEach(route => app.get(route, (req, res) => {
+    res.set('X-Robots-Tag', 'noindex');
+    res.status(410).type('text/plain').send('Gone');
+  }));
 
   const routePairs = [
     ['/de/', '/sr/'],

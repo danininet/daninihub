@@ -21,6 +21,9 @@ assert.match(serverRuntime, /DH-PILOT-/);
 assert.match(serverRuntime, /Neue strukturierte Pilot-Anfrage/);
 assert.match(serverRuntime, /INCOMPLETE_PILOT_DATA/);
 assert.match(serverRuntime, /confirmationSent/);
+assert.match(serverRuntime, /legacyGoneRoutes/);
+assert.match(serverRuntime, /status\(410\)/);
+assert.match(serverRuntime, /X-Robots-Tag/);
 
 // Core German and Serbian public routes must be served by the SPA runtime.
 for (const route of [

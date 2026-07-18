@@ -6,6 +6,35 @@ const links = {
   sr: { start:'Početna', services:'Usluge', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', pilot:'Provera pilota', knowledge:'Praksa i znanje', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
 }
 
+const routePairs = [
+  ['/de/', '/sr/'],
+  ['/de/leistungsrahmen', '/sr/obim-usluge'],
+  ['/de/continuity-support', '/sr/kontinuitet-podrska'],
+  ['/de/fahrerkommunikation', '/sr/komunikacija-vozaci'],
+  ['/de/pilot-check', '/sr/provera-pilota'],
+  ['/de/praxis-wissen', '/sr/praksa-znanje'],
+  ['/de/pilot-beispiel', '/sr/primer-pilota'],
+  ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
+  ['/de/impressum', '/sr/impressum'],
+  ['/de/datenschutz', '/sr/privatnost'],
+  ['/de/cookies', '/sr/kolacici'],
+  ['/de/haftungsausschluss', '/sr/odricanje-odgovornosti'],
+  ['/de/glossar', '/sr/recnik']
+]
+
+function translatedPath(targetLang) {
+  const current = location.pathname.replace(/\/$/, '') || '/'
+  for (const [de, sr] of routePairs) {
+    const dePath = de.replace(/\/$/, '') || '/'
+    const srPath = sr.replace(/\/$/, '') || '/'
+    if (current === dePath || current === srPath) {
+      const target = targetLang === 'sr' ? sr : de
+      return `${target}${location.search}${location.hash}`
+    }
+  }
+  return targetLang === 'sr' ? '/sr/' : '/de/'
+}
+
 export default function SiteNavigation({ lang }) {
   const [open, setOpen] = useState(false)
   const t = links[lang]
@@ -18,6 +47,8 @@ export default function SiteNavigation({ lang }) {
   const pilot = sr ? '/sr/provera-pilota' : '/de/pilot-check'
   const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
   const home = sr ? '/sr/' : '/de/'
+  const deHref = translatedPath('de')
+  const srHref = translatedPath('sr')
 
   useEffect(() => {
     const onEscape = event => event.key === 'Escape' && setOpen(false)
@@ -51,8 +82,8 @@ export default function SiteNavigation({ lang }) {
 
       <div className="site-nav-actions">
         <div className="site-nav-langs" aria-label="Language">
-          <a className={lang === 'de' ? 'active' : ''} href="/de/">DE</a>
-          <a className={lang === 'sr' ? 'active' : ''} href="/sr/">SR</a>
+          <a className={lang === 'de' ? 'active' : ''} href={deHref}>DE</a>
+          <a className={lang === 'sr' ? 'active' : ''} href={srHref}>SR</a>
         </div>
         <a className="site-nav-cta" href={pilot}>{t.pilot}</a>
       </div>
@@ -79,7 +110,7 @@ export default function SiteNavigation({ lang }) {
         <a href={pilot} onClick={close}>{t.pilot}</a>
         <a href={`${home}#contact`} onClick={close}>{t.contact}</a>
       </nav>
-      <div className="site-nav-mobile-langs"><a href="/de/">DE</a><a href="/sr/">SR</a></div>
+      <div className="site-nav-mobile-langs"><a href={deHref}>DE</a><a href={srHref}>SR</a></div>
     </aside>
   </>
 }

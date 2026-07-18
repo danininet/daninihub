@@ -15,6 +15,7 @@ const pilotSource = read('daninihub-front/src/PilotCheck.jsx');
 const businessSource = read('daninihub-front/src/BusinessPages.jsx');
 const driverArticleSource = read('daninihub-front/src/DriverCommunicationArticle.jsx');
 const handoverArticleSource = read('daninihub-front/src/ShiftHandoverArticle.jsx');
+const escalationArticleSource = read('daninihub-front/src/DeviationEscalationArticle.jsx');
 
 // Current public runtime and contact workflow.
 assert.match(serverRuntime, /mountPublicRuntime/);
@@ -45,7 +46,8 @@ for (const route of [
   ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
   '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje',
   '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
-  '/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija'
+  '/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija',
+  '/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
@@ -116,6 +118,20 @@ for (const value of [
   'Razgovor može dopuniti detalje, ali ne zamenjuje'
 ]) {
   assert.match(handoverArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+
+// Escalation article must require measurable thresholds, authority and a decision deadline.
+for (const value of [
+  'Transportabweichungen richtig eskalieren',
+  'Eskalacija odstupanja u transportu',
+  'Eine Meldung informiert. Eine Eskalation fordert',
+  'Obaveštenje prenosi informaciju. Eskalacija zahteva',
+  'Keine universellen Minutenwerte',
+  'Ne postoji univerzalan broj minuta',
+  'Ohne solchen Weg darf operative Unterstützung keine Befugnis erfinden',
+  'Bez tog puta operativna podrška ne sme sama da izmisli ovlašćenje'
+]) {
+  assert.match(escalationArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
 
 // Pilot intake must submit structured operational fields and preserve human approval boundaries.

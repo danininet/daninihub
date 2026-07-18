@@ -4,7 +4,8 @@ import './KnowledgeArticle.css'
 import EtaArticle from './EtaArticle'
 import DriverCommunicationArticle from './DriverCommunicationArticle'
 import ShiftHandoverArticle from './ShiftHandoverArticle'
-import { driverCommunicationArticlePaths, etaArticlePaths, shiftHandoverArticlePaths, tmsArticlePaths } from './KnowledgePaths'
+import DeviationEscalationArticle from './DeviationEscalationArticle'
+import { deviationEscalationArticlePaths, driverCommunicationArticlePaths, etaArticlePaths, shiftHandoverArticlePaths, tmsArticlePaths } from './KnowledgePaths'
 
 const copy = {
   de: {
@@ -145,9 +146,10 @@ const editorial = {
       ['9 Min. Lesezeit · ETA & Status', 'ETA ist keine Zusage: Transportstatus richtig kommunizieren', 'Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt sauber trennen – mit einer sofort nutzbaren 6-Bausteine-Formel.', etaArticlePaths.de],
       ['10 Min. Lesezeit · Fahrerkommunikation', 'Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen', 'Wie eindeutiger Tourbezug, sichere Rückbestätigung und ein gemeinsamer Datensatz Missverständnisse und unnötige Folgekosten verhindern.', driverCommunicationArticlePaths.de],
       ['11 Min. Lesezeit · Schichtübergabe', 'Schichtübergabe in der Disposition: 10 Pflichtinformationen', 'Ein arbeitsfähiger Übergabedatensatz für bestätigten Status, offene Entscheidungen, Verantwortung, Eskalation und nächste Prüfung.', shiftHandoverArticlePaths.de],
+      ['11 Min. Lesezeit · Eskalation', 'Transportabweichungen richtig eskalieren', 'Ein vierstufiges Arbeitsmodell für messbare Schwellen, klare Verantwortung, entscheidungsfähige Meldungen und kritische Meldewege.', deviationEscalationArticlePaths.de],
     ],
     topics: [['DISPOSITION','TMS & menschliche Entscheidung','Wo Systemdaten enden und operative Bewertung beginnt.'],['FAHRER','Balkan–DACH Kommunikation','Wie Status, Anweisungen und Abweichungen eindeutig bestätigt werden.'],['KONTINUITÄT','Spitzenlast & Übergabe','Wie definierte Unterstützung interne Engpässe abfedern kann.']],
-    planned: ['Abweichungen eskalieren: Schwellen, Zuständigkeit und Entscheidungsbedarf', 'Transportdokumente übergeben: CMR, POD und offene Nachweise'],
+    planned: ['Transportdokumente übergeben: CMR, POD und offene Nachweise', 'Abend- und Wochenenddisposition: klare Grenzen für externe Unterstützung'],
   },
   sr: {
     eyebrow: 'PRAKSA I ZNANJE · BALKAN–DACH', title: 'Operativno znanje za transportne timove.',
@@ -157,9 +159,10 @@ const editorial = {
       ['9 min. čitanja · ETA i status', 'ETA nije obećanje: pravilna komunikacija statusa', 'Jasno razdvojite planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru uz odmah primenljivu formulu od šest elemenata.', etaArticlePaths.sr],
       ['10 min. čitanja · Komunikacija sa vozačima', 'Balkan–DACH komunikacija sa vozačima: gde greške stvaraju troškove', 'Kako jasan kontekst ture, bezbedna povratna potvrda i zajednički zapis sprečavaju nesporazume i nepotrebne posledice.', driverCommunicationArticlePaths.sr],
       ['11 min. čitanja · Predaja smene', 'Predaja smene u dispoziciji: 10 obaveznih informacija', 'Upotrebljiv zapis predaje za potvrđen status, otvorene odluke, odgovornost, eskalaciju i sledeću proveru.', shiftHandoverArticlePaths.sr],
+      ['11 min. čitanja · Eskalacija', 'Eskalacija odstupanja u transportu', 'Radni model sa četiri nivoa za merljive pragove, jasnu odgovornost, poruke spremne za odluku i kritične puteve prijave.', deviationEscalationArticlePaths.sr],
     ],
     topics: [['DISPOZICIJA','TMS i ljudska odluka','Gde se završavaju sistemski podaci, a počinje operativna procena.'],['VOZAČI','Balkan–DACH komunikacija','Kako se status, instrukcije i odstupanja jasno potvrđuju.'],['KONTINUITET','Opterećenje i predaja','Kako ograničena podrška može da pokrije interni manjak kapaciteta.']],
-    planned: ['Eskalacija odstupanja: pragovi, odgovornost i potrebna odluka', 'Predaja transportnih dokumenata: CMR, POD i otvoreni dokazi'],
+    planned: ['Predaja transportnih dokumenata: CMR, POD i otvoreni dokazi', 'Večernja i vikend dispozicija: jasne granice spoljne podrške'],
   },
 }
 
@@ -193,6 +196,7 @@ export default function KnowledgeCenter({ lang }) {
   if (location.pathname === etaArticlePaths[lang]) return <EtaArticle lang={lang}/>
   if (location.pathname === driverCommunicationArticlePaths[lang]) return <DriverCommunicationArticle lang={lang}/>
   if (location.pathname === shiftHandoverArticlePaths[lang]) return <ShiftHandoverArticle lang={lang}/>
+  if (location.pathname === deviationEscalationArticlePaths[lang]) return <DeviationEscalationArticle lang={lang}/>
 
   const videoStructuredData = {
     '@context': 'https://schema.org',

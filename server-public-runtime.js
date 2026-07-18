@@ -177,6 +177,7 @@ function mountPublicRuntime(app) {
     ['/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje'],
     ['/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'],
     ['/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija'],
+    ['/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja'],
     ['/de/pilot-beispiel', '/sr/primer-pilota'],
     ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
     ['/de/impressum', '/sr/impressum'],
@@ -206,6 +207,8 @@ function mountPublicRuntime(app) {
     '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach': ['Balkan–DACH komunikacija sa vozačima: gde greške stvaraju troškove | DaniniHub', 'Praktičan standard za jasnu, bezbednu i dokumentovanu komunikaciju sa vozačima na Balkan–DACH transportnim relacijama.'],
     '/de/praxis-wissen/schichtuebergabe-disposition': ['Schichtübergabe Disposition: 10 Pflichtinformationen | DaniniHub', 'Zehn Pflichtinformationen für eine belastbare Schichtübergabe mit offenen Entscheidungen, Verantwortung, Eskalation und nächster Prüfung.'],
     '/sr/praksa-znanje/predaja-smene-dispozicija': ['Predaja smene u dispoziciji: 10 obaveznih informacija | DaniniHub', 'Deset obaveznih informacija za pouzdanu predaju smene, otvorene odluke, odgovornost, eskalaciju i sledeću proveru.'],
+    '/de/praxis-wissen/abweichungen-eskalieren': ['Transportabweichungen eskalieren: Schwellen und Verantwortung | DaniniHub', 'Operativer Leitfaden für messbare Eskalationsschwellen, verantwortliche Rollen, Entscheidungsbedarf, Frist und dokumentierten nächsten Schritt.'],
+    '/sr/praksa-znanje/eskalacija-odstupanja': ['Eskalacija odstupanja: pragovi i odgovornost | DaniniHub', 'Operativni vodič za merljive pragove eskalacije, odgovornu ulogu, potrebnu odluku, rok i dokumentovan sledeći korak.'],
     '/de/pilot-beispiel': ['Pilot-Beispiel für Transport Operations | DaniniHub', 'Fiktive Simulation eines begrenzten Operations Supports mit Status, ETA, Abweichung und dokumentierter Eskalation.'],
     '/sr/primer-pilota': ['Primer pilota za transportnu operativu | DaniniHub', 'Fiktivna simulacija ograničene operativne podrške sa statusom, ETA, odstupanjem i dokumentovanom eskalacijom.'],
     '/de/operations-desk-demo': ['Interaktiver Transport Operations Desk | DaniniHub', 'Interaktive DaniniHub-Simulation einer Transporttour mit Statuspunkten, ETA, Abweichung, Eskalation und Übergabe.'],
@@ -228,9 +231,9 @@ function mountPublicRuntime(app) {
     const pair = routePairs.find(([de, sr]) => de === normalized || sr === normalized) || routePairs[0];
     const [title, description] = seo[normalized] || (language === 'sr' ? seo['/sr/'] : seo['/de/']);
     const canonical = `https://daninihub.com${normalized}`;
-    const isArticle = /warum-tms-disponenten-nicht-ersetzen|zasto-tms-ne-menja-disponente|eta-ist-keine-zusage|eta-nije-obecanje|fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija/.test(normalized);
-    const datePublished = /fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija/.test(normalized) ? '2026-07-19' : '2026-07-18';
-    const dateModified = /eta-ist-keine-zusage|eta-nije-obecanje|fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija/.test(normalized) ? '2026-07-19' : '2026-07-18';
+    const isArticle = /warum-tms-disponenten-nicht-ersetzen|zasto-tms-ne-menja-disponente|eta-ist-keine-zusage|eta-nije-obecanje|fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija|abweichungen-eskalieren|eskalacija-odstupanja/.test(normalized);
+    const datePublished = /fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija|abweichungen-eskalieren|eskalacija-odstupanja/.test(normalized) ? '2026-07-19' : '2026-07-18';
+    const dateModified = /eta-ist-keine-zusage|eta-nije-obecanje|fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija|abweichungen-eskalieren|eskalacija-odstupanja/.test(normalized) ? '2026-07-19' : '2026-07-18';
     const articleSchema = isArticle ? `<script type="application/ld+json">${JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Article',

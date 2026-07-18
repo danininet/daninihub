@@ -17,6 +17,7 @@ const routePairs = [
   ['/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje'],
   ['/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'],
   ['/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija'],
+  ['/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja'],
   ['/de/pilot-beispiel', '/sr/primer-pilota'],
   ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
   ['/de/impressum', '/sr/impressum'],

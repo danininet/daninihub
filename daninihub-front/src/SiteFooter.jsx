@@ -15,6 +15,7 @@ const copy = {
     eta: 'ETA & Status',
     driver: 'Fahrerkommunikation',
     handover: 'Schichtübergabe',
+    escalation: 'Abweichung & Eskalation',
     law: 'Transport-Glossar',
     imprint: 'Impressum',
     privacy: 'Datenschutz',
@@ -36,6 +37,7 @@ const copy = {
     eta: 'ETA i status',
     driver: 'Komunikacija sa vozačima',
     handover: 'Predaja smene',
+    escalation: 'Odstupanje i eskalacija',
     law: 'Transportni rečnik',
     imprint: 'Impresum',
     privacy: 'Privatnost',
@@ -85,6 +87,7 @@ export default function SiteFooter({ lang }) {
           <a href={sr ? '/sr/praksa-znanje/eta-nije-obecanje' : '/de/praxis-wissen/eta-ist-keine-zusage'}>{t.eta}</a>
           <a href={sr ? '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach' : '/de/praxis-wissen/fahrerkommunikation-balkan-dach'}>{t.driver}</a>
           <a href={sr ? '/sr/praksa-znanje/predaja-smene-dispozicija' : '/de/praxis-wissen/schichtuebergabe-disposition'}>{t.handover}</a>
+          <a href={sr ? '/sr/praksa-znanje/eskalacija-odstupanja' : '/de/praxis-wissen/abweichungen-eskalieren'}>{t.escalation}</a>
           <a href={sr ? '/sr/recnik' : '/de/glossar'}>{t.law}</a>
         </nav>
 

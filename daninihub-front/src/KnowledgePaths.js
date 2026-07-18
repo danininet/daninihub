@@ -17,3 +17,8 @@ export const shiftHandoverArticlePaths = {
   de: '/de/praxis-wissen/schichtuebergabe-disposition',
   sr: '/sr/praksa-znanje/predaja-smene-dispozicija',
 }
+
+export const deviationEscalationArticlePaths = {
+  de: '/de/praxis-wissen/abweichungen-eskalieren',
+  sr: '/sr/praksa-znanje/eskalacija-odstupanja',
+}

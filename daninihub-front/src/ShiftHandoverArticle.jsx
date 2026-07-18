@@ -1,5 +1,5 @@
 import './KnowledgeArticle.css'
-import { driverCommunicationArticlePaths, etaArticlePaths, tmsArticlePaths } from './KnowledgePaths'
+import { deviationEscalationArticlePaths, driverCommunicationArticlePaths, etaArticlePaths, tmsArticlePaths } from './KnowledgePaths'
 
 const article = {
   de: {
@@ -77,6 +77,7 @@ const article = {
     ],
     relatedTitle: 'Passende Fachbeiträge',
     related: [
+      ['Transportabweichungen richtig eskalieren', 'Messbare Schwellen, Entscheidungsfrage und Eskalationsfrist eindeutig dokumentieren.', 'Artikel zur Eskalation lesen', deviationEscalationArticlePaths.de],
       ['ETA ist keine Zusage', 'Plantermin, Prognose und bestätigten Kundentermin sauber trennen.', 'ETA-Artikel lesen', etaArticlePaths.de],
       ['Fahrerkommunikation Balkan–DACH', 'Verständnis, sichere Rückbestätigung und Ergebnis dokumentieren.', 'Artikel zur Fahrerkommunikation lesen', driverCommunicationArticlePaths.de],
       ['Warum TMS Disponenten nicht ersetzt', 'Die operative Lücke zwischen Daten, Entscheidung und Verantwortung.', 'Grundlagenartikel lesen', tmsArticlePaths.de],
@@ -163,6 +164,7 @@ const article = {
     ],
     relatedTitle: 'Povezani stručni članci',
     related: [
+      ['Eskalacija odstupanja u transportu', 'Jasno dokumentujte merljiv prag, pitanje za odluku i rok eskalacije.', 'Pročitaj članak o eskalaciji', deviationEscalationArticlePaths.sr],
       ['ETA nije obećanje', 'Jasno razdvojite planirani termin, procenu i termin potvrđen klijentu.', 'Pročitaj ETA članak', etaArticlePaths.sr],
       ['Balkan–DACH komunikacija sa vozačima', 'Dokumentujte razumevanje, bezbednu povratnu potvrdu i rezultat.', 'Pročitaj članak o komunikaciji', driverCommunicationArticlePaths.sr],
       ['Zašto TMS ne menja disponente', 'Operativna praznina između podataka, odluke i odgovornosti.', 'Pročitaj osnovni članak', tmsArticlePaths.sr],

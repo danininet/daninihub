@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import './KnowledgeCenter.css'
 import './KnowledgeArticle.css'
+import EtaArticle from './EtaArticle'
+import { etaArticlePaths, tmsArticlePaths } from './KnowledgePaths'
 
 const copy = {
   de: {
@@ -17,8 +20,11 @@ const copy = {
       ['Wo Kosten tatsächlich entstehen', 'Nicht jede Verspätung ist vermeidbar. Vermeidbar sind jedoch Folgekosten durch späte Meldungen, unterschiedliche Versionen eines Ereignisses, fehlende Zuständigkeit oder eine unvollständige Übergabe. Kleine Informationsbrüche lösen Wartezeit, Reklamationen, Sonderfahrten oder verlorene Anschlussplanung aus.'],
     ],
     flow: ['Plan', 'Abweichung', 'Fakten prüfen', 'Risiko bewerten', 'Entscheidung', 'Kommunikation', 'Übergabe'],
-    checkTitle: 'Operativer Selbstcheck',
-    checks: ['Ist der letzte Status bestätigt?', 'Ist ETA klar von einer verbindlichen Zusage getrennt?', 'Ist eine verantwortliche Person benannt?', 'Sind Freigaben und Rückfragen dokumentiert?', 'Ist der nächste Prüfzeitpunkt festgelegt?', 'Kann die nächste Schicht ohne Zusatzanruf übernehmen?'],
+    checkTitle: 'Schnellcheck vor der Übergabe',
+    checkIntro: 'Vor Schichtende oder der Übergabe an einen Kollegen zeigen diese sechs Fragen, ob ein laufender Transport wirklich kontrolliert und nachvollziehbar dokumentiert ist.',
+    checks: ['Ist der letzte Fahrer- oder Transportstatus durch eine verlässliche Quelle bestätigt?', 'Sind die aktuelle ETA und der dem Kunden bestätigte Termin getrennt dokumentiert?', 'Ist festgelegt, wer den nächsten Schritt verantwortet?', 'Sind Entscheidungen, Freigaben und offene Rückfragen nachvollziehbar dokumentiert?', 'Ist festgelegt, wer den Status wann erneut prüft?', 'Kann die nächste Schicht ausschließlich anhand des Eintrags weiterarbeiten, ohne Fahrer oder Kunden erneut anzurufen?'],
+    checkNoteTitle: 'Wofür diese Liste da ist',
+    checkNote: 'Sie prüft die Qualität der operativen Übergabe. Muss die nächste Schicht zuerst Kollegen, Fahrer oder Kunden anrufen, nur um den Vorgang zu verstehen, ist die Dokumentation noch nicht vollständig.',
     faqTitle: 'Häufige Fragen',
     faq: [
       ['Ersetzt DaniniHub ein TMS?', 'Nein. DaniniHub ergänzt bestehende Systeme durch strukturierte Kommunikation, Statusnachverfolgung und dokumentierte Übergaben.'],
@@ -44,8 +50,11 @@ const copy = {
       ['Gde stvarno nastaju troškovi', 'Nije svako kašnjenje moguće sprečiti. Mogu se sprečiti posledice kasne prijave, različitih verzija događaja, nejasne odgovornosti i loše predaje. Mali prekidi u informacijama izazivaju čekanje, reklamacije, vanredne vožnje ili gubitak naredne ture.'],
     ],
     flow: ['Plan', 'Odstupanje', 'Provera činjenica', 'Procena rizika', 'Odluka', 'Komunikacija', 'Predaja'],
-    checkTitle: 'Operativna kontrolna lista',
-    checks: ['Da li je poslednji status potvrđen?', 'Da li je ETA odvojena od obećanja?', 'Da li je imenovana odgovorna osoba?', 'Da li su odobrenja i pitanja dokumentovani?', 'Da li je sledeća provera zakazana?', 'Može li sledeća smena preuzeti slučaj bez dodatnog poziva?'],
+    checkTitle: 'Brza provera pre predaje transportnog slučaja',
+    checkIntro: 'Pre završetka smene ili predaje kolegi, ovih šest pitanja pokazuje da li je aktivan transport zaista pod kontrolom i dovoljno jasno dokumentovan.',
+    checks: ['Da li je poslednji status vozača ili transporta potvrđen pouzdanim izvorom?', 'Da li su aktuelna ETA i termin potvrđen klijentu odvojeno dokumentovani?', 'Da li je određeno ko je odgovoran za sledeći korak?', 'Da li su odluke, odobrenja i otvorena pitanja jasno zabeleženi?', 'Da li je određeno ko i kada ponovo proverava status?', 'Može li sledeća smena nastaviti rad samo na osnovu zapisa, bez ponovnog pozivanja vozača ili klijenta?'],
+    checkNoteTitle: 'Čemu služi ova lista',
+    checkNote: 'Ona proverava kvalitet operativne primopredaje. Ako sledeća smena prvo mora da pozove kolegu, vozača ili klijenta samo da bi razumela slučaj, dokumentacija još nije potpuna.',
     faqTitle: 'Česta pitanja',
     faq: [
       ['Da li DaniniHub menja TMS?', 'Ne. DaniniHub dopunjuje postojeće sisteme strukturisanom komunikacijom, praćenjem statusa i dokumentovanom predajom.'],
@@ -58,25 +67,93 @@ const copy = {
   },
 }
 
-const articlePaths = {
-  de: '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
-  sr: '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
+const videoCopy = {
+  de: {
+    eyebrow: 'VIDEO · 03:09 MIN.',
+    title: 'Wenn ein TMS allein nicht reicht',
+    text: 'Das Video zeigt, wo Systemdaten enden und warum Faktenprüfung, Freigabe, Kommunikation und dokumentierte Übergabe weiterhin organisiert werden müssen.',
+    language: 'Videosprache: Deutsch',
+    load: 'YouTube-Video laden',
+    loadLabel: 'Video von YouTube laden und abspielen',
+    notice: 'Erst nach Ihrem Klick wird eine Verbindung zu YouTube hergestellt. Dabei können Daten an Google/YouTube übertragen und auf Ihrem Endgerät gespeichert werden.',
+    activeNotice: 'YouTube ist für dieses Video aktiviert. Mit „Video deaktivieren“ wird die eingebettete Verbindung wieder beendet.',
+    disable: 'Video deaktivieren',
+    external: 'Direkt auf YouTube ansehen',
+    privacy: 'Datenschutzhinweise',
+  },
+  sr: {
+    eyebrow: 'VIDEO · 03:09 MIN.',
+    title: 'Kada TMS sam nije dovoljan',
+    text: 'Video pokazuje gde se završavaju sistemski podaci i zašto provera činjenica, odobrenje, komunikacija i dokumentovana predaja i dalje moraju biti organizovani.',
+    language: 'Jezik videa: nemački',
+    load: 'Učitaj YouTube video',
+    loadLabel: 'Učitaj i pokreni video sa YouTube-a',
+    notice: 'Veza sa YouTube-om uspostavlja se tek nakon vašeg klika. Tada podaci mogu biti prosleđeni Google-u/YouTube-u i sačuvani na vašem uređaju.',
+    activeNotice: 'YouTube je aktiviran za ovaj video. Dugme „Isključi video“ ponovo prekida ugrađenu vezu.',
+    disable: 'Isključi video',
+    external: 'Pogledaj direktno na YouTube-u',
+    privacy: 'Obaveštenje o privatnosti',
+  },
+}
+
+function ArticleVideo({ lang }) {
+  const [enabled, setEnabled] = useState(false)
+  const t = videoCopy[lang]
+  const sr = lang === 'sr'
+
+  return <section className="article-video" aria-labelledby="article-video-title">
+    <div className="article-video-copy">
+      <span>{t.eyebrow}</span>
+      <h2 id="article-video-title">{t.title}</h2>
+      <p>{t.text}</p>
+      <small>{t.language}</small>
+    </div>
+    <div className="privacy-video-shell">
+      <div className="article-video-viewport">
+        {enabled ? <iframe
+          src="https://www.youtube-nocookie.com/embed/FTMCWxUGcig?autoplay=1&rel=0"
+          title="Balkan–DACH Transport: Wenn TMS allein nicht reicht | DaniniHub"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        /> : <button className="video-consent-trigger" type="button" onClick={() => setEnabled(true)} aria-label={t.loadLabel}>
+          <img src="/assets/daninihub-tms-video-poster.webp" alt="" width="1280" height="720" loading="lazy" />
+          <span className="video-poster-shade" />
+          <span className="video-play-label"><b aria-hidden="true">▶</b><strong>{t.load}</strong></span>
+        </button>}
+      </div>
+      <div className="video-privacy-note">
+        <p>{enabled ? t.activeNotice : t.notice}</p>
+        <div>
+          {enabled && <button type="button" onClick={() => setEnabled(false)}>{t.disable}</button>}
+          <a href={sr ? '/sr/privatnost' : '/de/datenschutz'}>{t.privacy}</a>
+          <a href="https://youtu.be/FTMCWxUGcig" target="_blank" rel="noreferrer">{t.external} ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
 }
 
 const editorial = {
   de: {
     eyebrow: 'PRAXIS & WISSEN · BALKAN–DACH', title: 'Operatives Wissen für Transportteams.',
     lead: 'Fachbeiträge, Checklisten und Praxisbeispiele über Status, ETA, Fahrerkommunikation, Eskalation und belastbare Schichtübergaben.',
-    featured: 'Aktueller Fachbeitrag', read: 'Artikel lesen', categories: 'Themenfelder', upcoming: 'In redaktioneller Vorbereitung',
+    featured: 'Grundlagenartikel', read: 'Artikel lesen', more: 'Neu veröffentlicht', categories: 'Themenfelder', upcoming: 'In redaktioneller Vorbereitung',
+    etaMeta: '9 Min. Lesezeit · ETA & Status',
+    etaTitle: 'ETA ist keine Zusage: Transportstatus richtig kommunizieren',
+    etaLead: 'Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt sauber trennen – mit einer sofort nutzbaren 6-Bausteine-Formel.',
     topics: [['DISPOSITION','TMS & menschliche Entscheidung','Wo Systemdaten enden und operative Bewertung beginnt.'],['FAHRER','Balkan–DACH Kommunikation','Wie Status, Anweisungen und Abweichungen eindeutig bestätigt werden.'],['KONTINUITÄT','Spitzenlast & Übergabe','Wie definierte Unterstützung interne Engpässe abfedern kann.']],
-    planned: ['ETA ist keine Zusage: Transportstatus richtig kommunizieren','Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen','Schichtübergabe in der Disposition: 10 Pflichtinformationen'],
+    planned: ['Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen','Schichtübergabe in der Disposition: 10 Pflichtinformationen'],
   },
   sr: {
     eyebrow: 'PRAKSA I ZNANJE · BALKAN–DACH', title: 'Operativno znanje za transportne timove.',
     lead: 'Stručni članci, kontrolne liste i praktični primeri o statusu, ETA, komunikaciji sa vozačima, eskalaciji i pouzdanoj predaji smene.',
-    featured: 'Aktuelni stručni članak', read: 'Pročitaj članak', categories: 'Tematske oblasti', upcoming: 'U uredničkoj pripremi',
+    featured: 'Osnovni stručni članak', read: 'Pročitaj članak', more: 'Novo objavljeno', categories: 'Tematske oblasti', upcoming: 'U uredničkoj pripremi',
+    etaMeta: '9 min. čitanja · ETA i status',
+    etaTitle: 'ETA nije obećanje: pravilna komunikacija statusa',
+    etaLead: 'Jasno razdvojite planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru uz odmah primenljivu formulu od šest elemenata.',
     topics: [['DISPOZICIJA','TMS i ljudska odluka','Gde se završavaju sistemski podaci, a počinje operativna procena.'],['VOZAČI','Balkan–DACH komunikacija','Kako se status, instrukcije i odstupanja jasno potvrđuju.'],['KONTINUITET','Opterećenje i predaja','Kako ograničena podrška može da pokrije interni manjak kapaciteta.']],
-    planned: ['ETA nije obećanje: pravilna komunikacija statusa','Balkan–DACH komunikacija: gde greške stvaraju troškove','Predaja smene u dispoziciji: 10 obaveznih informacija'],
+    planned: ['Balkan–DACH komunikacija: gde greške stvaraju troškove','Predaja smene u dispoziciji: 10 obaveznih informacija'],
   },
 }
 
@@ -87,10 +164,15 @@ function KnowledgeIndex({ lang }) {
     <section className="knowledge-hero knowledge-index-hero"><div className="knowledge-eyebrow">{e.eyebrow}</div><h1>{e.title}</h1><p>{e.lead}</p></section>
     <section className="knowledge-article knowledge-index">
       <div className="knowledge-section-head"><span>01</span><h2>{e.featured}</h2></div>
-      <article className="featured-article"><div><span>{t.meta}</span><h2>{t.title}</h2><p>{t.lead}</p><a href={articlePaths[lang]}>{e.read} →</a></div><aside><strong>{t.summaryTitle}</strong><p>{t.summary}</p></aside></article>
-      <div className="knowledge-section-head section-space"><span>02</span><h2>{e.categories}</h2></div>
+      <article className="featured-article"><div><span>{t.meta}</span><h2>{t.title}</h2><p>{t.lead}</p><a href={tmsArticlePaths[lang]}>{e.read} →</a></div><aside><strong>{t.summaryTitle}</strong><p>{t.summary}</p></aside></article>
+      <div className="knowledge-section-head section-space"><span>02</span><h2>{e.more}</h2></div>
+      <article className="published-article-card">
+        <div><span>{e.etaMeta}</span><h2>{e.etaTitle}</h2><p>{e.etaLead}</p></div>
+        <a href={etaArticlePaths[lang]}>{e.read} →</a>
+      </article>
+      <div className="knowledge-section-head section-space"><span>03</span><h2>{e.categories}</h2></div>
       <div className="knowledge-category-grid">{e.topics.map(([tag,title,text])=><article key={tag}><span>{tag}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
-      <div className="knowledge-section-head section-space"><span>03</span><h2>{e.upcoming}</h2></div>
+      <div className="knowledge-section-head section-space"><span>04</span><h2>{e.upcoming}</h2></div>
       <ol className="editorial-queue">{e.planned.map((title,index)=><li key={title}><span>{String(index+1).padStart(2,'0')}</span><strong>{title}</strong></li>)}</ol>
     </section>
   </main>
@@ -100,9 +182,25 @@ export default function KnowledgeCenter({ lang }) {
   const t = copy[lang]
   const sr = lang === 'sr'
   if (location.pathname === (sr ? '/sr/praksa-znanje' : '/de/praxis-wissen')) return <KnowledgeIndex lang={lang}/>
+  if (location.pathname === etaArticlePaths[lang]) return <EtaArticle lang={lang}/>
+
+  const videoStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: 'Balkan–DACH Transport: Wenn TMS allein nicht reicht | DaniniHub',
+    description: 'Warum TMS-Daten allein operative Abweichungen nicht lösen und wie Faktenprüfung, Entscheidung, Kommunikation, Dokumentation und Recovery zusammenspielen.',
+    thumbnailUrl: ['https://daninihub.com/assets/daninihub-tms-video-poster.webp'],
+    uploadDate: '2026-07-18',
+    duration: 'PT3M9S',
+    inLanguage: 'de',
+    embedUrl: 'https://www.youtube-nocookie.com/embed/FTMCWxUGcig',
+    url: 'https://youtu.be/FTMCWxUGcig',
+    isAccessibleForFree: true,
+  }
 
   return (
     <main className="knowledge-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoStructuredData) }} />
       <section className="knowledge-hero">
         <a className="article-back" href={sr?'/sr/praksa-znanje':'/de/praxis-wissen'}>← {sr?'Praksa i znanje':'Praxis & Wissen'}</a>
         <div className="knowledge-eyebrow">{t.eyebrow}</div>
@@ -121,6 +219,8 @@ export default function KnowledgeCenter({ lang }) {
           <strong>{t.summaryTitle}</strong>
           <p>{t.summary}</p>
         </aside>
+
+        <ArticleVideo lang={lang} />
 
         {t.sections.map(([heading, paragraph]) => (
           <section key={heading}>
@@ -143,12 +243,17 @@ export default function KnowledgeCenter({ lang }) {
 
         <section className="article-checklist">
           <h2>{t.checkTitle}</h2>
+          <p className="checklist-intro">{t.checkIntro}</p>
           {t.checks.map((item) => (
             <label key={item}>
               <input type="checkbox" />
               <span>{item}</span>
             </label>
           ))}
+          <div className="checklist-note">
+            <strong>{t.checkNoteTitle}</strong>
+            <p>{t.checkNote}</p>
+          </div>
         </section>
 
         <section className="article-faq">
@@ -160,6 +265,13 @@ export default function KnowledgeCenter({ lang }) {
             </details>
           ))}
         </section>
+
+        <aside className="related-article-card">
+          <span>{sr ? 'SLEDEĆI PRAKTIČNI ČLANAK' : 'NÄCHSTER PRAXISARTIKEL'}</span>
+          <h2>{sr ? 'ETA nije obećanje: pravilna komunikacija statusa' : 'ETA ist keine Zusage: Transportstatus richtig kommunizieren'}</h2>
+          <p>{sr ? 'Razdvojite planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru uz obrazac od šest elemenata.' : 'Trennen Sie Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt mit einer vollständigen 6-Bausteine-Formel.'}</p>
+          <a href={etaArticlePaths[lang]}>{sr ? 'Pročitaj sledeći članak' : 'Nächsten Artikel lesen'} →</a>
+        </aside>
 
         <section className="article-cta">
           <span>PILOT FIRST</span>

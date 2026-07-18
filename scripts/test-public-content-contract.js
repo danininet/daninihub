@@ -40,7 +40,8 @@ for (const route of [
   '/de/leistungsrahmen', '/sr/obim-usluge',
   '/de/continuity-support', '/sr/kontinuitet-podrska',
   '/de/fahrerkommunikation', '/sr/komunikacija-vozaci'
-  ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
+  ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
+  '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }

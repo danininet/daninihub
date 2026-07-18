@@ -12,6 +12,7 @@ const copy = {
     pilot: 'Pilot-Check',
     practice: 'Fachartikel',
     dispatch: 'TMS & Disposition',
+    eta: 'ETA & Status',
     driver: 'Fahrerkommunikation',
     law: 'Transport-Glossar',
     updates: 'Pilot-Simulation',
@@ -32,6 +33,7 @@ const copy = {
     pilot: 'Provera pilota',
     practice: 'Stručni članci',
     dispatch: 'TMS i dispozicija',
+    eta: 'ETA i status',
     driver: 'Komunikacija sa vozačima',
     law: 'Transportni rečnik',
     updates: 'Simulacija pilota',
@@ -80,6 +82,7 @@ export default function SiteFooter({ lang }) {
           <h2>{t.knowledge}</h2>
           <a href={sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}>{t.practice}</a>
           <a href={sr ? '/sr/praksa-znanje/zasto-tms-ne-menja-disponente' : '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen'}>{t.dispatch}</a>
+          <a href={sr ? '/sr/praksa-znanje/eta-nije-obecanje' : '/de/praxis-wissen/eta-ist-keine-zusage'}>{t.eta}</a>
           <a href={sr ? '/sr/komunikacija-vozaci' : '/de/fahrerkommunikation'}>{t.driver}</a>
           <a href={sr ? '/sr/recnik' : '/de/glossar'}>{t.law}</a>
           <a href={sr ? '/sr/primer-pilota' : '/de/pilot-beispiel'}>{t.updates}</a>

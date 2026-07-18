@@ -174,6 +174,7 @@ function mountPublicRuntime(app) {
     ['/de/pilot-check', '/sr/provera-pilota'],
     ['/de/praxis-wissen', '/sr/praksa-znanje'],
     ['/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'],
+    ['/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje'],
     ['/de/pilot-beispiel', '/sr/primer-pilota'],
     ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
     ['/de/impressum', '/sr/impressum'],
@@ -197,6 +198,8 @@ function mountPublicRuntime(app) {
     '/sr/praksa-znanje': ['Praksa i znanje za transportne timove | DaniniHub', 'Stručni članci, kontrolne liste i praktični primeri o dispoziciji, ETA, komunikaciji i Balkan–DACH transportu.'],
     '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen': ['Warum TMS-Systeme Disponenten nicht ersetzen | DaniniHub', 'Fachbeitrag über die operative Lücke zwischen TMS-Daten, Fahrerkommunikation, Entscheidung, Eskalation und Schichtübergabe.'],
     '/sr/praksa-znanje/zasto-tms-ne-menja-disponente': ['Zašto TMS sistemi ne menjaju disponente | DaniniHub', 'Stručni članak o praznini između TMS podataka, komunikacije sa vozačem, odluke, eskalacije i predaje smene.'],
+    '/de/praxis-wissen/eta-ist-keine-zusage': ['ETA ist keine Zusage: Transportstatus richtig kommunizieren | DaniniHub', 'Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt in der Transportkommunikation klar trennen.'],
+    '/sr/praksa-znanje/eta-nije-obecanje': ['ETA nije obećanje: pravilna komunikacija statusa | DaniniHub', 'Kako jasno razdvojiti planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru u transportnoj komunikaciji.'],
     '/de/pilot-beispiel': ['Pilot-Beispiel für Transport Operations | DaniniHub', 'Fiktive Simulation eines begrenzten Operations Supports mit Status, ETA, Abweichung und dokumentierter Eskalation.'],
     '/sr/primer-pilota': ['Primer pilota za transportnu operativu | DaniniHub', 'Fiktivna simulacija ograničene operativne podrške sa statusom, ETA, odstupanjem i dokumentovanom eskalacijom.'],
     '/de/operations-desk-demo': ['Interaktiver Transport Operations Desk | DaniniHub', 'Interaktive DaniniHub-Simulation einer Transporttour mit Statuspunkten, ETA, Abweichung, Eskalation und Übergabe.'],
@@ -219,7 +222,7 @@ function mountPublicRuntime(app) {
     const pair = routePairs.find(([de, sr]) => de === normalized || sr === normalized) || routePairs[0];
     const [title, description] = seo[normalized] || (language === 'sr' ? seo['/sr/'] : seo['/de/']);
     const canonical = `https://daninihub.com${normalized}`;
-    const articleSchema = /warum-tms-disponenten-nicht-ersetzen|zasto-tms-ne-menja-disponente/.test(normalized) ? `<script type="application/ld+json">${JSON.stringify({
+    const articleSchema = /warum-tms-disponenten-nicht-ersetzen|zasto-tms-ne-menja-disponente|eta-ist-keine-zusage|eta-nije-obecanje/.test(normalized) ? `<script type="application/ld+json">${JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Article',
       headline: title.replace(' | DaniniHub', ''),

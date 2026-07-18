@@ -14,6 +14,7 @@ const legalSource = read('daninihub-front/src/LegalKnowledge.jsx');
 const pilotSource = read('daninihub-front/src/PilotCheck.jsx');
 const businessSource = read('daninihub-front/src/BusinessPages.jsx');
 const driverArticleSource = read('daninihub-front/src/DriverCommunicationArticle.jsx');
+const handoverArticleSource = read('daninihub-front/src/ShiftHandoverArticle.jsx');
 
 // Current public runtime and contact workflow.
 assert.match(serverRuntime, /mountPublicRuntime/);
@@ -43,7 +44,8 @@ for (const route of [
   '/de/fahrerkommunikation', '/sr/komunikacija-vozaci'
   ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
   '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje',
-  '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'
+  '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
+  '/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
@@ -100,6 +102,20 @@ for (const value of [
   'Instrukcije vozaču, bezbednosne odluke'
 ]) {
   assert.match(driverArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+
+// Shift handover article must transfer operational control, not only summarize events.
+for (const value of [
+  'Schichtübergabe in der Disposition: 10 Pflichtinformationen',
+  'Predaja smene u dispoziciji: 10 obaveznih informacija',
+  'Übergabe bedeutet Kontrollwechsel',
+  'Predaja znači promenu operativne kontrole',
+  'neuer Kundentermin noch nicht bestätigt',
+  'ne obećavati novi termin pre dobijenog odobrenja',
+  'Telefonat darf Details ergänzen, ersetzt aber nicht',
+  'Razgovor može dopuniti detalje, ali ne zamenjuje'
+]) {
+  assert.match(handoverArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
 
 // Pilot intake must submit structured operational fields and preserve human approval boundaries.

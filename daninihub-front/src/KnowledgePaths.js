@@ -12,3 +12,8 @@ export const driverCommunicationArticlePaths = {
   de: '/de/praxis-wissen/fahrerkommunikation-balkan-dach',
   sr: '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
 }
+
+export const shiftHandoverArticlePaths = {
+  de: '/de/praxis-wissen/schichtuebergabe-disposition',
+  sr: '/sr/praksa-znanje/predaja-smene-dispozicija',
+}

@@ -14,8 +14,8 @@ const copy = {
     dispatch: 'TMS & Disposition',
     eta: 'ETA & Status',
     driver: 'Fahrerkommunikation',
+    handover: 'Schichtübergabe',
     law: 'Transport-Glossar',
-    updates: 'Pilot-Simulation',
     imprint: 'Impressum',
     privacy: 'Datenschutz',
     cookies: 'Cookies',
@@ -35,8 +35,8 @@ const copy = {
     dispatch: 'TMS i dispozicija',
     eta: 'ETA i status',
     driver: 'Komunikacija sa vozačima',
+    handover: 'Predaja smene',
     law: 'Transportni rečnik',
-    updates: 'Simulacija pilota',
     imprint: 'Impresum',
     privacy: 'Privatnost',
     cookies: 'Kolačići',
@@ -84,8 +84,8 @@ export default function SiteFooter({ lang }) {
           <a href={sr ? '/sr/praksa-znanje/zasto-tms-ne-menja-disponente' : '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen'}>{t.dispatch}</a>
           <a href={sr ? '/sr/praksa-znanje/eta-nije-obecanje' : '/de/praxis-wissen/eta-ist-keine-zusage'}>{t.eta}</a>
           <a href={sr ? '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach' : '/de/praxis-wissen/fahrerkommunikation-balkan-dach'}>{t.driver}</a>
+          <a href={sr ? '/sr/praksa-znanje/predaja-smene-dispozicija' : '/de/praxis-wissen/schichtuebergabe-disposition'}>{t.handover}</a>
           <a href={sr ? '/sr/recnik' : '/de/glossar'}>{t.law}</a>
-          <a href={sr ? '/sr/primer-pilota' : '/de/pilot-beispiel'}>{t.updates}</a>
         </nav>
 
         <nav>

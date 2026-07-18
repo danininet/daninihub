@@ -1,5 +1,5 @@
 import './KnowledgeArticle.css'
-import { etaArticlePaths, tmsArticlePaths } from './KnowledgePaths'
+import { etaArticlePaths, shiftHandoverArticlePaths, tmsArticlePaths } from './KnowledgePaths'
 
 const article = {
   de: {
@@ -66,6 +66,7 @@ const article = {
     relatedTitle: 'Weiterlesen',
     related: [
       ['ETA ist keine Zusage', 'Wie Prognose, Kundentermin und nächster Prüfpunkt sauber getrennt werden.', 'ETA-Artikel lesen', etaArticlePaths.de],
+      ['Schichtübergabe in der Disposition', 'Die zehn Pflichtinformationen für einen kontrollierten Wechsel der operativen Verantwortung.', 'Artikel zur Schichtübergabe lesen', shiftHandoverArticlePaths.de],
       ['Warum TMS Disponenten nicht ersetzt', 'Wie Daten durch Prüfung, Entscheidung und Übergabe operativ nutzbar werden.', 'Grundlagenartikel lesen', tmsArticlePaths.de],
     ],
     back: 'Praxis & Wissen',
@@ -139,6 +140,7 @@ const article = {
     relatedTitle: 'Povezani članci',
     related: [
       ['ETA nije obećanje', 'Kako razdvojiti procenu, termin potvrđen klijentu i sledeću proveru.', 'Pročitaj ETA članak', etaArticlePaths.sr],
+      ['Predaja smene u dispoziciji', 'Deset obaveznih informacija za kontrolisan prenos operativne odgovornosti.', 'Pročitaj članak o predaji smene', shiftHandoverArticlePaths.sr],
       ['Zašto TMS ne menja disponente', 'Kako podaci kroz proveru, odluku i predaju postaju operativno upotrebljivi.', 'Pročitaj osnovni članak', tmsArticlePaths.sr],
     ],
     back: 'Praksa i znanje',

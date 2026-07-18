@@ -2,7 +2,7 @@ import './SiteFooter.css'
 
 const copy = {
   de: {
-    about: 'Klar begrenzte operative Unterstützung für Balkan–DACH-Transporte. Kommunikation, Status, Übergaben und dokumentierte Eskalation – ohne Übernahme der finalen Disposition.',
+    about: 'Operative Unterstützung für Balkan–DACH: Status, Fahrerkommunikation und dokumentierte Übergaben.',
     services: 'Leistungen',
     knowledge: 'Praxis & Wissen',
     legal: 'Rechtliches',
@@ -20,10 +20,9 @@ const copy = {
     cookies: 'Cookies',
     liability: 'Haftungsausschluss',
     contact: 'Kontakt',
-    note: 'Keine autonome Disposition · keine Preisentscheidung · menschliche Freigabe',
   },
   sr: {
-    about: 'Jasno ograničena operativna podrška za Balkan–DACH transport. Komunikacija, statusi, predaja i dokumentovana eskalacija – bez preuzimanja konačne dispozicije.',
+    about: 'Operativna podrška za Balkan–DACH: statusi, komunikacija sa vozačima i dokumentovana predaja.',
     services: 'Usluge',
     knowledge: 'Praksa i znanje',
     legal: 'Pravne informacije',
@@ -41,7 +40,6 @@ const copy = {
     cookies: 'Kolačići',
     liability: 'Odricanje odgovornosti',
     contact: 'Kontakt',
-    note: 'Bez autonomne dispozicije · bez odluka o cenama · ljudsko odobrenje',
   },
 }
 
@@ -99,7 +97,6 @@ export default function SiteFooter({ lang }) {
 
       <div className="footer-meta">
         <span>© 2026 DaniniHub</span>
-        <span>{t.note}</span>
         <span>DE · SR</span>
       </div>
     </footer>

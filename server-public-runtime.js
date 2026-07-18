@@ -122,6 +122,14 @@ async function sendContactEmails(data) {
 
 function mountPublicRuntime(app) {
   const front = path.join(__dirname, 'daninihub-front', 'dist');
+  app.disable('x-powered-by');
+  app.use((req, res, next) => {
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'DENY');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+  });
   app.post('/api/contact', express.json({ limit: '24kb' }), async (req, res) => {
     const data = Object.fromEntries(Object.entries(req.body || {}).map(([key, value]) => [key, clean(value)]));
     if (data.website) return res.status(202).json({ ok: true });
@@ -199,8 +207,8 @@ function mountPublicRuntime(app) {
     '/sr/impressum': ['Impresum | DaniniHub Transport & Logistics', 'Podaci o pružaocu usluge i kontakt DaniniHub Transport & Logistics u Duisburgu.'],
     '/de/datenschutz': ['Datenschutzerklärung | DaniniHub', 'Informationen zur Verarbeitung von Kontakt-, Hosting- und E-Mail-Daten bei DaniniHub gemäß DSGVO.'],
     '/sr/privatnost': ['Zaštita podataka | DaniniHub', 'Informacije o obradi kontaktnih, hosting i e-mail podataka u DaniniHub-u prema GDPR-u.'],
-    '/de/cookies': ['Cookies und lokale Speicherung | DaniniHub', 'Informationen zu Cookies und lokaler Speicherung auf der DaniniHub-Website.'],
-    '/sr/kolacici': ['Kolačići i lokalno čuvanje | DaniniHub', 'Informacije o kolačićima i lokalnom čuvanju na DaniniHub sajtu.'],
+    '/de/cookies': ['Cookies und externe Inhalte | DaniniHub', 'Informationen zu Cookies, Tracking und externen Inhalten auf der DaniniHub-Website.'],
+    '/sr/kolacici': ['Kolačići i spoljni sadržaji | DaniniHub', 'Informacije o kolačićima, praćenju i spoljnim sadržajima na DaniniHub sajtu.'],
     '/de/haftungsausschluss': ['Haftungsausschluss | DaniniHub', 'Leistungsgrenzen und rechtliche Hinweise zur operativen Transport-Unterstützung von DaniniHub.'],
     '/sr/odricanje-odgovornosti': ['Odricanje odgovornosti | DaniniHub', 'Granice usluge i pravne napomene za DaniniHub operativnu podršku u transportu.']
   };

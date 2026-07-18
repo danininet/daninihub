@@ -7,6 +7,7 @@ import SiteNavigation from './SiteNavigation'
 import SiteFooter from './SiteFooter'
 import KnowledgeCenter from './KnowledgeCenter'
 import './App.css'
+import './Polish.css'
 
 export default function App() {
   const [lang, setLang] = useState(() => location.pathname.startsWith('/sr') ? 'sr' : 'de')
@@ -20,7 +21,7 @@ export default function App() {
     const knowledgeCenter = /praxis-wissen|praksa-znanje/.test(path)
     const knowledgeArticle = /warum-tms-disponenten-nicht-ersetzen|zasto-tms-ne-menja-disponente/.test(path)
     const businessPage = /leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(path)
-    const contentTitle = /impressum/.test(path) ? (sr ? 'Impresum | DaniniHub Transport & Logistics' : 'Impressum | DaniniHub Transport & Logistics') : /datenschutz|privatnost/.test(path) ? (sr ? 'Zaštita podataka | DaniniHub' : 'Datenschutzerklärung | DaniniHub') : /cookies|kolacici/.test(path) ? (sr ? 'Kolačići i lokalno čuvanje | DaniniHub' : 'Cookies und lokale Speicherung | DaniniHub') : /haftungsausschluss|odricanje-odgovornosti/.test(path) ? (sr ? 'Odricanje odgovornosti | DaniniHub' : 'Haftungsausschluss | DaniniHub') : /glossar|recnik/.test(path) ? (sr ? 'Nemačko-srpski rečnik transporta | DaniniHub' : 'Transport-Glossar Deutsch–Serbisch | DaniniHub') : null
+    const contentTitle = /impressum/.test(path) ? (sr ? 'Impresum | DaniniHub Transport & Logistics' : 'Impressum | DaniniHub Transport & Logistics') : /datenschutz|privatnost/.test(path) ? (sr ? 'Zaštita podataka | DaniniHub' : 'Datenschutzerklärung | DaniniHub') : /cookies|kolacici/.test(path) ? (sr ? 'Kolačići i spoljni sadržaji | DaniniHub' : 'Cookies und externe Inhalte | DaniniHub') : /haftungsausschluss|odricanje-odgovornosti/.test(path) ? (sr ? 'Odricanje odgovornosti | DaniniHub' : 'Haftungsausschluss | DaniniHub') : /glossar|recnik/.test(path) ? (sr ? 'Nemačko-srpski rečnik transporta | DaniniHub' : 'Transport-Glossar Deutsch–Serbisch | DaniniHub') : null
     const businessTitle = /leistungsrahmen|obim-usluge/.test(path) ? (sr ? 'Obim usluge | DaniniHub' : 'Leistungsrahmen | DaniniHub') : /continuity-support|kontinuitet-podrska/.test(path) ? (sr ? 'Podrška kontinuitetu | DaniniHub' : 'Continuity Support | DaniniHub') : (sr ? 'Komunikacija sa vozačima | DaniniHub' : 'Fahrerkommunikation | DaniniHub')
     document.documentElement.lang = lang
     document.title = contentTitle || (knowledgeArticle ? (sr ? 'Zašto TMS sistemi ne menjaju disponente | DaniniHub' : 'Warum TMS-Systeme Disponenten nicht ersetzen | DaniniHub') : knowledgeCenter ? (sr ? 'Praksa i znanje | DaniniHub' : 'Praxis & Wissen | DaniniHub') : businessPage ? businessTitle : pilotCheck ? (sr ? 'Provera pilota | DaniniHub' : 'Pilot-Check | DaniniHub') : operationsDemo ? (sr ? 'Interaktivni operativni pult | DaniniHub' : 'Interaktiver Operations Desk | DaniniHub') : pilot ? (sr ? 'Kako izgleda pilot | DaniniHub' : 'So funktioniert ein Pilot | DaniniHub') : (sr ? 'DaniniHub Transport & Logistics | Balkan–DACH operativna podrška' : 'DaniniHub Transport & Logistics | Balkan–DACH Operations Support'))

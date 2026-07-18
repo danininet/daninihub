@@ -36,7 +36,7 @@ const copy = {
     aboutFacts: ['Internationale Disposition und Routenplanung', 'FTL/LTL, Fahrer- und Kundenkommunikation', 'Deutsch und Sprachen des Balkans', 'Duisburg · Remote-Unterstützung nach Vereinbarung'],
     contactTitle: 'Was fehlt heute in Ihrer Transportorganisation?',
     contactText: 'Nennen Sie Relationen, Fahrzeugzahl und die Aufgaben, die intern zu viel Zeit binden. Sie erhalten eine ehrliche Einschätzung, ob der begrenzte Leistungsrahmen passt.',
-    company: 'Unternehmen / Name', email: 'E-Mail', phone: 'Telefon (optional)', fleet: 'Fahrzeuge (optional)', routes: 'Relationen (optional)', interest: 'Interesse', message: 'Kurze Beschreibung', send: 'Anfrage sicher senden', consent: 'Ich bin mit der Verarbeitung meiner Angaben zur Beantwortung der Anfrage einverstanden.', success: 'Vielen Dank. Ihre Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error: 'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.',
+    company: 'Unternehmen / Name', email: 'E-Mail', phone: 'Telefon (optional)', fleet: 'Fahrzeuge (optional)', routes: 'Relationen (optional)', interest: 'Interesse', message: 'Kurze Beschreibung', send: 'Anfrage sicher senden', privacyBefore: 'Ich habe die', privacyLabel: 'Datenschutzerklärung', privacyAfter: 'zur Kenntnis genommen. Meine Angaben werden zur Bearbeitung meiner Anfrage verarbeitet.', success: 'Vielen Dank. Ihre Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error: 'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.',
     options: ['Pilotprojekt für ein Transportunternehmen', 'Praxis-Einstieg Transportorganisation', 'Künftige operative Zusammenarbeit'],
     legal: ['Impressum', 'Datenschutz']
   },
@@ -70,17 +70,23 @@ const copy = {
     aboutFacts: ['Međunarodna dispozicija i planiranje ruta', 'FTL/LTL, komunikacija sa vozačima i klijentima', 'Nemački i jezici Balkana', 'Duisburg · rad od kuće prema dogovoru'],
     contactTitle: 'Šta trenutno nedostaje vašoj transportnoj operativi?',
     contactText: 'Napišite relacije, broj vozila i zadatke koji vam oduzimaju najviše vremena. Dobićete realnu procenu da li se potreba uklapa u ograničeni obim podrške.',
-    company: 'Firma / ime', email: 'E-mail', phone: 'Telefon (opciono)', fleet: 'Broj vozila (opciono)', routes: 'Relacije (opciono)', interest: 'Interesovanje', message: 'Kratak opis', send: 'Pošaljite siguran upit', consent: 'Saglasan sam da se moji podaci obrade radi odgovora na upit.', success: 'Hvala. Upit je poslat, a potvrda stiže na vašu e-mail adresu.', error: 'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.',
+    company: 'Firma / ime', email: 'E-mail', phone: 'Telefon (opciono)', fleet: 'Broj vozila (opciono)', routes: 'Relacije (opciono)', interest: 'Interesovanje', message: 'Kratak opis', send: 'Pošaljite siguran upit', privacyBefore: 'Pročitao/la sam', privacyLabel: 'obaveštenje o privatnosti', privacyAfter: 'Moji podaci se obrađuju radi odgovora na upit.', success: 'Hvala. Upit je poslat, a potvrda stiže na vašu e-mail adresu.', error: 'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.',
     options: ['Pilot projekat za transportnu firmu', 'Praktičan uvod u organizaciju transporta', 'Buduća operativna saradnja'],
     legal: ['Impresum', 'Privatnost']
   }
 }
 
-function CookieNotice({lang}) {
-  const [visible, setVisible] = useState(() => localStorage.getItem('dh_cookie_notice') !== 'seen')
-  if (!visible) return null
-  const close=()=>{localStorage.setItem('dh_cookie_notice','seen');setVisible(false)}
-  return <aside className="cookie-note" aria-label={lang==='sr'?'Informacije o lokalnom čuvanju':'Hinweis zur lokalen Speicherung'}><p>{lang==='sr'?'Bez praćenja: sajt trenutno ne koristi analitičke, marketinške niti reklamne kolačiće. Lokalno se čuva samo potvrda da je ovo obaveštenje pročitano.':'Kein Tracking: Diese Website verwendet derzeit keine Analyse-, Marketing- oder Werbe-Cookies. Lokal wird nur gespeichert, dass dieser Hinweis gelesen wurde.'}</p><a href={lang==='sr'?'/sr/kolacici':'/de/cookies'}>{lang==='sr'?'Detalji':'Details'}</a><button onClick={close}>{lang==='sr'?'Zatvori':'Schließen'}</button></aside>
+const serviceIconPaths = [
+  'M4 5h16v11H9l-5 4V5zm4 4h8M8 12h5',
+  'M12 3a9 9 0 1 0 9 9M8 12l3 3 6-7',
+  'M6 3h8l4 4v14H6V3zm8 0v5h5M9 12h6M9 16h6',
+  'M5 5h14v16H5V5zm3-2v4m8-4v4M5 9h14m-10 4h2m2 0h2',
+  'M12 3 22 20H2L12 3zm0 6v5m0 3h.01',
+  'M5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm14-12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7 17c5-1 3-8 10-10',
+]
+
+function ServiceIcon({ index }) {
+  return <span className="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d={serviceIconPaths[index]}/></svg></span>
 }
 
 export default function PublicLanding({ lang }) {
@@ -116,13 +122,12 @@ export default function PublicLanding({ lang }) {
   }
   return <main id="top">
     <section className="hero"><div className="hero-copy"><p className="kicker">{t.kicker}</p><h1>{t.title}</h1><p className="lead">{t.lead}</p><a className="btn" href="#contact">{t.cta} →</a><div className="proof">{t.proof.map(x=><span key={x}>✓ {x}</span>)}</div></div><div className="route-art" aria-hidden="true"><div className="globe"/><div className="route r1"/><div className="route r2"/><div className="truck">▰</div><span className="city c1">DUISBURG</span><span className="city c2">WIEN</span><span className="city c3">BEOGRAD</span></div></section>
-    <section id="services" className="section"><p className="kicker">OPERATIONS DESK</p><h2>{t.servicesTitle}</h2><div className="grid">{t.services.map(([a,b],i)=><article key={a}><span className="num">0{i+1}</span><h3>{a}</h3><p>{b}</p></article>)}</div></section>
+    <section id="services" className="section"><p className="kicker">OPERATIONS DESK</p><h2>{t.servicesTitle}</h2><div className="grid">{t.services.map(([a,b],i)=><article key={a}><div className="service-card-head"><span className="num">0{i+1}</span><ServiceIcon index={i}/></div><h3>{a}</h3><p>{b}</p></article>)}</div></section>
     <section id="scope" className="section scope"><p className="kicker">KLARE GRENZEN · JASNE GRANICE</p><h2>{t.scopeTitle}</h2><div className="scope-grid"><article><span>DaniniHub</span><p>{t.support}</p></article><article><span>Auftraggeber · Naručilac</span><p>{t.retain}</p></article></div></section>
     <section className="section"><p className="kicker">START</p><h2>{t.startTitle}</h2><div className="start-grid">{t.startSteps.map(([n,a,b])=><article key={n}><span>{n}</span><h3>{a}</h3><p>{b}</p></article>)}</div></section>
     <section id="entry" className="section split"><div><p className="kicker">PRAXISEINSTIEG · PRAKTIČAN UVOD</p><h2>{t.entryTitle}</h2></div><div><p className="big">{t.entryText}</p><a className="entry-demo-link" href={lang==='sr'?'/sr/primer-pilota':'/de/pilot-beispiel'}>{lang==='sr'?'Pogledajte javnu simulaciju pilota':'Öffentliche Pilot-Simulation ansehen'} →</a></div></section>
     <section className="section"><p className="kicker">INTERESSE · INTERESOVANJE</p><h2>{t.pathsTitle}</h2><div className="start-grid interest-grid">{t.paths.map(([a,b],i)=><article key={a}><span>0{i+1}</span><h3>{a}</h3><p>{b}</p><a href="#contact">{lang==='sr'?'Pošalji upit':'Anfrage senden'} →</a></article>)}</div></section>
     <section className="section about"><p className="kicker">ERFAHRUNG · ISKUSTVO</p><h2>{t.aboutTitle}</h2><p className="big">{t.aboutText}</p><div className="fact-row">{t.aboutFacts.map(x=><span key={x}>✓ {x}</span>)}</div></section>
-    <section id="contact" className="section contact"><div><p className="kicker">DIREKTER KONTAKT</p><h2>{t.contactTitle}</h2><p>{t.contactText}</p><a className="mail" href="mailto:info@daninihub.com">info@daninihub.com</a><p>Duisburg · Nordrhein-Westfalen<br/><a href="tel:+4915730916621">+49 1573 0916621</a><br/><a href="https://wa.me/4915730916621" target="_blank" rel="noreferrer">WhatsApp</a></p></div><form onSubmit={send}><div className="form-pair"><label>{t.company}<input name="company" required maxLength="120"/></label><label>{t.email}<input name="email" type="email" required maxLength="180"/></label></div><div className="form-pair"><label>{t.phone}<input name="phone" type="tel" maxLength="60"/></label><label>{t.fleet}<input name="fleet" maxLength="60"/></label></div><label>{t.routes}<input name="routes" maxLength="180"/></label><label>{t.interest}<select name="interest">{t.options.map(x=><option key={x}>{x}</option>)}</select></label><label>{t.message}<textarea name="message" required minLength="20" maxLength="3000"/></label><label className="honey" aria-hidden="true">Website<input name="website" tabIndex="-1" autoComplete="off"/></label><label className="consent"><input name="consent" type="checkbox" value="yes" required/>{t.consent}</label><button className="btn" type="submit" disabled={formState==='sending'}>{formState==='sending'?'…':t.send+' →'}</button>{formState==='success'&&<p className="form-success" role="status">{t.success}</p>}{formState==='error'&&<p className="form-error" role="alert">{t.error}</p>}</form></section>
-    <CookieNotice lang={lang}/>
+    <section id="contact" className="section contact"><div><p className="kicker">DIREKTER KONTAKT</p><h2>{t.contactTitle}</h2><p>{t.contactText}</p><a className="mail" href="mailto:info@daninihub.com">info@daninihub.com</a><p>Duisburg · Nordrhein-Westfalen<br/><a href="tel:+4915730916621">+49 1573 0916621</a><br/><a href="https://wa.me/4915730916621" target="_blank" rel="noopener noreferrer">WhatsApp</a></p></div><form onSubmit={send}><div className="form-pair"><label>{t.company}<input name="company" required maxLength="120"/></label><label>{t.email}<input name="email" type="email" required maxLength="180"/></label></div><div className="form-pair"><label>{t.phone}<input name="phone" type="tel" maxLength="60"/></label><label>{t.fleet}<input name="fleet" maxLength="60"/></label></div><label>{t.routes}<input name="routes" maxLength="180"/></label><label>{t.interest}<select name="interest">{t.options.map(x=><option key={x}>{x}</option>)}</select></label><label>{t.message}<textarea name="message" required minLength="20" maxLength="3000"/></label><label className="honey" aria-hidden="true">Website<input name="website" tabIndex="-1" autoComplete="off"/></label><label className="consent"><input name="consent" type="checkbox" value="yes" required/><span>{t.privacyBefore} <a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'} target="_blank" rel="noopener noreferrer">{t.privacyLabel}</a> {t.privacyAfter}</span></label><button className="btn" type="submit" disabled={formState==='sending'}>{formState==='sending'?'…':t.send+' →'}</button>{formState==='success'&&<p className="form-success" role="status">{t.success}</p>}{formState==='error'&&<p className="form-error" role="alert">{t.error}</p>}</form></section>
   </main>
 }

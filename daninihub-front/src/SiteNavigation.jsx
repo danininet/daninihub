@@ -66,7 +66,7 @@ export default function SiteNavigation({ lang }) {
   return <>
     <header className="site-nav">
       <a className="site-nav-brand" href={home} aria-label="DaniniHub">
-        <img src="/logo-mark.svg" alt="" width="44" height="44"/>
+        <img src="/logo-mark.svg" alt="" width="52" height="52"/>
         <strong>DaniniHub<small>TRANSPORT &amp; LOGISTICS</small></strong>
       </a>
 

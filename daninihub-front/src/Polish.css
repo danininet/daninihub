@@ -1,0 +1,57 @@
+.service-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.service-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid #31536b;
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(56, 198, 232, .12), rgba(56, 198, 232, .02));
+  color: var(--cyan);
+}
+
+.service-icon svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grid article {
+  transition: transform .2s ease, border-color .2s ease;
+}
+
+.grid article:hover {
+  transform: translateY(-3px);
+  border-color: #39647e;
+}
+
+.consent span {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.consent a,
+.check-contact .check-consent a {
+  color: var(--cyan);
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid article {
+    transition: none;
+  }
+
+  .grid article:hover {
+    transform: none;
+  }
+}

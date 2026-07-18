@@ -24,6 +24,10 @@ assert.match(serverRuntime, /confirmationSent/);
 assert.match(serverRuntime, /legacyGoneRoutes/);
 assert.match(serverRuntime, /status\(410\)/);
 assert.match(serverRuntime, /X-Robots-Tag/);
+assert.match(serverRuntime, /X-Content-Type-Options/);
+assert.match(serverRuntime, /X-Frame-Options/);
+assert.match(serverRuntime, /Referrer-Policy/);
+assert.match(serverRuntime, /Permissions-Policy/);
 
 // Core German and Serbian public routes must be served by the SPA runtime.
 for (const route of [
@@ -59,6 +63,8 @@ assert.match(landingSource, /Deutsch \+ Balkan-Sprachen/);
 assert.match(landingSource, /Pilotprojekt für ein Transportunternehmen/);
 assert.match(landingSource, /DaniniHub ist kein Frachtführer, keine Spedition, kein Verkehrsleiter/);
 assert.doesNotMatch(landingSource, /Persönliche KI-Analyse|12 EUR|12 €/);
+assert.doesNotMatch(landingSource, /CookieNotice|dh_cookie_notice|localStorage/);
+assert.match(landingSource, /Datenschutzerklärung/);
 
 // Legal and privacy content must contain the current provider and processing details.
 for (const value of [
@@ -68,6 +74,10 @@ for (const value of [
   'info@daninihub.com',
   'Hostinger',
   'Brevo',
+  'Sendinblue SAS',
+  'Standardvertragsklauseln',
+  'Pflicht- und freiwillige Angaben',
+  'LDI NRW',
   'DSGVO',
   'Keine automatisierte Entscheidung'
 ]) {

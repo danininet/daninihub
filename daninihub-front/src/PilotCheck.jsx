@@ -36,7 +36,8 @@ export default function PilotCheck({ lang }) {
   }
   const send = async event => {
     event.preventDefault()
-    const contact = Object.fromEntries(new FormData(event.currentTarget))
+    const form = event.currentTarget
+    const contact = Object.fromEntries(new FormData(form))
     const payload = {
       source: 'pilot-check',
       language: lang,
@@ -58,7 +59,7 @@ export default function PilotCheck({ lang }) {
     try {
       const response = await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
       if (!response.ok) throw new Error('send_failed')
-      event.currentTarget.reset()
+      form.reset()
       setFormState('success')
     } catch {
       setFormState('error')

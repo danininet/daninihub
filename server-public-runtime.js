@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const { BrevoClient } = require('@getbrevo/brevo');
 
@@ -144,20 +145,80 @@ function mountPublicRuntime(app) {
 
   const oldPublicRoutes = [
     '/en', /^\/en(?:\/.*)?$/, '/de/method', '/de/project-mode', '/de/levels', '/de/artifacts',
-    '/de/trust', '/de/activation', '/de/ki-transparenz', '/de/affiliate-hinweis', '/de/cookies',
+    '/de/trust', '/de/activation', '/de/ki-transparenz', '/de/affiliate-hinweis',
     '/sr/metoda', '/sr/projektni-rezim', '/sr/nivoi', '/sr/artefakti', '/sr/poverenje',
-    '/sr/aktivacija', '/sr/ai-transparentnost', '/sr/affiliate-napomena', '/sr/kolacici',
+    '/sr/aktivacija', '/sr/ai-transparentnost', '/sr/affiliate-napomena',
     '/api/entry/12-eur/checkout'
   ];
   oldPublicRoutes.forEach(route => app.get(route, (req, res) => res.redirect(308, '/de/')));
 
-  const siteRoutes = [
-    '/', '/de', '/de/', '/sr', '/sr/',
-    '/de/impressum', '/de/datenschutz', '/de/cookies', '/de/haftungsausschluss', '/de/praxis-wissen', '/de/glossar', '/de/pilot-beispiel', '/de/operations-desk-demo', '/de/pilot-check',
-    '/sr/impressum', '/sr/privatnost', '/sr/kolacici', '/sr/odricanje-odgovornosti', '/sr/praksa-propisi', '/sr/recnik', '/sr/primer-pilota', '/sr/operativni-pult-demo', '/sr/provera-pilota'
+  const routePairs = [
+    ['/de/', '/sr/'],
+    ['/de/leistungsrahmen', '/sr/obim-usluge'],
+    ['/de/continuity-support', '/sr/kontinuitet-podrska'],
+    ['/de/fahrerkommunikation', '/sr/komunikacija-vozaci'],
+    ['/de/pilot-check', '/sr/provera-pilota'],
+    ['/de/praxis-wissen', '/sr/praksa-znanje'],
+    ['/de/pilot-beispiel', '/sr/primer-pilota'],
+    ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
+    ['/de/impressum', '/sr/impressum'],
+    ['/de/datenschutz', '/sr/privatnost'],
+    ['/de/cookies', '/sr/kolacici'],
+    ['/de/haftungsausschluss', '/sr/odricanje-odgovornosti'],
+    ['/de/glossar', '/sr/recnik']
   ];
+  const seo = {
+    '/de/': ['DaniniHub Transport & Logistics | Balkan–DACH Operations Support', 'Operative Transport-Unterstützung zwischen Balkan und DACH: Kommunikation, Status, Termine, Dokumente und klar begrenzte Zuständigkeiten.'],
+    '/sr/': ['DaniniHub Transport & Logistics | Balkan–DACH operativna podrška', 'Operativna podrška transportnim firmama između Balkana i DACH regiona: komunikacija, statusi, termini i dokumentacija.'],
+    '/de/leistungsrahmen': ['Leistungsrahmen für Transport Operations | DaniniHub', 'Klar begrenzte operative Unterstützung für Status, ETA, Fahrerkommunikation, Dokumente und Eskalationen im Balkan–DACH-Transport.'],
+    '/sr/obim-usluge': ['Obim operativne podrške u transportu | DaniniHub', 'Jasno ograničena podrška za statuse, ETA, vozače, dokumentaciju i eskalacije u Balkan–DACH transportu.'],
+    '/de/continuity-support': ['Continuity Support für Transportteams | DaniniHub', 'Operative Unterstützung bei Urlaub, Krankheit, Spitzenlast und fehlender Abendkapazität – mit klaren Aufgaben und Übergaben.'],
+    '/sr/kontinuitet-podrska': ['Podrška kontinuitetu transportnih timova | DaniniHub', 'Operativna podrška tokom odmora, bolovanja, vršnog opterećenja i manjka kapaciteta, uz jasne zadatke i predaju.'],
+    '/de/fahrerkommunikation': ['Mehrsprachige Fahrerkommunikation Balkan–DACH | DaniniHub', 'Deutschsprachige Schnittstelle für Fahrer aus dem Balkanraum: Status, ETA, Anweisungen, Rückfragen und dokumentierte Eskalation.'],
+    '/sr/komunikacija-vozaci': ['Višejezička komunikacija sa vozačima | DaniniHub', 'Nemačka komunikaciona veza za vozače sa Balkana: status, ETA, instrukcije, pitanja i dokumentovana eskalacija.'],
+    '/de/pilot-check': ['Pilot-Check für Transport Operations | DaniniHub', 'Prüfen Sie strukturiert, ob ein begrenzter DaniniHub-Pilot zu Relationen, Fahrzeugzahl und operativem Engpass passt.'],
+    '/sr/provera-pilota': ['Provera pilota za transportnu operativu | DaniniHub', 'Proverite strukturisano da li ograničeni DaniniHub pilot odgovara relacijama, broju vozila i operativnom problemu.'],
+    '/de/praxis-wissen': ['Warum TMS-Systeme Disponenten nicht ersetzen | DaniniHub', 'Fachbeitrag über die operative Lücke zwischen TMS-Daten, Fahrerkommunikation, Entscheidung, Eskalation und Schichtübergabe.'],
+    '/sr/praksa-znanje': ['Zašto TMS sistemi ne menjaju disponente | DaniniHub', 'Stručni članak o praznini između TMS podataka, komunikacije sa vozačem, odluke, eskalacije i predaje smene.'],
+    '/de/pilot-beispiel': ['Pilot-Beispiel für Transport Operations | DaniniHub', 'Fiktive Simulation eines begrenzten Operations Supports mit Status, ETA, Abweichung und dokumentierter Eskalation.'],
+    '/sr/primer-pilota': ['Primer pilota za transportnu operativu | DaniniHub', 'Fiktivna simulacija ograničene operativne podrške sa statusom, ETA, odstupanjem i dokumentovanom eskalacijom.'],
+    '/de/operations-desk-demo': ['Interaktiver Transport Operations Desk | DaniniHub', 'Interaktive DaniniHub-Simulation einer Transporttour mit Statuspunkten, ETA, Abweichung, Eskalation und Übergabe.'],
+    '/sr/operativni-pult-demo': ['Interaktivni transportni operativni pult | DaniniHub', 'Interaktivna DaniniHub simulacija ture sa statusima, ETA, odstupanjem, eskalacijom i predajom.'],
+    '/de/glossar': ['Transport-Glossar Deutsch–Serbisch | DaniniHub', 'Praxisnahes deutsch-serbisches Glossar für Disposition, Fahrerkommunikation, Dokumente, Zoll und Balkan–DACH-Transporte.'],
+    '/sr/recnik': ['Nemačko-srpski rečnik transporta | DaniniHub', 'Praktičan nemačko-srpski rečnik za dispoziciju, vozače, dokumentaciju, carinu i Balkan–DACH transport.'],
+    '/de/impressum': ['Impressum | DaniniHub Transport & Logistics', 'Anbieterkennzeichnung und Kontaktdaten von DaniniHub Transport & Logistics in Duisburg.'],
+    '/sr/impressum': ['Impresum | DaniniHub Transport & Logistics', 'Podaci o pružaocu usluge i kontakt DaniniHub Transport & Logistics u Duisburgu.'],
+    '/de/datenschutz': ['Datenschutzerklärung | DaniniHub', 'Informationen zur Verarbeitung von Kontakt-, Hosting- und E-Mail-Daten bei DaniniHub gemäß DSGVO.'],
+    '/sr/privatnost': ['Zaštita podataka | DaniniHub', 'Informacije o obradi kontaktnih, hosting i e-mail podataka u DaniniHub-u prema GDPR-u.'],
+    '/de/cookies': ['Cookies und lokale Speicherung | DaniniHub', 'Informationen zu Cookies und lokaler Speicherung auf der DaniniHub-Website.'],
+    '/sr/kolacici': ['Kolačići i lokalno čuvanje | DaniniHub', 'Informacije o kolačićima i lokalnom čuvanju na DaniniHub sajtu.'],
+    '/de/haftungsausschluss': ['Haftungsausschluss | DaniniHub', 'Leistungsgrenzen und rechtliche Hinweise zur operativen Transport-Unterstützung von DaniniHub.'],
+    '/sr/odricanje-odgovornosti': ['Odricanje odgovornosti | DaniniHub', 'Granice usluge i pravne napomene za DaniniHub operativnu podršku u transportu.']
+  };
+  const htmlTemplate = () => fs.readFileSync(path.join(front, 'index.html'), 'utf8');
+  const renderSeoPage = route => {
+    const normalized = route === '/de' ? '/de/' : route === '/sr' ? '/sr/' : route;
+    const language = normalized.startsWith('/sr') ? 'sr' : 'de';
+    const pair = routePairs.find(([de, sr]) => de === normalized || sr === normalized) || routePairs[0];
+    const [title, description] = seo[normalized] || (language === 'sr' ? seo['/sr/'] : seo['/de/']);
+    const canonical = `https://daninihub.com${normalized}`;
+    return htmlTemplate()
+      .replace('<html lang="de">', `<html lang="${language}">`)
+      .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
+      .replace(/<meta name="description" content="[^"]*"\/>/, `<meta name="description" content="${description}"/>`)
+      .replace(/<link rel="canonical" href="[^"]*"\/>/, `<link rel="canonical" href="${canonical}"/>`)
+      .replace(/<link rel="alternate" hreflang="de" href="[^"]*"\/>/, `<link rel="alternate" hreflang="de" href="https://daninihub.com${pair[0]}"/>`)
+      .replace(/<link rel="alternate" hreflang="sr" href="[^"]*"\/>/, `<link rel="alternate" hreflang="sr" href="https://daninihub.com${pair[1]}"/>`)
+      .replace(/<link rel="alternate" hreflang="x-default" href="[^"]*"\/>/, `<link rel="alternate" hreflang="x-default" href="https://daninihub.com${pair[0]}"/>`)
+      .replace(/<meta property="og:title" content="[^"]*"\/>/, `<meta property="og:title" content="${title}"/>`)
+      .replace(/<meta property="og:description" content="[^"]*"\/>/, `<meta property="og:description" content="${description}"/>`)
+      .replace(/<meta property="og:url" content="[^"]*"\/>/, `<meta property="og:url" content="${canonical}"/>`);
+  };
+  const siteRoutes = routePairs.flat();
+  app.get('/', (req, res) => res.redirect(308, '/de/'));
+  app.get(/^\/(?:de|sr)$/, (req, res) => res.redirect(308, `${req.path}/`));
   siteRoutes.forEach(route => app.get(route, (req, res) => {
-    res.sendFile(path.join(front, 'index.html'));
+    res.type('html').send(renderSeoPage(route));
   }));
 
   app.get('/robots.txt', (req, res) => res.type('text/plain').send(
@@ -165,7 +226,7 @@ function mountPublicRuntime(app) {
   ));
   app.get('/sitemap.xml', (req, res) => res.type('application/xml').send(
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-    ['/de/','/sr/','/de/impressum','/de/datenschutz','/de/cookies','/de/haftungsausschluss','/de/praxis-wissen','/de/glossar','/de/pilot-beispiel','/de/operations-desk-demo','/de/pilot-check','/sr/impressum','/sr/privatnost','/sr/kolacici','/sr/odricanje-odgovornosti','/sr/praksa-propisi','/sr/recnik','/sr/primer-pilota','/sr/operativni-pult-demo','/sr/provera-pilota'].map(route => `<url><loc>https://daninihub.com${route}</loc></url>`).join('') +
+    siteRoutes.map(route => `<url><loc>https://daninihub.com${route}</loc></url>`).join('') +
     '</urlset>'
   ));
   app.get('/api/public-layer', (req, res) => res.json({

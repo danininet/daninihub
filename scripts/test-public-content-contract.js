@@ -36,6 +36,10 @@ for (const route of [
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
+assert.match(serverRuntime, /\/sr\/praksa-znanje/);
+assert.doesNotMatch(serverRuntime, /\/sr\/praksa-propisi/);
+assert.match(serverRuntime, /renderSeoPage/);
+assert.match(serverRuntime, /hreflang="x-default"/);
 
 // React router selection and SEO metadata for the current public product.
 assert.match(appSource, /PilotCheck/);

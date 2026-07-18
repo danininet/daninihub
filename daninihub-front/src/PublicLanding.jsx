@@ -76,10 +76,6 @@ const copy = {
   }
 }
 
-function Logo() {
-  return <a className="brand" href="#top" aria-label="DaniniHub"><img src="/logo-mark.svg" alt="" width="46" height="46"/><strong>DaniniHub<small>TRANSPORT &amp; LOGISTICS</small></strong></a>
-}
-
 function CookieNotice({lang}) {
   const [visible, setVisible] = useState(() => localStorage.getItem('dh_cookie_notice') !== 'seen')
   if (!visible) return null

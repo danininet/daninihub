@@ -4,6 +4,7 @@ import PilotCheck from './PilotCheck'
 import BusinessPages from './BusinessPages'
 import ServiceQuickNav from './ServiceQuickNav'
 import SiteNavigation from './SiteNavigation'
+import SiteFooter from './SiteFooter'
 import './App.css'
 
 export default function App() {
@@ -26,6 +27,6 @@ export default function App() {
   if (/pilot-check|provera-pilota/.test(location.pathname)) return <PilotCheck lang={lang}/>
   if (/leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(location.pathname)) return <BusinessPages lang={lang}/>
   const isHome = /^\/(de|sr)\/?$/.test(location.pathname) || location.pathname === '/'
-  if (isHome) return <div className="public-app"><SiteNavigation lang={lang}/><PublicLanding lang={lang} setLang={setLang}/><ServiceQuickNav lang={lang}/></div>
+  if (isHome) return <div className="public-app"><SiteNavigation lang={lang}/><PublicLanding lang={lang} setLang={setLang}/><ServiceQuickNav lang={lang}/><SiteFooter lang={lang}/></div>
   return <PublicLanding lang={lang} setLang={setLang}/>
 }

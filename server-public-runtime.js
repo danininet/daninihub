@@ -159,6 +159,7 @@ function mountPublicRuntime(app) {
     ['/de/fahrerkommunikation', '/sr/komunikacija-vozaci'],
     ['/de/pilot-check', '/sr/provera-pilota'],
     ['/de/praxis-wissen', '/sr/praksa-znanje'],
+    ['/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'],
     ['/de/pilot-beispiel', '/sr/primer-pilota'],
     ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
     ['/de/impressum', '/sr/impressum'],
@@ -178,8 +179,10 @@ function mountPublicRuntime(app) {
     '/sr/komunikacija-vozaci': ['Višejezička komunikacija sa vozačima | DaniniHub', 'Nemačka komunikaciona veza za vozače sa Balkana: status, ETA, instrukcije, pitanja i dokumentovana eskalacija.'],
     '/de/pilot-check': ['Pilot-Check für Transport Operations | DaniniHub', 'Prüfen Sie strukturiert, ob ein begrenzter DaniniHub-Pilot zu Relationen, Fahrzeugzahl und operativem Engpass passt.'],
     '/sr/provera-pilota': ['Provera pilota za transportnu operativu | DaniniHub', 'Proverite strukturisano da li ograničeni DaniniHub pilot odgovara relacijama, broju vozila i operativnom problemu.'],
-    '/de/praxis-wissen': ['Warum TMS-Systeme Disponenten nicht ersetzen | DaniniHub', 'Fachbeitrag über die operative Lücke zwischen TMS-Daten, Fahrerkommunikation, Entscheidung, Eskalation und Schichtübergabe.'],
-    '/sr/praksa-znanje': ['Zašto TMS sistemi ne menjaju disponente | DaniniHub', 'Stručni članak o praznini između TMS podataka, komunikacije sa vozačem, odluke, eskalacije i predaje smene.'],
+    '/de/praxis-wissen': ['Praxis & Wissen für Transportteams | DaniniHub', 'Fachbeiträge, Checklisten und Praxisbeispiele zu Disposition, ETA, Fahrerkommunikation und Balkan–DACH-Transporten.'],
+    '/sr/praksa-znanje': ['Praksa i znanje za transportne timove | DaniniHub', 'Stručni članci, kontrolne liste i praktični primeri o dispoziciji, ETA, komunikaciji i Balkan–DACH transportu.'],
+    '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen': ['Warum TMS-Systeme Disponenten nicht ersetzen | DaniniHub', 'Fachbeitrag über die operative Lücke zwischen TMS-Daten, Fahrerkommunikation, Entscheidung, Eskalation und Schichtübergabe.'],
+    '/sr/praksa-znanje/zasto-tms-ne-menja-disponente': ['Zašto TMS sistemi ne menjaju disponente | DaniniHub', 'Stručni članak o praznini između TMS podataka, komunikacije sa vozačem, odluke, eskalacije i predaje smene.'],
     '/de/pilot-beispiel': ['Pilot-Beispiel für Transport Operations | DaniniHub', 'Fiktive Simulation eines begrenzten Operations Supports mit Status, ETA, Abweichung und dokumentierter Eskalation.'],
     '/sr/primer-pilota': ['Primer pilota za transportnu operativu | DaniniHub', 'Fiktivna simulacija ograničene operativne podrške sa statusom, ETA, odstupanjem i dokumentovanom eskalacijom.'],
     '/de/operations-desk-demo': ['Interaktiver Transport Operations Desk | DaniniHub', 'Interaktive DaniniHub-Simulation einer Transporttour mit Statuspunkten, ETA, Abweichung, Eskalation und Übergabe.'],
@@ -202,6 +205,18 @@ function mountPublicRuntime(app) {
     const pair = routePairs.find(([de, sr]) => de === normalized || sr === normalized) || routePairs[0];
     const [title, description] = seo[normalized] || (language === 'sr' ? seo['/sr/'] : seo['/de/']);
     const canonical = `https://daninihub.com${normalized}`;
+    const articleSchema = /warum-tms-disponenten-nicht-ersetzen|zasto-tms-ne-menja-disponente/.test(normalized) ? `<script type="application/ld+json">${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: title.replace(' | DaniniHub', ''),
+      description,
+      datePublished: '2026-07-18',
+      dateModified: '2026-07-18',
+      inLanguage: language === 'sr' ? 'sr' : 'de',
+      mainEntityOfPage: canonical,
+      author: { '@type': 'Person', name: 'Dragan Zdravković' },
+      publisher: { '@type': 'Organization', name: 'DaniniHub', url: 'https://daninihub.com', logo: { '@type': 'ImageObject', url: 'https://daninihub.com/logo-mark.svg' } }
+    })}</script>` : '';
     return htmlTemplate()
       .replace('<html lang="de">', `<html lang="${language}">`)
       .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
@@ -212,7 +227,8 @@ function mountPublicRuntime(app) {
       .replace(/<link rel="alternate" hreflang="x-default" href="[^"]*"\/>/, `<link rel="alternate" hreflang="x-default" href="https://daninihub.com${pair[0]}"/>`)
       .replace(/<meta property="og:title" content="[^"]*"\/>/, `<meta property="og:title" content="${title}"/>`)
       .replace(/<meta property="og:description" content="[^"]*"\/>/, `<meta property="og:description" content="${description}"/>`)
-      .replace(/<meta property="og:url" content="[^"]*"\/>/, `<meta property="og:url" content="${canonical}"/>`);
+      .replace(/<meta property="og:url" content="[^"]*"\/>/, `<meta property="og:url" content="${canonical}"/>`)
+      .replace('</head>', `${articleSchema}</head>`);
   };
   const siteRoutes = routePairs.flat();
   app.get('/', (req, res) => res.redirect(308, '/de/'));

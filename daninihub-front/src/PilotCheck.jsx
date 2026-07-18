@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './PilotCheck.css'
+import './PilotDeliverables.css'
 
 const copy = {
   de: {
@@ -9,7 +10,8 @@ const copy = {
     placeholders: { company:'Beispiel Spedition GmbH', fleet:'z. B. 8', routes:'z. B. Serbien–Deutschland', tasks:'Statusabfragen, ETA, Fahrerkommunikation, Dokumente …', availability:'z. B. werktags 16–22 Uhr', systems:'TMS, E-Mail, WhatsApp, Telefon …', decision:'Name oder Funktion' },
     create:'Pilot-Zusammenfassung erstellen', summary:'Vorläufige Pilot-Zusammenfassung', fit:'Grundsätzlich prüfbar', contact:'Strukturierte Anfrage senden', reset:'Angaben ändern', labels:['Unternehmen','Flotte','Relationen','Zeitfresser','Zeitfenster','Systeme','Freigaben'],
     missingText:'Nicht angegeben', boundary:'Der endgültige Leistungsrahmen, Erreichbarkeit, Vergütung und die Befugnisse werden ausschließlich schriftlich vereinbart.',
-    email:'E-Mail', phone:'Telefon (optional)', consent:'Ich bin mit der Verarbeitung meiner Angaben zur Beantwortung der Anfrage einverstanden.', send:'Pilot-Anfrage sicher senden', success:'Vielen Dank. Die strukturierte Pilot-Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error:'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.'
+    email:'E-Mail', phone:'Telefon (optional)', consent:'Ich bin mit der Verarbeitung meiner Angaben zur Beantwortung der Anfrage einverstanden.', send:'Pilot-Anfrage sicher senden', success:'Vielen Dank. Die strukturierte Pilot-Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error:'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.',
+    deliverableTitle:'Was ein begrenzter Pilot konkret prüft', deliverables:[['Umfang','Eine Relation oder kleine Fahrzeuggruppe, definierte Aufgaben und feste Zeitfenster.'],['Arbeitsnachweis','Status- und ETA-Protokoll, dokumentierte Abweichungen, Eskalationen und Übergaben.'],['Auswertung','Gemeinsame Bewertung anhand vorab vereinbarter Kriterien – ohne automatische Verlängerung.']]
   },
   sr: {
     back: 'Nazad na operativni pult', title: 'Provera pilota', subtitle: 'U nekoliko koraka proverite da li ograničeni DaniniHub pilot odgovara vašoj operativi.',
@@ -18,7 +20,8 @@ const copy = {
     placeholders: { company:'Primer Transport d.o.o.', fleet:'npr. 8', routes:'npr. Srbija–Nemačka', tasks:'Statusi, ETA, komunikacija sa vozačima, dokumenta …', availability:'npr. radnim danima 16–22 h', systems:'TMS, e-mail, WhatsApp, telefon …', decision:'Ime ili funkcija' },
     create:'Kreiraj rezime pilota', summary:'Preliminarni rezime pilota', fit:'Moguće za dalju proveru', contact:'Pošaljite strukturisan upit', reset:'Izmeni podatke', labels:['Firma','Flota','Relacije','Zadaci','Vreme podrške','Sistemi','Odobrenja'],
     missingText:'Nije navedeno', boundary:'Konačan obim usluge, dostupnost, naknada i ovlašćenja dogovaraju se isključivo pisanim putem.',
-    email:'E-mail', phone:'Telefon (opciono)', consent:'Saglasan sam da se moji podaci obrade radi odgovora na upit.', send:'Pošaljite siguran pilot-upit', success:'Hvala. Strukturisan pilot-upit je poslat, a potvrda stiže na vašu e-mail adresu.', error:'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.'
+    email:'E-mail', phone:'Telefon (opciono)', consent:'Saglasan sam da se moji podaci obrade radi odgovora na upit.', send:'Pošaljite siguran pilot-upit', success:'Hvala. Strukturisan pilot-upit je poslat, a potvrda stiže na vašu e-mail adresu.', error:'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.',
+    deliverableTitle:'Šta konkretno proverava ograničeni pilot', deliverables:[['Obim','Jedna relacija ili mala grupa vozila, definisani zadaci i određeni vremenski period.'],['Dokaz rada','Evidencija statusa i ETA, dokumentovana odstupanja, eskalacije i predaje.'],['Evaluacija','Zajednička procena prema unapred dogovorenim kriterijumima – bez automatskog produženja.']]
   }
 }
 
@@ -70,6 +73,7 @@ export default function PilotCheck({ lang }) {
     <header className="check-header"><a href={home}>← {t.back}</a><strong>DaniniHub · PILOT</strong></header>
     <section className="check-page">
       <p className="kicker">PILOT READINESS CHECK</p><h1>{t.title}</h1><p className="check-lead">{t.subtitle}</p><p className="check-notice">{t.notice}</p>
+      <section className="pilot-deliverables"><h2>{t.deliverableTitle}</h2><div>{t.deliverables.map(([title,text],index)=><article key={title}><span>{String(index+1).padStart(2,'0')}</span><h3>{title}</h3><p>{text}</p></article>)}</div></section>
       <form className="check-form" onSubmit={submit}>
         {keys.map((key,index)=><label key={key} className={key==='tasks'?'wide':''}><span>{t.fields[key]}</span>{key==='tasks'?<textarea name={key} placeholder={t.placeholders[key]} required/>:<input name={key} type={key==='fleet'?'number':'text'} min={key==='fleet'?'1':undefined} placeholder={t.placeholders[key]} required={index<4}/>}</label>)}
         <button className="btn" type="submit">{t.create} →</button>

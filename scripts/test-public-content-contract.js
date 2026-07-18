@@ -33,6 +33,7 @@ for (const route of [
   '/de/leistungsrahmen', '/sr/obim-usluge',
   '/de/continuity-support', '/sr/kontinuitet-podrska',
   '/de/fahrerkommunikation', '/sr/komunikacija-vozaci'
+  ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
@@ -69,8 +70,8 @@ for (const value of [
 ]) {
   assert.match(legalSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
-assert.match(legalSource, /DaniniHub ist kein Frachtführer, keine Spedition, kein Verkehrsleiter/);
-assert.match(legalSource, /nije prevoznik, špedicija, Verkehrsleiter/);
+assert.match(legalSource, /DaniniHub übernimmt nicht die Rolle von Frachtführer, Spediteur, Verkehrsleiter/);
+assert.match(legalSource, /DaniniHub ne preuzima ulogu prevoznika, špeditera, Verkehrsleitera/);
 
 // Pilot intake must submit structured operational fields and preserve human approval boundaries.
 for (const field of ['fleet', 'routes', 'tasks', 'availability', 'systems', 'decision']) {
@@ -80,13 +81,15 @@ assert.match(pilotSource, /source:\s*'pilot-check'/);
 assert.match(pilotSource, /Keine automatische Entscheidung/);
 assert.match(pilotSource, /Nema automatske odluke/);
 assert.match(pilotSource, /form\.reset\(\)/);
+assert.match(pilotSource, /Was ein begrenzter Pilot konkret prüft/);
+assert.match(pilotSource, /Šta konkretno proverava ograničeni pilot/);
 
 // New service pages must cover scope, continuity and multilingual driver communication.
 assert.match(businessSource, /Leistungsrahmen/);
-assert.match(businessSource, /Continuity Support/);
+assert.match(businessSource, /Continuity Support/i);
 assert.match(businessSource, /Fahrerkommunikation/);
-assert.match(businessSource, /Obim usluge/);
-assert.match(businessSource, /Podrška kontinuitetu/);
-assert.match(businessSource, /Komunikacija sa vozačima/);
+assert.match(businessSource, /Obim usluge/i);
+assert.match(businessSource, /Podrška kontinuitetu/i);
+assert.match(businessSource, /Komunikacija sa vozačima/i);
 
 console.log('DaniniHub transport public content contract: OK');

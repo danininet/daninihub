@@ -1,4 +1,5 @@
 import './KnowledgeCenter.css'
+import './KnowledgeArticle.css'
 
 const copy = {
   de: {
@@ -61,20 +62,60 @@ const copy = {
   },
 }
 
+const articlePaths = {
+  de: '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
+  sr: '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
+}
+
+const editorial = {
+  de: {
+    eyebrow: 'PRAXIS & WISSEN · BALKAN–DACH', title: 'Operatives Wissen für Transportteams.',
+    lead: 'Fachbeiträge, Checklisten und Praxisbeispiele über Status, ETA, Fahrerkommunikation, Eskalation und belastbare Schichtübergaben.',
+    featured: 'Aktueller Fachbeitrag', read: 'Artikel lesen', categories: 'Themenfelder', upcoming: 'In redaktioneller Vorbereitung',
+    topics: [['DISPOSITION','TMS & menschliche Entscheidung','Wo Systemdaten enden und operative Bewertung beginnt.'],['FAHRER','Balkan–DACH Kommunikation','Wie Status, Anweisungen und Abweichungen eindeutig bestätigt werden.'],['KONTINUITÄT','Spitzenlast & Übergabe','Wie definierte Unterstützung interne Engpässe abfedern kann.']],
+    planned: ['ETA ist keine Zusage: Transportstatus richtig kommunizieren','Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen','Schichtübergabe in der Disposition: 10 Pflichtinformationen'],
+  },
+  sr: {
+    eyebrow: 'PRAKSA I ZNANJE · BALKAN–DACH', title: 'Operativno znanje za transportne timove.',
+    lead: 'Stručni članci, kontrolne liste i praktični primeri o statusu, ETA, komunikaciji sa vozačima, eskalaciji i pouzdanoj predaji smene.',
+    featured: 'Aktuelni stručni članak', read: 'Pročitaj članak', categories: 'Tematske oblasti', upcoming: 'U uredničkoj pripremi',
+    topics: [['DISPOZICIJA','TMS i ljudska odluka','Gde se završavaju sistemski podaci, a počinje operativna procena.'],['VOZAČI','Balkan–DACH komunikacija','Kako se status, instrukcije i odstupanja jasno potvrđuju.'],['KONTINUITET','Opterećenje i predaja','Kako ograničena podrška može da pokrije interni manjak kapaciteta.']],
+    planned: ['ETA nije obećanje: pravilna komunikacija statusa','Balkan–DACH komunikacija: gde greške stvaraju troškove','Predaja smene u dispoziciji: 10 obaveznih informacija'],
+  },
+}
+
+function KnowledgeIndex({ lang }) {
+  const t = copy[lang]
+  const e = editorial[lang]
+  return <main className="knowledge-page">
+    <section className="knowledge-hero knowledge-index-hero"><div className="knowledge-eyebrow">{e.eyebrow}</div><h1>{e.title}</h1><p>{e.lead}</p></section>
+    <section className="knowledge-article knowledge-index">
+      <div className="knowledge-section-head"><span>01</span><h2>{e.featured}</h2></div>
+      <article className="featured-article"><div><span>{t.meta}</span><h2>{t.title}</h2><p>{t.lead}</p><a href={articlePaths[lang]}>{e.read} →</a></div><aside><strong>{t.summaryTitle}</strong><p>{t.summary}</p></aside></article>
+      <div className="knowledge-section-head section-space"><span>02</span><h2>{e.categories}</h2></div>
+      <div className="knowledge-category-grid">{e.topics.map(([tag,title,text])=><article key={tag}><span>{tag}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
+      <div className="knowledge-section-head section-space"><span>03</span><h2>{e.upcoming}</h2></div>
+      <ol className="editorial-queue">{e.planned.map((title,index)=><li key={title}><span>{String(index+1).padStart(2,'0')}</span><strong>{title}</strong></li>)}</ol>
+    </section>
+  </main>
+}
+
 export default function KnowledgeCenter({ lang }) {
   const t = copy[lang]
   const sr = lang === 'sr'
+  if (location.pathname === (sr ? '/sr/praksa-znanje' : '/de/praxis-wissen')) return <KnowledgeIndex lang={lang}/>
 
   return (
     <main className="knowledge-page">
       <section className="knowledge-hero">
+        <a className="article-back" href={sr?'/sr/praksa-znanje':'/de/praxis-wissen'}>← {sr?'Praksa i znanje':'Praxis & Wissen'}</a>
         <div className="knowledge-eyebrow">{t.eyebrow}</div>
         <h1>{t.title}</h1>
         <p>{t.lead}</p>
         <div className="article-meta">{t.meta}</div>
         <div className="knowledge-categories">
           {t.categories.map((x, i) => (
-            <a key={x} href={`#cat-${i}`}>{x}</a>
+            <span key={x} data-index={i}>{x}</span>
           ))}
         </div>
       </section>

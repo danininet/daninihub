@@ -16,6 +16,7 @@ const businessSource = read('daninihub-front/src/BusinessPages.jsx');
 const driverArticleSource = read('daninihub-front/src/DriverCommunicationArticle.jsx');
 const handoverArticleSource = read('daninihub-front/src/ShiftHandoverArticle.jsx');
 const escalationArticleSource = read('daninihub-front/src/DeviationEscalationArticle.jsx');
+const documentsArticleSource = read('daninihub-front/src/TransportDocumentsArticle.jsx');
 
 // Current public runtime and contact workflow.
 assert.match(serverRuntime, /mountPublicRuntime/);
@@ -47,7 +48,8 @@ for (const route of [
   '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje',
   '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
   '/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija',
-  '/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja'
+  '/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja',
+  '/de/praxis-wissen/transportdokumente-cmr-pod', '/sr/praksa-znanje/transportna-dokumenta-cmr-pod'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
@@ -132,6 +134,20 @@ for (const value of [
   'Bez tog puta operativna podrška ne sme sama da izmisli ovlašćenje'
 ]) {
   assert.match(escalationArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+
+// Document handover article must separate file receipt, verification and acceptance.
+for (const value of [
+  'Transportdokumente übergeben: CMR, POD und offene Nachweise',
+  'Predaja transportnih dokumenata: CMR, POD i otvoreni dokazi',
+  'Ein Dokument ist nicht erledigt, nur weil eine Datei vorhanden ist',
+  'Dokument nije završen samo zato što fajl postoji',
+  'digital bedeutet nicht automatisch überall akzeptiert',
+  'digitalno ne znači automatski prihvaćeno svuda',
+  'eine Einwilligung ist nicht automatisch immer erforderlich',
+  'saglasnost nije automatski uvek neophodna'
+]) {
+  assert.match(documentsArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
 
 // Pilot intake must submit structured operational fields and preserve human approval boundaries.

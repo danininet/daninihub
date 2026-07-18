@@ -1,5 +1,5 @@
 import './KnowledgeArticle.css'
-import { driverCommunicationArticlePaths, etaArticlePaths, shiftHandoverArticlePaths, tmsArticlePaths } from './KnowledgePaths'
+import { driverCommunicationArticlePaths, etaArticlePaths, shiftHandoverArticlePaths, tmsArticlePaths, transportDocumentsArticlePaths } from './KnowledgePaths'
 
 const article = {
   de: {
@@ -92,6 +92,7 @@ const article = {
       ['Schichtübergabe in der Disposition', 'Offene Entscheidungen, Verantwortung und nächste Prüfung kontrolliert übergeben.', 'Artikel zur Schichtübergabe lesen', shiftHandoverArticlePaths.de],
       ['ETA ist keine Zusage', 'Prognose und bestätigten Kundentermin vor der Eskalation sauber trennen.', 'ETA-Artikel lesen', etaArticlePaths.de],
       ['Fahrerkommunikation Balkan–DACH', 'Bestätigten Fahrerstatus und sichere Rückmeldung strukturiert dokumentieren.', 'Artikel zur Fahrerkommunikation lesen', driverCommunicationArticlePaths.de],
+      ['CMR, POD und offene Nachweise', 'Fehlende oder nicht akzeptierte Dokumente mit eindeutigem Status und nächstem Schritt steuern.', 'Artikel zu Transportdokumenten lesen', transportDocumentsArticlePaths.de],
       ['Warum TMS Disponenten nicht ersetzt', 'Warum Systemdaten allein noch keine operative Entscheidung ergeben.', 'Grundlagenartikel lesen', tmsArticlePaths.de],
     ],
     back: 'Praxis & Wissen',
@@ -191,6 +192,7 @@ const article = {
       ['Predaja smene u dispoziciji', 'Kontrolisano predajte otvorene odluke, odgovornost i sledeću proveru.', 'Pročitaj članak o predaji', shiftHandoverArticlePaths.sr],
       ['ETA nije obećanje', 'Razdvojite procenu i termin potvrđen klijentu pre eskalacije.', 'Pročitaj ETA članak', etaArticlePaths.sr],
       ['Balkan–DACH komunikacija sa vozačima', 'Strukturisano dokumentujte potvrđen status i bezbedan odgovor vozača.', 'Pročitaj članak o komunikaciji', driverCommunicationArticlePaths.sr],
+      ['CMR, POD i otvoreni dokazi', 'Vodite nedostajuća ili neprihvaćena dokumenta uz jasan status i sledeći korak.', 'Pročitaj članak o dokumentima', transportDocumentsArticlePaths.sr],
       ['Zašto TMS ne menja disponente', 'Zašto sistemski podatak sam po sebi još nije operativna odluka.', 'Pročitaj osnovni članak', tmsArticlePaths.sr],
     ],
     back: 'Praksa i znanje',

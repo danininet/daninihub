@@ -22,3 +22,8 @@ export const deviationEscalationArticlePaths = {
   de: '/de/praxis-wissen/abweichungen-eskalieren',
   sr: '/sr/praksa-znanje/eskalacija-odstupanja',
 }
+
+export const transportDocumentsArticlePaths = {
+  de: '/de/praxis-wissen/transportdokumente-cmr-pod',
+  sr: '/sr/praksa-znanje/transportna-dokumenta-cmr-pod',
+}

@@ -16,6 +16,7 @@ const copy = {
     driver: 'Fahrerkommunikation',
     handover: 'Schichtübergabe',
     escalation: 'Abweichung & Eskalation',
+    documents: 'CMR, POD & Nachweise',
     law: 'Transport-Glossar',
     imprint: 'Impressum',
     privacy: 'Datenschutz',
@@ -38,6 +39,7 @@ const copy = {
     driver: 'Komunikacija sa vozačima',
     handover: 'Predaja smene',
     escalation: 'Odstupanje i eskalacija',
+    documents: 'CMR, POD i dokazi',
     law: 'Transportni rečnik',
     imprint: 'Impresum',
     privacy: 'Privatnost',
@@ -88,6 +90,7 @@ export default function SiteFooter({ lang }) {
           <a href={sr ? '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach' : '/de/praxis-wissen/fahrerkommunikation-balkan-dach'}>{t.driver}</a>
           <a href={sr ? '/sr/praksa-znanje/predaja-smene-dispozicija' : '/de/praxis-wissen/schichtuebergabe-disposition'}>{t.handover}</a>
           <a href={sr ? '/sr/praksa-znanje/eskalacija-odstupanja' : '/de/praxis-wissen/abweichungen-eskalieren'}>{t.escalation}</a>
+          <a href={sr ? '/sr/praksa-znanje/transportna-dokumenta-cmr-pod' : '/de/praxis-wissen/transportdokumente-cmr-pod'}>{t.documents}</a>
           <a href={sr ? '/sr/recnik' : '/de/glossar'}>{t.law}</a>
         </nav>
 

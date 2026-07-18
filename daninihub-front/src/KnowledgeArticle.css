@@ -75,7 +75,7 @@
 .related-article-card p{max-width:760px;margin:0;color:#adbfcb;line-height:1.7}
 .related-article-card a{display:inline-block;margin-top:18px;color:#8de9f4;font-weight:900;text-decoration:none}
 .related-article-next{border-color:#3d6c82;background:linear-gradient(135deg,#0d2938,#0a1a26)}
-.knowledge-article>.driver-risk-section,.knowledge-article>.driver-protocol-section,.knowledge-article>.related-articles-section,.knowledge-article>.handover-failures-section,.knowledge-article>.handover-mandatory-section,.knowledge-article>.handover-example-section,.knowledge-article>.escalation-levels-section,.knowledge-article>.escalation-triggers-section,.knowledge-article>.escalation-packet-section{max-width:none!important}
+.knowledge-article>.driver-risk-section,.knowledge-article>.driver-protocol-section,.knowledge-article>.related-articles-section,.knowledge-article>.handover-failures-section,.knowledge-article>.handover-mandatory-section,.knowledge-article>.handover-example-section,.knowledge-article>.escalation-levels-section,.knowledge-article>.escalation-triggers-section,.knowledge-article>.escalation-packet-section,.knowledge-article>.document-roles-section,.knowledge-article>.document-risks-section,.knowledge-article>.document-record-section,.knowledge-article>.document-example-section,.knowledge-article>.document-boundary-grid,.knowledge-article>.article-sources-section{max-width:none!important}
 .driver-risk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:26px}
 .driver-risk-grid article{padding:22px;border:1px solid #28485f;border-radius:15px;background:linear-gradient(145deg,#0b1d2a,#091720)}
 .driver-risk-grid article>span{color:#f6ae3b;font-size:11px;font-weight:900;letter-spacing:.14em}
@@ -131,6 +131,26 @@
 .escalation-trigger-grid h3{margin:0 0 8px;color:#8de9f4;font-size:18px}
 .escalation-trigger-grid p{margin:0!important;color:#9fb3c0!important;font-size:14px!important;line-height:1.62!important}
 .escalation-loop>div{grid-template-columns:repeat(5,minmax(0,1fr))}
+.document-role-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:24px}
+.document-role-grid article{padding:23px;border:1px solid #28485f;border-top:3px solid #42cbe7;border-radius:15px;background:linear-gradient(145deg,#0b1d2a,#091720)}
+.document-role-grid article:last-child{border-top-color:#e3a655}
+.document-role-grid article>span{color:#f6ae3b;font-size:10px;font-weight:900;letter-spacing:.15em}
+.document-role-grid h3{margin:13px 0 9px;font-size:20px}
+.document-role-grid p{margin:0!important;color:#9fb3c0!important;font-size:14px!important;line-height:1.65!important}
+.document-flow>div{grid-template-columns:repeat(6,minmax(0,1fr))}
+.document-flow>p{margin:18px 0 0!important;color:#9fb3c0!important;font-size:14px!important;line-height:1.65!important}
+.document-risk-grid article{border-top:3px solid #d88a74}
+.document-record-grid li:last-child{grid-column:1/-1}
+.document-boundary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:50px}
+.document-boundary-grid article{padding:25px;border:1px solid #31536b;border-radius:17px;background:linear-gradient(145deg,#0b1f2d,#091721)}
+.document-boundary-grid article>span{color:#f6ae3b;font-size:10px;font-weight:900;letter-spacing:.15em}
+.document-boundary-grid h2{margin:12px 0!important;font-size:25px!important}
+.document-boundary-grid p{margin:0!important;color:#a9bbc7!important;font-size:15px!important;line-height:1.7!important}
+.article-source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.article-source-grid a{position:relative;display:grid;gap:8px;padding:22px 48px 22px 22px;border:1px solid #31536b;border-radius:15px;background:#091923;color:#f3f7fa;text-decoration:none;transition:border-color .18s ease,transform .18s ease}
+.article-source-grid a:hover{border-color:#42cbe7;transform:translateY(-2px)}
+.article-source-grid a>span{color:#9fb3c0;font-size:14px;line-height:1.6}
+.article-source-grid a>b{position:absolute;top:20px;right:20px;color:#8de9f4}
 .related-articles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:22px}
 .related-articles-grid article{display:flex;flex-direction:column;align-items:flex-start;padding:24px;border:1px solid #31536b;border-radius:16px;background:linear-gradient(145deg,#0b1f2d,#091721)}
 .related-articles-grid h3{margin:0 0 10px;font-size:22px}
@@ -160,16 +180,20 @@
   .driver-loop>div{grid-template-columns:repeat(2,minmax(0,1fr))}
   .driver-loop span:nth-child(2)::after{display:none}
   .handover-failure-grid{grid-template-columns:1fr}
-  .escalation-level-grid,.escalation-trigger-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .escalation-level-grid,.escalation-trigger-grid,.document-role-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .document-flow>div{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .document-flow span:nth-child(2)::after,.document-flow span:nth-child(4)::after{display:grid}
+  .document-flow span:nth-child(3)::after{display:none}
 }
 
 @media(max-width:560px){
   .article-flow{grid-template-columns:1fr}
   .article-video,.article-checklist,.article-faq,.article-cta,.featured-article>div,.featured-article>aside{padding:20px}
-  .eta-definition-grid,.eta-format-grid,.eta-example-grid,.driver-risk-grid,.driver-protocol-grid,.related-articles-grid,.driver-loop>div,.handover-mandatory-list,.escalation-level-grid,.escalation-trigger-grid{grid-template-columns:1fr}
+  .eta-definition-grid,.eta-format-grid,.eta-example-grid,.driver-risk-grid,.driver-protocol-grid,.related-articles-grid,.driver-loop>div,.handover-mandatory-list,.escalation-level-grid,.escalation-trigger-grid,.document-role-grid,.document-boundary-grid,.article-source-grid{grid-template-columns:1fr}
   .driver-loop{padding:20px}
   .driver-loop span:not(:last-child)::after{display:grid;right:auto;top:auto;bottom:-15px;left:50%;transform:translateX(-50%) rotate(90deg)}
   .handover-good-example dl>div{grid-template-columns:1fr;gap:5px}
+  .document-record-grid li:last-child{grid-column:auto}
   .published-article-card,.related-article-card{padding:20px}
   .article-video-copy h2{font-size:27px!important}
   .video-play-label{bottom:16px}

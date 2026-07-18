@@ -18,6 +18,7 @@ const routePairs = [
   ['/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'],
   ['/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija'],
   ['/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja'],
+  ['/de/praxis-wissen/transportdokumente-cmr-pod', '/sr/praksa-znanje/transportna-dokumenta-cmr-pod'],
   ['/de/pilot-beispiel', '/sr/primer-pilota'],
   ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
   ['/de/impressum', '/sr/impressum'],

@@ -1,0 +1,30 @@
+.public-app > main > header{display:none}
+.site-nav{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:28px;padding:15px max(22px,calc((100vw - 1180px)/2));background:rgba(7,17,29,.96);backdrop-filter:blur(16px);border-bottom:1px solid #243b50}
+.site-nav-brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:max-content}
+.site-nav-brand strong{display:block;font-size:18px;line-height:1}
+.site-nav-brand small{display:block;margin-top:5px;color:#a5b5c4;font-size:9px;letter-spacing:.17em}
+.site-nav-desktop{display:flex;align-items:center;gap:18px;margin-left:auto}
+.site-nav-desktop>a,.site-nav-dropdown>summary{color:#b6c4cf;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;list-style:none}
+.site-nav-dropdown>summary::-webkit-details-marker{display:none}
+.site-nav-desktop>a:hover,.site-nav-dropdown>summary:hover{color:#fff}
+.site-nav-dropdown{position:relative}
+.site-nav-dropdown>div{display:none;position:absolute;top:34px;left:-16px;min-width:240px;padding:10px;background:#0b1a28;border:1px solid #243b50;border-radius:12px;box-shadow:0 18px 44px rgba(0,0,0,.32)}
+.site-nav-dropdown[open]>div{display:grid}
+.site-nav-dropdown>div a{padding:11px 12px;border-radius:8px;color:#c6d2dc;text-decoration:none;font-size:13px}
+.site-nav-dropdown>div a:hover{background:#12283a;color:#fff}
+.site-nav-actions{display:flex;align-items:center;gap:12px}
+.site-nav-langs{display:flex;border:1px solid #243b50;border-radius:9px;overflow:hidden}
+.site-nav-langs a{padding:7px 9px;color:#93a4b4;text-decoration:none;font-size:11px;font-weight:900}
+.site-nav-langs a.active{background:#38c6e8;color:#04101a}
+.site-nav-cta{padding:11px 14px;border-radius:9px;background:#f6ae3b;color:#111a21;text-decoration:none;font-size:13px;font-weight:900}
+.site-nav-mobile{display:none;margin-left:auto;position:relative}
+.site-nav-mobile>summary{list-style:none;padding:9px 12px;border:1px solid #243b50;border-radius:9px;color:#fff;font-weight:800;cursor:pointer}
+.site-nav-mobile>summary::-webkit-details-marker{display:none}
+.site-nav-mobile nav{position:absolute;right:0;top:48px;width:min(310px,calc(100vw - 28px));display:grid;gap:4px;padding:15px;background:#091725;border:1px solid #243b50;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.site-nav-mobile nav strong{padding:8px 10px;color:#38c6e8;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.site-nav-mobile nav a{padding:11px 10px;border-radius:8px;color:#d2dce4;text-decoration:none;font-size:14px}
+.site-nav-mobile nav a:hover{background:#12283a}
+.site-nav-mobile-langs{display:flex;gap:8px;padding-top:8px;border-top:1px solid #243b50}
+.site-nav-mobile-langs a{font-weight:900}
+@media(max-width:980px){.site-nav-desktop,.site-nav-actions{display:none}.site-nav-mobile{display:block}}
+@media(max-width:560px){.site-nav{padding:12px 16px}.site-nav-brand small{display:none}.site-nav-brand strong{font-size:16px}}

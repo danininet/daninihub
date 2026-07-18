@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import PublicLanding from './PublicLanding'
 import PilotCheck from './PilotCheck'
 import BusinessPages from './BusinessPages'
+import ServiceQuickNav from './ServiceQuickNav'
 import './App.css'
 
 export default function App() {
@@ -23,5 +24,6 @@ export default function App() {
   }, [lang])
   if (/pilot-check|provera-pilota/.test(location.pathname)) return <PilotCheck lang={lang}/>
   if (/leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(location.pathname)) return <BusinessPages lang={lang}/>
-  return <PublicLanding lang={lang} setLang={setLang} />
+  const isHome = /^\/(de|sr)\/?$/.test(location.pathname) || location.pathname === '/'
+  return <><PublicLanding lang={lang} setLang={setLang}/>{isHome&&<ServiceQuickNav lang={lang}/>}</>
 }

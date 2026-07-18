@@ -26,8 +26,6 @@ const copy = {
       ['Kann KI die Disposition vollständig übernehmen?', 'KI kann strukturieren, Lücken markieren und Optionen vorbereiten. Freigaben und verbindliche Entscheidungen bleiben bei Menschen.'],
       ['Wann ist ein Pilot sinnvoll?', 'Wenn ein klar abgrenzbarer operativer Engpass besteht und Erfolg anhand weniger Kriterien gemessen werden kann.'],
     ],
-    videoTitle: 'Video zum Beitrag',
-    videoText: 'Balkan–DACH Operations Support in kompakter Form.',
     categories: ['Für Disponenten', 'Für Fahrer', 'Gesetze & Vorschriften', 'Regeländerungen & Updates', 'Balkan–DACH Praxis', 'DaniniHub Standards'],
     cta: 'Pilot-Check starten',
   },
@@ -55,8 +53,6 @@ const copy = {
       ['Može li AI potpuno preuzeti dispoziciju?', 'AI može strukturisati informacije, označiti praznine i pripremiti opcije. Odobrenja i obavezujuće odluke ostaju kod ljudi.'],
       ['Kada pilot ima smisla?', 'Kada postoji jasno ograničeno operativno usko grlo i rezultat može da se meri kroz nekoliko kriterijuma.'],
     ],
-    videoTitle: 'Video uz članak',
-    videoText: 'Balkan–DACH operativna podrška u sažetom obliku.',
     categories: ['Za disponente', 'Za vozače', 'Zakoni i propisi', 'Promene pravila i novosti', 'Balkan–DACH praksa', 'DaniniHub standardi'],
     cta: 'Pokreni proveru pilota',
   },
@@ -125,17 +121,6 @@ export default function KnowledgeCenter({ lang }) {
           <strong>{t.summaryTitle}</strong>
           <p>{t.summary}</p>
         </aside>
-
-        <section className="article-video">
-          <div>
-            <span>VIDEO</span>
-            <h2>{t.videoTitle}</h2>
-            <p>{t.videoText}</p>
-          </div>
-          <video controls preload="metadata">
-            <source src="/DaniniHub_Balkan-DACH.mp4" type="video/mp4" />
-          </video>
-        </section>
 
         {t.sections.map(([heading, paragraph]) => (
           <section key={heading}>

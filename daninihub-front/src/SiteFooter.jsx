@@ -11,10 +11,10 @@ const copy = {
     drivers: 'Fahrerkommunikation',
     pilot: 'Pilot-Check',
     practice: 'Fachartikel',
-    dispatch: 'Für Disponenten',
-    driver: 'Für Fahrer',
-    law: 'Gesetze & Vorschriften',
-    updates: 'Regeländerungen',
+    dispatch: 'TMS & Disposition',
+    driver: 'Fahrerkommunikation',
+    law: 'Transport-Glossar',
+    updates: 'Pilot-Simulation',
     imprint: 'Impressum',
     privacy: 'Datenschutz',
     cookies: 'Cookies',
@@ -32,10 +32,10 @@ const copy = {
     drivers: 'Komunikacija sa vozačima',
     pilot: 'Provera pilota',
     practice: 'Stručni članci',
-    dispatch: 'Za disponente',
-    driver: 'Za vozače',
-    law: 'Zakoni i propisi',
-    updates: 'Promene pravila',
+    dispatch: 'TMS i dispozicija',
+    driver: 'Komunikacija sa vozačima',
+    law: 'Transportni rečnik',
+    updates: 'Simulacija pilota',
     imprint: 'Impresum',
     privacy: 'Privatnost',
     cookies: 'Kolačići',
@@ -81,10 +81,10 @@ export default function SiteFooter({ lang }) {
         <nav>
           <h2>{t.knowledge}</h2>
           <a href={sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}>{t.practice}</a>
-          <a href={`${sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}#dispatch`}>{t.dispatch}</a>
-          <a href={`${sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}#drivers`}>{t.driver}</a>
-          <a href={`${sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}#law`}>{t.law}</a>
-          <a href={`${sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}#updates`}>{t.updates}</a>
+          <a href={sr ? '/sr/praksa-znanje/zasto-tms-ne-menja-disponente' : '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen'}>{t.dispatch}</a>
+          <a href={sr ? '/sr/komunikacija-vozaci' : '/de/fahrerkommunikation'}>{t.driver}</a>
+          <a href={sr ? '/sr/recnik' : '/de/glossar'}>{t.law}</a>
+          <a href={sr ? '/sr/primer-pilota' : '/de/pilot-beispiel'}>{t.updates}</a>
         </nav>
 
         <nav>

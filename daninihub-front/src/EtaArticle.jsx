@@ -1,4 +1,5 @@
 import './KnowledgeArticle.css'
+import { driverCommunicationArticlePaths } from './KnowledgePaths'
 
 const article = {
   de: {
@@ -62,6 +63,11 @@ const article = {
     relatedText: 'Wie aus Systemdaten durch Faktenprüfung, Entscheidung, Kommunikation und Übergabe ein belastbarer operativer Vorgang wird.',
     relatedLink: '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
     relatedCta: 'Grundlagenartikel lesen',
+    nextLabel: 'Nächster Praxisartikel',
+    nextTitle: 'Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen',
+    nextText: 'Wie klarer Tourbezug, sichere Rückbestätigung und Dokumentation eine Nachricht zu einem geschlossenen operativen Vorgang machen.',
+    nextLink: driverCommunicationArticlePaths.de,
+    nextCta: 'Artikel zur Fahrerkommunikation lesen',
     back: 'Praxis & Wissen',
     ctaEyebrow: 'PILOT FIRST',
     ctaTitle: 'Statuskommunikation an einem klar begrenzten Ablauf testen.',
@@ -129,6 +135,11 @@ const article = {
     relatedText: 'Kako se od sistemskih podataka, kroz proveru činjenica, odluku, komunikaciju i predaju, stvara pouzdan operativni slučaj.',
     relatedLink: '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
     relatedCta: 'Pročitaj osnovni članak',
+    nextLabel: 'Sledeći praktični članak',
+    nextTitle: 'Balkan–DACH komunikacija sa vozačima: gde greške stvaraju troškove',
+    nextText: 'Kako jasan kontekst ture, bezbedna povratna potvrda i dokumentacija pretvaraju poruku u zatvoren operativni proces.',
+    nextLink: driverCommunicationArticlePaths.sr,
+    nextCta: 'Pročitaj članak o komunikaciji',
     back: 'Praksa i znanje',
     ctaEyebrow: 'PILOT FIRST',
     ctaTitle: 'Testirajte statusnu komunikaciju na jasno ograničenom procesu.',
@@ -219,6 +230,13 @@ export default function EtaArticle({ lang }) {
           <p>{answer}</p>
         </details>)}
       </section>
+
+      <aside className="related-article-card related-article-next">
+        <span>{t.nextLabel}</span>
+        <h2>{t.nextTitle}</h2>
+        <p>{t.nextText}</p>
+        <a href={t.nextLink}>{t.nextCta} →</a>
+      </aside>
 
       <aside className="related-article-card">
         <span>{t.relatedLabel}</span>

@@ -13,6 +13,7 @@ const landingSource = read('daninihub-front/src/PublicLanding.jsx');
 const legalSource = read('daninihub-front/src/LegalKnowledge.jsx');
 const pilotSource = read('daninihub-front/src/PilotCheck.jsx');
 const businessSource = read('daninihub-front/src/BusinessPages.jsx');
+const driverArticleSource = read('daninihub-front/src/DriverCommunicationArticle.jsx');
 
 // Current public runtime and contact workflow.
 assert.match(serverRuntime, /mountPublicRuntime/);
@@ -41,7 +42,8 @@ for (const route of [
   '/de/continuity-support', '/sr/kontinuitet-podrska',
   '/de/fahrerkommunikation', '/sr/komunikacija-vozaci'
   ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
-  '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje'
+  '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje',
+  '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
@@ -86,6 +88,19 @@ for (const value of [
 }
 assert.match(legalSource, /DaniniHub übernimmt nicht die Rolle von Frachtführer, Spediteur, Verkehrsleiter/);
 assert.match(legalSource, /DaniniHub ne preuzima ulogu prevoznika, špeditera, Verkehrsleitera/);
+
+// Driver communication article must preserve safe, closed-loop operating boundaries.
+for (const value of [
+  'Fahrerkommunikation Balkan–DACH',
+  'Balkan–DACH komunikacija sa vozačima',
+  'sicheren Stillstand',
+  'bezbednom mirovanju',
+  'Zugestellt“ bedeutet nicht „verstanden',
+  'Isporučeno“ ne znači „razumljeno',
+  'Instrukcije vozaču, bezbednosne odluke'
+]) {
+  assert.match(driverArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
 
 // Pilot intake must submit structured operational fields and preserve human approval boundaries.
 for (const field of ['fleet', 'routes', 'tasks', 'availability', 'systems', 'decision']) {

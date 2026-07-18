@@ -83,7 +83,7 @@ export default function SiteFooter({ lang }) {
           <a href={sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}>{t.practice}</a>
           <a href={sr ? '/sr/praksa-znanje/zasto-tms-ne-menja-disponente' : '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen'}>{t.dispatch}</a>
           <a href={sr ? '/sr/praksa-znanje/eta-nije-obecanje' : '/de/praxis-wissen/eta-ist-keine-zusage'}>{t.eta}</a>
-          <a href={sr ? '/sr/komunikacija-vozaci' : '/de/fahrerkommunikation'}>{t.driver}</a>
+          <a href={sr ? '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach' : '/de/praxis-wissen/fahrerkommunikation-balkan-dach'}>{t.driver}</a>
           <a href={sr ? '/sr/recnik' : '/de/glossar'}>{t.law}</a>
           <a href={sr ? '/sr/primer-pilota' : '/de/pilot-beispiel'}>{t.updates}</a>
         </nav>

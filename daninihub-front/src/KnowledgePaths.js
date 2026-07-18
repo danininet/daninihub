@@ -7,3 +7,8 @@ export const etaArticlePaths = {
   de: '/de/praxis-wissen/eta-ist-keine-zusage',
   sr: '/sr/praksa-znanje/eta-nije-obecanje',
 }
+
+export const driverCommunicationArticlePaths = {
+  de: '/de/praxis-wissen/fahrerkommunikation-balkan-dach',
+  sr: '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
+}

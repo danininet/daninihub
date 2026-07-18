@@ -15,6 +15,7 @@ const routePairs = [
   ['/de/praxis-wissen', '/sr/praksa-znanje'],
   ['/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'],
   ['/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje'],
+  ['/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'],
   ['/de/pilot-beispiel', '/sr/primer-pilota'],
   ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
   ['/de/impressum', '/sr/impressum'],

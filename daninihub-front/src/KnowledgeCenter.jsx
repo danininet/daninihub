@@ -2,7 +2,8 @@ import { useState } from 'react'
 import './KnowledgeCenter.css'
 import './KnowledgeArticle.css'
 import EtaArticle from './EtaArticle'
-import { etaArticlePaths, tmsArticlePaths } from './KnowledgePaths'
+import DriverCommunicationArticle from './DriverCommunicationArticle'
+import { driverCommunicationArticlePaths, etaArticlePaths, tmsArticlePaths } from './KnowledgePaths'
 
 const copy = {
   de: {
@@ -139,21 +140,23 @@ const editorial = {
     eyebrow: 'PRAXIS & WISSEN · BALKAN–DACH', title: 'Operatives Wissen für Transportteams.',
     lead: 'Fachbeiträge, Checklisten und Praxisbeispiele über Status, ETA, Fahrerkommunikation, Eskalation und belastbare Schichtübergaben.',
     featured: 'Grundlagenartikel', read: 'Artikel lesen', more: 'Neu veröffentlicht', categories: 'Themenfelder', upcoming: 'In redaktioneller Vorbereitung',
-    etaMeta: '9 Min. Lesezeit · ETA & Status',
-    etaTitle: 'ETA ist keine Zusage: Transportstatus richtig kommunizieren',
-    etaLead: 'Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt sauber trennen – mit einer sofort nutzbaren 6-Bausteine-Formel.',
+    published: [
+      ['9 Min. Lesezeit · ETA & Status', 'ETA ist keine Zusage: Transportstatus richtig kommunizieren', 'Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt sauber trennen – mit einer sofort nutzbaren 6-Bausteine-Formel.', etaArticlePaths.de],
+      ['10 Min. Lesezeit · Fahrerkommunikation', 'Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen', 'Wie eindeutiger Tourbezug, sichere Rückbestätigung und ein gemeinsamer Datensatz Missverständnisse und unnötige Folgekosten verhindern.', driverCommunicationArticlePaths.de],
+    ],
     topics: [['DISPOSITION','TMS & menschliche Entscheidung','Wo Systemdaten enden und operative Bewertung beginnt.'],['FAHRER','Balkan–DACH Kommunikation','Wie Status, Anweisungen und Abweichungen eindeutig bestätigt werden.'],['KONTINUITÄT','Spitzenlast & Übergabe','Wie definierte Unterstützung interne Engpässe abfedern kann.']],
-    planned: ['Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen','Schichtübergabe in der Disposition: 10 Pflichtinformationen'],
+    planned: ['Schichtübergabe in der Disposition: 10 Pflichtinformationen'],
   },
   sr: {
     eyebrow: 'PRAKSA I ZNANJE · BALKAN–DACH', title: 'Operativno znanje za transportne timove.',
     lead: 'Stručni članci, kontrolne liste i praktični primeri o statusu, ETA, komunikaciji sa vozačima, eskalaciji i pouzdanoj predaji smene.',
     featured: 'Osnovni stručni članak', read: 'Pročitaj članak', more: 'Novo objavljeno', categories: 'Tematske oblasti', upcoming: 'U uredničkoj pripremi',
-    etaMeta: '9 min. čitanja · ETA i status',
-    etaTitle: 'ETA nije obećanje: pravilna komunikacija statusa',
-    etaLead: 'Jasno razdvojite planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru uz odmah primenljivu formulu od šest elemenata.',
+    published: [
+      ['9 min. čitanja · ETA i status', 'ETA nije obećanje: pravilna komunikacija statusa', 'Jasno razdvojite planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru uz odmah primenljivu formulu od šest elemenata.', etaArticlePaths.sr],
+      ['10 min. čitanja · Komunikacija sa vozačima', 'Balkan–DACH komunikacija sa vozačima: gde greške stvaraju troškove', 'Kako jasan kontekst ture, bezbedna povratna potvrda i zajednički zapis sprečavaju nesporazume i nepotrebne posledice.', driverCommunicationArticlePaths.sr],
+    ],
     topics: [['DISPOZICIJA','TMS i ljudska odluka','Gde se završavaju sistemski podaci, a počinje operativna procena.'],['VOZAČI','Balkan–DACH komunikacija','Kako se status, instrukcije i odstupanja jasno potvrđuju.'],['KONTINUITET','Opterećenje i predaja','Kako ograničena podrška može da pokrije interni manjak kapaciteta.']],
-    planned: ['Balkan–DACH komunikacija: gde greške stvaraju troškove','Predaja smene u dispoziciji: 10 obaveznih informacija'],
+    planned: ['Predaja smene u dispoziciji: 10 obaveznih informacija'],
   },
 }
 
@@ -166,10 +169,12 @@ function KnowledgeIndex({ lang }) {
       <div className="knowledge-section-head"><span>01</span><h2>{e.featured}</h2></div>
       <article className="featured-article"><div><span>{t.meta}</span><h2>{t.title}</h2><p>{t.lead}</p><a href={tmsArticlePaths[lang]}>{e.read} →</a></div><aside><strong>{t.summaryTitle}</strong><p>{t.summary}</p></aside></article>
       <div className="knowledge-section-head section-space"><span>02</span><h2>{e.more}</h2></div>
-      <article className="published-article-card">
-        <div><span>{e.etaMeta}</span><h2>{e.etaTitle}</h2><p>{e.etaLead}</p></div>
-        <a href={etaArticlePaths[lang]}>{e.read} →</a>
-      </article>
+      <div className="published-articles-list">
+        {e.published.map(([meta, title, lead, href]) => <article className="published-article-card" key={href}>
+          <div><span>{meta}</span><h2>{title}</h2><p>{lead}</p></div>
+          <a href={href}>{e.read} →</a>
+        </article>)}
+      </div>
       <div className="knowledge-section-head section-space"><span>03</span><h2>{e.categories}</h2></div>
       <div className="knowledge-category-grid">{e.topics.map(([tag,title,text])=><article key={tag}><span>{tag}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
       <div className="knowledge-section-head section-space"><span>04</span><h2>{e.upcoming}</h2></div>
@@ -183,6 +188,7 @@ export default function KnowledgeCenter({ lang }) {
   const sr = lang === 'sr'
   if (location.pathname === (sr ? '/sr/praksa-znanje' : '/de/praxis-wissen')) return <KnowledgeIndex lang={lang}/>
   if (location.pathname === etaArticlePaths[lang]) return <EtaArticle lang={lang}/>
+  if (location.pathname === driverCommunicationArticlePaths[lang]) return <DriverCommunicationArticle lang={lang}/>
 
   const videoStructuredData = {
     '@context': 'https://schema.org',

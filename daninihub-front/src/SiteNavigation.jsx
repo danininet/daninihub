@@ -7,7 +7,7 @@ const links = {
     continuity: 'Continuity Support',
     drivers: 'Fahrerkommunikation',
     pilot: 'Pilot-Check',
-    knowledge: 'Praxis & Recht',
+    knowledge: 'Praxis & Wissen',
     contact: 'Kontakt',
     menu: 'Menü'
   },
@@ -17,7 +17,7 @@ const links = {
     continuity: 'Podrška kontinuitetu',
     drivers: 'Komunikacija sa vozačima',
     pilot: 'Provera pilota',
-    knowledge: 'Procedure i propisi',
+    knowledge: 'Praksa i znanje',
     contact: 'Kontakt',
     menu: 'Meni'
   }
@@ -32,7 +32,7 @@ export default function SiteNavigation({ lang }) {
     [t.drivers, sr ? '/sr/komunikacija-vozaci' : '/de/fahrerkommunikation']
   ]
   const pilot = sr ? '/sr/provera-pilota' : '/de/pilot-check'
-  const knowledge = sr ? '/sr/praksa-propisi' : '/de/praxis-wissen'
+  const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
   const home = sr ? '/sr/' : '/de/'
 
   return <header className="site-nav">
@@ -42,13 +42,14 @@ export default function SiteNavigation({ lang }) {
     </a>
 
     <nav className="site-nav-desktop" aria-label={sr ? 'Glavna navigacija' : 'Hauptnavigation'}>
+      <a href={home}>{sr?'Početna':'Start'}</a>
       <details className="site-nav-dropdown">
         <summary>{t.services}</summary>
         <div>{serviceLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div>
       </details>
-      <a href={pilot}>{t.pilot}</a>
       <a href={knowledge}>{t.knowledge}</a>
-      <a href="#contact">{t.contact}</a>
+      <a href={pilot}>{t.pilot}</a>
+      <a href={home+'#contact'}>{t.contact}</a>
     </nav>
 
     <div className="site-nav-actions">
@@ -62,11 +63,12 @@ export default function SiteNavigation({ lang }) {
     <details className="site-nav-mobile">
       <summary>{t.menu}</summary>
       <nav>
+        <a href={home}>{sr?'Početna':'Start'}</a>
         <strong>{t.services}</strong>
         {serviceLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
-        <a href={pilot}>{t.pilot}</a>
         <a href={knowledge}>{t.knowledge}</a>
-        <a href="#contact">{t.contact}</a>
+        <a href={pilot}>{t.pilot}</a>
+        <a href={home+'#contact'}>{t.contact}</a>
         <div className="site-nav-mobile-langs"><a href="/de/">DE</a><a href="/sr/">SR</a></div>
       </nav>
     </details>

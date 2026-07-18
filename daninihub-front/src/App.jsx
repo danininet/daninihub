@@ -10,6 +10,7 @@ import './App.css'
 
 export default function App() {
   const [lang, setLang] = useState(() => location.pathname.startsWith('/sr') ? 'sr' : 'de')
+
   useEffect(() => {
     const sr = lang === 'sr'
     const path = location.pathname
@@ -26,10 +27,19 @@ export default function App() {
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical)
     document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical)
   }, [lang])
-  if (/pilot-check|provera-pilota/.test(location.pathname)) return <PilotCheck lang={lang}/>
-  if (/praxis-wissen|praksa-znanje/.test(location.pathname)) return <KnowledgeCenter lang={lang}/>
-  if (/leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(location.pathname)) return <BusinessPages lang={lang}/>
+
+  let page
+  if (/pilot-check|provera-pilota/.test(location.pathname)) page = <PilotCheck lang={lang}/>
+  else if (/praxis-wissen|praksa-znanje/.test(location.pathname)) page = <KnowledgeCenter lang={lang}/>
+  else if (/leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(location.pathname)) page = <BusinessPages lang={lang}/>
+  else page = <PublicLanding lang={lang} setLang={setLang}/>
+
   const isHome = /^\/(de|sr)\/?$/.test(location.pathname) || location.pathname === '/'
-  if (isHome) return <div className="public-app"><SiteNavigation lang={lang}/><PublicLanding lang={lang} setLang={setLang}/><ServiceQuickNav lang={lang}/><SiteFooter lang={lang}/></div>
-  return <PublicLanding lang={lang} setLang={setLang}/>
+
+  return <div className="public-app">
+    <SiteNavigation lang={lang}/>
+    {page}
+    {isHome && <ServiceQuickNav lang={lang}/>} 
+    <SiteFooter lang={lang}/>
+  </div>
 }

@@ -5,8 +5,10 @@ on:
     paths:
       - 'daninihub-front/src/DispatchPilotWorkspace.jsx'
       - 'daninihub-front/src/DispatchPilotWorkspaceV3.jsx'
+      - 'daninihub-front/src/DispatchPilotWorkspaceV4.jsx'
       - 'daninihub-front/src/DispatchPilotWorkspace.css'
       - 'daninihub-front/src/DispatchPilotWorkspaceV2.css'
+      - 'daninihub-front/src/DispatchPilotWorkspaceV4.css'
       - 'daninihub-front/src/App.jsx'
       - 'core/dispatch-ai-structure.js'
       - 'server-dispatch-runtime.js'

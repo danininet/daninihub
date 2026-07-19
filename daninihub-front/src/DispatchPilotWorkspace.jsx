@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer, useState } from 'react'
 import './DispatchPilotWorkspace.css'
+import './DispatchPilotWorkspaceV2.css'
 
 const initialState = {
   caseId: 'TEST-DH-001',

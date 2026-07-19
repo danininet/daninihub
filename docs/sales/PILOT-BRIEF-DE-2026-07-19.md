@@ -7,18 +7,33 @@ Version: 19.07.2026
 
 Der DaniniHub DACH Operations Desk ist eine klar begrenzte operative Unterstützung für Transportunternehmen mit Relationen zwischen dem Balkan und Deutschland, Österreich oder der Schweiz.
 
-Der Pilot ersetzt weder das bestehende TMS noch das Dispositionsteam oder die verantwortliche Person des Auftraggebers. Auf einem kleinen, definierten Umfang wird geprüft, ob ein strukturierter Umgang mit Status, ETA, deutschsprachiger Kommunikation, Dokumentation, Abweichungen und Übergaben unnötige Unterbrechungen und Rückfragen reduziert.
+Der Pilot ersetzt weder das bestehende TMS noch das Dispositionsteam oder die verantwortliche Person des Auftraggebers. Auf einem kleinen, vorab definierten Umfang wird geprüft, ob ein strukturierter Umgang mit Status, ETA, deutschsprachiger Kommunikation, Dokumentation, Abweichungen und Übergaben unnötige Unterbrechungen und Rückfragen reduziert.
 
-## Vorgeschlagener Startumfang
+## Kostenfreie Prüfung vor dem Pilot
 
-- Dauer: 7 Kalendertage;
-- eine vorab definierte Relation oder höchstens drei Fahrzeuge/Fälle;
-- vereinbartes Zeitfenster der Unterstützung;
+Vor dem bezahlten Pilot sind kostenfrei verfügbar:
+
+- Pilot-Check;
+- Erstgespräch bis 20 Minuten;
+- öffentlicher Operations-Demo und Fachinhalte;
+- Prüfung eines anonymisierten oder vollständig fiktiven Falls;
+- Einschätzung, ob ein sinnvoller und klar begrenzter Pilotumfang besteht.
+
+Die kostenfreie Prüfung umfasst keine Arbeit an realen Transporten, keinen Kontakt mit realen Fahrern oder Kunden, keinen Zugriff auf das TMS des Auftraggebers und keine Verarbeitung realer personenbezogener Daten.
+
+## Bezahlter Founding Pilot
+
+- Dauer: 14 Kalendertage;
+- eine vorab definierte Relation;
+- höchstens drei Fahrzeuge oder operative Fälle;
+- vereinbartes Arbeitszeitfenster an Werktagen;
+- höchstens 8 operative Stunden insgesamt;
 - ausschließlich schriftlich definierte operative Aufgaben;
 - eine verantwortliche Person beim Auftraggeber für Freigaben und Eskalationen;
+- Abschlussbericht und Auswertung;
 - keine automatische Verlängerung.
 
-Der endgültige Umfang entsteht erst nach dem Pilot-Check und einer schriftlichen Vereinbarung.
+Der endgültige Umfang entsteht erst nach Pilot-Check, Gespräch und schriftlicher Vereinbarung.
 
 ## Mögliche Unterstützung durch DaniniHub
 
@@ -70,7 +85,7 @@ Während des Piloten werden mindestens dokumentiert:
 - offene Fragen;
 - Risiko und Frist;
 - erforderliche Entscheidung und verantwortliche Person;
-- vorbereitete oder versendete Mitteilungen;
+- vorbereitete oder freigegebene Mitteilungen;
 - nächster Kontrollzeitpunkt;
 - abschließende Fallübergabe.
 
@@ -89,18 +104,24 @@ Der Pilot garantiert weder einen wirtschaftlichen Erfolg noch Kosteneinsparungen
 
 ## Preis und Zahlung
 
-Nach dem Pilot-Check wird ein schriftliches Festpreisangebot erstellt. Die Kalkulation richtet sich nach Fahrzeugen/Fällen, Erreichbarkeitszeit, Kommunikationskanälen, Dokumentationsumfang und Eskalationsniveau.
+Für die ersten drei bezahlten Founding Pilots beträgt der Validierungspreis 490 EUR netto:
 
-Es gibt keine kostenlose Testphase. Der Pilot beginnt erst nach:
+- 50 % nach Annahme des schriftlichen Leistungsumfangs;
+- 50 % nach Übergabe des Abschlussberichts;
+- zusätzlicher Aufwand nur nach neuer schriftlicher Freigabe.
+
+Schließt der Auftraggeber innerhalb von 7 Tagen nach der Auswertung eine erste monatliche Fortsetzung ab, wird die gesamte Pilotgebühr auf diese erste Fortsetzung angerechnet.
+
+Der Pilot beginnt erst nach:
 
 1. schriftlicher Annahme des Leistungsumfangs;
-2. Vereinbarung von Preis und Zahlungsweise;
+2. Vereinbarung der Zahlungsweise;
 3. Bestätigung von Verantwortlichkeiten und Kommunikationskanälen;
-4. Erfüllung der rechtlichen und technischen Voraussetzungen.
+4. Erfüllung der rechtlichen, technischen und datenschutzbezogenen Voraussetzungen.
 
 ## Abschluss
 
-Nach sieben Tagen erfolgt eine kurze gemeinsame Auswertung. Der Pilot verlängert sich nicht automatisch. Jede Fortsetzung erfordert eine neue schriftliche Vereinbarung.
+Nach 14 Tagen erfolgt eine kurze gemeinsame Auswertung. Der Pilot verlängert sich nicht automatisch. Jede Fortsetzung erfordert eine neue schriftliche Vereinbarung.
 
 ## Nächster Schritt
 

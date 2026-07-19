@@ -11,7 +11,7 @@
     "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",
     "start": "node server.js",
     "dev": "node server.js",
-    "check:syntax": "node --check danini.js && node --check server.js && node --check server-guided-analysis-runtime.js && node --check server-gumroad-runtime.js && node --check server-admin-runtime.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",
+    "check:syntax": "node --check danini.js && node --check server.js && node --check server-public-runtime.js && node --check server-guided-analysis-runtime.js && node --check server-gumroad-runtime.js && node --check server-admin-runtime.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",
     "check:tree": "find . \\( -path './node_modules' -o -path './.git' -o -path './_archive' \\) -prune -o -type f -print | sort",
     "health": "node scripts/healthcheck.js",
     "agent": "node danini.js",

@@ -10,11 +10,13 @@ on:
       - 'daninihub-front/src/App.jsx'
       - 'core/dispatch-ai-structure.js'
       - 'server-dispatch-runtime.js'
+      - 'dispatch-access-bootstrap.js'
       - 'dispatch-case-store.js'
       - 'server.js'
       - 'scripts/test-dispatch-workspace-contract.js'
       - 'scripts/test-dispatch-secure-runtime.js'
       - 'scripts/test-dispatch-ai-structure.js'
+      - 'scripts/test-dispatch-access-bootstrap.js'
       - 'package.json'
       - '.github/workflows/dispatch-pilot-workspace.yml'
 
@@ -65,6 +67,9 @@ jobs:
 
       - name: Dispatch AI structuring contract
         run: npm run test:dispatch-ai
+
+      - name: Dispatch access bootstrap contract
+        run: npm run test:dispatch-access
 
       - name: Production frontend build
         run: npm run build

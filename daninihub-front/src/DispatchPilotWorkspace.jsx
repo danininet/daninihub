@@ -1,8 +1,10 @@
-import { useMemo, useReducer, useState } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
 import './DispatchPilotWorkspace.css'
+import './DispatchPilotWorkspaceV2.css'
 
 const initialState = {
   caseId: 'TEST-DH-001',
+  caseStatus: 'DRAFT',
   route: 'Duisburg → Beograd',
   vehicle: 'TEST-TRUCK-01',
   customer: 'Demo Kunde GmbH',
@@ -36,13 +38,21 @@ function now() {
 }
 
 function reducer(state, action) {
-  if (action.type === 'UPDATE') {
-    return { ...state, [action.field]: action.value }
+  if (action.type === 'UPDATE') return { ...state, [action.field]: action.value }
+  if (action.type === 'LOAD') {
+    return {
+      ...initialState,
+      ...action.payload,
+      caseId: action.caseId,
+      caseStatus: action.status,
+      approval: action.approval
+    }
   }
   if (action.type === 'APPROVE') {
     return {
       ...state,
       approval: 'APPROVED',
+      caseStatus: 'IN_REVIEW',
       audit: [...state.audit, { time: now(), event: 'Nacrt je ručno odobren. Slanje ostaje onemogućeno u pilot verziji.' }]
     }
   }
@@ -50,6 +60,7 @@ function reducer(state, action) {
     return {
       ...state,
       approval: 'REJECTED',
+      caseStatus: 'DRAFT',
       audit: [...state.audit, { time: now(), event: 'Nacrt je ručno odbijen i vraćen na doradu.' }]
     }
   }
@@ -62,6 +73,24 @@ function reducer(state, action) {
   }
   if (action.type === 'RESET') return initialState
   return state
+}
+
+async function request(path, options = {}) {
+  const response = await fetch(path, {
+    credentials: 'same-origin',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  })
+  const data = await response.json().catch(() => ({}))
+  if (response.status === 401) {
+    location.reload()
+    throw new Error('Interna sesija je istekla.')
+  }
+  if (!response.ok) throw new Error(data.error || 'DISPATCH_REQUEST_FAILED')
+  return data
 }
 
 function ListEditor({ title, items, onChange }) {
@@ -79,6 +108,10 @@ function ListEditor({ title, items, onChange }) {
 export default function DispatchPilotWorkspace() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [note, setNote] = useState('')
+  const [savedCases, setSavedCases] = useState([])
+  const [storageMode, setStorageMode] = useState('—')
+  const [syncState, setSyncState] = useState('idle')
+  const [syncMessage, setSyncMessage] = useState('')
 
   const handover = useMemo(() => [
     `Slučaj: ${state.caseId}`,
@@ -93,9 +126,73 @@ export default function DispatchPilotWorkspace() {
     `Status nacrta: ${state.approval}`
   ].join('\n'), [state])
 
+  const refreshCases = async () => {
+    const data = await request('/api/v1/dispatch/cases?limit=50')
+    setSavedCases(data.cases || [])
+    setStorageMode(data.storageMode || '—')
+  }
+
+  useEffect(() => {
+    refreshCases().catch(error => setSyncMessage(error.message))
+  }, [])
+
   const addNote = () => {
     dispatch({ type: 'ADD_NOTE', note })
     setNote('')
+  }
+
+  const saveCase = async () => {
+    setSyncState('saving')
+    setSyncMessage('')
+    try {
+      const payload = {
+        ...state,
+        fictitious: true,
+        realData: false,
+        savedBy: 'DaniniHub internal operator'
+      }
+      const data = await request(`/api/v1/dispatch/cases/${encodeURIComponent(state.caseId)}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          status: state.caseStatus,
+          approval: state.approval,
+          payload
+        })
+      })
+      setStorageMode(data.storageMode || '—')
+      setSyncMessage(`Sačuvano ${new Date(data.case.updatedAt).toLocaleString('de-DE')}`)
+      await refreshCases()
+    } catch (error) {
+      setSyncMessage(error.message)
+    } finally {
+      setSyncState('idle')
+    }
+  }
+
+  const loadCase = async caseId => {
+    setSyncState('loading')
+    setSyncMessage('')
+    try {
+      const data = await request(`/api/v1/dispatch/cases/${encodeURIComponent(caseId)}`)
+      dispatch({
+        type: 'LOAD',
+        caseId: data.case.caseId,
+        status: data.case.status,
+        approval: data.case.approval,
+        payload: data.case.payload
+      })
+      setStorageMode(data.storageMode || '—')
+      setSyncMessage(`Učitan ${data.case.caseId}`)
+    } catch (error) {
+      setSyncMessage(error.message)
+    } finally {
+      setSyncState('idle')
+    }
+  }
+
+  const logout = async () => {
+    await request('/api/v1/dispatch/logout', { method: 'POST', body: '{}' }).catch(() => {})
+    location.reload()
   }
 
   return <main className="dpw-shell">
@@ -105,8 +202,24 @@ export default function DispatchPilotWorkspace() {
         <h1>DaniniHub Dispatch Pilot Workspace</h1>
         <p>Strukturiranje slučaja, ljudsko odobrenje, audit i radno sposobna predaja. Bez stvarnih podataka i bez automatskog slanja.</p>
       </div>
-      <button className="dpw-secondary" type="button" onClick={() => dispatch({ type: 'RESET' })}>Resetuj fiktivni slučaj</button>
+      <div className="dpw-header-actions">
+        <button type="button" onClick={saveCase} disabled={syncState !== 'idle'}>{syncState === 'saving' ? 'Čuvam…' : 'Sačuvaj slučaj'}</button>
+        <button className="dpw-secondary" type="button" onClick={() => dispatch({ type: 'RESET' })}>Novi fiktivni slučaj</button>
+        <button className="dpw-secondary" type="button" onClick={logout}>Odjava</button>
+      </div>
     </header>
+
+    <section className="dpw-card dpw-sync-panel">
+      <div><strong>Storage:</strong> {storageMode}</div>
+      <div><strong>Status:</strong> {syncMessage || 'Interna sesija aktivna.'}</div>
+    </section>
+
+    <section className="dpw-card dpw-case-controls">
+      <label>Fiktivni ID slučaja<input value={state.caseId} onChange={event => dispatch({ type: 'UPDATE', field: 'caseId', value: event.target.value.toUpperCase() })} /></label>
+      <label>Status slučaja<select value={state.caseStatus} onChange={event => dispatch({ type: 'UPDATE', field: 'caseStatus', value: event.target.value })}><option>DRAFT</option><option>IN_REVIEW</option><option>CLOSED</option></select></label>
+      <label>Relacija<input value={state.route} onChange={event => dispatch({ type: 'UPDATE', field: 'route', value: event.target.value })} /></label>
+      <label>Vozilo<input value={state.vehicle} onChange={event => dispatch({ type: 'UPDATE', field: 'vehicle', value: event.target.value })} /></label>
+    </section>
 
     <section className="dpw-overview" aria-label="Pregled slučaja">
       <article><span>Slučaj</span><strong>{state.caseId}</strong></article>
@@ -114,6 +227,11 @@ export default function DispatchPilotWorkspace() {
       <article><span>Vozilo</span><strong>{state.vehicle}</strong></article>
       <article><span>Rizik</span><strong>{state.risk}</strong></article>
       <article><span>Nacrt</span><strong>{state.approval}</strong></article>
+    </section>
+
+    <section className="dpw-card dpw-saved">
+      <h2>Sačuvani fiktivni slučajevi</h2>
+      {savedCases.length ? <div className="dpw-saved-list">{savedCases.map(item => <button type="button" key={item.caseId} onClick={() => loadCase(item.caseId)} disabled={syncState !== 'idle'}><strong>{item.caseId}</strong><span>{item.status} · {item.approval}</span></button>)}</div> : <p>Još nema sačuvanih slučajeva.</p>}
     </section>
 
     <section className="dpw-card dpw-raw">

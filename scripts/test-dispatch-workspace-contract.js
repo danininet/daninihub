@@ -19,7 +19,11 @@ const requiredWorkspaceText = [
   'Automatsko slanje je deaktivirano',
   'Audit događaja',
   'Radno sposobna predaja',
-  'Ne predstavlja instrukciju vozaču'
+  'Ne predstavlja instrukciju vozaču',
+  'Sačuvaj slučaj',
+  'Sačuvani fiktivni slučajevi',
+  'Novi fiktivni slučaj',
+  'Odjava'
 ];
 
 for (const text of requiredWorkspaceText) {
@@ -34,16 +38,27 @@ for (const text of [
   assert(app.includes(text), `Required Dispatch route boundary missing: ${text}`);
 }
 
+for (const text of [
+  "credentials: 'same-origin'",
+  '/api/v1/dispatch/cases',
+  '/api/v1/dispatch/logout',
+  'fictitious: true',
+  'realData: false'
+]) {
+  assert(workspace.includes(text), `Required protected Dispatch behavior missing: ${text}`);
+}
+
 for (const forbidden of [
-  'fetch(',
   'axios',
   'localStorage',
   'sessionStorage',
   'navigator.sendBeacon',
   'window.open(',
-  'mailto:'
+  'mailto:',
+  'http://',
+  'https://'
 ]) {
-  assert(!workspace.includes(forbidden), `Forbidden external or persistent action found: ${forbidden}`);
+  assert(!workspace.includes(forbidden), `Forbidden external or browser persistence action found: ${forbidden}`);
 }
 
 for (const state of ["approval: 'PENDING'", "approval: 'APPROVED'", "approval: 'REJECTED'"]) {

@@ -27,7 +27,7 @@ assert.match(serverRuntime, /INCOMPLETE_PILOT_DATA/);
 assert.match(serverRuntime, /confirmationSent/);
 assert.match(serverRuntime, /lead-review/);
 assert.match(serverRuntime, /sendQualifiedFollowup/);
-assert.match(serverRuntime, /30-Tage-Pilotprojekt/);
+assert.match(serverRuntime, /14-tägigen DaniniHub Founding Pilot/);
 assert.match(serverRuntime, /followup-sent/);
 assert.match(serverRuntime, /DANINI_ADMIN_SECRET/);
 assert.match(serverRuntime, /DANINI_SESSION_SECRET/);

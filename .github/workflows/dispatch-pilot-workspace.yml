@@ -1,0 +1,56 @@
+name: Dispatch Pilot Workspace
+
+on:
+  pull_request:
+    paths:
+      - 'daninihub-front/src/DispatchPilotWorkspace.jsx'
+      - 'daninihub-front/src/DispatchPilotWorkspace.css'
+      - 'daninihub-front/src/App.jsx'
+      - 'scripts/test-dispatch-workspace-contract.js'
+      - 'package.json'
+      - '.github/workflows/dispatch-pilot-workspace.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax check
+        run: npm run check:syntax
+
+      - name: Core contract
+        run: npm run test:core
+
+      - name: Guided analysis contract
+        run: npm run test:guided
+
+      - name: Gumroad contract
+        run: npm run test:gumroad
+
+      - name: Admin contract
+        run: npm run test:admin
+
+      - name: Public site contracts
+        run: npm run test:public
+
+      - name: Dispatch safety contract
+        run: npm run test:dispatch
+
+      - name: Production frontend build
+        run: npm run build

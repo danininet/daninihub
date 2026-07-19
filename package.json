@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "DaniniHub deploy package.",
   "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "directories": {"doc": "docs"},
   "scripts": {
     "build": "npm run build:front",
     "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",
@@ -23,8 +21,9 @@
     "test:gumroad": "node scripts/test-gumroad-activation-contract.js",
     "test:admin": "node scripts/test-admin-runtime-contract.js",
     "test:pilot-policy": "node scripts/test-pilot-policy-contract.js",
+    "test:dispatch": "node scripts/test-dispatch-workspace-contract.js",
     "test:public": "node scripts/test-public-content-contract.js && node scripts/test-contact-lead-store.js && npm run test:pilot-policy",
-    "test:os": "npm run test:core && npm run test:guided && npm run test:gumroad && npm run test:admin && npm run test:public",
+    "test:os": "npm run test:core && npm run test:guided && npm run test:gumroad && npm run test:admin && npm run test:public && npm run test:dispatch",
     "test:artifact": "node scripts/test-artifact.js",
     "test:pdf": "node scripts/test-pdf.js",
     "audit:last": "node scripts/audit-last.js",

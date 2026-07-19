@@ -1,11 +1,11 @@
-# DaniniHub DACH Operations Desk — begrenztes Pilotprojekt
+# DaniniHub Balkan Continuity Support — begrenztes Pilotprojekt
 
 Status: Kundenentwurf, nicht vor rechtlicher und operativer Aktivierung versenden
 Version: 19.07.2026
 
 ## Zweck
 
-Der DaniniHub DACH Operations Desk ist eine klar begrenzte operative Unterstützung für Transportunternehmen mit Relationen zwischen dem Balkan und Deutschland, Österreich oder der Schweiz.
+Der DaniniHub Balkan Continuity Support ist eine klar begrenzte operative Unterstützung für Transportunternehmen im DACH-Raum, die mit Fahrern, Frachtführern, Niederlassungen oder Partnern im Balkanraum arbeiten.
 
 Der Pilot ersetzt weder das bestehende TMS noch das Dispositionsteam oder die verantwortliche Person des Auftraggebers. Auf einem kleinen, vorab definierten Umfang wird geprüft, ob ein strukturierter Umgang mit Status, ETA, deutschsprachiger Kommunikation, Dokumentation, Abweichungen und Übergaben unnötige Unterbrechungen und Rückfragen reduziert.
 

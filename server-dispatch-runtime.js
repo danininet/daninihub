@@ -126,10 +126,8 @@ function mountDispatchRuntime(app, options = {}) {
         res.set('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(createSessionToken())}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; Secure; SameSite=Strict`);
         return res.redirect(303, `${DISPATCH_PATH}?lang=${verified.lang}`);
       }
-      const message = lang === 'de' ? 'Der Zugangslink ist ungültig oder abgelaufen.' : 'Pristupni link je nevažeći ili je istekao.';
-      return res.status(401).type('html').send(renderAccessPage(lang, { message }));
+      return res.redirect(303, `${DISPATCH_PATH}?lang=${lang}`);
     }
-    if (!dispatchAuthorized(req)) return res.status(401).type('html').send(renderAccessPage(lang));
     return next();
   });
 

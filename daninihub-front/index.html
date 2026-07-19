@@ -20,30 +20,5 @@
     <meta name="twitter:card" content="summary_large_image"/>
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Dragan Zdravković","url":"https://daninihub.com","email":"info@daninihub.com","telephone":"+49 1573 0916621","address":{"@type":"PostalAddress","streetAddress":"Fischerstraße 54","postalCode":"47055","addressLocality":"Duisburg","addressCountry":"DE"},"knowsAbout":["Transportorganisation","Balkan–DACH Transportkommunikation","Disposition"]}</script>
   </head>
-  <body>
-    <div id="root"></div>
-    <script>
-      (() => {
-        const srArticle = '/sr/praksa-znanje/zasto-tms-ne-menja-disponente';
-        const correctId = 'wGFtA53BirQ';
-        if (location.pathname !== srArticle) return;
-
-        const repairVideoLinks = () => {
-          document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(frame => {
-            const correctSrc = `https://www.youtube-nocookie.com/embed/${correctId}?autoplay=1&rel=0`;
-            if (frame.getAttribute('src') !== correctSrc) frame.setAttribute('src', correctSrc);
-            frame.setAttribute('title', 'Dispečeri vs. softver: zašto TMS ne menja disponenta | DaniniHub');
-          });
-          document.querySelectorAll('a[href*="youtu.be/"], a[href*="youtube.com/watch"]').forEach(link => {
-            if (link.closest('.article-video')) link.setAttribute('href', `https://youtu.be/${correctId}`);
-          });
-        };
-
-        new MutationObserver(repairVideoLinks).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'href'] });
-        document.addEventListener('DOMContentLoaded', repairVideoLinks);
-        repairVideoLinks();
-      })();
-    </script>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+  <body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body>
 </html>

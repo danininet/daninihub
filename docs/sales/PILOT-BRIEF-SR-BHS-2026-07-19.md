@@ -7,18 +7,33 @@ Verzija: 19.07.2026.
 
 DaniniHub DACH Operations Desk je jasno ograničena operativna podrška za transportne firme sa Balkana koje rade sa Nemačkom, Austrijom ili Švajcarskom.
 
-Pilot ne menja postojeći TMS, disponentski tim niti odgovornu osobu naručioca. Cilj je da se na malom obimu proveri da li strukturisan rad sa statusima, ETA, nemačkom komunikacijom, dokumentacijom, odstupanjima i predajom smanjuje prekide i nepotrebna ponovna pitanja.
+Pilot ne menja postojeći TMS, disponentski tim niti odgovornu osobu naručioca. Na malom, unapred definisanom obimu proverava se da li strukturisan rad sa statusima, ETA, nemačkom komunikacijom, dokumentacijom, odstupanjima i predajom smanjuje prekide i nepotrebna ponovna pitanja.
 
-## Predloženi početni obim
+## Besplatna provera pre pilota
 
-- trajanje: 7 kalendarskih dana;
-- jedna unapred definisana relacija ili najviše tri vozila/slučaja;
-- dogovoreni vremenski prozor dostupnosti;
+Pre plaćenog pilota besplatno su dostupni:
+
+- Pilot-Check;
+- uvodni razgovor do 20 minuta;
+- javni operativni demo i stručni materijali;
+- pregled jednog anonimizovanog ili potpuno fiktivnog slučaja;
+- procena da li postoji smislen i jasno ograničen pilot-obim.
+
+Besplatna provera ne uključuje rad na stvarnoj turi, kontakt sa stvarnim vozačima ili klijentima, rad u klijentskom TMS-u niti obradu realnih ličnih podataka.
+
+## Plaćeni Founding Pilot
+
+- trajanje: 14 kalendarskih dana;
+- jedna unapred definisana relacija;
+- najviše tri vozila ili operativna slučaja;
+- dogovoreni radni prozor radnim danima;
+- najviše 8 operativnih sati ukupno;
 - samo unapred navedeni operativni zadaci;
 - jedna odgovorna osoba naručioca za odobrenja i eskalacije;
+- završni izveštaj i evaluacija;
 - bez automatskog produženja.
 
-Konačan obim nastaje tek nakon Pilot-Checka i pisanog dogovora.
+Konačan obim nastaje tek nakon Pilot-Checka, razgovora i pisanog dogovora.
 
 ## Šta DaniniHub može da podrži
 
@@ -70,7 +85,7 @@ Tokom pilota vodi se najmanje:
 - otvorena pitanja;
 - rizik i rok;
 - potrebna odluka i odgovorna osoba;
-- poslate ili pripremljene poruke;
+- pripremljene ili odobrene poruke;
 - vreme sledeće provere;
 - završna predaja slučaja.
 
@@ -89,18 +104,24 @@ Pilot ne garantuje poslovni rezultat, uštedu ili sprečavanje kašnjenja. On pr
 
 ## Cena i plaćanje
 
-Cena se daje kao fiksna pisana ponuda nakon Pilot-Checka, jer zavisi od broja vozila/slučajeva, vremena dostupnosti, komunikacionih kanala, obima dokumentacije i nivoa eskalacije.
+Za prva tri plaćena Founding Pilota validaciona cena iznosi 490 EUR neto:
 
-Nema besplatnog probnog perioda. Pilot počinje tek nakon:
+- 50% po prihvatanju pisanog obima;
+- 50% po završnom izveštaju;
+- dodatni rad samo uz novu pisanu saglasnost.
+
+Ako klijent u roku od 7 dana nakon evaluacije zaključi prvi mesečni nastavak, celokupna pilot-naknada uračunava se u cenu tog prvog nastavka.
+
+Pilot počinje tek nakon:
 
 1. pisanog prihvatanja obima;
-2. dogovora o ceni i načinu plaćanja;
+2. dogovora o načinu plaćanja;
 3. potvrde odgovornosti i kanala komunikacije;
-4. ispunjenih pravnih i tehničkih uslova.
+4. ispunjenih pravnih, tehničkih i data-protection uslova.
 
 ## Završetak
 
-Po isteku sedam dana sledi kratka zajednička evaluacija. Saradnja se ne produžava automatski. Svaki nastavak zahteva novi pisani dogovor.
+Po isteku 14 dana sledi kratka zajednička evaluacija. Saradnja se ne produžava automatski. Svaki nastavak zahteva novi pisani dogovor.
 
 ## Sledeći korak
 

@@ -5,30 +5,42 @@ on:
     branches: [main]
     paths:
       - 'core/**'
+      - 'daninihub-front/**'
       - 'scripts/test-agent-execution-contract.js'
       - 'scripts/test-guided-analysis-contract.js'
       - 'scripts/test-gumroad-activation-contract.js'
       - 'scripts/test-admin-runtime-contract.js'
+      - 'scripts/test-public-content-contract.js'
+      - 'scripts/test-pilot-policy-contract.js'
+      - 'scripts/test-contact-lead-store.js'
       - 'server.js'
+      - 'server-public-runtime.js'
       - 'server-guided-analysis-runtime.js'
       - 'server-gumroad-runtime.js'
       - 'server-admin-runtime.js'
       - 'danini.js'
       - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/danini-os-core.yml'
   pull_request:
     paths:
       - 'core/**'
+      - 'daninihub-front/**'
       - 'scripts/test-agent-execution-contract.js'
       - 'scripts/test-guided-analysis-contract.js'
       - 'scripts/test-gumroad-activation-contract.js'
       - 'scripts/test-admin-runtime-contract.js'
+      - 'scripts/test-public-content-contract.js'
+      - 'scripts/test-pilot-policy-contract.js'
+      - 'scripts/test-contact-lead-store.js'
       - 'server.js'
+      - 'server-public-runtime.js'
       - 'server-guided-analysis-runtime.js'
       - 'server-gumroad-runtime.js'
       - 'server-admin-runtime.js'
       - 'danini.js'
       - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/danini-os-core.yml'
 
 permissions:
@@ -37,7 +49,7 @@ permissions:
 jobs:
   core-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -57,3 +69,6 @@ jobs:
 
       - name: Danini OS contract tests
         run: npm run test:os
+
+      - name: Production frontend build
+        run: npm run build

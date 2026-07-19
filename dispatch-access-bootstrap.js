@@ -48,8 +48,8 @@ async function bootstrapDispatchAccess(options = {}) {
     sender: sender(env),
     to: [{ email: recipient, name: 'DaniniHub Admin' }],
     replyTo: { email: 'info@daninihub.com', name: 'DaniniHub' },
-    subject: 'DaniniHub Dispatch Workspace – interni pristup',
-    htmlContent: `<h2>Interni pristup za Dispatch Pilot Workspace</h2><p>Ovaj link važi do sledećeg restartovanja aplikacije i nakon otvaranja postavlja zaštićenu HttpOnly sesiju.</p><p><a href="${accessUrl}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Otvori Dispatch Workspace</a></p><p>Ako niste pokrenuli ovu aplikaciju, ignorišite poruku.</p>`
+    subject: 'DaniniHub Dispatch Workspace – interni pristup / interner Zugang',
+    htmlContent: `<h2>Dispatch Pilot Workspace</h2><p><strong>SR:</strong> Kliknite dugme ispod da otvorite internu dvojezičnu radnu stranu. Link važi do sledećeg restartovanja aplikacije i postavlja zaštićenu HttpOnly sesiju.</p><p><strong>DE:</strong> Klicken Sie auf die Schaltfläche unten, um den internen zweisprachigen Workspace zu öffnen. Der Link gilt bis zum nächsten Neustart der Anwendung und setzt eine geschützte HttpOnly-Sitzung.</p><p><a href="${accessUrl}" style="display:inline-block;background:#087f8c;color:#fff;padding:14px 20px;border-radius:8px;text-decoration:none;font-weight:800">OTVORI WORKSPACE / WORKSPACE ÖFFNEN</a></p><p><strong>SR:</strong> Ako niste pokrenuli ovu aplikaciju, ignorišite poruku.<br><strong>DE:</strong> Wenn Sie diese Anwendung nicht gestartet haben, ignorieren Sie diese Nachricht.</p>`
   };
 
   const sendEmail = options.sendEmail || (payload => defaultSendEmail(payload, env));

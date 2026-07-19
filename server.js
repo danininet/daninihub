@@ -7,7 +7,7 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-transport-2026-07-19-contact-delivery-fallback-v3';
+const DEPLOYMENT_MARKER = 'daninihub-transport-2026-07-19-serbian-video-wGFtA53BirQ-v1';
 
 app.set('trust proxy', 1);
 app.use(cors({ origin: process.env.DANINI_PUBLIC_URL || 'https://daninihub.com' }));

@@ -6,35 +6,37 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'daninihub-front/src/App.jsx'), 'utf8');
-const workspace = fs.readFileSync(path.join(root, 'daninihub-front/src/DispatchPilotWorkspaceV3.jsx'), 'utf8');
+const workspace = fs.readFileSync(path.join(root, 'daninihub-front/src/DispatchPilotWorkspaceV4.jsx'), 'utf8');
+const accessRuntime = fs.readFileSync(path.join(root, 'server-dispatch-runtime.js'), 'utf8');
+const accessEmail = fs.readFileSync(path.join(root, 'dispatch-access-bootstrap.js'), 'utf8');
 
 const requiredWorkspaceText = [
-  'INTERNE PILOTVERSION · NUR FIKTIVE DATEN',
-  'Potvrđene činjenice',
-  'Nepoznato / mora se proveriti',
-  'Potrebna odluka',
-  'Odgovorna osoba',
-  'Ručno odobri nacrt',
-  'Odbij i vrati na doradu',
-  'Automatsko slanje je deaktivirano',
-  'Audit događaja',
-  'Radno sposobna predaja',
-  'Ne predstavlja instrukciju vozaču',
-  'Sačuvaj slučaj',
-  'Sačuvani fiktivni slučajevi',
-  'Novi fiktivni slučaj',
-  'Odjava',
-  'AI strukturiraj nacrt',
-  'Rezultat se vraća kao PENDING',
-  'ništa nije odobreno niti poslato'
+  'INTERNA PILOT VERZIJA / INTERNE PILOTVERSION',
+  'Unesi poruku',
+  'Rohmeldung eingeben',
+  'Pregledaj AI strukturu',
+  'KI-Struktur prüfen',
+  'Ručno odobri ili odbij',
+  'Manuell freigeben oder ablehnen',
+  'AI STRUKTURIRAJ / MIT KI STRUKTURIEREN',
+  'Potvrđene činjenice / Bestätigte Fakten',
+  'Nepoznato / Offene Punkte',
+  'Potrebna odluka / Erforderliche Entscheidung',
+  'ODOBRI NACRT / ENTWURF FREIGEBEN',
+  'VRATI NA DORADU / ZUR ÜBERARBEITUNG',
+  'SAČUVAJ OVAJ SLUČAJ / DIESEN FALL SPEICHERN',
+  'Sačuvani fiktivni slučajevi / Gespeicherte fiktive Fälle',
+  'Radno sposobna predaja / Arbeitsfähige Übergabe',
+  'Rezultat ostaje PENDING',
+  'Es wird nichts versendet'
 ];
 
 for (const text of requiredWorkspaceText) {
-  assert(workspace.includes(text), `Required Dispatch workspace text missing: ${text}`);
+  assert(workspace.includes(text), `Required bilingual Dispatch text missing: ${text}`);
 }
 
 for (const text of [
-  "from './DispatchPilotWorkspaceV3'",
+  "from './DispatchPilotWorkspaceV4'",
   'dispatch-pilot-workspace',
   'noindex,nofollow',
   'return <DispatchPilotWorkspace/>'
@@ -54,6 +56,21 @@ for (const text of [
   'realData: false'
 ]) {
   assert(workspace.includes(text), `Required protected Dispatch behavior missing: ${text}`);
+}
+
+for (const text of [
+  'INTERNI PRISTUP / INTERNER ZUGANG',
+  'OTVORI / ÖFFNEN',
+  'Administratorski ključ / Administratorschlüssel'
+]) {
+  assert(accessRuntime.includes(text), `Required bilingual access page text missing: ${text}`);
+}
+
+for (const text of [
+  'interni pristup / interner Zugang',
+  'OTVORI WORKSPACE / WORKSPACE ÖFFNEN'
+]) {
+  assert(accessEmail.includes(text), `Required bilingual access email text missing: ${text}`);
 }
 
 for (const forbidden of [
@@ -79,4 +96,4 @@ assert(!workspace.includes('Nachricht senden'));
 assert(!workspace.includes('autoApprove'));
 assert(!workspace.includes('autoSend'));
 
-console.log('Dispatch Pilot Workspace v3 contract OK');
+console.log('Dispatch Pilot Workspace v4 bilingual guided contract OK');

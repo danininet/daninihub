@@ -93,7 +93,7 @@ const article = {
       ['ETA ist keine Zusage', 'Prognose und bestätigten Kundentermin vor der Eskalation sauber trennen.', 'ETA-Artikel lesen', etaArticlePaths.de],
       ['Fahrerkommunikation Balkan–DACH', 'Bestätigten Fahrerstatus und sichere Rückmeldung strukturiert dokumentieren.', 'Artikel zur Fahrerkommunikation lesen', driverCommunicationArticlePaths.de],
       ['CMR, POD und offene Nachweise', 'Fehlende oder nicht akzeptierte Dokumente mit eindeutigem Status und nächstem Schritt steuern.', 'Artikel zu Transportdokumenten lesen', transportDocumentsArticlePaths.de],
-      ['Warum TMS Disponenten nicht ersetzt', 'Warum Systemdaten allein noch keine operative Entscheidung ergeben.', 'Grundlagenartikel lesen', tmsArticlePaths.de],
+      ['Warum TMS-Systeme Disponenten nicht ersetzen', 'Warum Systemdaten allein noch keine operative Entscheidung ergeben.', 'Grundlagenartikel lesen', tmsArticlePaths.de],
     ],
     back: 'Praxis & Wissen',
     ctaEyebrow: 'ESCALATION PILOT',

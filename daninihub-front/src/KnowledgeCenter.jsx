@@ -91,11 +91,11 @@ const videoCopy = {
     text: 'Video pokazuje gde se završavaju sistemski podaci i zašto provera činjenica, odobrenje, komunikacija i dokumentovana predaja i dalje moraju biti organizovani.',
     language: 'Jezik videa: nemački',
     load: 'Učitaj YouTube video',
-    loadLabel: 'Učitaj i pokreni video sa YouTube-a',
-    notice: 'Veza sa YouTube-om uspostavlja se tek nakon vašeg klika. Tada podaci mogu biti prosleđeni Google-u/YouTube-u i sačuvani na vašem uređaju.',
+    loadLabel: 'Učitaj i pokreni video sa YouTubea',
+    notice: 'Veza sa YouTubeom uspostavlja se tek nakon vašeg klika. Tada podaci mogu biti prosleđeni Googleu/YouTubeu i sačuvani na vašem uređaju.',
     activeNotice: 'YouTube je aktiviran za ovaj video. Dugme „Isključi video“ ponovo prekida ugrađenu vezu.',
     disable: 'Isključi video',
-    external: 'Pogledaj direktno na YouTube-u',
+    external: 'Pogledaj direktno na YouTubeu',
     privacy: 'Obaveštenje o privatnosti',
   },
 }
@@ -144,7 +144,7 @@ const editorial = {
     lead: 'Fachbeiträge, Checklisten und Praxisbeispiele über Status, ETA, Fahrerkommunikation, Dokumente, Eskalation und belastbare Schichtübergaben.',
     featured: 'Grundlagenartikel', read: 'Artikel lesen', more: 'Neu veröffentlicht', categories: 'Themenfelder', upcoming: 'In redaktioneller Vorbereitung',
     published: [
-      ['9 Min. Lesezeit · ETA & Status', 'ETA ist keine Zusage: Transportstatus richtig kommunizieren', 'Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt sauber trennen – mit einer sofort nutzbaren 6-Bausteine-Formel.', etaArticlePaths.de],
+      ['9 Min. Lesezeit · ETA & Status', 'ETA ist keine Zusage: Transportstatus richtig kommunizieren', 'Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt sauber trennen – mit einer sofort nutzbaren Sechs-Bausteine-Formel.', etaArticlePaths.de],
       ['10 Min. Lesezeit · Fahrerkommunikation', 'Fahrerkommunikation Balkan–DACH: Wo Informationsfehler Kosten verursachen', 'Wie eindeutiger Tourbezug, sichere Rückbestätigung und ein gemeinsamer Datensatz Missverständnisse und unnötige Folgekosten verhindern.', driverCommunicationArticlePaths.de],
       ['11 Min. Lesezeit · Schichtübergabe', 'Schichtübergabe in der Disposition: 10 Pflichtinformationen', 'Ein arbeitsfähiger Übergabedatensatz für bestätigten Status, offene Entscheidungen, Verantwortung, Eskalation und nächste Prüfung.', shiftHandoverArticlePaths.de],
       ['11 Min. Lesezeit · Eskalation', 'Transportabweichungen richtig eskalieren', 'Ein vierstufiges Arbeitsmodell für messbare Schwellen, klare Verantwortung, entscheidungsfähige Meldungen und kritische Meldewege.', deviationEscalationArticlePaths.de],
@@ -287,7 +287,7 @@ export default function KnowledgeCenter({ lang }) {
         <aside className="related-article-card">
           <span>{sr ? 'SLEDEĆI PRAKTIČNI ČLANAK' : 'NÄCHSTER PRAXISARTIKEL'}</span>
           <h2>{sr ? 'ETA nije obećanje: pravilna komunikacija statusa' : 'ETA ist keine Zusage: Transportstatus richtig kommunizieren'}</h2>
-          <p>{sr ? 'Razdvojite planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru uz obrazac od šest elemenata.' : 'Trennen Sie Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt mit einer vollständigen 6-Bausteine-Formel.'}</p>
+          <p>{sr ? 'Razdvojite planirani termin, operativnu ETA, termin potvrđen klijentu i sledeću proveru uz obrazac od šest elemenata.' : 'Trennen Sie Plantermin, operative ETA, bestätigten Kundentermin und nächsten Prüfpunkt mit einer vollständigen Sechs-Bausteine-Formel.'}</p>
           <a href={etaArticlePaths[lang]}>{sr ? 'Pročitaj sledeći članak' : 'Nächsten Artikel lesen'} →</a>
         </aside>
 

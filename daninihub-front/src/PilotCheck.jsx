@@ -10,17 +10,17 @@ const copy = {
     placeholders: { company:'Beispiel Spedition GmbH', fleet:'z. B. 8', routes:'z. B. Serbien–Deutschland', tasks:'Statusabfragen, ETA, Fahrerkommunikation, Dokumente …', availability:'z. B. werktags 16–22 Uhr', systems:'TMS, E-Mail, WhatsApp, Telefon …', decision:'Name oder Funktion' },
     create:'Pilot-Zusammenfassung erstellen', summary:'Vorläufige Pilot-Zusammenfassung', fit:'Grundsätzlich prüfbar', contact:'Strukturierte Anfrage senden', reset:'Angaben ändern', labels:['Unternehmen','Flotte','Relationen','Zeitfresser','Zeitfenster','Systeme','Freigaben'],
     missingText:'Nicht angegeben', boundary:'Der endgültige Leistungsrahmen, Erreichbarkeit, Vergütung und die Befugnisse werden ausschließlich schriftlich vereinbart.',
-    email:'E-Mail', phone:'Telefon (optional)', privacyBefore:'Ich habe die', privacyLabel:'Datenschutzerklärung', privacyAfter:'zur Kenntnis genommen. Meine Angaben werden zur Bearbeitung meiner Anfrage verarbeitet.', send:'Pilot-Anfrage sicher senden', success:'Vielen Dank. Die strukturierte Pilot-Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error:'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.',
+    email:'E-Mail', phone:'Telefon (optional)', privacyBefore:'Ich habe die', privacyLabel:'Datenschutzerklärung', privacyAfter:'zur Kenntnis genommen. Meine Angaben werden zur Bearbeitung meiner Anfrage verarbeitet.', send:'Pilot-Anfrage senden', success:'Vielen Dank. Die strukturierte Pilot-Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error:'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.',
     deliverableTitle:'Was ein begrenzter Pilot konkret prüft', deliverables:[['Umfang','Eine Relation oder kleine Fahrzeuggruppe, definierte Aufgaben und feste Zeitfenster.'],['Arbeitsnachweis','Status- und ETA-Protokoll, dokumentierte Abweichungen, Eskalationen und Übergaben.'],['Auswertung','Gemeinsame Bewertung anhand vorab vereinbarter Kriterien – ohne automatische Verlängerung.']]
   },
   sr: {
-    back: 'Nazad na operativni pult', title: 'Provera pilota', subtitle: 'U nekoliko koraka proverite da li ograničeni DaniniHub pilot odgovara vašoj operativi.',
+    back: 'Nazad na operativni pult', title: 'Provera pilota', subtitle: 'U nekoliko koraka proverite da li ograničeni DaniniHub pilot-projekat odgovara vašoj operativi.',
     notice: 'Nema automatske odluke. Podaci služe samo za pripremu neobavezujućeg razgovora.',
     fields: { company:'Firma / ime', fleet:'Vozila u relevantnom delu poslovanja', routes:'Važne relacije', tasks:'Koji zadaci trenutno oduzimaju vreme?', availability:'Kada je podrška potrebna?', systems:'Koje sisteme koristite?', decision:'Ko može da odobri operativne korake?' },
     placeholders: { company:'Primer Transport d.o.o.', fleet:'npr. 8', routes:'npr. Srbija–Nemačka', tasks:'Statusi, ETA, komunikacija sa vozačima, dokumenta …', availability:'npr. radnim danima 16–22 h', systems:'TMS, e-mail, WhatsApp, telefon …', decision:'Ime ili funkcija' },
     create:'Kreiraj rezime pilota', summary:'Preliminarni rezime pilota', fit:'Moguće za dalju proveru', contact:'Pošaljite strukturisan upit', reset:'Izmeni podatke', labels:['Firma','Flota','Relacije','Zadaci','Vreme podrške','Sistemi','Odobrenja'],
     missingText:'Nije navedeno', boundary:'Konačan obim usluge, dostupnost, naknada i ovlašćenja dogovaraju se isključivo pisanim putem.',
-    email:'E-mail', phone:'Telefon (opciono)', privacyBefore:'Pročitao/la sam', privacyLabel:'obaveštenje o privatnosti', privacyAfter:'Moji podaci se obrađuju radi odgovora na upit.', send:'Pošaljite siguran pilot-upit', success:'Hvala. Strukturisan pilot-upit je poslat, a potvrda stiže na vašu e-mail adresu.', error:'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.',
+    email:'E-mail', phone:'Telefon (opciono)', privacyBefore:'Pročitao/la sam', privacyLabel:'obaveštenje o privatnosti', privacyAfter:'Moji podaci se obrađuju radi odgovora na upit.', send:'Pošaljite upit za pilot-projekat', success:'Hvala. Strukturisan upit za pilot-projekat je poslat, a potvrda stiže na vašu e-mail adresu.', error:'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.',
     deliverableTitle:'Šta konkretno proverava ograničeni pilot', deliverables:[['Obim','Jedna relacija ili mala grupa vozila, definisani zadaci i određeni vremenski period.'],['Dokaz rada','Evidencija statusa i ETA, dokumentovana odstupanja, eskalacije i predaje.'],['Evaluacija','Zajednička procena prema unapred dogovorenim kriterijumima – bez automatskog produženja.']]
   }
 }
@@ -53,7 +53,7 @@ export default function PilotCheck({ lang }) {
       availability: result.availability,
       systems: result.systems,
       decision: result.decision,
-      interest: lang === 'sr' ? 'Pilot projekat za transportnu firmu' : 'Pilotprojekt für ein Transportunternehmen',
+      interest: lang === 'sr' ? 'Pilot-projekat za transportnu firmu' : 'Pilotprojekt für ein Transportunternehmen',
       message: lang === 'sr' ? 'Strukturisan upit poslat putem DaniniHub provere pilota.' : 'Strukturierte Anfrage über den DaniniHub Pilot-Check.',
       consent: contact.consent,
       website: ''

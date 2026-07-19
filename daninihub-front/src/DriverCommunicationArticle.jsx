@@ -67,7 +67,7 @@ const article = {
     related: [
       ['ETA ist keine Zusage', 'Wie Prognose, Kundentermin und nächster Prüfpunkt sauber getrennt werden.', 'ETA-Artikel lesen', etaArticlePaths.de],
       ['Schichtübergabe in der Disposition', 'Die zehn Pflichtinformationen für einen kontrollierten Wechsel der operativen Verantwortung.', 'Artikel zur Schichtübergabe lesen', shiftHandoverArticlePaths.de],
-      ['Warum TMS Disponenten nicht ersetzt', 'Wie Daten durch Prüfung, Entscheidung und Übergabe operativ nutzbar werden.', 'Grundlagenartikel lesen', tmsArticlePaths.de],
+      ['Warum TMS-Systeme Disponenten nicht ersetzen', 'Wie Daten durch Prüfung, Entscheidung und Übergabe operativ nutzbar werden.', 'Grundlagenartikel lesen', tmsArticlePaths.de],
     ],
     back: 'Praxis & Wissen',
     ctaEyebrow: 'PILOT FIRST',
@@ -89,7 +89,7 @@ const article = {
       ['01', 'Nejasan kontekst', 'Tura, vozilo, mesto utovara ili nalog nisu jasno navedeni. Ispravna informacija zato može biti vezana za pogrešan slučaj.'],
       ['02', 'Dvosmislena radnja', 'Izrazi poput „kasnije“, „druga adresa“ ili „brzo proveri“ ne govore šta se konkretno očekuje.'],
       ['03', 'Nema povratne potvrde', 'Poruka je poslata, ali razumevanje i izvršenje nisu potvrđeni. „Isporučeno“ ne znači „razumljeno“.'],
-      ['04', 'Rasuta dokumentacija', 'Jedan deo je u TMS-u, drugi u chatu, a treći samo u telefonskom razgovoru. Sledeća smena nema kompletnu verziju.'],
+      ['04', 'Rasuta dokumentacija', 'Jedan deo je u TMS-u, drugi u razmeni poruka, a treći samo u telefonskom razgovoru. Sledeća smena nema potpunu verziju.'],
     ],
     sections: [
       ['Jezik je samo jedan nivo razumevanja', 'Dobar prevod pomaže, ali operativna jasnoća nastaje tek iz konteksta i strukture. Oznaka ture, mesto, potvrđen status, očekivana radnja i rok moraju zadržati isto značenje u svakoj jezičkoj verziji. Interne skraćenice i lokalni izrazi treba da budu objašnjeni ako nije sigurno da ih vozač poznaje.'],

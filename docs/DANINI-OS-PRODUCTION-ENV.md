@@ -18,6 +18,20 @@ GUMROAD_PRODUCT_ID=<gumroad-product-id>
 BREVO_API_KEY=<brevo-api-key>
 BREVO_SENDER_EMAIL=info@daninihub.com
 BREVO_SENDER_NAME=DaniniHub
+
+# Transport lead review and manually approved Brevo follow-up
+DANINI_ADMIN_SECRET=<random-secret-minimum-32-characters>
+
+# Optional: published DE/SR Pilot Brief. Until configured, the public pilot example is used.
+DANINI_PILOT_BRIEF_DE_URL=https://daninihub.com/de/pilot-beispiel
+DANINI_PILOT_BRIEF_SR_URL=https://daninihub.com/sr/primer-pilota
+
+# Durable lead storage. Without a complete DB configuration, the runtime uses a local private file.
+DB_HOST=<mysql-host>
+DB_PORT=3306
+DB_USER=<mysql-user>
+DB_PASSWORD=<mysql-password>
+DB_NAME=<mysql-database>
 ```
 
 Gumroad Ping endpoint:

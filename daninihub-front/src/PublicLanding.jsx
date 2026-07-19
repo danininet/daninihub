@@ -12,31 +12,31 @@ const copy = {
     title: 'Weniger Rückfragen. Klare Informationen. Ruhigere Abläufe.',
     lead: 'Externe operative Unterstützung für Transportunternehmen zwischen dem Balkan und dem deutschsprachigen Raum – auf Deutsch und in den Sprachen der Region.',
     cta: 'Leistungsrahmen besprechen',
-    proof: ['Begrenztes Pilotmodell', 'Deutsch + Balkan-Sprachen', 'Klare Zuständigkeiten'],
+    proof: ['Begrenztes Pilotmodell', 'Deutsch + Sprachen des Balkans', 'Klare Zuständigkeiten'],
     servicesTitle: 'Unterstützung dort, wo im Tagesgeschäft Zeit verloren geht.',
     services: [
-      ['Kommunikation', 'Abstimmung mit Fahrern, Kunden und Be-/Entladestellen in verständlicher Sprache.'],
+      ['Kommunikation', 'Abstimmung mit Fahrern, Kunden sowie Lade- und Entladestellen in verständlicher Sprache.'],
       ['Status & ETA', 'Statusmeldungen, voraussichtliche Ankunftszeiten und proaktive Information bei Abweichungen.'],
       ['Dokumente', 'Operative Prüfung, ob Transportangaben und benötigte Unterlagen vollständig vorliegen.'],
       ['Terminabstimmung', 'Koordination von Lade- und Entladefenstern innerhalb vereinbarter Befugnisse.'],
       ['Störungsmeldung', 'Probleme strukturiert aufnehmen, Beteiligte informieren und Entscheidungen eskalieren.'],
-      ['Routenunterstützung', 'Operative Hinweise zu Relationen Balkan–DACH; finale Disposition bleibt beim Auftraggeber.']
+      ['Routenunterstützung', 'Operative Hinweise zu Relationen Balkan–DACH; die abschließende Disposition bleibt beim Auftraggeber.']
     ],
     scopeTitle: 'Unterstützung ohne unklare Haftung.',
     support: 'DaniniHub kann im schriftlich vereinbarten Rahmen bei Kommunikation, Statuspflege, Terminabstimmung, Informationsweitergabe und dokumentierter Eskalation unterstützen.',
-    retain: 'Das Unternehmen behält Transportaufträge, Preise, rechtsverbindliche Zusagen, Fahrerweisung, Verkehrsleitung und finale Entscheidungen.',
-    startTitle: 'Ein kleiner Pilot statt unklarer Dauerverpflichtung.',
-    startSteps: [['01', '20 Minuten Erstgespräch', 'Relationen, Fahrzeugzahl und tatsächlichen Engpass klären.'], ['02', 'Aufgaben und Befugnisse', 'Schriftlich festlegen, was unterstützt, gemeldet oder eskaliert wird.'], ['03', 'Pilot auswerten', 'Zeitraum, Erreichbarkeit, Vergütung und messbare Kriterien vor dem Start vereinbaren.']],
+    retain: 'Transportaufträge, Preise, rechtsverbindliche Zusagen, Fahreranweisungen, Verkehrsleitung und abschließende Entscheidungen verbleiben beim Auftraggeber.',
+    startTitle: 'Ein kleines Pilotprojekt statt unklarer Dauerverpflichtung.',
+    startSteps: [['01', '20-minütiges Erstgespräch', 'Relationen, Fahrzeugzahl und tatsächlichen Engpass klären.'], ['02', 'Aufgaben und Befugnisse', 'Schriftlich festlegen, was unterstützt, gemeldet oder eskaliert wird.'], ['03', 'Pilotprojekt auswerten', 'Zeitraum, Erreichbarkeit, Vergütung und messbare Kriterien vor dem Start vereinbaren.']],
     entryTitle: 'Praxisorientierter Einstieg in die Transportorganisation.',
     entryText: 'Für Interessierte, die Disposition, Transportkommunikation und typische Abläufe realistisch kennenlernen möchten. Praktische Orientierung – keine zertifizierte Ausbildung, Rechtsberatung oder Jobgarantie.',
     pathsTitle: 'Drei klare Wege zur Kontaktaufnahme.',
-    paths: [['Für Unternehmen', 'Begrenzten Pilot für Kommunikation, Status, Termine und dokumentierte Eskalation prüfen.'], ['Für Interessierte', 'Unverbindlich Interesse an einem praxisorientierten Einstieg in die Transportorganisation melden.'], ['Für spätere Zusammenarbeit', 'Operatives Kooperationsinteresse beschreiben – ohne Vermittlungs- oder Beschäftigungsversprechen.']],
+    paths: [['Für Unternehmen', 'Begrenztes Pilotprojekt für Kommunikation, Status, Termine und dokumentierte Eskalation prüfen.'], ['Für Interessierte', 'Unverbindlich Interesse an einem praxisorientierten Einstieg in die Transportorganisation melden.'], ['Für spätere Zusammenarbeit', 'Operatives Kooperationsinteresse beschreiben – ohne Vermittlungs- oder Beschäftigungsversprechen.']],
     aboutTitle: 'Erfahrung aus Transport und Unternehmertum.',
     aboutText: 'Dragan Zdravković arbeitete im internationalen Transport als Disponent und führte anschließend ein Unternehmen für Export, Import, Handel und Transport. Heute verbindet er diese Erfahrung mit langjähriger Kundenkommunikation in Deutschland.',
     aboutFacts: ['Internationale Disposition und Routenplanung', 'FTL/LTL, Fahrer- und Kundenkommunikation', 'Deutsch und Sprachen des Balkans', 'Duisburg · Remote-Unterstützung nach Vereinbarung'],
     contactTitle: 'Was fehlt heute in Ihrer Transportorganisation?',
     contactText: 'Nennen Sie Relationen, Fahrzeugzahl und die Aufgaben, die intern zu viel Zeit binden. Sie erhalten eine ehrliche Einschätzung, ob der begrenzte Leistungsrahmen passt.',
-    company: 'Unternehmen / Name', email: 'E-Mail', phone: 'Telefon (optional)', fleet: 'Fahrzeuge (optional)', routes: 'Relationen (optional)', interest: 'Interesse', message: 'Kurze Beschreibung', send: 'Anfrage sicher senden', privacyBefore: 'Ich habe die', privacyLabel: 'Datenschutzerklärung', privacyAfter: 'zur Kenntnis genommen. Meine Angaben werden zur Bearbeitung meiner Anfrage verarbeitet.', success: 'Vielen Dank. Ihre Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error: 'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.',
+    company: 'Unternehmen / Name', email: 'E-Mail', phone: 'Telefon (optional)', fleet: 'Fahrzeuge (optional)', routes: 'Relationen (optional)', interest: 'Interesse', message: 'Kurze Beschreibung', send: 'Anfrage senden', privacyBefore: 'Ich habe die', privacyLabel: 'Datenschutzerklärung', privacyAfter: 'zur Kenntnis genommen. Meine Angaben werden zur Bearbeitung meiner Anfrage verarbeitet.', success: 'Vielen Dank. Ihre Anfrage wurde gesendet; eine Bestätigung folgt per E-Mail.', error: 'Die Anfrage konnte nicht gesendet werden. Schreiben Sie bitte an info@daninihub.com.',
     options: ['Pilotprojekt für ein Transportunternehmen', 'Praxis-Einstieg Transportorganisation', 'Künftige operative Zusammenarbeit'],
     legal: ['Impressum', 'Datenschutz']
   },
@@ -46,32 +46,32 @@ const copy = {
     title: 'Manje poziva. Jasne informacije. Mirnija operativa.',
     lead: 'Spoljna operativna podrška transportnim firmama između Balkana i nemačkog govornog područja – na nemačkom i jezicima regiona.',
     cta: 'Razgovor o obimu usluge',
-    proof: ['Ograničen pilot model', 'Nemački + balkanski jezici', 'Jasne odgovornosti'],
+    proof: ['Ograničen pilot-model', 'Nemački + jezici Balkana', 'Jasne odgovornosti'],
     servicesTitle: 'Podrška tamo gde se u svakodnevnom radu gubi vreme.',
     services: [
       ['Komunikacija', 'Dogovor sa vozačima, klijentima i mestima utovara/istovara na razumljivom jeziku.'],
       ['Status i ETA', 'Statusne informacije, očekivano vreme dolaska i pravovremena prijava odstupanja.'],
-      ['Dokumentacija', 'Operativna provera da li su podaci i potrebna dokumenta kompletni.'],
+      ['Dokumentacija', 'Operativna provera da li su transportni podaci i potrebna dokumenta potpuni.'],
       ['Termini', 'Koordinacija termina utovara i istovara u okviru unapred dogovorenih ovlašćenja.'],
       ['Prijava problema', 'Strukturisano evidentiranje problema, obaveštavanje i eskalacija odluke.'],
       ['Podrška rutama', 'Operativne informacije za Balkan–DACH; konačna dispozicija ostaje kod firme.']
     ],
     scopeTitle: 'Podrška bez nejasne odgovornosti.',
     support: 'DaniniHub može, u pismeno dogovorenom okviru, da podrži komunikaciju, ažuriranje statusa, dogovor termina, prenos informacija i dokumentovanu eskalaciju.',
-    retain: 'Firma zadržava transportne naloge, cene, pravno obavezujuća obećanja, upravljanje vozačima, Verkehrsleitung i konačne odluke.',
+    retain: 'Transportni nalozi, cene, pravno obavezujuća obećanja, instrukcije vozačima, odgovornost za rukovođenje transportom i konačne odluke ostaju kod naručioca.',
     startTitle: 'Mali pilot umesto nejasne trajne obaveze.',
     startSteps: [['01', 'Uvodni razgovor od 20 minuta', 'Razjašnjavamo relacije, broj vozila i stvarni operativni problem.'], ['02', 'Zadaci i ovlašćenja', 'Pismeno definišemo šta se podržava, prijavljuje ili prosleđuje na odluku.'], ['03', 'Evaluacija pilota', 'Pre početka usaglašavamo period, dostupnost, naknadu i merljive kriterijume.']],
     entryTitle: 'Praktičan uvod u organizaciju transporta.',
-    entryText: 'Za zainteresovane koji žele realno da upoznaju dispečing, transportnu komunikaciju i tipične procedure. Ovo je praktična orijentacija – nije sertifikovana obuka, pravni savet niti garancija posla.',
+    entryText: 'Za zainteresovane koji žele realno da upoznaju dispoziciju, transportnu komunikaciju i tipične procedure. Ovo je praktična orijentacija – nije sertifikovana obuka, pravni savet niti garancija posla.',
     pathsTitle: 'Tri jasna načina za kontakt.',
     paths: [['Za kompanije', 'Provera ograničenog pilota za komunikaciju, statuse, termine i dokumentovanu eskalaciju.'], ['Za zainteresovane', 'Neobavezno iskazivanje interesovanja za praktičan uvod u organizaciju transporta.'], ['Za buduću saradnju', 'Opis interesa za operativnu saradnju – bez obećanja posredovanja ili zaposlenja.']],
     aboutTitle: 'Iskustvo iz transporta i preduzetništva.',
     aboutText: 'Dragan Zdravković radio je kao disponent u međunarodnom transportu, a zatim vodio firmu za izvoz, uvoz, trgovinu i transport. Danas to iskustvo povezuje sa dugogodišnjom komunikacijom sa klijentima u Nemačkoj.',
-    aboutFacts: ['Međunarodna dispozicija i planiranje ruta', 'FTL/LTL, komunikacija sa vozačima i klijentima', 'Nemački i jezici Balkana', 'Duisburg · rad od kuće prema dogovoru'],
-    contactTitle: 'Šta trenutno nedostaje vašoj transportnoj operativi?',
+    aboutFacts: ['Međunarodna dispozicija i planiranje ruta', 'FTL/LTL, komunikacija sa vozačima i klijentima', 'Nemački i jezici Balkana', 'Duisburg · udaljena podrška prema dogovoru'],
+    contactTitle: 'Šta trenutno nedostaje u vašoj transportnoj operativi?',
     contactText: 'Napišite relacije, broj vozila i zadatke koji vam oduzimaju najviše vremena. Dobićete realnu procenu da li se potreba uklapa u ograničeni obim podrške.',
-    company: 'Firma / ime', email: 'E-mail', phone: 'Telefon (opciono)', fleet: 'Broj vozila (opciono)', routes: 'Relacije (opciono)', interest: 'Interesovanje', message: 'Kratak opis', send: 'Pošaljite siguran upit', privacyBefore: 'Pročitao/la sam', privacyLabel: 'obaveštenje o privatnosti', privacyAfter: 'Moji podaci se obrađuju radi odgovora na upit.', success: 'Hvala. Upit je poslat, a potvrda stiže na vašu e-mail adresu.', error: 'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.',
-    options: ['Pilot projekat za transportnu firmu', 'Praktičan uvod u organizaciju transporta', 'Buduća operativna saradnja'],
+    company: 'Firma / ime', email: 'E-mail', phone: 'Telefon (opciono)', fleet: 'Broj vozila (opciono)', routes: 'Relacije (opciono)', interest: 'Interesovanje', message: 'Kratak opis', send: 'Pošaljite upit', privacyBefore: 'Pročitao/la sam', privacyLabel: 'obaveštenje o privatnosti', privacyAfter: 'Moji podaci se obrađuju radi odgovora na upit.', success: 'Hvala. Upit je poslat, a potvrda stiže na vašu e-mail adresu.', error: 'Upit nije mogao da bude poslat. Pišite direktno na info@daninihub.com.',
+    options: ['Pilot-projekat za transportnu firmu', 'Praktičan uvod u organizaciju transporta', 'Buduća operativna saradnja'],
     legal: ['Impresum', 'Privatnost']
   }
 }
@@ -128,6 +128,6 @@ export default function PublicLanding({ lang }) {
     <section id="entry" className="section split"><div><p className="kicker">PRAXISEINSTIEG · PRAKTIČAN UVOD</p><h2>{t.entryTitle}</h2></div><div><p className="big">{t.entryText}</p><a className="entry-demo-link" href={lang==='sr'?'/sr/primer-pilota':'/de/pilot-beispiel'}>{lang==='sr'?'Pogledajte javnu simulaciju pilota':'Öffentliche Pilot-Simulation ansehen'} →</a></div></section>
     <section className="section"><p className="kicker">INTERESSE · INTERESOVANJE</p><h2>{t.pathsTitle}</h2><div className="start-grid interest-grid">{t.paths.map(([a,b],i)=><article key={a}><span>0{i+1}</span><h3>{a}</h3><p>{b}</p><a href="#contact">{lang==='sr'?'Pošalji upit':'Anfrage senden'} →</a></article>)}</div></section>
     <section className="section about"><p className="kicker">ERFAHRUNG · ISKUSTVO</p><h2>{t.aboutTitle}</h2><p className="big">{t.aboutText}</p><div className="fact-row">{t.aboutFacts.map(x=><span key={x}>✓ {x}</span>)}</div></section>
-    <section id="contact" className="section contact"><div><p className="kicker">DIREKTER KONTAKT</p><h2>{t.contactTitle}</h2><p>{t.contactText}</p><a className="mail" href="mailto:info@daninihub.com">info@daninihub.com</a><p>Duisburg · Nordrhein-Westfalen<br/><a href="tel:+4915730916621">+49 1573 0916621</a><br/><a href="https://wa.me/4915730916621" target="_blank" rel="noopener noreferrer">WhatsApp</a></p></div><form onSubmit={send}><div className="form-pair"><label>{t.company}<input name="company" required maxLength="120"/></label><label>{t.email}<input name="email" type="email" required maxLength="180"/></label></div><div className="form-pair"><label>{t.phone}<input name="phone" type="tel" maxLength="60"/></label><label>{t.fleet}<input name="fleet" maxLength="60"/></label></div><label>{t.routes}<input name="routes" maxLength="180"/></label><label>{t.interest}<select name="interest">{t.options.map(x=><option key={x}>{x}</option>)}</select></label><label>{t.message}<textarea name="message" required minLength="20" maxLength="3000"/></label><label className="honey" aria-hidden="true">Website<input name="website" tabIndex="-1" autoComplete="off"/></label><label className="consent"><input name="consent" type="checkbox" value="yes" required/><span>{t.privacyBefore} <a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'} target="_blank" rel="noopener noreferrer">{t.privacyLabel}</a> {t.privacyAfter}</span></label><button className="btn" type="submit" disabled={formState==='sending'}>{formState==='sending'?'…':t.send+' →'}</button>{formState==='success'&&<p className="form-success" role="status">{t.success}</p>}{formState==='error'&&<p className="form-error" role="alert">{t.error}</p>}</form></section>
+    <section id="contact" className="section contact"><div><p className="kicker">DIREKTER KONTAKT</p><h2>{t.contactTitle}</h2><p>{t.contactText}</p><a className="mail" href="mailto:info@daninihub.com">info@daninihub.com</a><p>Duisburg · Nordrhein-Westfalen<br/><a href="tel:+4915730916621">+49 1573 0916621</a><br/><a href="https://wa.me/4915730916621" target="_blank" rel="noopener noreferrer">WhatsApp</a></p></div><form onSubmit={send}><input name="language" type="hidden" value={lang}/><input name="source" type="hidden" value="contact"/><div className="form-pair"><label>{t.company}<input name="company" required maxLength="120"/></label><label>{t.email}<input name="email" type="email" required maxLength="180"/></label></div><div className="form-pair"><label>{t.phone}<input name="phone" type="tel" maxLength="60"/></label><label>{t.fleet}<input name="fleet" maxLength="60"/></label></div><label>{t.routes}<input name="routes" maxLength="180"/></label><label>{t.interest}<select name="interest">{t.options.map(x=><option key={x}>{x}</option>)}</select></label><label>{t.message}<textarea name="message" required minLength="20" maxLength="3000"/></label><label className="honey" aria-hidden="true">Website<input name="website" tabIndex="-1" autoComplete="off"/></label><label className="consent"><input name="consent" type="checkbox" value="yes" required/><span>{t.privacyBefore} <a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'} target="_blank" rel="noopener noreferrer">{t.privacyLabel}</a> {t.privacyAfter}</span></label><button className="btn" type="submit" disabled={formState==='sending'}>{formState==='sending'?'…':t.send+' →'}</button>{formState==='success'&&<p className="form-success" role="status">{t.success}</p>}{formState==='error'&&<p className="form-error" role="alert">{t.error}</p>}</form></section>
   </main>
 }

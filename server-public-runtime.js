@@ -5,6 +5,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { BrevoClient } = require('@getbrevo/brevo');
+const { createContactLeadStore } = require('./contact-lead-store');
 
 const contactAttempts = new Map();
 const clean = (value, max = 3000) => String(value || '').trim().slice(0, max);
@@ -31,21 +32,53 @@ function sender() {
   return { email, name: process.env.BREVO_SENDER_NAME || process.env.DANINIHUB_SENDER_NAME || 'DaniniHub Transport & Logistics' };
 }
 
-function pilotReference() {
+function leadReference(isPilot) {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  return `DH-PILOT-${date}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  return `DH-${isPilot ? 'PILOT' : 'LEAD'}-${date}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 }
 
-function standardAdminEmail(data) {
+function publicUrl() {
+  return String(process.env.DANINI_PUBLIC_URL || 'https://daninihub.com').replace(/\/$/, '');
+}
+
+function reviewToken(reference) {
+  const secret = String(process.env.DANINI_ADMIN_SECRET || '');
+  if (!secret) return '';
+  return crypto.createHmac('sha256', secret).update(reference).digest('hex');
+}
+
+function reviewUrl(reference) {
+  const token = reviewToken(reference);
+  return token ? `${publicUrl()}/lead-review/${encodeURIComponent(reference)}?token=${token}` : '';
+}
+
+function validReviewToken(reference, candidate) {
+  const expected = reviewToken(reference);
+  const received = clean(candidate, 128);
+  if (!expected || expected.length !== received.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received));
+}
+
+function reviewAction(reference) {
+  const url = reviewUrl(reference);
+  return url
+    ? `<p style="margin:24px 0"><a href="${html(url)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Anfrage prüfen und Follow-up freigeben</a></p>`
+    : '<p><strong>Hinweis:</strong> DANINI_ADMIN_SECRET ist nicht konfiguriert. Follow-up kann noch nicht sicher freigegeben werden.</p>';
+}
+
+function standardAdminEmail(data, reference) {
   return `
     <h2>Neue DaniniHub Transport-Anfrage</h2>
+    <p><strong>Referenz:</strong> ${html(reference)}</p>
     <p><strong>Firma/Name:</strong> ${html(data.company)}<br>
     <strong>E-Mail:</strong> ${html(data.email)}<br>
     <strong>Telefon:</strong> ${valueOrDash(data.phone)}<br>
     <strong>Fahrzeuge:</strong> ${valueOrDash(data.fleet)}<br>
     <strong>Relationen:</strong> ${valueOrDash(data.routes)}<br>
     <strong>Interesse:</strong> ${html(data.interest)}</p>
-    <p><strong>Nachricht:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p>`;
+    <p><strong>Nachricht:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p>
+    ${reviewAction(reference)}
+    <p style="color:#607180;font-size:13px">Die Vorprüfung ist nur eine Entscheidungshilfe. Ein Follow-up wird erst nach Ihrer persönlichen Freigabe versendet.</p>`;
 }
 
 function pilotAdminEmail(data, reference) {
@@ -75,8 +108,9 @@ function pilotAdminEmail(data, reference) {
       </table>
       <div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8">
         <strong>Nächster Schritt</strong><br>
-        Bedarf prüfen, Rückfragen vorbereiten und entscheiden, ob ein begrenztes Erstgespräch sinnvoll ist.
+        Bedarf prüfen, Rückfragen vorbereiten und entscheiden, ob ein klar begrenztes Pilotprojekt sinnvoll ist.
       </div>
+      ${reviewAction(reference)}
       <p style="margin-top:24px;color:#607180;font-size:13px">Diese Anfrage ist noch kein Transportauftrag, kein Angebot und keine Annahme eines Leistungsumfangs.</p>
     </div>
   </div>`;
@@ -86,18 +120,53 @@ function confirmationEmail(data, reference) {
   const isSr = data.language === 'sr' || /podrška|upoznavanje|organizacijom/i.test(data.interest);
   if (data.source === 'pilot-check') {
     return isSr
-      ? `<h2>Hvala na strukturisanom pilot-upitu.</h2><p>Podaci iz provere pilota su kompletno prosleđeni DaniniHub-u pod referencom <strong>${html(reference)}</strong>.</p><p>Pregledaću navedene relacije, broj vozila, zadatke, vreme podrške, sisteme i ovlašćenja i javiti se lično čim bude moguće.</p><p>Ova potvrda nije prihvatanje transportnog naloga niti pravno obavezujuća ponuda.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
-      : `<h2>Vielen Dank für Ihre strukturierte Pilot-Anfrage.</h2><p>Ihre Angaben aus dem Pilot-Check wurden vollständig unter der Referenz <strong>${html(reference)}</strong> an DaniniHub übermittelt.</p><p>Ich prüfe Relationen, Fahrzeugzahl, Aufgaben, gewünschtes Zeitfenster, Systeme und Freigaben und melde mich persönlich, sobald es möglich ist.</p><p>Diese Bestätigung ist keine Annahme eines Transportauftrags und kein rechtsverbindliches Angebot.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
+      ? `<h2>Hvala na strukturisanom upitu za pilot-projekat.</h2><p>Vaši podaci su bezbedno primljeni pod referencom <strong>${html(reference)}</strong>.</p><p>Lično ću proveriti relacije, broj vozila, zadatke, traženo vreme podrške, sisteme i ovlašćenja. Nakon provere dobićete jasan predlog sledećeg koraka.</p><p>Ova potvrda nije prihvatanje transportnog naloga niti pravno obavezujuća ponuda.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
+      : `<h2>Vielen Dank für Ihre strukturierte Pilot-Anfrage.</h2><p>Ihre Angaben wurden unter der Referenz <strong>${html(reference)}</strong> sicher empfangen.</p><p>Ich prüfe Relationen, Fahrzeugzahl, Aufgaben, gewünschtes Zeitfenster, Systeme und Freigaben persönlich. Anschließend erhalten Sie einen klaren Vorschlag für den nächsten Schritt.</p><p>Diese Bestätigung ist weder die Annahme eines Transportauftrags noch ein rechtsverbindliches Angebot.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
   }
   return isSr
-    ? `<h2>Hvala na upitu.</h2><p>Vaša poruka je stigla u DaniniHub Transport & Logistics. Pregledaću podatke i javiti se lično čim budem mogao.</p><p>Ova potvrda nije prihvatanje transportnog naloga niti pravno obavezujuća ponuda.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
-    : `<h2>Vielen Dank für Ihre Anfrage.</h2><p>Ihre Nachricht ist bei DaniniHub Transport & Logistics eingegangen. Ich prüfe die Angaben und melde mich persönlich, sobald es möglich ist.</p><p>Diese Bestätigung ist keine Annahme eines Transportauftrags und kein rechtsverbindliches Angebot.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
+    ? `<h2>Hvala na upitu.</h2><p>Vaša poruka je primljena pod referencom <strong>${html(reference)}</strong>. Lično ću proveriti podatke i poslati vam jasan predlog sledećeg koraka.</p><p>Ova potvrda nije prihvatanje transportnog naloga niti pravno obavezujuća ponuda.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
+    : `<h2>Vielen Dank für Ihre Anfrage.</h2><p>Ihre Nachricht wurde unter der Referenz <strong>${html(reference)}</strong> empfangen. Ich prüfe die Angaben persönlich und sende Ihnen anschließend einen klaren Vorschlag für den nächsten Schritt.</p><p>Diese Bestätigung ist weder die Annahme eines Transportauftrags noch ein rechtsverbindliches Angebot.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
 }
 
-async function sendContactEmails(data) {
+function qualifiedFollowupEmail(lead) {
+  const isSr = lead.language === 'sr';
+  const pilotCheck = `${publicUrl()}${isSr ? '/sr/provera-pilota' : '/de/pilot-check'}`;
+  const defaultBrief = `${publicUrl()}${isSr ? '/sr/primer-pilota' : '/de/pilot-beispiel'}`;
+  const brief = clean(isSr ? process.env.DANINI_PILOT_BRIEF_SR_URL : process.env.DANINI_PILOT_BRIEF_DE_URL, 1000) || defaultBrief;
+  const demo = `${publicUrl()}${isSr ? '/sr/operativni-pult-demo' : '/de/operations-desk-demo'}`;
+  const isPilot = lead.source === 'pilot-check';
+  if (!isPilot) {
+    return isSr ? {
+      subject: `DaniniHub – sledeći korak za vaš upit ${lead.reference}`,
+      htmlContent: `<h2>Vaš upit je lično pregledan.</h2><p>Hvala, ${html(lead.company)}. Na osnovu prvih podataka vredi precizno proveriti relacije, broj vozila, vremenski prozor, sisteme i granice ovlašćenja.</p><p><strong>Sledeći korak:</strong> popunite kratku strukturisanu proveru pilota. To nije narudžbina niti automatsko odobrenje.</p><p><a href="${html(pilotCheck)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Pokreni proveru pilota</a></p><p>Nakon provere dogovaramo kratak razgovor. Prezentacija, obim, rok i cena šalju se tek kada potvrdimo da postoji stvarno poklapanje.</p><p>Srdačan pozdrav,<br>Dragan Zdravković<br>DaniniHub</p>`
+    } : {
+      subject: `DaniniHub – nächster Schritt zu Ihrer Anfrage ${lead.reference}`,
+      htmlContent: `<h2>Ihre Anfrage wurde persönlich geprüft.</h2><p>Vielen Dank, ${html(lead.company)}. Nach den ersten Angaben sollten Relationen, Fahrzeugzahl, Zeitfenster, Systeme und Befugnisgrenzen strukturiert geprüft werden.</p><p><strong>Nächster Schritt:</strong> Bitte füllen Sie den kurzen Pilot-Check aus. Er ist weder eine Bestellung noch eine automatische Freigabe.</p><p><a href="${html(pilotCheck)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Pilot-Check starten</a></p><p>Danach vereinbaren wir ein kurzes Gespräch. Präsentation, Leistungsumfang, Zeitraum und Preis folgen erst, wenn die grundsätzliche Passung bestätigt ist.</p><p>Freundliche Grüße<br>Dragan Zdravković<br>DaniniHub</p>`
+    };
+  }
+  return isSr ? {
+    subject: `DaniniHub – predlog ograničenog 30-dnevnog pilot-projekta ${lead.reference}`,
+    htmlContent: `<h2>Vaša provera pilota je lično pregledana.</h2><p>Na osnovu dostavljenih podataka predlažem razgovor o jasno ograničenom <strong>30-dnevnom pilot-projektu</strong>.</p><ul><li>jedna relacija ili mala, unapred definisana grupa vozila/slučajeva;</li><li>pisano definisani zadaci, vreme dostupnosti, ovlašćenja i eskalacije;</li><li>statusni i ETA zapis, odstupanja, odluke i predaje;</li><li>zajednička završna evaluacija bez automatskog produženja.</li></ul><p><a href="${html(brief)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Pogledaj prikaz pilot-projekta</a> &nbsp; <a href="${html(demo)}">Otvori operativni demo</a></p><p>Ovo još nije ponuda. Nakon kratkog razgovora dobijate pisani obim, odgovornosti, rok i cenu. Početak sledi tek nakon obostrane pisane potvrde i dogovorenog načina plaćanja.</p><p>Srdačan pozdrav,<br>Dragan Zdravković<br>DaniniHub</p>`
+  } : {
+    subject: `DaniniHub – Vorschlag für ein begrenztes 30-Tage-Pilotprojekt ${lead.reference}`,
+    htmlContent: `<h2>Ihr Pilot-Check wurde persönlich geprüft.</h2><p>Auf Grundlage Ihrer Angaben schlage ich ein Gespräch über ein klar begrenztes <strong>30-Tage-Pilotprojekt</strong> vor.</p><ul><li>eine Relation oder eine kleine, vorab definierte Fahrzeug- beziehungsweise Fallgruppe;</li><li>schriftlich festgelegte Aufgaben, Erreichbarkeit, Befugnisse und Eskalationswege;</li><li>Status- und ETA-Protokoll, Abweichungen, Entscheidungen und Übergaben;</li><li>gemeinsame Abschlussauswertung ohne automatische Verlängerung.</li></ul><p><a href="${html(brief)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Pilotablauf ansehen</a> &nbsp; <a href="${html(demo)}">Operations-Demo öffnen</a></p><p>Dies ist noch kein Angebot. Nach dem kurzen Gespräch erhalten Sie Leistungsumfang, Verantwortlichkeiten, Zeitraum und Preis schriftlich. Der Start erfolgt erst nach beiderseitiger schriftlicher Bestätigung und Vereinbarung der Zahlungsweise.</p><p>Freundliche Grüße<br>Dragan Zdravković<br>DaniniHub</p>`
+  };
+}
+
+async function sendQualifiedFollowup(lead) {
+  const message = qualifiedFollowupEmail(lead);
+  return brevo().sendTransacEmail({
+    sender: sender(),
+    to: [{ email: lead.email, name: lead.company }],
+    replyTo: { email: 'info@daninihub.com', name: 'DaniniHub' },
+    subject: message.subject,
+    htmlContent: message.htmlContent
+  });
+}
+
+async function sendContactEmails(data, reference) {
   const isPilot = data.source === 'pilot-check';
-  const reference = isPilot ? pilotReference() : null;
-  const details = isPilot ? pilotAdminEmail(data, reference) : standardAdminEmail(data);
+  const details = isPilot ? pilotAdminEmail(data, reference) : standardAdminEmail(data, reference);
   const confirmation = confirmationEmail(data, reference);
   const isSr = data.language === 'sr' || /podrška|upoznavanje|organizacijom/i.test(data.interest);
   const api = brevo();
@@ -120,8 +189,43 @@ async function sendContactEmails(data) {
   ]);
 }
 
+function reviewPage(lead, token, notice = '') {
+  const data = lead.payload || {};
+  const isPilot = lead.source === 'pilot-check';
+  const fields = [
+    ['Unternehmen / Name', lead.company],
+    ['E-Mail', lead.email],
+    ['Telefon', data.phone],
+    ['Sprache', lead.language === 'sr' ? 'Serbisch' : 'Deutsch'],
+    ['Interesse', data.interest],
+    ['Fahrzeuge', data.fleet],
+    ['Relationen', data.routes],
+    ['Aufgaben', data.tasks || data.message],
+    ['Zeitfenster', data.availability],
+    ['Systeme', data.systems],
+    ['Freigabestelle', data.decision]
+  ].filter(([, value]) => value);
+  const statusLabel = {
+    received: 'Empfangen – Prüfung offen',
+    'delivery-partial': 'Empfangen – E-Mail teilweise fehlgeschlagen',
+    'followup-sending': 'Follow-up wird verarbeitet',
+    'followup-sent': 'Persönlich freigegeben – Follow-up gesendet',
+    closed: 'Ohne Follow-up geschlossen'
+  }[lead.status] || lead.status;
+  const actionLabel = isPilot ? '30-Tage-Pilotvorschlag senden' : 'Einladung zum Pilot-Check senden';
+  return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Lead-Prüfung ${html(lead.reference)}</title><style>
+  :root{color-scheme:light;font-family:Inter,Arial,sans-serif;color:#17212b;background:#edf3f5}body{margin:0;padding:32px 16px}.card{max-width:820px;margin:auto;background:#fff;border-radius:16px;box-shadow:0 16px 50px rgba(15,35,45,.12);overflow:hidden}.head{padding:28px 32px;background:#07131f;color:#fff}.head small{color:#62d7e5;font-weight:700;letter-spacing:.1em}.body{padding:28px 32px}.status,.notice{padding:12px 14px;border-radius:8px;background:#eef8fa;margin:0 0 20px}.notice{background:#eef9ef;color:#205f2b}table{width:100%;border-collapse:collapse;margin:18px 0}td{padding:10px 0;border-bottom:1px solid #e5eaed;vertical-align:top}td:first-child{width:190px;color:#607180}textarea{width:100%;min-height:80px;box-sizing:border-box;padding:10px;border:1px solid #aebbc2;border-radius:8px}button{border:0;border-radius:8px;padding:12px 18px;font-weight:700;cursor:pointer}.send{background:#087f8c;color:#fff}.close{background:#e5eaed;color:#26343d}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.warning{font-size:13px;color:#607180}.error{color:#a02b2b}@media(max-width:600px){.head,.body{padding:22px 18px}td{display:block}td:first-child{width:auto;border-bottom:0;padding-bottom:2px}}
+  </style></head><body><main class="card"><header class="head"><small>DANINIHUB · PERSÖNLICHE FREIGABE</small><h1>${html(lead.reference)}</h1></header><section class="body">
+  ${notice ? `<p class="notice">${html(notice)}</p>` : ''}<p class="status"><strong>Status:</strong> ${html(statusLabel)}<br><strong>Vorprüfung:</strong> ${html(lead.recommendation)}</p>
+  <table>${fields.map(([label, value]) => `<tr><td>${html(label)}</td><td>${html(value).replace(/\n/g, '<br>')}</td></tr>`).join('')}</table>
+  ${lead.followupSentAt ? `<p><strong>Follow-up gesendet:</strong> ${html(lead.followupSentAt)}</p>` : ''}
+  ${lead.status === 'followup-sent' || lead.status === 'closed' ? '' : `<form method="post" action="/api/lead-review/${encodeURIComponent(lead.reference)}"><input type="hidden" name="token" value="${html(token)}"><input type="hidden" name="action" value="send"><label for="reviewNote"><strong>Interne Prüfnotiz (optional)</strong></label><textarea id="reviewNote" name="reviewNote" maxlength="1000" placeholder="Passung, Rückfragen, steuerliche Angaben oder vereinbarter Gesprächsschritt"></textarea><p class="warning">Mit dem Klick bestätigen Sie die persönliche Prüfung. KI oder Vorprüfung versenden keine Nachricht selbstständig. Das Follow-up enthält noch kein rechtsverbindliches Angebot und keinen automatisch verlängerten Vertrag.</p><div class="actions"><button class="send" type="submit">${html(actionLabel)}</button></div></form><form method="post" action="/api/lead-review/${encodeURIComponent(lead.reference)}"><input type="hidden" name="token" value="${html(token)}"><input type="hidden" name="action" value="close"><div class="actions"><button class="close" type="submit">Ohne Follow-up schließen</button></div></form>`}
+  </section></main></body></html>`;
+}
+
 function mountPublicRuntime(app) {
   const front = path.join(__dirname, 'daninihub-front', 'dist');
+  const leadStore = createContactLeadStore();
   app.disable('x-powered-by');
   app.use((req, res, next) => {
     res.set('X-Content-Type-Options', 'nosniff');
@@ -129,6 +233,64 @@ function mountPublicRuntime(app) {
     res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     next();
+  });
+  app.get('/lead-review/:reference', async (req, res) => {
+    const reference = clean(req.params.reference, 64);
+    const token = clean(req.query.token, 128);
+    if (!validReviewToken(reference, token)) return res.status(404).type('text/plain').send('Not found');
+    try {
+      const lead = await leadStore.get(reference);
+      if (!lead) return res.status(404).type('text/plain').send('Not found');
+      res.set('Cache-Control', 'no-store');
+      res.set('Referrer-Policy', 'no-referrer');
+      res.set('X-Robots-Tag', 'noindex, nofollow');
+      const notice = req.query.sent === '1' ? 'Follow-up wurde über Brevo versendet.' : req.query.closed === '1' ? 'Anfrage wurde ohne Follow-up geschlossen.' : '';
+      return res.type('html').send(reviewPage(lead, token, notice));
+    } catch (error) {
+      console.error('Lead review failed:', error.message);
+      return res.status(503).type('text/plain').send('Lead review temporarily unavailable');
+    }
+  });
+  app.post('/api/lead-review/:reference', express.urlencoded({ extended: false, limit: '8kb' }), async (req, res) => {
+    const reference = clean(req.params.reference, 64);
+    const token = clean(req.body.token, 128);
+    if (!validReviewToken(reference, token)) return res.status(404).type('text/plain').send('Not found');
+    let previousStatus = 'received';
+    let followupDelivered = false;
+    try {
+      const lead = await leadStore.get(reference);
+      if (!lead) return res.status(404).type('text/plain').send('Not found');
+      if (!['received', 'delivery-partial'].includes(lead.status)) return res.status(409).type('text/plain').send('Lead already reviewed');
+      if (!['send', 'close'].includes(req.body.action)) return res.status(400).type('text/plain').send('Invalid action');
+      const reviewNote = clean(req.body.reviewNote, 1000);
+      const reviewedAt = new Date().toISOString();
+      previousStatus = lead.status;
+      await leadStore.beginReview(reference, reviewedAt, reviewNote);
+      if (req.body.action === 'close') {
+        await leadStore.update(reference, { status: 'closed', reviewedAt, reviewNote });
+        return res.redirect(303, `/lead-review/${encodeURIComponent(reference)}?token=${token}&closed=1`);
+      }
+      await sendQualifiedFollowup(lead);
+      followupDelivered = true;
+      await leadStore.update(reference, {
+        status: 'followup-sent',
+        followupKind: lead.source === 'pilot-check' ? 'pilot-brief' : 'pilot-check-invitation',
+        followupSentAt: reviewedAt,
+        reviewedAt,
+        reviewNote,
+        lastError: ''
+      });
+      return res.redirect(303, `/lead-review/${encodeURIComponent(reference)}?token=${token}&sent=1`);
+    } catch (error) {
+      console.error('Qualified follow-up failed:', error.message);
+      try {
+        const current = await leadStore.get(reference);
+        if (!followupDelivered && current?.status === 'followup-sending') {
+          await leadStore.update(reference, { status: previousStatus || 'received', lastError: clean(error.message, 1000) });
+        }
+      } catch {}
+      return res.status(503).type('text/plain').send('Follow-up could not be sent. No review status was changed.');
+    }
   });
   app.post('/api/contact', express.json({ limit: '24kb' }), async (req, res) => {
     const data = Object.fromEntries(Object.entries(req.body || {}).map(([key, value]) => [key, clean(value)]));
@@ -140,10 +302,31 @@ function mountPublicRuntime(app) {
     if (data.source === 'pilot-check' && (!data.fleet || !data.routes || !data.tasks)) {
       return res.status(400).json({ ok: false, error: 'INCOMPLETE_PILOT_DATA' });
     }
+    const isPilot = data.source === 'pilot-check';
+    const reference = leadReference(isPilot);
+    data.language = data.language === 'sr' ? 'sr' : 'de';
+    data.source = isPilot ? 'pilot-check' : 'contact';
     try {
-      const results = await sendContactEmails(data);
-      if (results[0].status !== 'fulfilled') throw results[0].reason;
-      return res.status(202).json({ ok: true, confirmationSent: results[1].status === 'fulfilled' });
+      await leadStore.create({
+        reference,
+        source: data.source,
+        language: data.language,
+        email: data.email,
+        company: data.company,
+        payload: data,
+        recommendation: isPilot ? 'bereit-für-persönliche-pilotprüfung' : 'nach-prüfung-zum-pilot-check-einladen'
+      });
+      const results = await sendContactEmails(data, reference);
+      const adminSent = results[0].status === 'fulfilled';
+      const confirmationSent = results[1].status === 'fulfilled';
+      await leadStore.update(reference, {
+        status: adminSent ? 'received' : 'delivery-partial',
+        adminSent,
+        confirmationSent,
+        lastError: results.filter(result => result.status === 'rejected').map(result => clean(result.reason?.message, 300)).join(' | ')
+      });
+      if (!adminSent) throw results[0].reason;
+      return res.status(202).json({ ok: true, reference, confirmationSent });
     } catch (error) {
       console.error('Contact delivery failed:', error.message);
       return res.status(503).json({ ok: false, error: 'CONTACT_DELIVERY_FAILED' });

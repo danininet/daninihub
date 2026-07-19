@@ -21,10 +21,15 @@ const documentsArticleSource = read('daninihub-front/src/TransportDocumentsArtic
 // Current public runtime and contact workflow.
 assert.match(serverRuntime, /mountPublicRuntime/);
 assert.match(serverRuntime, /app\.post\('\/api\/contact'/);
-assert.match(serverRuntime, /DH-PILOT-/);
+assert.match(serverRuntime, /isPilot \? 'PILOT' : 'LEAD'/);
 assert.match(serverRuntime, /Neue strukturierte Pilot-Anfrage/);
 assert.match(serverRuntime, /INCOMPLETE_PILOT_DATA/);
 assert.match(serverRuntime, /confirmationSent/);
+assert.match(serverRuntime, /lead-review/);
+assert.match(serverRuntime, /sendQualifiedFollowup/);
+assert.match(serverRuntime, /30-Tage-Pilotprojekt/);
+assert.match(serverRuntime, /followup-sent/);
+assert.match(serverRuntime, /DANINI_ADMIN_SECRET/);
 assert.match(serverRuntime, /legacyGoneRoutes/);
 assert.match(serverRuntime, /status\(410\)/);
 assert.match(serverRuntime, /X-Robots-Tag/);
@@ -68,7 +73,7 @@ assert.match(appSource, /link\[rel="canonical"\]/);
 // Homepage must present the actual transport service, not the retired AI-analysis product.
 assert.match(landingSource, /BALKAN–DACH TRANSPORT OPERATIONS SUPPORT/);
 assert.match(landingSource, /Weniger Rückfragen\. Klare Informationen\. Ruhigere Abläufe\./);
-assert.match(landingSource, /Deutsch \+ Balkan-Sprachen/);
+assert.match(landingSource, /Deutsch \+ Sprachen des Balkans/);
 assert.match(landingSource, /Pilotprojekt für ein Transportunternehmen/);
 assert.match(landingSource, /DaniniHub ist kein Frachtführer, keine Spedition, kein Verkehrsleiter/);
 assert.doesNotMatch(landingSource, /Persönliche KI-Analyse|12 EUR|12 €/);
@@ -93,7 +98,7 @@ for (const value of [
   assert.match(legalSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
 assert.match(legalSource, /DaniniHub übernimmt nicht die Rolle von Frachtführer, Spediteur, Verkehrsleiter/);
-assert.match(legalSource, /DaniniHub ne preuzima ulogu prevoznika, špeditera, Verkehrsleitera/);
+assert.match(legalSource, /DaniniHub ne preuzima ulogu prevoznika, špeditera, rukovodioca transporta/);
 
 // Driver communication article must preserve safe, closed-loop operating boundaries.
 for (const value of [
@@ -141,11 +146,11 @@ for (const value of [
   'Transportdokumente übergeben: CMR, POD und offene Nachweise',
   'Predaja transportnih dokumenata: CMR, POD i otvoreni dokazi',
   'Ein Dokument ist nicht erledigt, nur weil eine Datei vorhanden ist',
-  'Dokument nije završen samo zato što fajl postoji',
+  'Dokumentacioni proces nije završen samo zato što datoteka postoji',
   'digital bedeutet nicht automatisch überall akzeptiert',
   'digitalno ne znači automatski prihvaćeno svuda',
-  'eine Einwilligung ist nicht automatisch immer erforderlich',
-  'saglasnost nije automatski uvek neophodna'
+  'eine Einwilligung ist weder automatisch erforderlich',
+  'saglasnost nije automatski neophodna'
 ]) {
   assert.match(documentsArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }

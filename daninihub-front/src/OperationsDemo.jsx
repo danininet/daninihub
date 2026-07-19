@@ -4,39 +4,39 @@ import './OperationsDemo.css'
 const content = {
   de: {
     back: 'Zurück zur Pilot-Erklärung', title: 'DaniniHub Operations Desk', subtitle: 'Interaktive Simulation einer fiktiven Tour', notice: 'DEMO-MODUS · Keine realen Unternehmens-, Fahrer- oder Transportdaten · Keine automatische Entscheidung',
-    tour: 'Tour', route: 'Novi Sad → Duisburg', cargo: '24 Paletten · Industrieware', client: 'BalkanCargo (fiktiv)', slot: 'Entladeslot', planned: 'Plan-ETA', current: 'Aktuelle ETA', decision: 'Entscheider', decisionPerson: 'Herr Marković', documents: 'Dokumente', complete: 'operativ vollständig', onPlan: 'Im Plan', deviation: '+ 90 Min. Abweichung',
+    tour: 'Tour', route: 'Novi Sad → Duisburg', cargo: '24 Paletten · Industrieware', client: 'BalkanCargo (fiktiv)', slot: 'Entladeslot', planned: 'Plan-ETA', current: 'Aktuelle ETA', decision: 'Entscheidungsbefugte Person', decisionPerson: 'Herr Marković', documents: 'Dokumente', complete: 'operativ vollständig', onPlan: 'Im Plan', deviation: '+ 90 Min. Abweichung',
     timeline: 'Status-Zeitlinie', next: 'Nächsten Schritt anzeigen', reset: 'Simulation neu starten', active: 'Aktueller Vorgang', open: 'Offene Entscheidung', noDecision: 'Keine offene Entscheidung', summary: 'Pilot-Zusammenfassung', evaluation: 'Auswertung', cta: 'Pilot besprechen', check: 'Pilot-Check starten', language: 'Sprache',
     steps: [
       ['13:45', 'Auftrag geprüft', 'Adressen, Referenzen, Fahrzeug und Ansprechpartner operativ vollständig.'],
       ['15:05', 'Beladung abgeschlossen', 'CMR liegt vor. Abfahrt bestätigt. ETA Duisburg: 09:20 Uhr.'],
-      ['20:00', 'Regelstatus', 'Transit planmäßig. Nächste Prüfung um 22:00 Uhr vorgesehen.'],
+      ['20:00', 'Planmäßiger Statuscheck', 'Transit planmäßig. Nächste Prüfung um 22:00 Uhr vorgesehen.'],
       ['21:10', 'Abweichung erkannt', 'Verkehrsstillstand gemeldet. Vorläufige ETA: 10:50 Uhr. Slot gefährdet.'],
       ['21:14', 'Entscheidung eskaliert', 'Auftraggeber muss Freigabe zur Kontaktaufnahme mit der Entladestelle erteilen.'],
       ['21:18', 'Freigabe dokumentiert', 'Auftraggeber erlaubt Information der Entladestelle und Nachfrage zum Zeitfenster.'],
       ['21:32', 'Entladestelle informiert', 'Operative Annahme bis 11:15 Uhr möglich. Keine rechtsverbindliche Terminänderung durch DaniniHub.'],
-      ['21:38', 'Beteiligte aktualisiert', 'Auftraggeber informiert. Fahrer erhielt die freigegebene Information. Nächste Prüfung: 07:00 Uhr.']
+      ['21:38', 'Beteiligte informiert', 'Auftraggeber informiert. Fahrer erhielt die freigegebene Information. Nächste Prüfung: 07:00 Uhr.']
     ],
     decisions: ['Freigabe zur Kontaktaufnahme erforderlich', 'Freigabe erteilt und dokumentiert'],
     metrics: [['8', 'Statusereignisse'], ['28 Min.', 'Störung bis Rückmeldung'], ['1', 'eskalierte Entscheidung'], ['0', 'unbefugte Zusagen']],
-    boundary: 'DaniniHub dokumentiert und kommuniziert. Transportauftrag, Preis, Fahrerweisung, Verkehrsleitung und finale Entscheidungen bleiben beim Auftraggeber.'
+    boundary: 'DaniniHub dokumentiert und kommuniziert. Transportauftrag, Preis, Fahreranweisungen, Verkehrsleitung und abschließende Entscheidungen verbleiben beim Auftraggeber.'
   },
   sr: {
     back: 'Nazad na objašnjenje pilota', title: 'DaniniHub operativni pult', subtitle: 'Interaktivna simulacija fiktivne ture', notice: 'DEMO REŽIM · Nema stvarnih podataka firme, vozača ili transporta · Nema automatskog odlučivanja',
-    tour: 'Tura', route: 'Novi Sad → Duisburg', cargo: '24 palete · industrijska roba', client: 'BalkanCargo (fiktivno)', slot: 'Termin istovara', planned: 'Planirana ETA', current: 'Aktuelna ETA', decision: 'Odgovorna osoba', decisionPerson: 'g. Marković', documents: 'Dokumenti', complete: 'operativno kompletni', onPlan: 'Prema planu', deviation: '+ 90 min. odstupanja',
+    tour: 'Tura', route: 'Novi Sad → Duisburg', cargo: '24 palete · industrijska roba', client: 'BalkanCargo (fiktivna firma)', slot: 'Termin istovara', planned: 'Planirana ETA', current: 'Aktuelna ETA', decision: 'Osoba ovlašćena za odluku', decisionPerson: 'g. Marković', documents: 'Dokumentacija', complete: 'operativno potpuna', onPlan: 'Prema planu', deviation: '+ 90 min. odstupanja',
     timeline: 'Vremenska linija statusa', next: 'Prikaži sledeći korak', reset: 'Pokreni simulaciju ponovo', active: 'Aktuelni događaj', open: 'Otvorena odluka', noDecision: 'Nema otvorene odluke', summary: 'Rezime pilota', evaluation: 'Evaluacija', cta: 'Razgovor o pilotu', check: 'Pokreni proveru pilota', language: 'Jezik',
     steps: [
-      ['13:45', 'Nalog proveren', 'Adrese, reference, vozilo i odgovorna osoba su operativno kompletni.'],
+      ['13:45', 'Nalog proveren', 'Operativni podaci o adresama, referencama, vozilu i odgovornoj osobi su potpuni.'],
       ['15:05', 'Utovar završen', 'CMR postoji. Polazak potvrđen. ETA Duisburg: 09:20.'],
       ['20:00', 'Redovni status', 'Tranzit prema planu. Sledeća provera predviđena za 22:00.'],
       ['21:10', 'Uočeno odstupanje', 'Prijavljen zastoj. Privremena ETA: 10:50. Termin je ugrožen.'],
       ['21:14', 'Odluka eskalirana', 'Naručilac mora odobriti kontaktiranje mesta istovara.'],
       ['21:18', 'Odobrenje dokumentovano', 'Naručilac dozvoljava obaveštavanje i pitanje o vremenskom prozoru.'],
-      ['21:32', 'Istovar obavešten', 'Operativni prijem moguć do 11:15. DaniniHub ne menja pravno obavezujući termin.'],
+      ['21:32', 'Mesto istovara obavešteno', 'Operativni prijem moguć do 11:15. DaniniHub ne menja pravno obavezujući termin.'],
       ['21:38', 'Učesnici ažurirani', 'Naručilac je obavešten. Vozač je dobio odobrenu informaciju. Sledeća provera: 07:00.']
     ],
     decisions: ['Potrebno odobrenje za kontaktiranje', 'Odobrenje dato i dokumentovano'],
-    metrics: [['8', 'statusnih događaja'], ['28 min.', 'od smetnje do odgovora'], ['1', 'eskalirana odluka'], ['0', 'neovlašćenih obećanja']],
-    boundary: 'DaniniHub dokumentuje i komunicira. Transportni nalog, cena, instrukcije vozaču, Verkehrsleitung i konačne odluke ostaju kod naručioca.'
+    metrics: [['8', 'statusnih događaja'], ['28 min.', 'od odstupanja do povratne informacije'], ['1', 'eskalirana odluka'], ['0', 'neovlašćenih obećanja']],
+    boundary: 'DaniniHub dokumentuje i komunicira. Transportni nalog, cena, instrukcije vozaču, odgovornost za rukovođenje transportom i konačne odluke ostaju kod naručioca.'
   }
 }
 

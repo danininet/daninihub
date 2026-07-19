@@ -1,0 +1,3 @@
+Hostinger deploy trigger for Dispatch Workspace V5.
+Merge commit: 9874dd2585a09dda00ae3bce55cd061e16c0b6e7
+Expected runtime marker: daninihub-dispatch-language-toggle-v5

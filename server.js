@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const crypto = require('crypto');
+const path = require('path');
 const cors = require('cors');
 const express = require('express');
 const { bootstrapDispatchAccess, signingMaterial } = require('./dispatch-access-bootstrap');
@@ -10,10 +11,11 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-dispatch-fresh-session-v7';
+const DEPLOYMENT_MARKER = 'daninihub-dispatch-explicit-index-v8';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
+const FRONTEND_INDEX = path.join(__dirname, 'daninihub-front', 'dist', 'index.html');
 
 // The current Workspace accepts fictitious TEST/DEMO cases only. Ensure the
 // internal pilot can always establish a server-side session even when no
@@ -44,6 +46,14 @@ app.get(DISPATCH_PATH, (req, res, next) => {
 mountDispatchRuntime(app);
 mountPublicRuntime(app);
 
+// Explicit SPA document handler. express.static serves assets, but the virtual
+// internal route needs the built React index document to avoid "Cannot GET".
+app.get(DISPATCH_PATH, (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  return res.sendFile(FRONTEND_INDEX);
+});
+
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
@@ -66,7 +76,7 @@ app.get('/api/runtime-version', (req, res) => {
     service: 'Balkan-DACH Transport Operations Support',
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
-    dispatchWorkspaceVersion: 'fresh-session-v7',
+    dispatchWorkspaceVersion: 'explicit-index-v8',
     contact: 'info@daninihub.com'
   });
 });

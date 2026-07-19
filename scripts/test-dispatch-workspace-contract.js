@@ -27,7 +27,7 @@ for (const text of requiredWorkspaceText) {
 }
 
 for (const text of [
-  'internal/dispatch-pilot-workspace',
+  'dispatch-pilot-workspace',
   'noindex,nofollow',
   'return <DispatchPilotWorkspace/>'
 ]) {

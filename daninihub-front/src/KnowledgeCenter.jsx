@@ -86,10 +86,10 @@ const videoCopy = {
     privacy: 'Datenschutzhinweise',
   },
   sr: {
-    eyebrow: 'VIDEO · 03:09 MIN.',
-    title: 'Kada TMS sam nije dovoljan',
-    text: 'Video pokazuje gde se završavaju sistemski podaci i zašto provera činjenica, odobrenje, komunikacija i dokumentovana predaja i dalje moraju biti organizovani.',
-    language: 'Jezik videa: nemački',
+    eyebrow: 'VIDEO · 09:17 MIN.',
+    title: 'Dispečeri vs. softver: zašto TMS ne menja disponenta',
+    text: 'Video pokazuje gde se završavaju mogućnosti TMS-a i zašto provera činjenica, odobrenje, komunikacija i dokumentovana predaja i dalje zahtevaju ljudsku odgovornost.',
+    language: 'Jezik videa: srpski',
     load: 'Učitaj YouTube video',
     loadLabel: 'Učitaj i pokreni video sa YouTubea',
     notice: 'Veza sa YouTubeom uspostavlja se tek nakon vašeg klika. Tada podaci mogu biti prosleđeni Googleu/YouTubeu i sačuvani na vašem uređaju.',
@@ -100,9 +100,29 @@ const videoCopy = {
   },
 }
 
+const videoConfig = {
+  de: {
+    id: 'FTMCWxUGcig',
+    title: 'Balkan–DACH Transport: Wenn ein TMS allein nicht reicht | DaniniHub',
+    description: 'Warum TMS-Daten allein operative Abweichungen nicht lösen und wie Faktenprüfung, Entscheidung, Kommunikation, Dokumentation und Recovery zusammenspielen.',
+    uploadDate: '2026-07-18',
+    duration: 'PT3M9S',
+    inLanguage: 'de',
+  },
+  sr: {
+    id: 'glgFJsoA2zY',
+    title: 'Dispečeri vs. softver: zašto TMS ne menja disponenta | DaniniHub',
+    description: 'Zašto TMS i telematika ne preuzimaju operativnu odgovornost i kako se povezuju provera činjenica, odluka, komunikacija, dokumentacija i predaja.',
+    uploadDate: '2026-07-19',
+    duration: 'PT9M17S',
+    inLanguage: 'sr',
+  },
+}
+
 function ArticleVideo({ lang }) {
   const [enabled, setEnabled] = useState(false)
   const t = videoCopy[lang]
+  const video = videoConfig[lang]
   const sr = lang === 'sr'
 
   return <section className="article-video" aria-labelledby="article-video-title">
@@ -115,8 +135,8 @@ function ArticleVideo({ lang }) {
     <div className="privacy-video-shell">
       <div className="article-video-viewport">
         {enabled ? <iframe
-          src="https://www.youtube-nocookie.com/embed/FTMCWxUGcig?autoplay=1&rel=0"
-          title="Balkan–DACH Transport: Wenn TMS allein nicht reicht | DaniniHub"
+          src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`}
+          title={video.title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
@@ -131,7 +151,7 @@ function ArticleVideo({ lang }) {
         <div>
           {enabled && <button type="button" onClick={() => setEnabled(false)}>{t.disable}</button>}
           <a href={sr ? '/sr/privatnost' : '/de/datenschutz'}>{t.privacy}</a>
-          <a href="https://youtu.be/FTMCWxUGcig" target="_blank" rel="noreferrer">{t.external} ↗</a>
+          <a href={`https://youtu.be/${video.id}`} target="_blank" rel="noreferrer">{t.external} ↗</a>
         </div>
       </div>
     </div>
@@ -202,17 +222,18 @@ export default function KnowledgeCenter({ lang }) {
   if (location.pathname === deviationEscalationArticlePaths[lang]) return <DeviationEscalationArticle lang={lang}/>
   if (location.pathname === transportDocumentsArticlePaths[lang]) return <TransportDocumentsArticle lang={lang}/>
 
+  const video = videoConfig[lang]
   const videoStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
-    name: 'Balkan–DACH Transport: Wenn TMS allein nicht reicht | DaniniHub',
-    description: 'Warum TMS-Daten allein operative Abweichungen nicht lösen und wie Faktenprüfung, Entscheidung, Kommunikation, Dokumentation und Recovery zusammenspielen.',
+    name: video.title,
+    description: video.description,
     thumbnailUrl: ['https://daninihub.com/assets/daninihub-tms-video-poster.webp'],
-    uploadDate: '2026-07-18',
-    duration: 'PT3M9S',
-    inLanguage: 'de',
-    embedUrl: 'https://www.youtube-nocookie.com/embed/FTMCWxUGcig',
-    url: 'https://youtu.be/FTMCWxUGcig',
+    uploadDate: video.uploadDate,
+    duration: video.duration,
+    inLanguage: video.inLanguage,
+    embedUrl: `https://www.youtube-nocookie.com/embed/${video.id}`,
+    url: `https://youtu.be/${video.id}`,
     isAccessibleForFree: true,
   }
 

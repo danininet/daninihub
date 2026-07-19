@@ -52,8 +52,8 @@ for (const route of [
   '/de/pilot-check', '/sr/provera-pilota',
   '/de/leistungsrahmen', '/sr/obim-usluge',
   '/de/continuity-support', '/sr/kontinuitet-podrska',
-  '/de/fahrerkommunikation', '/sr/komunikacija-vozaci',
-  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
+  '/de/fahrerkommunikation', '/sr/komunikacija-vozaci'
+  ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
   '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje',
   '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
   '/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija',
@@ -80,7 +80,7 @@ assert.match(landingSource, /Weniger Rückfragen\. Klare Informationen\. Ruhiger
 assert.match(landingSource, /Deutsch \+ Sprachen des Balkans/);
 assert.match(landingSource, /Pilotprojekt für ein Transportunternehmen/);
 assert.match(landingSource, /DaniniHub ist kein Frachtführer, keine Spedition, kein Verkehrsleiter/);
-assert.doesNotMatch(landingSource, /Persönliche KI-Analyse|12 EUR|12 €\//);
+assert.doesNotMatch(landingSource, /Persönliche KI-Analyse|12 EUR|12 €/);
 assert.doesNotMatch(landingSource, /CookieNotice|dh_cookie_notice|localStorage/);
 assert.match(landingSource, /Datenschutzerklärung/);
 

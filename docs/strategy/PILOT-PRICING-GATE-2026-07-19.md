@@ -2,6 +2,7 @@
 
 Status: INTERNO / BLOCKED ZA JAVNU OBJAVU I NAPLATU
 Datum: 19.07.2026.
+Izvor odluke: `PILOT-MODEL-OWNER-DECISION-2026-07-19.md`
 
 ## Odluka
 
@@ -11,42 +12,56 @@ Klijent prvo prolazi kroz:
 
 1. dozvolu za slanje informacija;
 2. Pilot-Check;
-3. kratak razgovor;
-4. pisano određivanje obima;
-5. fiksnu ponudu.
+3. besplatan uvodni razgovor do 20 minuta;
+4. po potrebi pregled jednog anonimizovanog ili fiktivnog slučaja;
+5. pisano određivanje obima;
+6. fiksnu ponudu.
 
-Nema besplatnog probnog perioda.
+Besplatan sloj ne uključuje živu operativu.
 
-## Predloženi validacioni koridor
+## DaniniHub Founding Pilot
 
-### Pilot Start
+Za prva tri plaćena pilota važi jedan model za DACH i Balkan:
 
-- 7 kalendarskih dana;
+- 14 kalendarskih dana;
 - jedna relacija;
 - najviše tri vozila ili operativna slučaja;
 - unapred dogovoreni radni prozor radnim danima;
-- do 8 operativnih sati ukupno;
-- status, ETA, komunikacija, odstupanje i predaja;
-- završna evaluacija;
-- interni ciljni koridor: 590–690 EUR neto.
+- najviše 8 operativnih sati ukupno;
+- status, ETA, komunikacija, odstupanje, eskalacija i predaja;
+- završni izveštaj i evaluacija;
+- bez automatskog produženja;
+- fiksna validaciona cena: 490 EUR neto.
 
-### Pilot Plus
+## Plaćanje i risk reversal
 
-- 7 kalendarskih dana;
-- jedna relacija ili mala grupa povezanih slučajeva;
-- najviše pet vozila/slučajeva;
-- do 14 operativnih sati ukupno;
-- proširena komunikacija i dokumentacioni zapis;
-- završna evaluacija;
-- interni ciljni koridor: 790–890 EUR neto.
+- 50% po prihvatanju pisanog obima;
+- 50% po završnom izveštaju;
+- dodatni rad samo uz novu pisanu saglasnost;
+- ako klijent u roku od 7 dana nakon evaluacije zaključi prvi mesečni nastavak, celokupnih 490 EUR pilot-naknade uračunava se u cenu tog prvog nastavka.
 
-### Dodatni rad
+Pilot zato nije besplatan jednokratni rad, ali klijentu koji nastavi saradnju ne stvara dodatni ulazni trošak.
 
-Dodatni sati ne nastaju automatski. Izvršavaju se samo nakon pisanog odobrenja.
+## Besplatni sloj
 
-Interna obračunska osnova za validaciju: 55 EUR neto po dodatnom satu.
+Besplatno su dozvoljeni:
 
-## Šta nije uključeno
+- Pilot-Check;
+- uvodni razgovor;
+- javni demo i stručni materijali;
+- pregled jednog anonimizovanog ili fiktivnog slučaja;
+- procena smislenog pilot-obima.
+
+Besplatno nisu dozvoljeni:
+
+- rad na stvarnoj turi;
+- kontakt sa stvarnim vozačem ili klijentom;
+- rad u klijentskom TMS-u;
+- priprema ili slanje poruka za živ slučaj;
+- večernja, vikend ili krizna podrška;
+- obrada realnih ličnih podataka.
+
+## Šta nije uključeno u Founding Pilot
 
 - 24/7 dežurstvo;
 - noćna podrška;
@@ -62,13 +77,17 @@ Interna obračunska osnova za validaciju: 55 EUR neto po dodatnom satu.
 
 Ove stavke zahtevaju poseban scope, procenu rizika i cenu.
 
-## Razlog za koridor
+## Tržišno obrazloženje
 
-Pilot nije SaaS licenca, jer uključuje ljudski operativni rad, nemačku/regionalnu komunikaciju, proveru činjenica i dokumentovanu predaju.
+Pilot nije SaaS licenca. Uključuje ljudski operativni rad, nemačku/regionalnu komunikaciju, proveru činjenica i dokumentovanu predaju.
 
-Pilot nije ni klasični interim-management angažman, jer je obim mali, ovlašćenja su ograničena, nema pune odgovornosti za dispoziciju i cilj je validacija procesa.
+TMS i digitalne platforme često nude 7–30 dana besplatno jer daju pristup softveru. Najbliži evropski outsourcing servisi uglavnom koriste mesečni paket, procenat od prometa, individualnu ponudu ili minimalnu obavezu, bez besplatne pune operative.
 
-Ciljni koridor približno odgovara 8–14 sati rada po internoj osnovi oko 55 EUR/sat, uz fiksni obim i završnu evaluaciju.
+DaniniHub zato kombinuje:
+
+- besplatnu proveru podobnosti;
+- mali plaćeni operativni pilot;
+- potpunu uračunljivost pilot-naknade u prvi mesečni nastavak.
 
 ## Gate pre ponude
 
@@ -84,14 +103,15 @@ Fiksna cena može se poslati tek kada su ispunjeni svi uslovi:
 - odgovorna osoba klijenta imenovana;
 - aplikacija ne obećana kao klijentski proizvod dok nije stabilna i integrisana.
 
-## Kasnija standardizacija
+## Posle validacije
 
-Tek nakon najmanje tri završena plaćena pilota treba odlučiti da li postoje:
+Nakon tri završena plaćena pilota ponovo se procenjuju:
 
-- standardni paket;
+- standardna cena pilota;
 - mesečni retainer;
 - cena po vozilu/slučaju;
 - cena po vremenskom prozoru;
-- dodatak za večernju, vikend ili kriznu podršku.
+- dodatak za večernju, vikend ili kriznu podršku;
+- stvarni utrošak vremena i profitabilnost.
 
 Do tada se svaki pilot ugovara kao fiksni, ograničeni projekat bez automatskog produženja.

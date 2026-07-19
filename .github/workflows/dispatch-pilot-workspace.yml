@@ -6,9 +6,11 @@ on:
       - 'daninihub-front/src/DispatchPilotWorkspace.jsx'
       - 'daninihub-front/src/DispatchPilotWorkspaceV3.jsx'
       - 'daninihub-front/src/DispatchPilotWorkspaceV4.jsx'
+      - 'daninihub-front/src/DispatchPilotWorkspaceV5.jsx'
       - 'daninihub-front/src/DispatchPilotWorkspace.css'
       - 'daninihub-front/src/DispatchPilotWorkspaceV2.css'
       - 'daninihub-front/src/DispatchPilotWorkspaceV4.css'
+      - 'daninihub-front/src/DispatchPilotWorkspaceV5.css'
       - 'daninihub-front/src/App.jsx'
       - 'core/dispatch-ai-structure.js'
       - 'server-dispatch-runtime.js'
@@ -70,7 +72,7 @@ jobs:
       - name: Dispatch AI structuring contract
         run: npm run test:dispatch-ai
 
-      - name: Dispatch access bootstrap contract
+      - name: Dispatch signed access contract
         run: npm run test:dispatch-access
 
       - name: Production frontend build

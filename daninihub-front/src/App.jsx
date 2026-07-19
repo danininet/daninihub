@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import PublicLanding from './PublicLanding'
 import GermanB2BLanding from './GermanB2BLanding'
 import SerbianB2BLanding from './SerbianB2BLanding'
+import DispatchPilotWorkspace from './DispatchPilotWorkspace'
 import PilotCheck from './PilotCheck'
 import BusinessPages from './BusinessPages'
 import ServiceQuickNav from './ServiceQuickNav'
@@ -13,8 +14,16 @@ import './Polish.css'
 
 export default function App() {
   const [lang, setLang] = useState(() => location.pathname.startsWith('/sr') ? 'sr' : 'de')
+  const dispatchWorkspace = /^\/internal\/dispatch-pilot-workspace\/?$/.test(location.pathname)
 
   useEffect(() => {
+    if (dispatchWorkspace) {
+      document.documentElement.lang = 'sr'
+      document.title = 'DaniniHub Dispatch Pilot Workspace'
+      document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex,nofollow')
+      return
+    }
+
     const sr = lang === 'sr'
     const path = location.pathname
     const pilot = /pilot-beispiel|primer-pilota/.test(path)
@@ -45,7 +54,9 @@ export default function App() {
     document.querySelector('link[hreflang="de"]')?.setAttribute('href', `https://daninihub.com${pair[0]}`)
     document.querySelector('link[hreflang="sr"]')?.setAttribute('href', `https://daninihub.com${pair[1]}`)
     document.querySelector('link[hreflang="x-default"]')?.setAttribute('href', `https://daninihub.com${pair[0]}`)
-  }, [lang])
+  }, [dispatchWorkspace, lang])
+
+  if (dispatchWorkspace) return <DispatchPilotWorkspace/>
 
   let page
   if (/pilot-check|provera-pilota/.test(location.pathname)) page = <PilotCheck lang={lang}/>

@@ -42,8 +42,9 @@ function publicUrl() {
 }
 
 function reviewToken(reference) {
-  const secret = String(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || '');
-  if (!secret) return '';
+  const secretMaterial = String(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY || '');
+  if (!secretMaterial) return '';
+  const secret = crypto.createHash('sha256').update(`daninihub-lead-review-v1:${secretMaterial}`).digest();
   return crypto.createHmac('sha256', secret).update(reference).digest('hex');
 }
 
@@ -63,7 +64,7 @@ function reviewAction(reference) {
   const url = reviewUrl(reference);
   return url
     ? `<p style="margin:24px 0"><a href="${html(url)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Anfrage prüfen und Follow-up freigeben</a></p>`
-    : '<p><strong>Hinweis:</strong> Es ist noch kein sicherer Admin- oder Session-Schlüssel konfiguriert. Follow-up kann noch nicht freigegeben werden.</p>';
+    : '<p><strong>Hinweis:</strong> Es ist noch kein sicherer serverseitiger Schlüssel konfiguriert. Follow-up kann noch nicht freigegeben werden.</p>';
 }
 
 function standardAdminEmail(data, reference) {

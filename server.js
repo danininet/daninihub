@@ -7,7 +7,7 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-transport-2026-07-19-content-lead-review';
+const DEPLOYMENT_MARKER = 'daninihub-transport-2026-07-19-secure-lead-review-v2';
 
 app.set('trust proxy', 1);
 app.use(cors({ origin: process.env.DANINI_PUBLIC_URL || 'https://daninihub.com' }));
@@ -20,7 +20,7 @@ app.get('/health', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
-    manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET),
+    manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY),
     durableLeadDatabase: Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME)
   });
 });

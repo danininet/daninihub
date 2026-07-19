@@ -4,14 +4,17 @@ on:
   pull_request:
     paths:
       - 'daninihub-front/src/DispatchPilotWorkspace.jsx'
+      - 'daninihub-front/src/DispatchPilotWorkspaceV3.jsx'
       - 'daninihub-front/src/DispatchPilotWorkspace.css'
       - 'daninihub-front/src/DispatchPilotWorkspaceV2.css'
       - 'daninihub-front/src/App.jsx'
+      - 'core/dispatch-ai-structure.js'
       - 'server-dispatch-runtime.js'
       - 'dispatch-case-store.js'
       - 'server.js'
       - 'scripts/test-dispatch-workspace-contract.js'
       - 'scripts/test-dispatch-secure-runtime.js'
+      - 'scripts/test-dispatch-ai-structure.js'
       - 'package.json'
       - '.github/workflows/dispatch-pilot-workspace.yml'
 
@@ -59,6 +62,9 @@ jobs:
 
       - name: Dispatch secure runtime contract
         run: npm run test:dispatch-secure
+
+      - name: Dispatch AI structuring contract
+        run: npm run test:dispatch-ai
 
       - name: Production frontend build
         run: npm run build

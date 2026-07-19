@@ -6,7 +6,7 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'daninihub-front/src/App.jsx'), 'utf8');
-const workspace = fs.readFileSync(path.join(root, 'daninihub-front/src/DispatchPilotWorkspace.jsx'), 'utf8');
+const workspace = fs.readFileSync(path.join(root, 'daninihub-front/src/DispatchPilotWorkspaceV3.jsx'), 'utf8');
 
 const requiredWorkspaceText = [
   'INTERNE PILOTVERSION · NUR FIKTIVE DATEN',
@@ -23,7 +23,10 @@ const requiredWorkspaceText = [
   'Sačuvaj slučaj',
   'Sačuvani fiktivni slučajevi',
   'Novi fiktivni slučaj',
-  'Odjava'
+  'Odjava',
+  'AI strukturiraj nacrt',
+  'Rezultat se vraća kao PENDING',
+  'ništa nije odobreno niti poslato'
 ];
 
 for (const text of requiredWorkspaceText) {
@@ -31,6 +34,7 @@ for (const text of requiredWorkspaceText) {
 }
 
 for (const text of [
+  "from './DispatchPilotWorkspaceV3'",
   'dispatch-pilot-workspace',
   'noindex,nofollow',
   'return <DispatchPilotWorkspace/>'
@@ -42,6 +46,10 @@ for (const text of [
   "credentials: 'same-origin'",
   '/api/v1/dispatch/cases',
   '/api/v1/dispatch/logout',
+  '/api/v1/dispatch/structure',
+  "type: 'AI_STRUCTURE'",
+  "approval: 'PENDING'",
+  "caseStatus: 'DRAFT'",
   'fictitious: true',
   'realData: false'
 ]) {
@@ -68,5 +76,7 @@ for (const state of ["approval: 'PENDING'", "approval: 'APPROVED'", "approval: '
 assert(!workspace.includes('Pošalji poruku'));
 assert(!workspace.includes('Send message'));
 assert(!workspace.includes('Nachricht senden'));
+assert(!workspace.includes('autoApprove'));
+assert(!workspace.includes('autoSend'));
 
-console.log('Dispatch Pilot Workspace contract OK');
+console.log('Dispatch Pilot Workspace v3 contract OK');

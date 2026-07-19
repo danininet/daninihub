@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const express = require('express');
+const { structureDispatchMessage } = require('./core/dispatch-ai-structure');
 const { createDispatchCaseStore } = require('./dispatch-case-store');
 
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -85,6 +86,7 @@ function validateCaseInput(body) {
 
 function mountDispatchRuntime(app, options = {}) {
   const store = options.store || createDispatchCaseStore(options.storeOptions);
+  const structure = options.structureDispatchMessage || structureDispatchMessage;
 
   app.get('/internal/dispatch-pilot-workspace', (req, res, next) => {
     res.set('Cache-Control', 'no-store');
@@ -103,6 +105,27 @@ function mountDispatchRuntime(app, options = {}) {
   app.post('/api/v1/dispatch/logout', (req, res) => {
     res.set('Set-Cookie', `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict`);
     return res.json({ ok: true });
+  });
+
+  app.post('/api/v1/dispatch/structure', async (req, res) => {
+    if (!process.env.OPENAI_API_KEY && !options.aiClient) {
+      return res.status(503).json({ ok: false, error: 'DISPATCH_AI_NOT_CONFIGURED' });
+    }
+    const input = {
+      fictitious: req.body?.fictitious === true,
+      rawMessage: clean(req.body?.rawMessage, 5000),
+      route: clean(req.body?.route, 300),
+      vehicle: clean(req.body?.vehicle, 200)
+    };
+    try {
+      const result = await structure(input, { client: options.aiClient, model: options.aiModel });
+      return res.json({ ok: true, approval: 'PENDING', structure: result });
+    } catch (error) {
+      const inputErrors = ['FICTITIOUS_CASE_REQUIRED', 'RAW_MESSAGE_REQUIRED'];
+      const status = inputErrors.includes(error.code) ? 400 : 503;
+      console.error('Dispatch AI structure failed:', error.message);
+      return res.status(status).json({ ok: false, error: error.code || 'DISPATCH_AI_FAILED' });
+    }
   });
 
   app.get('/api/v1/dispatch/cases', async (req, res) => {

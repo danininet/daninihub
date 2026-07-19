@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "DaniniHub deploy package.",
   "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "directories": {"doc": "docs"},
   "scripts": {
     "build": "npm run build:front",
     "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",

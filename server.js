@@ -20,7 +20,7 @@ app.get('/health', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
-    manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET),
+    manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET),
     durableLeadDatabase: Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME)
   });
 });

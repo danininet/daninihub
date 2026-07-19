@@ -42,7 +42,7 @@ function publicUrl() {
 }
 
 function reviewToken(reference) {
-  const secret = String(process.env.DANINI_ADMIN_SECRET || '');
+  const secret = String(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || '');
   if (!secret) return '';
   return crypto.createHmac('sha256', secret).update(reference).digest('hex');
 }
@@ -63,7 +63,7 @@ function reviewAction(reference) {
   const url = reviewUrl(reference);
   return url
     ? `<p style="margin:24px 0"><a href="${html(url)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Anfrage prüfen und Follow-up freigeben</a></p>`
-    : '<p><strong>Hinweis:</strong> DANINI_ADMIN_SECRET ist nicht konfiguriert. Follow-up kann noch nicht sicher freigegeben werden.</p>';
+    : '<p><strong>Hinweis:</strong> Es ist noch kein sicherer Admin- oder Session-Schlüssel konfiguriert. Follow-up kann noch nicht freigegeben werden.</p>';
 }
 
 function standardAdminEmail(data, reference) {

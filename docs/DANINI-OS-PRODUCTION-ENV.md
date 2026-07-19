@@ -21,6 +21,7 @@ BREVO_SENDER_NAME=DaniniHub
 
 # Transport lead review and manually approved Brevo follow-up
 DANINI_ADMIN_SECRET=<random-secret-minimum-32-characters>
+# DANINI_ADMIN_SECRET is preferred. During migration, DANINI_SESSION_SECRET is used as a secure fallback.
 
 # Optional: published DE/SR Pilot Brief. Until configured, the public pilot example is used.
 DANINI_PILOT_BRIEF_DE_URL=https://daninihub.com/de/pilot-beispiel

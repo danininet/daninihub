@@ -4,13 +4,53 @@ const crypto = require('crypto');
 const express = require('express');
 const { createDispatchCaseStore } = require('./dispatch-case-store');
 
+const COOKIE_NAME = 'danini_dispatch_session';
+const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const clean = (value, max = 200) => String(value || '').trim().slice(0, max);
 
-function dispatchAuthorized(req) {
+function sameSecret(candidate) {
   const expected = String(process.env.DANINI_ADMIN_SECRET || '');
-  const supplied = String(req.headers['x-danini-admin-secret'] || req.query.key || '');
+  const supplied = String(candidate || '');
   if (!expected || !supplied || expected.length !== supplied.length) return false;
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(supplied));
+}
+
+function sessionKey() {
+  const secret = String(process.env.DANINI_ADMIN_SECRET || '');
+  if (!secret) return null;
+  return crypto.createHash('sha256').update(`daninihub-dispatch-session-v1:${secret}`).digest();
+}
+
+function createSessionToken() {
+  const key = sessionKey();
+  if (!key) return '';
+  const expiresAt = Date.now() + SESSION_TTL_SECONDS * 1000;
+  const value = String(expiresAt);
+  const signature = crypto.createHmac('sha256', key).update(value).digest('hex');
+  return `${value}.${signature}`;
+}
+
+function parseCookies(req) {
+  return Object.fromEntries(String(req.headers.cookie || '').split(';').map(part => part.trim()).filter(Boolean).map(part => {
+    const separator = part.indexOf('=');
+    if (separator < 0) return [part, ''];
+    return [part.slice(0, separator), decodeURIComponent(part.slice(separator + 1))];
+  }));
+}
+
+function validSessionToken(candidate) {
+  const key = sessionKey();
+  const [expiresRaw, signature = ''] = String(candidate || '').split('.');
+  const expiresAt = Number(expiresRaw);
+  if (!key || !Number.isFinite(expiresAt) || expiresAt <= Date.now() || signature.length !== 64) return false;
+  const expected = crypto.createHmac('sha256', key).update(String(expiresAt)).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+}
+
+function dispatchAuthorized(req) {
+  const supplied = req.headers['x-danini-admin-secret'] || req.query.key;
+  if (sameSecret(supplied)) return true;
+  return validSessionToken(parseCookies(req)[COOKIE_NAME]);
 }
 
 function requireDispatchAdmin(req, res, next) {
@@ -50,11 +90,20 @@ function mountDispatchRuntime(app, options = {}) {
     res.set('Cache-Control', 'no-store');
     res.set('X-Robots-Tag', 'noindex, nofollow');
     if (!process.env.DANINI_ADMIN_SECRET) return res.status(503).type('html').send(renderAccessPage('Administratorski pristup još nije konfigurisan.'));
-    if (!dispatchAuthorized(req)) return res.status(401).type('html').send(renderAccessPage(req.query.key ? 'Pogrešan ključ.' : ''));
+    if (req.query.key && sameSecret(req.query.key)) {
+      res.set('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(createSessionToken())}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; Secure; SameSite=Strict`);
+      return res.redirect(303, '/internal/dispatch-pilot-workspace');
+    }
+    if (!validSessionToken(parseCookies(req)[COOKIE_NAME])) return res.status(401).type('html').send(renderAccessPage(req.query.key ? 'Pogrešan ključ.' : ''));
     return next();
   });
 
   app.use('/api/v1/dispatch', express.json({ limit: '64kb' }), requireDispatchAdmin);
+
+  app.post('/api/v1/dispatch/logout', (req, res) => {
+    res.set('Set-Cookie', `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict`);
+    return res.json({ ok: true });
+  });
 
   app.get('/api/v1/dispatch/cases', async (req, res) => {
     try {
@@ -91,4 +140,4 @@ function mountDispatchRuntime(app, options = {}) {
   });
 }
 
-module.exports = { dispatchAuthorized, mountDispatchRuntime, requireDispatchAdmin, validateCaseInput };
+module.exports = { createSessionToken, dispatchAuthorized, mountDispatchRuntime, requireDispatchAdmin, validSessionToken, validateCaseInput };

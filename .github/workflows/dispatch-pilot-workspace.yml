@@ -34,8 +34,23 @@ jobs:
       - name: Syntax check
         run: npm run check:syntax
 
-      - name: Complete contract suite
-        run: npm run test:os
+      - name: Core contract
+        run: npm run test:core
+
+      - name: Guided analysis contract
+        run: npm run test:guided
+
+      - name: Gumroad contract
+        run: npm run test:gumroad
+
+      - name: Admin contract
+        run: npm run test:admin
+
+      - name: Public site contracts
+        run: npm run test:public
+
+      - name: Dispatch safety contract
+        run: npm run test:dispatch
 
       - name: Production frontend build
         run: npm run build

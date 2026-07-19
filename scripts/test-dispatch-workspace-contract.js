@@ -6,37 +6,35 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'daninihub-front/src/App.jsx'), 'utf8');
-const workspace = fs.readFileSync(path.join(root, 'daninihub-front/src/DispatchPilotWorkspaceV4.jsx'), 'utf8');
+const workspace = fs.readFileSync(path.join(root, 'daninihub-front/src/DispatchPilotWorkspaceV5.jsx'), 'utf8');
 const accessRuntime = fs.readFileSync(path.join(root, 'server-dispatch-runtime.js'), 'utf8');
 const accessEmail = fs.readFileSync(path.join(root, 'dispatch-access-bootstrap.js'), 'utf8');
 
-const requiredWorkspaceText = [
-  'INTERNA PILOT VERZIJA / INTERNE PILOTVERSION',
+for (const text of [
+  'INTERNA PILOT VERZIJA · SAMO FIKTIVNI PODACI',
+  'INTERNE PILOTVERSION · NUR FIKTIVE DATEN',
   'Unesi poruku',
   'Rohmeldung eingeben',
   'Pregledaj AI strukturu',
   'KI-Struktur prüfen',
   'Ručno odobri ili odbij',
   'Manuell freigeben oder ablehnen',
-  'AI STRUKTURIRAJ / MIT KI STRUKTURIEREN',
-  'Potvrđene činjenice / Bestätigte Fakten',
-  'Nepoznato / Offene Punkte',
-  'Potrebna odluka / Erforderliche Entscheidung',
-  'ODOBRI NACRT / ENTWURF FREIGEBEN',
-  'VRATI NA DORADU / ZUR ÜBERARBEITUNG',
-  'SAČUVAJ OVAJ SLUČAJ / DIESEN FALL SPEICHERN',
-  'Sačuvani fiktivni slučajevi / Gespeicherte fiktive Fälle',
-  'Radno sposobna predaja / Arbeitsfähige Übergabe',
-  'Rezultat ostaje PENDING',
-  'Es wird nichts versendet'
-];
-
-for (const text of requiredWorkspaceText) {
-  assert(workspace.includes(text), `Required bilingual Dispatch text missing: ${text}`);
+  'AI STRUKTURIRAJ',
+  'MIT KI STRUKTURIEREN',
+  'ODOBRI NACRT',
+  'ENTWURF FREIGEBEN',
+  'VRATI NA DORADU',
+  'ZUR ÜBERARBEITUNG',
+  'SAČUVAJ OVAJ SLUČAJ',
+  'DIESEN FALL SPEICHERN',
+  "setLang(next)",
+  "url.searchParams.set('lang', next)"
+]) {
+  assert(workspace.includes(text), `Required single-language Dispatch copy missing: ${text}`);
 }
 
 for (const text of [
-  "from './DispatchPilotWorkspaceV4'",
+  "from './DispatchPilotWorkspaceV5'",
   'dispatch-pilot-workspace',
   'noindex,nofollow',
   'return <DispatchPilotWorkspace/>'
@@ -59,30 +57,37 @@ for (const text of [
 }
 
 for (const text of [
-  'INTERNI PRISTUP / INTERNER ZUGANG',
-  'OTVORI / ÖFFNEN',
-  'Administratorski ključ / Administratorschlüssel'
+  'POŠALJI NOVI PRISTUPNI LINK',
+  'NEUEN ZUGANGSLINK SENDEN',
+  'request-access',
+  '?lang=sr',
+  '?lang=de'
 ]) {
-  assert(accessRuntime.includes(text), `Required bilingual access page text missing: ${text}`);
+  assert(accessRuntime.includes(text), `Required language-switch access behavior missing: ${text}`);
 }
 
 for (const text of [
-  'interni pristup / interner Zugang',
-  'OTVORI WORKSPACE / WORKSPACE ÖFFNEN'
+  'OTVORI WORKSPACE',
+  'WORKSPACE ÖFFNEN',
+  '?access=',
+  '&lang='
 ]) {
-  assert(accessEmail.includes(text), `Required bilingual access email text missing: ${text}`);
+  assert(accessEmail.includes(text), `Required signed access email behavior missing: ${text}`);
 }
 
 for (const forbidden of [
-  'axios',
-  'localStorage',
-  'sessionStorage',
-  'navigator.sendBeacon',
-  'window.open(',
-  'mailto:',
-  'http://',
-  'https://'
+  'Administratorski ključ',
+  'Administratorschlüssel',
+  'name="key"',
+  '?key=',
+  'INTERNA PILOT VERZIJA / INTERNE PILOTVERSION',
+  'AI STRUKTURIRAJ / MIT KI STRUKTURIEREN',
+  'ODOBRI NACRT / ENTWURF FREIGEBEN'
 ]) {
+  assert(!accessRuntime.includes(forbidden) && !workspace.includes(forbidden) && !accessEmail.includes(forbidden), `Forbidden mixed-language or manual-key UI found: ${forbidden}`);
+}
+
+for (const forbidden of ['axios', 'localStorage', 'sessionStorage', 'navigator.sendBeacon', 'window.open(', 'mailto:', 'http://', 'https://']) {
   assert(!workspace.includes(forbidden), `Forbidden external or browser persistence action found: ${forbidden}`);
 }
 
@@ -96,4 +101,4 @@ assert(!workspace.includes('Nachricht senden'));
 assert(!workspace.includes('autoApprove'));
 assert(!workspace.includes('autoSend'));
 
-console.log('Dispatch Pilot Workspace v4 bilingual guided contract OK');
+console.log('Dispatch Pilot Workspace v5 language-switch contract OK');

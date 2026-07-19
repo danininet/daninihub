@@ -8,7 +8,7 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-dispatch-secure-store-v2';
+const DEPLOYMENT_MARKER = 'daninihub-dispatch-ai-structuring-v3';
 
 app.set('trust proxy', 1);
 app.use(cors({ origin: process.env.DANINI_PUBLIC_URL || 'https://daninihub.com' }));
@@ -24,6 +24,7 @@ app.get('/health', (req, res) => {
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY),
     dispatchAdminAccess: Boolean(process.env.DANINI_ADMIN_SECRET),
+    dispatchAiConfigured: Boolean(process.env.OPENAI_API_KEY),
     durableLeadDatabase: Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME),
     durableDispatchDatabase: Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME)
   });
@@ -35,7 +36,7 @@ app.get('/api/runtime-version', (req, res) => {
     service: 'Balkan-DACH Transport Operations Support',
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
-    dispatchWorkspaceVersion: 'secure-store-v2',
+    dispatchWorkspaceVersion: 'ai-structuring-v3',
     contact: 'info@daninihub.com'
   });
 });

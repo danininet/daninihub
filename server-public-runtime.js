@@ -60,14 +60,17 @@ function validReviewToken(reference, candidate) {
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received));
 }
 
-function reviewAction(reference) {
+function reviewAction(reference, reviewAvailable = true) {
+  if (!reviewAvailable) {
+    return '<p><strong>Hinweis:</strong> Die Anfrage wurde per E-Mail zugestellt, konnte aber nicht für die Online-Freigabe gespeichert werden. Bitte antworten Sie in diesem Fall manuell.</p>';
+  }
   const url = reviewUrl(reference);
   return url
     ? `<p style="margin:24px 0"><a href="${html(url)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Anfrage prüfen und Follow-up freigeben</a></p>`
     : '<p><strong>Hinweis:</strong> Es ist noch kein sicherer serverseitiger Schlüssel konfiguriert. Follow-up kann noch nicht freigegeben werden.</p>';
 }
 
-function standardAdminEmail(data, reference) {
+function standardAdminEmail(data, reference, reviewAvailable = true) {
   return `
     <h2>Neue DaniniHub Transport-Anfrage</h2>
     <p><strong>Referenz:</strong> ${html(reference)}</p>
@@ -78,11 +81,11 @@ function standardAdminEmail(data, reference) {
     <strong>Relationen:</strong> ${valueOrDash(data.routes)}<br>
     <strong>Interesse:</strong> ${html(data.interest)}</p>
     <p><strong>Nachricht:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p>
-    ${reviewAction(reference)}
+    ${reviewAction(reference, reviewAvailable)}
     <p style="color:#607180;font-size:13px">Die Vorprüfung ist nur eine Entscheidungshilfe. Ein Follow-up wird erst nach Ihrer persönlichen Freigabe versendet.</p>`;
 }
 
-function pilotAdminEmail(data, reference) {
+function pilotAdminEmail(data, reference, reviewAvailable = true) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b">
     <div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0">
@@ -111,7 +114,7 @@ function pilotAdminEmail(data, reference) {
         <strong>Nächster Schritt</strong><br>
         Bedarf prüfen, Rückfragen vorbereiten und entscheiden, ob ein klar begrenztes Pilotprojekt sinnvoll ist.
       </div>
-      ${reviewAction(reference)}
+      ${reviewAction(reference, reviewAvailable)}
       <p style="margin-top:24px;color:#607180;font-size:13px">Diese Anfrage ist noch kein Transportauftrag, kein Angebot und keine Annahme eines Leistungsumfangs.</p>
     </div>
   </div>`;
@@ -165,9 +168,9 @@ async function sendQualifiedFollowup(lead) {
   });
 }
 
-async function sendContactEmails(data, reference) {
+async function sendContactEmails(data, reference, { reviewAvailable = true } = {}) {
   const isPilot = data.source === 'pilot-check';
-  const details = isPilot ? pilotAdminEmail(data, reference) : standardAdminEmail(data, reference);
+  const details = isPilot ? pilotAdminEmail(data, reference, reviewAvailable) : standardAdminEmail(data, reference, reviewAvailable);
   const confirmation = confirmationEmail(data, reference);
   const isSr = data.language === 'sr' || /podrška|upoznavanje|organizacijom/i.test(data.interest);
   const api = brevo();
@@ -307,6 +310,7 @@ function mountPublicRuntime(app) {
     const reference = leadReference(isPilot);
     data.language = data.language === 'sr' ? 'sr' : 'de';
     data.source = isPilot ? 'pilot-check' : 'contact';
+    let leadStored = false;
     try {
       await leadStore.create({
         reference,
@@ -317,17 +321,28 @@ function mountPublicRuntime(app) {
         payload: data,
         recommendation: isPilot ? 'bereit-für-persönliche-pilotprüfung' : 'nach-prüfung-zum-pilot-check-einladen'
       });
-      const results = await sendContactEmails(data, reference);
+      leadStored = true;
+    } catch (error) {
+      console.error('Contact lead storage failed; continuing with email delivery:', error.message);
+    }
+    try {
+      const results = await sendContactEmails(data, reference, { reviewAvailable: leadStored });
       const adminSent = results[0].status === 'fulfilled';
       const confirmationSent = results[1].status === 'fulfilled';
-      await leadStore.update(reference, {
-        status: adminSent ? 'received' : 'delivery-partial',
-        adminSent,
-        confirmationSent,
-        lastError: results.filter(result => result.status === 'rejected').map(result => clean(result.reason?.message, 300)).join(' | ')
-      });
+      if (leadStored) {
+        try {
+          await leadStore.update(reference, {
+            status: adminSent ? 'received' : 'delivery-partial',
+            adminSent,
+            confirmationSent,
+            lastError: results.filter(result => result.status === 'rejected').map(result => clean(result.reason?.message, 300)).join(' | ')
+          });
+        } catch (error) {
+          console.error('Contact lead status update failed after email delivery:', error.message);
+        }
+      }
       if (!adminSent) throw results[0].reason;
-      return res.status(202).json({ ok: true, reference, confirmationSent });
+      return res.status(202).json({ ok: true, reference, confirmationSent, reviewAvailable: leadStored });
     } catch (error) {
       console.error('Contact delivery failed:', error.message);
       return res.status(503).json({ ok: false, error: 'CONTACT_DELIVERY_FAILED' });

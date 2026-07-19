@@ -67,45 +67,59 @@ class ContactLeadStore {
     this.fileQueue = Promise.resolve();
   }
 
+  initializeFileStore() {
+    fs.mkdirSync(path.dirname(this.storageFile), { recursive: true });
+    if (!fs.existsSync(this.storageFile)) fs.writeFileSync(this.storageFile, '{}\n', { mode: 0o600 });
+  }
+
   async init() {
     if (this.initialized) return;
     if (this.mode === 'mysql') {
       const mysql = this.mysql || require('mysql2/promise');
-      this.pool = mysql.createPool({
-        host: this.env.DB_HOST,
-        port: this.env.DB_PORT ? Number(this.env.DB_PORT) : undefined,
-        user: this.env.DB_USER,
-        password: this.env.DB_PASSWORD,
-        database: this.env.DB_NAME,
-        waitForConnections: true,
-        connectionLimit: 5,
-        queueLimit: 0
-      });
-      await this.pool.execute(`
-        CREATE TABLE IF NOT EXISTS danini_contact_leads (
-          reference VARCHAR(64) PRIMARY KEY,
-          source VARCHAR(40) NOT NULL,
-          language VARCHAR(5) NOT NULL,
-          email VARCHAR(191) NOT NULL,
-          company VARCHAR(180) NOT NULL,
-          status VARCHAR(40) NOT NULL,
-          recommendation VARCHAR(80) NOT NULL,
-          payload_json LONGTEXT NOT NULL,
-          confirmation_sent TINYINT(1) NOT NULL DEFAULT 0,
-          admin_sent TINYINT(1) NOT NULL DEFAULT 0,
-          followup_kind VARCHAR(40) NULL,
-          followup_sent_at DATETIME NULL,
-          reviewed_at DATETIME NULL,
-          review_note TEXT NULL,
-          last_error TEXT NULL,
-          created_at DATETIME NOT NULL,
-          updated_at DATETIME NOT NULL,
-          INDEX idx_danini_leads_status_created (status, created_at)
-        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-      `);
+      try {
+        this.pool = mysql.createPool({
+          host: this.env.DB_HOST,
+          port: this.env.DB_PORT ? Number(this.env.DB_PORT) : undefined,
+          user: this.env.DB_USER,
+          password: this.env.DB_PASSWORD,
+          database: this.env.DB_NAME,
+          waitForConnections: true,
+          connectionLimit: 5,
+          queueLimit: 0
+        });
+        await this.pool.execute(`
+          CREATE TABLE IF NOT EXISTS danini_contact_leads (
+            reference VARCHAR(64) PRIMARY KEY,
+            source VARCHAR(40) NOT NULL,
+            language VARCHAR(5) NOT NULL,
+            email VARCHAR(191) NOT NULL,
+            company VARCHAR(180) NOT NULL,
+            status VARCHAR(40) NOT NULL,
+            recommendation VARCHAR(80) NOT NULL,
+            payload_json LONGTEXT NOT NULL,
+            confirmation_sent TINYINT(1) NOT NULL DEFAULT 0,
+            admin_sent TINYINT(1) NOT NULL DEFAULT 0,
+            followup_kind VARCHAR(40) NULL,
+            followup_sent_at DATETIME NULL,
+            reviewed_at DATETIME NULL,
+            review_note TEXT NULL,
+            last_error TEXT NULL,
+            created_at DATETIME NOT NULL,
+            updated_at DATETIME NOT NULL,
+            INDEX idx_danini_leads_status_created (status, created_at)
+          ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        `);
+      } catch (error) {
+        console.error(`Contact lead database unavailable; using protected local fallback: ${error.message}`);
+        if (this.pool && typeof this.pool.end === 'function') {
+          try { await this.pool.end(); } catch {}
+        }
+        this.pool = null;
+        this.mode = 'file';
+        this.initializeFileStore();
+      }
     } else {
-      fs.mkdirSync(path.dirname(this.storageFile), { recursive: true });
-      if (!fs.existsSync(this.storageFile)) fs.writeFileSync(this.storageFile, '{}\n', { mode: 0o600 });
+      this.initializeFileStore();
     }
     this.initialized = true;
   }

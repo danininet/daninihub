@@ -32,6 +32,8 @@ assert.match(serverRuntime, /followup-sent/);
 assert.match(serverRuntime, /DANINI_ADMIN_SECRET/);
 assert.match(serverRuntime, /DANINI_SESSION_SECRET/);
 assert.match(serverRuntime, /daninihub-lead-review-v1/);
+assert.match(serverRuntime, /continuing with email delivery/);
+assert.match(serverRuntime, /reviewAvailable: leadStored/);
 assert.match(serverRuntime, /legacyGoneRoutes/);
 assert.match(serverRuntime, /status\(410\)/);
 assert.match(serverRuntime, /X-Robots-Tag/);

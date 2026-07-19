@@ -45,6 +45,31 @@ const { createContactLeadStore } = require('../contact-lead-store');
     assert.equal(updated.confirmationSent, true);
 
     await assert.rejects(() => store.create({ ...received, reference }), /LEAD_ALREADY_EXISTS/);
+
+    const fallbackFile = path.join(directory, 'fallback-leads.json');
+    const unavailableMysql = {
+      createPool() {
+        return {
+          execute: async () => { throw new Error('SIMULATED_DATABASE_UNAVAILABLE'); },
+          end: async () => {}
+        };
+      }
+    };
+    const fallbackStore = createContactLeadStore({
+      env: { DB_HOST: 'database', DB_USER: 'user', DB_NAME: 'daninihub' },
+      storageFile: fallbackFile,
+      mysql: unavailableMysql
+    });
+    await fallbackStore.create({
+      reference: 'DH-PILOT-20260719-FALLBACK',
+      source: 'pilot-check',
+      language: 'sr',
+      email: 'test@example.com',
+      company: 'Fallback test',
+      payload: { message: 'Baza ne sme da obori formu', consent: 'yes' }
+    });
+    assert.equal(fallbackStore.mode, 'file');
+    assert.equal((await fallbackStore.get('DH-PILOT-20260719-FALLBACK')).company, 'Fallback test');
     console.log('DaniniHub contact lead store contract: OK');
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });

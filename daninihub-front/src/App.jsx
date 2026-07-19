@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import PublicLanding from './PublicLanding'
 import GermanB2BLanding from './GermanB2BLanding'
 import SerbianB2BLanding from './SerbianB2BLanding'
-import DispatchPilotWorkspace from './DispatchPilotWorkspaceV4'
+import DispatchPilotWorkspace from './DispatchPilotWorkspaceV5'
 import PilotCheck from './PilotCheck'
 import BusinessPages from './BusinessPages'
 import ServiceQuickNav from './ServiceQuickNav'
@@ -18,7 +18,8 @@ export default function App() {
 
   useEffect(() => {
     if (dispatchWorkspace) {
-      document.documentElement.lang = 'sr'
+      const dispatchLang = new URLSearchParams(location.search).get('lang') === 'de' ? 'de' : 'sr'
+      document.documentElement.lang = dispatchLang
       document.title = 'DaniniHub Dispatch Pilot Workspace'
       document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex,nofollow')
       return

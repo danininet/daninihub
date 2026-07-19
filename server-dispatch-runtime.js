@@ -4,26 +4,19 @@ const crypto = require('crypto');
 const express = require('express');
 const { structureDispatchMessage } = require('./core/dispatch-ai-structure');
 const { createDispatchCaseStore } = require('./dispatch-case-store');
+const { sendDispatchAccessLink, signingMaterial, verifyAccessToken } = require('./dispatch-access-bootstrap');
 
 const COOKIE_NAME = 'danini_dispatch_session';
+const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
+const ACCESS_REQUEST_COOLDOWN_MS = 5 * 60 * 1000;
+const accessRequestTimes = new Map();
 const clean = (value, max = 200) => String(value || '').trim().slice(0, max);
 
-function dispatchSecret() {
-  return String(process.env.DANINI_DISPATCH_ADMIN_SECRET || process.env.DANINI_ADMIN_SECRET || '');
-}
-
-function sameSecret(candidate) {
-  const expected = dispatchSecret();
-  const supplied = String(candidate || '');
-  if (!expected || !supplied || expected.length !== supplied.length) return false;
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(supplied));
-}
-
 function sessionKey() {
-  const secret = dispatchSecret();
-  if (!secret) return null;
-  return crypto.createHash('sha256').update(`daninihub-dispatch-session-v1:${secret}`).digest();
+  const material = signingMaterial();
+  if (!material) return null;
+  return crypto.createHash('sha256').update(`daninihub-dispatch-session-v2:${material}`).digest();
 }
 
 function createSessionToken() {
@@ -53,24 +46,32 @@ function validSessionToken(candidate) {
 }
 
 function dispatchAuthorized(req) {
-  const supplied = req.headers['x-danini-admin-secret'] || req.query.key;
-  if (sameSecret(supplied)) return true;
   return validSessionToken(parseCookies(req)[COOKIE_NAME]);
 }
 
 function requireDispatchAdmin(req, res, next) {
-  if (!dispatchSecret()) {
-    return res.status(503).json({ ok: false, error: 'DISPATCH_ADMIN_SECRET_NOT_CONFIGURED' });
-  }
-  if (!dispatchAuthorized(req)) {
-    return res.status(401).json({ ok: false, error: 'DISPATCH_NOT_AUTHORIZED' });
-  }
+  if (!signingMaterial()) return res.status(503).json({ ok: false, error: 'DISPATCH_ACCESS_NOT_CONFIGURED' });
+  if (!dispatchAuthorized(req)) return res.status(401).json({ ok: false, error: 'DISPATCH_NOT_AUTHORIZED' });
   return next();
 }
 
-function renderAccessPage(message = '') {
-  const safe = clean(message, 240).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
-  return `<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>DaniniHub Dispatch Access</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#07131f;color:#e5edf7;font-family:Inter,Arial,sans-serif}.card{width:min(520px,calc(100% - 32px));padding:30px;border:1px solid #28425a;border-radius:18px;background:#0d1d2c}.badge{display:inline-block;padding:7px 10px;border-radius:999px;background:#123149;color:#69d9e5;font-size:12px;font-weight:800;letter-spacing:.08em}h1{margin:16px 0 8px}.muted{color:#a9b9c7}.divider{height:1px;background:#28425a;margin:20px 0}input,button{width:100%;padding:14px;border-radius:10px;border:1px solid #38556f;box-sizing:border-box}input{background:#07131f;color:#fff;margin:12px 0}button{background:#16b8c8;color:#06131c;font-weight:900;cursor:pointer}.error{color:#fca5a5;padding:10px 12px;border:1px solid #7f1d1d;border-radius:10px;background:#2a1116}</style></head><body><main class="card"><span class="badge">INTERNI PRISTUP / INTERNER ZUGANG</span><h1>Dispatch Pilot Workspace</h1><p><strong>SR:</strong> Otvorite najnoviji pristupni link poslat na DaniniHub administratorski email.</p><p><strong>DE:</strong> Öffnen Sie den neuesten Zugangslink aus der DaniniHub-Administrator-E-Mail.</p>${safe ? `<p class="error">${safe}</p>` : ''}<div class="divider"></div><p class="muted">Ručni unos je rezervna opcija. / Die manuelle Eingabe ist nur die Reserveoption.</p><form method="get"><input name="key" type="password" required autocomplete="current-password" placeholder="Administratorski ključ / Administratorschlüssel"><button type="submit">OTVORI / ÖFFNEN</button></form></main></body></html>`;
+function escapeHtml(value) {
+  return clean(value, 300).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+}
+
+function renderAccessPage(lang = 'sr', options = {}) {
+  const de = lang === 'de';
+  const message = escapeHtml(options.message || '');
+  const sent = Boolean(options.sent);
+  const title = de ? 'Interner Zugang' : 'Interni pristup';
+  const intro = de
+    ? 'Fordern Sie einen neuen geschützten Zugangslink an. Er wird ausschließlich an die DaniniHub-Administratoradresse gesendet.'
+    : 'Zatražite novi zaštićeni pristupni link. Šalje se isključivo na DaniniHub administratorsku adresu.';
+  const action = de ? 'NEUEN ZUGANGSLINK SENDEN' : 'POŠALJI NOVI PRISTUPNI LINK';
+  const sentText = de
+    ? 'Der neue Link wurde gesendet. Öffnen Sie die neueste DaniniHub-E-Mail.'
+    : 'Novi link je poslat. Otvorite najnoviji DaniniHub email.';
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>DaniniHub Dispatch Access</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#07131f;color:#e5edf7;font-family:Inter,Arial,sans-serif}.card{width:min(520px,calc(100% - 32px));padding:30px;border:1px solid #28425a;border-radius:18px;background:#0d1d2c}.lang{display:flex;justify-content:flex-end;gap:8px}.lang a{padding:8px 12px;border:1px solid #38556f;border-radius:999px;color:#d9e8f3;text-decoration:none;font-weight:800}.lang a.active{background:#16b8c8;color:#06131c;border-color:#16b8c8}.badge{display:inline-block;padding:7px 10px;border-radius:999px;background:#123149;color:#69d9e5;font-size:12px;font-weight:800;letter-spacing:.08em}h1{margin:16px 0 8px}.muted{color:#a9b9c7}.notice,.error{padding:12px 14px;border-radius:10px;margin:18px 0}.notice{background:#0d3b31;color:#9ff3d6;border:1px solid #1f7a62}.error{background:#2a1116;color:#fca5a5;border:1px solid #7f1d1d}button{width:100%;padding:15px;border-radius:10px;border:0;background:#16b8c8;color:#06131c;font-weight:900;cursor:pointer;margin-top:18px}</style></head><body><main class="card"><nav class="lang"><a class="${lang === 'sr' ? 'active' : ''}" href="${DISPATCH_PATH}?lang=sr">SR</a><a class="${lang === 'de' ? 'active' : ''}" href="${DISPATCH_PATH}?lang=de">DE</a></nav><span class="badge">${title.toUpperCase()}</span><h1>Dispatch Pilot Workspace</h1><p>${intro}</p>${sent ? `<p class="notice">${sentText}</p>` : ''}${message ? `<p class="error">${message}</p>` : ''}<form method="post" action="${DISPATCH_PATH}/request-access"><input type="hidden" name="lang" value="${lang}"><button type="submit">${action}</button></form><p class="muted">${de ? 'Nach dem Öffnen sehen Sie den geführten Ablauf mit den Schritten 1–2–3.' : 'Nakon otvaranja videćete vođeni tok sa koracima 1–2–3.'}</p></main></body></html>`;
 }
 
 function validateCaseInput(body) {
@@ -91,16 +92,44 @@ function validateCaseInput(body) {
 function mountDispatchRuntime(app, options = {}) {
   const store = options.store || createDispatchCaseStore(options.storeOptions);
   const structure = options.structureDispatchMessage || structureDispatchMessage;
+  const sendAccessLink = options.sendDispatchAccessLink || sendDispatchAccessLink;
 
-  app.get('/internal/dispatch-pilot-workspace', (req, res, next) => {
+  app.post(`${DISPATCH_PATH}/request-access`, express.urlencoded({ extended: false }), async (req, res) => {
     res.set('Cache-Control', 'no-store');
     res.set('X-Robots-Tag', 'noindex, nofollow');
-    if (!dispatchSecret()) return res.status(503).type('html').send(renderAccessPage('SR: Pristupni link još nije generisan. DE: Der Zugangslink wurde noch nicht erzeugt.'));
-    if (req.query.key && sameSecret(req.query.key)) {
-      res.set('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(createSessionToken())}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; Secure; SameSite=Strict`);
-      return res.redirect(303, '/internal/dispatch-pilot-workspace');
+    const lang = req.body?.lang === 'de' ? 'de' : 'sr';
+    const requestKey = String(req.ip || req.socket?.remoteAddress || 'global');
+    const now = Date.now();
+    const previous = accessRequestTimes.get(requestKey) || 0;
+    if (now - previous < ACCESS_REQUEST_COOLDOWN_MS) {
+      const message = lang === 'de' ? 'Ein Zugangslink wurde bereits angefordert. Bitte prüfen Sie die neueste E-Mail.' : 'Pristupni link je već zatražen. Proverite najnoviji email.';
+      return res.status(429).type('html').send(renderAccessPage(lang, { message }));
     }
-    if (!validSessionToken(parseCookies(req)[COOKIE_NAME])) return res.status(401).type('html').send(renderAccessPage(req.query.key ? 'SR: Pogrešan ili istekao ključ. DE: Falscher oder abgelaufener Schlüssel.' : ''));
+    try {
+      await sendAccessLink({ lang });
+      accessRequestTimes.set(requestKey, now);
+      return res.type('html').send(renderAccessPage(lang, { sent: true }));
+    } catch (error) {
+      console.error('Dispatch access request failed:', error.message);
+      const message = lang === 'de' ? 'Der Zugangslink konnte nicht gesendet werden. Prüfen Sie die Runtime-Protokolle.' : 'Pristupni link nije mogao biti poslat. Proverite runtime log.';
+      return res.status(503).type('html').send(renderAccessPage(lang, { message }));
+    }
+  });
+
+  app.get(DISPATCH_PATH, (req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    res.set('X-Robots-Tag', 'noindex, nofollow');
+    const lang = req.query.lang === 'de' ? 'de' : 'sr';
+    if (req.query.access) {
+      const verified = verifyAccessToken(req.query.access);
+      if (verified) {
+        res.set('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(createSessionToken())}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; Secure; SameSite=Strict`);
+        return res.redirect(303, `${DISPATCH_PATH}?lang=${verified.lang}`);
+      }
+      const message = lang === 'de' ? 'Der Zugangslink ist ungültig oder abgelaufen.' : 'Pristupni link je nevažeći ili je istekao.';
+      return res.status(401).type('html').send(renderAccessPage(lang, { message }));
+    }
+    if (!dispatchAuthorized(req)) return res.status(401).type('html').send(renderAccessPage(lang));
     return next();
   });
 
@@ -112,9 +141,7 @@ function mountDispatchRuntime(app, options = {}) {
   });
 
   app.post('/api/v1/dispatch/structure', async (req, res) => {
-    if (!process.env.OPENAI_API_KEY && !options.aiClient) {
-      return res.status(503).json({ ok: false, error: 'DISPATCH_AI_NOT_CONFIGURED' });
-    }
+    if (!process.env.OPENAI_API_KEY && !options.aiClient) return res.status(503).json({ ok: false, error: 'DISPATCH_AI_NOT_CONFIGURED' });
     const input = {
       fictitious: req.body?.fictitious === true,
       rawMessage: clean(req.body?.rawMessage, 5000),
@@ -167,4 +194,14 @@ function mountDispatchRuntime(app, options = {}) {
   });
 }
 
-module.exports = { createSessionToken, dispatchAuthorized, dispatchSecret, mountDispatchRuntime, requireDispatchAdmin, validSessionToken, validateCaseInput };
+module.exports = {
+  ACCESS_REQUEST_COOLDOWN_MS,
+  DISPATCH_PATH,
+  createSessionToken,
+  dispatchAuthorized,
+  mountDispatchRuntime,
+  renderAccessPage,
+  requireDispatchAdmin,
+  validSessionToken,
+  validateCaseInput
+};

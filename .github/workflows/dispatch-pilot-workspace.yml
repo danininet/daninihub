@@ -5,8 +5,13 @@ on:
     paths:
       - 'daninihub-front/src/DispatchPilotWorkspace.jsx'
       - 'daninihub-front/src/DispatchPilotWorkspace.css'
+      - 'daninihub-front/src/DispatchPilotWorkspaceV2.css'
       - 'daninihub-front/src/App.jsx'
+      - 'server-dispatch-runtime.js'
+      - 'dispatch-case-store.js'
+      - 'server.js'
       - 'scripts/test-dispatch-workspace-contract.js'
+      - 'scripts/test-dispatch-secure-runtime.js'
       - 'package.json'
       - '.github/workflows/dispatch-pilot-workspace.yml'
 
@@ -49,8 +54,11 @@ jobs:
       - name: Public site contracts
         run: npm run test:public
 
-      - name: Dispatch safety contract
+      - name: Dispatch UI contract
         run: npm run test:dispatch
+
+      - name: Dispatch secure runtime contract
+        run: npm run test:dispatch-secure
 
       - name: Production frontend build
         run: npm run build

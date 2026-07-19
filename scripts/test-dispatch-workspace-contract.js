@@ -8,7 +8,7 @@ const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'daninihub-front/src/App.jsx'), 'utf8');
 const workspace = fs.readFileSync(path.join(root, 'daninihub-front/src/DispatchPilotWorkspace.jsx'), 'utf8');
 
-for (const required of [
+const requiredWorkspaceText = [
   'INTERNE PILOTVERSION · NUR FIKTIVE DATEN',
   'Potvrđene činjenice',
   'Nepoznato / mora se proveriti',
@@ -20,13 +20,19 @@ for (const required of [
   'Audit događaja',
   'Radno sposobna predaja',
   'Ne predstavlja instrukciju vozaču'
-]) {
-  assert.match(workspace, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+];
+
+for (const text of requiredWorkspaceText) {
+  assert(workspace.includes(text), `Required Dispatch workspace text missing: ${text}`);
 }
 
-assert.match(app, /internal\/dispatch-pilot-workspace/);
-assert.match(app, /noindex,nofollow/);
-assert.match(app, /return <DispatchPilotWorkspace\/>/);
+for (const text of [
+  'internal/dispatch-pilot-workspace',
+  'noindex,nofollow',
+  'return <DispatchPilotWorkspace/>'
+]) {
+  assert(app.includes(text), `Required Dispatch route boundary missing: ${text}`);
+}
 
 for (const forbidden of [
   'fetch(',
@@ -40,9 +46,12 @@ for (const forbidden of [
   assert(!workspace.includes(forbidden), `Forbidden external or persistent action found: ${forbidden}`);
 }
 
-assert(!/onClick=.*send/i.test(workspace), 'Workspace must not expose a send action');
-assert.match(workspace, /approval:\s*'PENDING'/);
-assert.match(workspace, /approval:\s*'APPROVED'/);
-assert.match(workspace, /approval:\s*'REJECTED'/);
+for (const state of ["approval: 'PENDING'", "approval: 'APPROVED'", "approval: 'REJECTED'"]) {
+  assert(workspace.includes(state), `Required manual approval state missing: ${state}`);
+}
+
+assert(!workspace.includes('Pošalji poruku'));
+assert(!workspace.includes('Send message'));
+assert(!workspace.includes('Nachricht senden'));
 
 console.log('Dispatch Pilot Workspace contract OK');

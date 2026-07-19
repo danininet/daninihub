@@ -9,7 +9,7 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-dispatch-access-fix-v4';
+const DEPLOYMENT_MARKER = 'daninihub-dispatch-bilingual-guided-v4';
 
 app.set('trust proxy', 1);
 app.use(cors({ origin: process.env.DANINI_PUBLIC_URL || 'https://daninihub.com' }));
@@ -43,7 +43,7 @@ app.get('/api/runtime-version', (req, res) => {
     service: 'Balkan-DACH Transport Operations Support',
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
-    dispatchWorkspaceVersion: 'ai-structuring-v3-access-fix-v4',
+    dispatchWorkspaceVersion: 'bilingual-guided-v4',
     contact: 'info@daninihub.com'
   });
 });

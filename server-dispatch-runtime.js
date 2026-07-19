@@ -69,8 +69,8 @@ function requireDispatchAdmin(req, res, next) {
 }
 
 function renderAccessPage(message = '') {
-  const safe = clean(message, 200).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
-  return `<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>DaniniHub Dispatch Access</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#07131f;color:#e5edf7;font-family:Inter,Arial,sans-serif}.card{width:min(440px,calc(100% - 32px));padding:28px;border:1px solid #28425a;border-radius:18px;background:#0d1d2c}h1{margin-top:0}input,button{width:100%;padding:13px;border-radius:10px;border:1px solid #38556f;box-sizing:border-box}input{background:#07131f;color:#fff;margin:12px 0}button{background:#16b8c8;color:#06131c;font-weight:800;cursor:pointer}.error{color:#fca5a5}</style></head><body><main class="card"><h1>Dispatch Pilot Workspace</h1><p>Interni pristup. Otvorite najnoviji pristupni link poslat na DaniniHub administratorski email.</p>${safe ? `<p class="error">${safe}</p>` : ''}<form method="get"><input name="key" type="password" required autocomplete="current-password" placeholder="Administratorski ključ"><button type="submit">Otvori Workspace</button></form></main></body></html>`;
+  const safe = clean(message, 240).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  return `<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>DaniniHub Dispatch Access</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#07131f;color:#e5edf7;font-family:Inter,Arial,sans-serif}.card{width:min(520px,calc(100% - 32px));padding:30px;border:1px solid #28425a;border-radius:18px;background:#0d1d2c}.badge{display:inline-block;padding:7px 10px;border-radius:999px;background:#123149;color:#69d9e5;font-size:12px;font-weight:800;letter-spacing:.08em}h1{margin:16px 0 8px}.muted{color:#a9b9c7}.divider{height:1px;background:#28425a;margin:20px 0}input,button{width:100%;padding:14px;border-radius:10px;border:1px solid #38556f;box-sizing:border-box}input{background:#07131f;color:#fff;margin:12px 0}button{background:#16b8c8;color:#06131c;font-weight:900;cursor:pointer}.error{color:#fca5a5;padding:10px 12px;border:1px solid #7f1d1d;border-radius:10px;background:#2a1116}</style></head><body><main class="card"><span class="badge">INTERNI PRISTUP / INTERNER ZUGANG</span><h1>Dispatch Pilot Workspace</h1><p><strong>SR:</strong> Otvorite najnoviji pristupni link poslat na DaniniHub administratorski email.</p><p><strong>DE:</strong> Öffnen Sie den neuesten Zugangslink aus der DaniniHub-Administrator-E-Mail.</p>${safe ? `<p class="error">${safe}</p>` : ''}<div class="divider"></div><p class="muted">Ručni unos je rezervna opcija. / Die manuelle Eingabe ist nur die Reserveoption.</p><form method="get"><input name="key" type="password" required autocomplete="current-password" placeholder="Administratorski ključ / Administratorschlüssel"><button type="submit">OTVORI / ÖFFNEN</button></form></main></body></html>`;
 }
 
 function validateCaseInput(body) {
@@ -95,12 +95,12 @@ function mountDispatchRuntime(app, options = {}) {
   app.get('/internal/dispatch-pilot-workspace', (req, res, next) => {
     res.set('Cache-Control', 'no-store');
     res.set('X-Robots-Tag', 'noindex, nofollow');
-    if (!dispatchSecret()) return res.status(503).type('html').send(renderAccessPage('Pristupni link još nije generisan. Proverite administratorski email ili runtime log.'));
+    if (!dispatchSecret()) return res.status(503).type('html').send(renderAccessPage('SR: Pristupni link još nije generisan. DE: Der Zugangslink wurde noch nicht erzeugt.'));
     if (req.query.key && sameSecret(req.query.key)) {
       res.set('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(createSessionToken())}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; Secure; SameSite=Strict`);
       return res.redirect(303, '/internal/dispatch-pilot-workspace');
     }
-    if (!validSessionToken(parseCookies(req)[COOKIE_NAME])) return res.status(401).type('html').send(renderAccessPage(req.query.key ? 'Pogrešan ili istekao ključ.' : ''));
+    if (!validSessionToken(parseCookies(req)[COOKIE_NAME])) return res.status(401).type('html').send(renderAccessPage(req.query.key ? 'SR: Pogrešan ili istekao ključ. DE: Falscher oder abgelaufener Schlüssel.' : ''));
     return next();
   });
 

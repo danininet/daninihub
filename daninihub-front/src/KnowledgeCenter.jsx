@@ -110,7 +110,7 @@ const videoConfig = {
     inLanguage: 'de',
   },
   sr: {
-    id: 'glgFJsoA2zY',
+    id: 'wGFtA53BirQ',
     title: 'Dispečeri vs. softver: zašto TMS ne menja disponenta | DaniniHub',
     description: 'Zašto TMS i telematika ne preuzimaju operativnu odgovornost i kako se povezuju provera činjenica, odluka, komunikacija, dokumentacija i predaja.',
     uploadDate: '2026-07-19',

@@ -20,7 +20,33 @@ To nije Dispatch Pilot Workspace.
 
 Stara grana/PR `ustav-runtime-core` zatvorena je bez merge-a. Ranije `danini-os/*` grane bile su spojene kroz PR-ove, ali trenutno nisu aktivne kao odvojene grane dostupne za direktno spajanje.
 
-Korisnik je potvrdio da se novija aplikaciona izrada nastavlja u drugom razgovoru i na drugoj GitHub grani. Dok naziv i HEAD te grane ne budu potvrđeni, ova grana ne sme da pokušava spajanje ili rekonstrukciju te aplikacije.
+## Potvrđeno stanje iz aplikacionog razgovora
+
+Owner je potvrdio sledeći status za granu `feature/dispatch-module-integration`:
+
+- Integration Blueprint: završen;
+- Dispatch produkcioni kod: nije dodat;
+- grana nema produkcione izmene;
+- `main` nije menjan iz tog razgovora;
+- Hostinger deployment nije pokrenut;
+- MySQL produkciona baza nije menjana;
+- Brevo, forme i Stripe nisu dirani;
+- dalji rad je zaustavljen do završetka javnog sajta, dubinske analize finalnog `main` stanja i prelaska na jedan centralni razgovor.
+
+Ovo znači da trenutno nema aplikacionog koda za audit ili merge. Postoji samo blueprint i bezbedna razvojna izolacija.
+
+## Centralni razgovor
+
+Od ovog trenutka ovaj razgovor je centralna operativna tačka za:
+
+- završetak javnog sajta;
+- finalni audit `main` grane;
+- definisanje minimalnog Dispatch Pilot Workspace-a;
+- pregled Integration Blueprint-a;
+- odluku da li se grana nastavlja, rekreira ili zamenjuje novom čistom granom;
+- kontrolisani PR i tek potom eventualni deployment.
+
+Drugi razgovor ostaje arhiva prethodnog rada. Iz njega se ne izvršavaju nove GitHub izmene bez eksplicitne odluke u ovom razgovoru.
 
 ## Šta se može ponovo koristiti kao obrazac
 
@@ -69,9 +95,22 @@ Prva verzija potrebna za ograničeni pilot mora da podrži samo:
 - obrada realnih podataka vozača ili klijenata pre pravnog i bezbednosnog gate-a;
 - oglašavanje aplikacije kao gotovog SaaS proizvoda.
 
+## Redosled nastavka
+
+1. završiti javni sajt i Pilot-Check;
+2. izvršiti dubinski audit finalnog `main` stanja;
+3. otvoriti Integration Blueprint iz grane `feature/dispatch-module-integration`;
+4. uporediti blueprint sa stvarnim stanjem `main` grane;
+5. zaključati minimalni data model, statuse, uloge i approval gate;
+6. tek tada dodati prvi Dispatch kod na novu ili očišćenu feature granu;
+7. pokrenuti build, lint i testove;
+8. otvoriti PR prema `main`;
+9. bez merge-a dok nema pregleda i zelenih statusnih provera;
+10. Hostinger deployment tek nakon merge-a i produkcionog checklist-a.
+
 ## Tehnički gate pre integracije
 
-Novija aplikaciona grana mora biti dostavljena sa:
+Aplikaciona grana mora biti dostavljena sa:
 
 - tačnim nazivom grane i HEAD commitom;
 - listom promenjenih fajlova;
@@ -99,6 +138,8 @@ Pre unosa podataka stvarnih firmi, vozača ili klijenata moraju postojati:
 
 ## Odluka
 
-Sajt i Pilot-Check mogu da se završe pre aplikacije.
+Sajt i Pilot-Check završavamo pre aplikacije.
+
+Grana `feature/dispatch-module-integration` ostaje zamrznuta kao blueprint-only radna tačka. Ne spaja se i ne deployuje.
 
 Aplikacija postaje klijentski deo ponude tek kada prođe tehnički i operativni gate. Do tada se predstavlja samo kao interni radni sistem u razvoju, a ne kao gotov proizvod.

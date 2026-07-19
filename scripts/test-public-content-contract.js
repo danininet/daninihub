@@ -9,7 +9,9 @@ const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf
 
 const serverRuntime = read('server-public-runtime.js');
 const appSource = read('daninihub-front/src/App.jsx');
-const landingSource = read('daninihub-front/src/PublicLanding.jsx');
+const publicLandingSource = read('daninihub-front/src/PublicLanding.jsx');
+const germanLandingSource = read('daninihub-front/src/GermanB2BLanding.jsx');
+const serbianLandingSource = read('daninihub-front/src/SerbianB2BLanding.jsx');
 const legalSource = read('daninihub-front/src/LegalKnowledge.jsx');
 const pilotSource = read('daninihub-front/src/PilotCheck.jsx');
 const businessSource = read('daninihub-front/src/BusinessPages.jsx');
@@ -52,8 +54,8 @@ for (const route of [
   '/de/pilot-check', '/sr/provera-pilota',
   '/de/leistungsrahmen', '/sr/obim-usluge',
   '/de/continuity-support', '/sr/kontinuitet-podrska',
-  '/de/fahrerkommunikation', '/sr/komunikacija-vozaci'
-  ,'/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
+  '/de/fahrerkommunikation', '/sr/komunikacija-vozaci',
+  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
   '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje',
   '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
   '/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija',
@@ -70,19 +72,39 @@ assert.match(serverRuntime, /hreflang="x-default"/);
 // React router selection and SEO metadata for the current public product.
 assert.match(appSource, /PilotCheck/);
 assert.match(appSource, /BusinessPages/);
-assert.match(appSource, /Operations Desk/);
-assert.match(appSource, /Balkan–DACH Operations Support/);
+assert.match(appSource, /GermanB2BLanding/);
+assert.match(appSource, /SerbianB2BLanding/);
+assert.match(appSource, /Balkan Continuity Support/);
+assert.match(appSource, /DACH Operations Desk/);
 assert.match(appSource, /link\[rel="canonical"\]/);
 
-// Homepage must present the actual transport service, not the retired AI-analysis product.
-assert.match(landingSource, /BALKAN–DACH TRANSPORT OPERATIONS SUPPORT/);
-assert.match(landingSource, /Weniger Rückfragen\. Klare Informationen\. Ruhigere Abläufe\./);
-assert.match(landingSource, /Deutsch \+ Sprachen des Balkans/);
-assert.match(landingSource, /Pilotprojekt für ein Transportunternehmen/);
-assert.match(landingSource, /DaniniHub ist kein Frachtführer, keine Spedition, kein Verkehrsleiter/);
-assert.doesNotMatch(landingSource, /Persönliche KI-Analyse|12 EUR|12 €/);
-assert.doesNotMatch(landingSource, /CookieNotice|dh_cookie_notice|localStorage/);
-assert.match(landingSource, /Datenschutzerklärung/);
+// The two homepages must remain B2B-focused and use the correct market positioning.
+for (const value of [
+  'BALKAN CONTINUITY SUPPORT FÜR DACH-TRANSPORTUNTERNEHMEN',
+  'Klarere Balkan-Kommunikation. Weniger Unterbrechungen in der Disposition.',
+  'Deutsch + Sprachen des Balkans',
+  'Prüfen, ob ein Pilot zu Ihrem Betrieb passt',
+  'Operative Unterstützung ohne Übernahme Ihrer Verantwortung'
+]) {
+  assert.match(germanLandingSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+assert.doesNotMatch(germanLandingSource, /Für Interessierte|Künftige operative Zusammenarbeit|zertifizierte Ausbildung/);
+
+for (const value of [
+  'DACH OPERATIONS DESK ZA TRANSPORTNE FIRME SA BALKANA',
+  'Jasnija komunikacija sa DACH klijentima. Manje prekida u dispoziciji.',
+  'Nemački + jezici Balkana',
+  'Proverite da li pilot odgovara vašoj firmi',
+  'Operativna podrška bez preuzimanja vaše odgovornosti'
+]) {
+  assert.match(serbianLandingSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+assert.doesNotMatch(serbianLandingSource, /Za zainteresovane|Buduća operativna saradnja|sertifikovana obuka/);
+
+// Retired AI-analysis product and browser-side cookie state must not return.
+assert.doesNotMatch(publicLandingSource, /Persönliche KI-Analyse|12 EUR|12 €\//);
+assert.doesNotMatch(publicLandingSource, /CookieNotice|dh_cookie_notice|localStorage/);
+assert.match(publicLandingSource, /Datenschutzerklärung/);
 
 // Legal and privacy content must contain the current provider and processing details.
 for (const value of [

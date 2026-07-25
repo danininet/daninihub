@@ -5,13 +5,13 @@ const crypto = require('crypto');
 const path = require('path');
 const cors = require('cors');
 const express = require('express');
-const { bootstrapDispatchAccess, signingMaterial } = require('./dispatch-access-bootstrap');
+const { signingMaterial } = require('./dispatch-access-bootstrap');
 const { createSessionToken, mountDispatchRuntime } = require('./server-dispatch-runtime');
 const { mountPublicRuntime } = require('./server-public-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-dispatch-explicit-index-v8';
+const DEPLOYMENT_MARKER = 'daninihub-dispatch-no-startup-email-v9';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -28,9 +28,8 @@ if (!signingMaterial()) {
 app.set('trust proxy', 1);
 app.use(cors({ origin: process.env.DANINI_PUBLIC_URL || 'https://daninihub.com' }));
 
-bootstrapDispatchAccess().catch(error => {
-  console.error(`Dispatch access bootstrap failed: ${error.message}`);
-});
+// Do not send Dispatch access emails during startup, deployment or restart.
+// Access email delivery remains available only through an explicit user action.
 
 // Always replace a stale browser cookie with a fresh valid session before the
 // protected runtime evaluates the request. The redirect happens once.
@@ -76,7 +75,7 @@ app.get('/api/runtime-version', (req, res) => {
     service: 'Balkan-DACH Transport Operations Support',
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
-    dispatchWorkspaceVersion: 'explicit-index-v8',
+    dispatchWorkspaceVersion: 'no-startup-email-v9',
     contact: 'info@daninihub.com'
   });
 });

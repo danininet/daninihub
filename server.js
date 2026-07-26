@@ -8,10 +8,11 @@ const express = require('express');
 const { signingMaterial } = require('./dispatch-access-bootstrap');
 const { createSessionToken, mountDispatchRuntime } = require('./server-dispatch-runtime');
 const { mountPublicRuntime } = require('./server-public-runtime');
+const { mountDispoCheckRuntime } = require('./server-dispo-check-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-dispatch-no-startup-email-v9';
+const DEPLOYMENT_MARKER = 'daninihub-dispocheck-result-email-v10';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -43,6 +44,7 @@ app.get(DISPATCH_PATH, (req, res, next) => {
 });
 
 mountDispatchRuntime(app);
+mountDispoCheckRuntime(app);
 mountPublicRuntime(app);
 
 // Explicit SPA document handler. express.static serves assets, but the virtual
@@ -60,6 +62,7 @@ app.get('/health', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
+    dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
     manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY),
     dispatchAccessConfigured: Boolean(signingMaterial()),
     dispatchAccessMode: process.env.DANINI_DISPATCH_ACCESS_MODE || 'direct-fictitious-pilot',
@@ -76,6 +79,7 @@ app.get('/api/runtime-version', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
+    dispoCheckVersion: 'personalized-result-email-v1',
     contact: 'info@daninihub.com'
   });
 });

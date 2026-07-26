@@ -5,7 +5,7 @@ const copy = {
     kicker: 'DANINIHUB DISPOLAB',
     title: 'Wenn der Transportplan nicht mehr stimmt, entscheidet nicht das TMS.',
     lead: 'Praxis- und Entscheidungstraining für Disponenten, Bewerber und Transportteams im Balkan–DACH-Verkehr.',
-    primary: 'Kostenlosen Dispo-Check vormerken',
+    primary: 'Kostenlosen Dispo-Check starten',
     secondary: 'Company Pilot anfragen',
     trust: 'Der Mensch entscheidet. DaniniHub strukturiert den Denkprozess.',
     introTitle: 'Keine Videokurse. Keine automatischen Entscheidungen.',
@@ -31,15 +31,15 @@ const copy = {
     companyTitle: 'Für Transportunternehmen',
     companyText: 'Nutzen Sie DispoLab für Bewerberauswahl, Einarbeitung, interne Weiterbildung und Standardisierung. Eigene anonymisierte Praxisfälle können später in unternehmensspezifische Simulationen überführt werden.',
     companyList: ['Bewerber strukturiert vergleichen', 'Neue Disponenten sicherer einarbeiten', 'Kommunikations- und Eskalationswege prüfen', 'Wissen erfahrener Mitarbeiter dokumentierbar machen'],
-    statusTitle: 'Aktueller Entwicklungsstand',
-    statusText: 'Die erste Version wird mit drei kostenlosen und zehn bezahlten Szenarien aufgebaut. Sie können sich jetzt für den frühen Test oder einen begrenzten Company Pilot melden.',
+    statusTitle: 'Der erste Check ist verfügbar',
+    statusText: 'Testen Sie jetzt drei simulierte Fälle zu ETA, CMR und Schichtübergabe. Die Auswertung arbeitet bewusst transparent mit festen Kriterien; Freitext- und KI-Analyse folgen nach der Validierung.',
     legal: 'DispoLab ersetzt weder Disponenten noch TMS-Systeme und erteilt keine bindenden operativen, rechtlichen, zollbezogenen oder sicherheitsrelevanten Weisungen.'
   },
   sr: {
     kicker: 'DANINIHUB DISPOLAB',
     title: 'Kada transportni plan više ne važi, TMS ne donosi odluku.',
     lead: 'Praktični trening razmišljanja i odlučivanja za disponente, kandidate i transportne timove na Balkan–DACH relacijama.',
-    primary: 'Prijavi se za besplatni Dispo-Check',
+    primary: 'Pokreni besplatni Dispo-Check',
     secondary: 'Pošalji upit za Company Pilot',
     trust: 'Čovek donosi odluku. DaniniHub strukturira proces razmišljanja.',
     introTitle: 'Bez video-kursa. Bez automatskih odluka.',
@@ -65,8 +65,8 @@ const copy = {
     companyTitle: 'Za transportne kompanije',
     companyText: 'Koristite DispoLab za izbor kandidata, onboarding, internu obuku i standardizaciju. Sopstveni anonimizovani slučajevi kasnije se mogu pretvoriti u simulacije prilagođene kompaniji.',
     companyList: ['Strukturisano poređenje kandidata', 'Bezbednije uvođenje novih disponenta', 'Provera komunikacije i eskalacije', 'Pretvaranje iskustva zaposlenih u prenosivo znanje'],
-    statusTitle: 'Trenutni status razvoja',
-    statusText: 'Prva verzija se gradi sa tri besplatna i deset plaćenih scenarija. Sada se možete prijaviti za rano testiranje ili ograničeni Company Pilot.',
+    statusTitle: 'Prva provera je dostupna',
+    statusText: 'Odmah možete testirati tri simulirana slučaja: ETA, CMR i predaju smene. Procena namerno koristi jasne fiksne kriterijume; slobodni tekst i AI analiza dolaze nakon validacije.',
     legal: 'DispoLab ne zamenjuje disponente ni TMS i ne izdaje obavezujuće operativne, pravne, carinske ili bezbednosne naloge.'
   }
 }
@@ -75,6 +75,7 @@ export default function DispoLabPage({ lang }) {
   const t = copy[lang]
   const home = lang === 'sr' ? '/sr/' : '/de/'
   const contact = `${home}#contact`
+  const check = lang === 'sr' ? '/sr/dispo-lab/provera' : '/de/dispolab/check'
 
   return <main className="dl-page">
     <section className="dl-hero">
@@ -83,7 +84,7 @@ export default function DispoLabPage({ lang }) {
         <h1>{t.title}</h1>
         <p className="dl-lead">{t.lead}</p>
         <div className="dl-actions">
-          <a className="dl-btn dl-btn-primary" href={contact}>{t.primary}</a>
+          <a className="dl-btn dl-btn-primary" href={check}>{t.primary}</a>
           <a className="dl-btn dl-btn-secondary" href={contact}>{t.secondary}</a>
         </div>
         <p className="dl-trust">{t.trust}</p>
@@ -123,8 +124,8 @@ export default function DispoLabPage({ lang }) {
     </section>
 
     <section className="dl-section dl-status">
-      <div><p className="dl-kicker">EARLY ACCESS</p><h2>{t.statusTitle}</h2><p>{t.statusText}</p></div>
-      <a className="dl-btn dl-btn-primary" href={contact}>{t.primary}</a>
+      <div><p className="dl-kicker">LIVE MVP</p><h2>{t.statusTitle}</h2><p>{t.statusText}</p></div>
+      <a className="dl-btn dl-btn-primary" href={check}>{t.primary}</a>
     </section>
 
     <p className="dl-legal">{t.legal}</p>

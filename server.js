@@ -9,10 +9,11 @@ const { signingMaterial } = require('./dispatch-access-bootstrap');
 const { createSessionToken, mountDispatchRuntime } = require('./server-dispatch-runtime');
 const { mountPublicRuntime } = require('./server-public-runtime');
 const { mountDispoCheckRuntime } = require('./server-dispo-check-runtime');
+const { mountDispoCheckContactInterceptor } = require('./server-dispo-check-contact-interceptor');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-dispocheck-result-email-v10';
+const DEPLOYMENT_MARKER = 'daninihub-dispocheck-personalized-email-v11';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -45,6 +46,7 @@ app.get(DISPATCH_PATH, (req, res, next) => {
 
 mountDispatchRuntime(app);
 mountDispoCheckRuntime(app);
+mountDispoCheckContactInterceptor(app);
 mountPublicRuntime(app);
 
 // Explicit SPA document handler. express.static serves assets, but the virtual
@@ -79,7 +81,7 @@ app.get('/api/runtime-version', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
-    dispoCheckVersion: 'personalized-result-email-v1',
+    dispoCheckVersion: 'personalized-result-email-v2',
     contact: 'info@daninihub.com'
   });
 });

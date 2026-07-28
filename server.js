@@ -14,7 +14,7 @@ const { mountTransportRoomRuntime } = require('./server-transport-room-runtime')
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-transport-room-invitations-v14';
+const DEPLOYMENT_MARKER = 'daninihub-transport-room-otp-audit-v15';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -60,6 +60,8 @@ app.get('/health', (req, res) => {
     transportRoomPersistence: true,
     transportRoomRoleAccess: true,
     transportRoomInvitations: true,
+    transportRoomOtpVerification: true,
+    transportRoomAuditLog: true,
     transportRoomInvitationEmail: Boolean(process.env.BREVO_API_KEY),
     manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY),
     dispatchAccessConfigured: Boolean(signingMaterial()),
@@ -78,7 +80,7 @@ app.get('/api/runtime-version', (req, res) => {
     serbianTmsVideoId: 'wGFtA53BirQ',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
-    transportRoomVersion: 'identity-invitations-pilot-v3',
+    transportRoomVersion: 'otp-revocation-audit-pilot-v4',
     contact: 'info@daninihub.com'
   });
 });

@@ -1,62 +1,33 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './TransportRoomDemo.css'
 
-const copy = {
-  de: {
-    kicker:'DANINIHUB TRANSPORT ROOM · PILOT MVP', title:'Duisburg → Beograd', subtitle:'Ein gemeinsamer operativer Raum für Status, ETA, Kommunikation, Dokumente und Abweichungen.',
-    demo:'Fiktive Demonstration. Keine reale Transportsteuerung.', status:'Transportstatus', eta:'Operative ETA', nextCheck:'Nächste Prüfung', risk:'Risiko', owner:'Verantwortlich', partner:'Partner', vehicle:'Fahrzeug', driver:'Fahrer',
-    tabs:['Übersicht','Kommunikation','Dokumente','Incident','Abschlussbericht'], facts:'Bestätigte Fakten', open:'Offene Punkte', timeline:'Statusverlauf', addStatus:'Status aktualisieren',
-    message:'Standardisierte Nachricht', source:'Quelle', confirmed:'Bestätigt', assumption:'Unbestätigt', translate:'DE–SR/BHS Vorschlag erstellen', approve:'Manuell freigeben', noAuto:'Nichts wird automatisch versendet.',
-    docs:'Dokumentenstatus', present:'Vorhanden', missing:'Fehlt', unclear:'Zu prüfen', incident:'Abweichung melden', severity:'Schweregrad', decision:'Erforderliche Entscheidung', escalation:'Eskalation', report:'Abschlussbericht erstellen', complete:'Transport abschließen', back:'Zurück',
-    statuses:['AUFTRAG ERFASST','FAHRZEUG UNTERWEGS','VERZÖGERUNGSRISIKO','KUNDE INFORMIERT'], messages:['Fahrer meldet Stau vor Budapest. Standort muss aktualisiert werden.','Verzögerungsrisiko wurde bestätigt. Eine belastbare ETA liegt noch nicht vor.'],
-    reportText:'Der Transport wurde mit dokumentierter Verzögerung abgeschlossen. ETA-Änderungen, Kundeninformation, CMR/POD-Status und Eskalation sind nachvollziehbar protokolliert.'
-  },
-  sr: {
-    kicker:'DANINIHUB TRANSPORT ROOM · PILOT MVP', title:'Duisburg → Beograd', subtitle:'Zajednički operativni prostor za statuse, ETA, komunikaciju, dokumente i odstupanja.',
-    demo:'Fiktivna demonstracija. Nije stvarno upravljanje transportom.', status:'Status transporta', eta:'Operativni ETA', nextCheck:'Sledeća provera', risk:'Rizik', owner:'Odgovoran', partner:'Partner', vehicle:'Vozilo', driver:'Vozač',
-    tabs:['Pregled','Komunikacija','Dokumenti','Incident','Završni izveštaj'], facts:'Potvrđene činjenice', open:'Otvorene tačke', timeline:'Tok statusa', addStatus:'Ažuriraj status',
-    message:'Standardizovana poruka', source:'Izvor', confirmed:'Potvrđeno', assumption:'Nepotvrđeno', translate:'Kreiraj DE–SR/BHS predlog', approve:'Ručno odobri', noAuto:'Ništa se ne šalje automatski.',
-    docs:'Status dokumenata', present:'Postoji', missing:'Nedostaje', unclear:'Za proveru', incident:'Prijavi odstupanje', severity:'Ozbiljnost', decision:'Potrebna odluka', escalation:'Eskalacija', report:'Kreiraj završni izveštaj', complete:'Završi transport', back:'Nazad',
-    statuses:['NALOG UNET','VOZILO NA PUTU','RIZIK KAŠNJENJA','KLIJENT OBAVEŠTEN'], messages:['Vozač javlja gužvu pre Budimpešte. Potrebno je ažurirati lokaciju.','Rizik kašnjenja je potvrđen. Pouzdan ETA još nije dostupan.'],
-    reportText:'Transport je završen uz dokumentovano kašnjenje. Promene ETA, obaveštavanje klijenta, status CMR/POD i eskalacija evidentirani su pregledno.'
-  }
+const copy={
+ de:{kicker:'DANINIHUB TRANSPORT ROOM · PILOT MVP',title:'Duisburg → Beograd',subtitle:'Ein gemeinsamer operativer Raum für Status, ETA, Kommunikation, Dokumente und Abweichungen.',demo:'Fiktive Demonstration. Keine reale Transportsteuerung.',tabs:['Übersicht','Kommunikation','Dokumente','Incident','Abschlussbericht'],status:'Transportstatus',eta:'Operative ETA',nextCheck:'Nächste Prüfung',risk:'Risiko',owner:'Verantwortlich',partner:'Partner',vehicle:'Fahrzeug',driver:'Fahrer',facts:'Bestätigte Fakten',open:'Offene Punkte',timeline:'Statusverlauf',addStatus:'Nächsten Status setzen',message:'Standardisierte Nachricht',source:'Quelle',confirmed:'Manuell freigegeben',translate:'Vorschlag aktualisieren',approve:'Manuell freigeben',noAuto:'Nichts wird automatisch versendet.',docs:'Dokumentenstatus',incident:'Abweichung melden',severity:'Schweregrad',decision:'Erforderliche Entscheidung',escalation:'Eskalieren',report:'Abschlussbericht erstellen',complete:'Transport abschließen',save:'Änderungen speichern',saving:'Speichern…',saved:'Gespeichert',loading:'Fall wird geladen…',loadError:'Der Fall konnte nicht geladen werden.',saveError:'Speichern fehlgeschlagen.',storage:'Speicher',present:'Vorhanden',missing:'Fehlt',review:'Zu prüfen'},
+ sr:{kicker:'DANINIHUB TRANSPORT ROOM · PILOT MVP',title:'Duisburg → Beograd',subtitle:'Zajednički operativni prostor za statuse, ETA, komunikaciju, dokumente i odstupanja.',demo:'Fiktivna demonstracija. Nije stvarno upravljanje transportom.',tabs:['Pregled','Komunikacija','Dokumenti','Incident','Završni izveštaj'],status:'Status transporta',eta:'Operativni ETA',nextCheck:'Sledeća provera',risk:'Rizik',owner:'Odgovoran',partner:'Partner',vehicle:'Vozilo',driver:'Vozač',facts:'Potvrđene činjenice',open:'Otvorene tačke',timeline:'Tok statusa',addStatus:'Postavi sledeći status',message:'Standardizovana poruka',source:'Izvor',confirmed:'Ručno odobreno',translate:'Ažuriraj predlog',approve:'Ručno odobri',noAuto:'Ništa se ne šalje automatski.',docs:'Status dokumenata',incident:'Prijavi odstupanje',severity:'Ozbiljnost',decision:'Potrebna odluka',escalation:'Eskaliraj',report:'Kreiraj završni izveštaj',complete:'Završi transport',save:'Sačuvaj izmene',saving:'Čuvam…',saved:'Sačuvano',loading:'Učitavam slučaj…',loadError:'Slučaj nije mogao da se učita.',saveError:'Čuvanje nije uspelo.',storage:'Skladište',present:'Postoji',missing:'Nedostaje',review:'Za proveru'}
 }
+const statusOrder=['ORDER_RECORDED','IN_TRANSIT','DELAY_RISK','CUSTOMER_INFORMED','ESCALATED','COMPLETED']
+const labels={de:{ORDER_RECORDED:'AUFTRAG ERFASST',IN_TRANSIT:'FAHRZEUG UNTERWEGS',DELAY_RISK:'VERZÖGERUNGSRISIKO',CUSTOMER_INFORMED:'KUNDE INFORMIERT',ESCALATED:'ESKALIERT',COMPLETED:'ABGESCHLOSSEN'},sr:{ORDER_RECORDED:'NALOG UNET',IN_TRANSIT:'VOZILO NA PUTU',DELAY_RISK:'RIZIK KAŠNJENJA',CUSTOMER_INFORMED:'KLIJENT OBAVEŠTEN',ESCALATED:'ESKALIRANO',COMPLETED:'ZAVRŠENO'}}
+const docLabel=(state,t)=>state==='PRESENT'?t.present:state==='MISSING'?t.missing:t.review
 
-export default function TransportRoomDemo({lang}) {
-  const t=copy[lang]
-  const [tab,setTab]=useState(0)
-  const [statusIndex,setStatusIndex]=useState(2)
-  const [approved,setApproved]=useState(false)
-  const [incidentOpen,setIncidentOpen]=useState(true)
-  const [reportReady,setReportReady]=useState(false)
-  const timeline=useMemo(()=>t.statuses.slice(0,statusIndex+1),[t,statusIndex])
-
-  return <main className="tr-shell">
-    <header className="tr-head"><div><p className="tr-kicker">{t.kicker}</p><h1>{t.title}</h1><p>{t.subtitle}</p></div><span className="tr-demo">{t.demo}</span></header>
-    <section className="tr-summary">
-      <article><small>{t.status}</small><strong>{t.statuses[statusIndex]}</strong></article><article><small>{t.eta}</small><strong>18:40</strong></article><article><small>{t.nextCheck}</small><strong>15:30</strong></article><article><small>{t.risk}</small><strong className="high">VISOK / HOCH</strong></article>
-    </section>
-    <section className="tr-transport-card"><div><small>{t.partner}</small><strong>Danube Logistics d.o.o.</strong></div><div><small>{t.vehicle}</small><strong>BG-TEST-101</strong></div><div><small>{t.driver}</small><strong>TEST DRIVER</strong></div><div><small>{t.owner}</small><strong>Operations Desk</strong></div></section>
-    <nav className="tr-tabs">{t.tabs.map((label,i)=><button key={label} className={tab===i?'active':''} onClick={()=>setTab(i)}>{label}</button>)}</nav>
-
-    {tab===0&&<section className="tr-grid">
-      <article className="tr-card"><h2>{t.facts}</h2><ul><li>Duisburg loading completed 08:10</li><li>Vehicle passed Nürnberg 12:20</li><li>Driver reported congestion before Budapest</li></ul></article>
-      <article className="tr-card"><h2>{t.open}</h2><ul><li>Current GPS position</li><li>Remaining driving time</li><li>Whether unloading slot remains available</li></ul></article>
-      <article className="tr-card tr-wide"><h2>{t.timeline}</h2><div className="tr-timeline">{timeline.map((item,i)=><span key={item}><b>{i+1}</b>{item}</span>)}</div>{statusIndex<t.statuses.length-1&&<button onClick={()=>setStatusIndex(v=>v+1)}>{t.addStatus}</button>}</article>
-    </section>}
-
-    {tab===1&&<section className="tr-grid">
-      <article className="tr-card"><h2>{t.source}</h2><p>WhatsApp · Fahrer / Vozač · 14:52</p><blockquote>“Stau Budapest. ETA unklar. Kunde wartet.”</blockquote><p><b>{t.assumption}:</b> unloading before 18:00</p></article>
-      <article className="tr-card"><h2>{t.message}</h2><textarea defaultValue={t.messages[approved?1:0]} rows="8"/><div className="tr-actions"><button>{t.translate}</button><button className="secondary" onClick={()=>setApproved(true)}>{t.approve}</button></div><small>{approved?t.confirmed:t.noAuto}</small></article>
-    </section>}
-
-    {tab===2&&<section className="tr-card"><h2>{t.docs}</h2><div className="tr-docs"><div><strong>Transportauftrag</strong><span className="ok">{t.present}</span></div><div><strong>CMR</strong><span>{t.unclear}</span></div><div><strong>POD / Abliefernachweis</strong><span className="bad">{t.missing}</span></div><div><strong>Versicherung / Osiguranje</strong><span className="ok">{t.present}</span></div></div></section>}
-
-    {tab===3&&<section className="tr-grid">
-      <article className="tr-card"><h2>{t.incident}</h2><label>{t.severity}<select defaultValue="HIGH"><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label><label>{t.decision}<textarea defaultValue="Confirm next customer update and decide whether a new unloading slot is required." rows="5"/></label><button onClick={()=>setIncidentOpen(false)}>{t.escalation}</button></article>
-      <article className="tr-card"><h2>Incident Log</h2><p><b>14:52</b> Driver reports congestion.</p><p><b>15:02</b> GPS update requested.</p><p><b>15:10</b> Customer informed about delay risk.</p><p><b>Status:</b> {incidentOpen?'OPEN':'ESCALATED'}</p></article>
-    </section>}
-
-    {tab===4&&<section className="tr-card tr-report"><h2>{t.tabs[4]}</h2><p>{t.reportText}</p><div className="tr-report-grid"><span><small>Transport</small><b>DH-TR-0001</b></span><span><small>ETA updates</small><b>3</b></span><span><small>Incidents</small><b>1</b></span><span><small>Documents</small><b>3 / 4</b></span></div><button onClick={()=>setReportReady(true)}>{reportReady?t.complete:t.report}</button>{reportReady&&<p className="tr-success">REPORT READY · HUMAN REVIEW REQUIRED</p>}</section>}
-  </main>
+export default function TransportRoomDemo({lang}){
+ const t=copy[lang],[tab,setTab]=useState(0),[room,setRoom]=useState(null),[sync,setSync]=useState('loading'),[storage,setStorage]=useState('—')
+ useEffect(()=>{fetch('/api/v1/transport-room/DH-TR-0001').then(r=>{if(!r.ok)throw new Error();return r.json()}).then(data=>{setRoom(data.case);setStorage(data.storageMode||'—');setSync('idle')}).catch(()=>setSync('load-error'))},[])
+ const timeline=useMemo(()=>room?.timeline||[],[room])
+ const patch=(key,value)=>setRoom(current=>({...current,[key]:value}))
+ const save=async()=>{setSync('saving');try{const response=await fetch(`/api/v1/transport-room/${room.caseId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(room)});if(!response.ok)throw new Error();const data=await response.json();setRoom(data.case);setStorage(data.storageMode||'—');setSync('saved')}catch{setSync('save-error')}}
+ const addStatus=()=>{const current=Math.max(0,statusOrder.indexOf(room.status)),next=statusOrder[Math.min(current+1,statusOrder.length-1)];patch('status',next);setRoom(value=>({...value,status:next,timeline:[...(value.timeline||[]),{at:new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),status:next,note:lang==='sr'?'Status ručno ažuriran u Transport Room-u.':'Status im Transport Room manuell aktualisiert.'}]}))}
+ const setDoc=(key,value)=>patch('documents',{...room.documents,[key]:value})
+ if(sync==='loading')return <main className="tr-shell"><section className="tr-card"><p>{t.loading}</p></section></main>
+ if(!room)return <main className="tr-shell"><section className="tr-card"><p>{t.loadError}</p></section></main>
+ return <main className="tr-shell">
+  <header className="tr-head"><div><p className="tr-kicker">{t.kicker}</p><h1>{t.title}</h1><p>{t.subtitle}</p></div><div><span className="tr-demo">{t.demo}</span><button onClick={save} disabled={sync==='saving'}>{sync==='saving'?t.saving:t.save}</button><small>{t.storage}: {storage} · {sync==='saved'?t.saved:sync==='save-error'?t.saveError:''}</small></div></header>
+  <section className="tr-summary"><article><small>{t.status}</small><strong>{labels[lang][room.status]}</strong></article><article><small>{t.eta}</small><input value={room.eta} onChange={e=>patch('eta',e.target.value)}/></article><article><small>{t.nextCheck}</small><input value={room.nextCheck} onChange={e=>patch('nextCheck',e.target.value)}/></article><article><small>{t.risk}</small><select value={room.risk} onChange={e=>patch('risk',e.target.value)}><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></article></section>
+  <section className="tr-transport-card">{[['partner',t.partner],['vehicle',t.vehicle],['driver',t.driver],['owner',t.owner]].map(([key,label])=><div key={key}><small>{label}</small><input value={room[key]} onChange={e=>patch(key,e.target.value)}/></div>)}</section>
+  <nav className="tr-tabs">{t.tabs.map((label,i)=><button key={label} className={tab===i?'active':''} onClick={()=>setTab(i)}>{label}</button>)}</nav>
+  {tab===0&&<section className="tr-grid"><article className="tr-card"><h2>{t.facts}</h2><ul><li>Duisburg loading completed 08:10</li><li>Vehicle passed Nürnberg 12:20</li><li>Driver reported congestion before Budapest</li></ul></article><article className="tr-card"><h2>{t.open}</h2><ul><li>Current GPS position</li><li>Remaining driving time</li><li>Whether unloading slot remains available</li></ul></article><article className="tr-card tr-wide"><h2>{t.timeline}</h2><div className="tr-timeline">{timeline.map((item,i)=><span key={`${item.at}-${i}`}><b>{item.at}</b>{labels[lang][item.status]}<small>{item.note}</small></span>)}</div><button onClick={addStatus}>{t.addStatus}</button></article></section>}
+  {tab===1&&<section className="tr-grid"><article className="tr-card"><h2>{t.source}</h2><p>WhatsApp · Fahrer / Vozač · 14:52</p><blockquote>“Stau Budapest. ETA unklar. Kunde wartet.”</blockquote></article><article className="tr-card"><h2>{t.message}</h2><textarea value={room.standardizedMessage} onChange={e=>patch('standardizedMessage',e.target.value)} rows="8"/><div className="tr-actions"><button onClick={()=>patch('standardizedMessage',lang==='sr'?'Vozač prijavljuje zastoj pre Budimpešte. Pre pouzdane ETA procene moraju se potvrditi lokacija i preostalo vreme vožnje.':'Der Fahrer meldet Stau vor Budapest. Vor einer belastbaren ETA müssen Standort und Restlenkzeit bestätigt werden.')}>{t.translate}</button><button className="secondary" onClick={()=>patch('approvedMessage',true)}>{t.approve}</button></div><small>{room.approvedMessage?t.confirmed:t.noAuto}</small></article></section>}
+  {tab===2&&<section className="tr-card"><h2>{t.docs}</h2><div className="tr-docs">{[['order','Transportauftrag'],['cmr','CMR'],['pod','POD / Abliefernachweis'],['insurance','Versicherung / Osiguranje']].map(([key,name])=><div key={key}><strong>{name}</strong><select value={room.documents[key]} onChange={e=>setDoc(key,e.target.value)}><option value="PRESENT">{t.present}</option><option value="REVIEW">{t.review}</option><option value="MISSING">{t.missing}</option></select><span>{docLabel(room.documents[key],t)}</span></div>)}</div></section>}
+  {tab===3&&<section className="tr-grid"><article className="tr-card"><h2>{t.incident}</h2><label>{t.severity}<select value={room.incident.severity} onChange={e=>patch('incident',{...room.incident,severity:e.target.value})}><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label><label>{t.decision}<textarea value={room.incident.decision} onChange={e=>patch('incident',{...room.incident,decision:e.target.value})} rows="5"/></label><button onClick={()=>{patch('incident',{...room.incident,status:'ESCALATED'});patch('status','ESCALATED')}}>{t.escalation}</button></article><article className="tr-card"><h2>Incident Log</h2>{timeline.filter(item=>['DELAY_RISK','ESCALATED'].includes(item.status)).map((item,i)=><p key={i}><b>{item.at}</b> {item.note}</p>)}<p><b>Status:</b> {room.incident.status}</p></article></section>}
+  {tab===4&&<section className="tr-card tr-report"><h2>{t.tabs[4]}</h2><p>{lang==='sr'?'Transport sadrži dokumentovan status, ETA, komunikaciju, dokumente i incident. Završavanje zahteva ljudsku proveru.':'Der Transport enthält dokumentierten Status, ETA, Kommunikation, Dokumente und Incident. Der Abschluss erfordert menschliche Prüfung.'}</p><div className="tr-report-grid"><span><small>Transport</small><b>{room.caseId}</b></span><span><small>ETA updates</small><b>{timeline.length}</b></span><span><small>Incidents</small><b>{room.incident.status==='OPEN'?1:1}</b></span><span><small>Documents</small><b>{Object.values(room.documents).filter(v=>v==='PRESENT').length} / 4</b></span></div><button onClick={()=>patch('status','COMPLETED')}>{room.status==='COMPLETED'?t.complete:t.report}</button>{room.status==='COMPLETED'&&<p className="tr-success">REPORT READY · HUMAN REVIEW REQUIRED</p>}</section>}
+ </main>
 }

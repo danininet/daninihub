@@ -14,7 +14,7 @@ const { mountTransportRoomRuntime } = require('./server-transport-room-runtime')
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-transport-room-persistence-v12';
+const DEPLOYMENT_MARKER = 'daninihub-transport-room-rbac-v13';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -58,6 +58,7 @@ app.get('/health', (req, res) => {
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
     transportRoomPersistence: true,
+    transportRoomRoleAccess: true,
     manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY),
     dispatchAccessConfigured: Boolean(signingMaterial()),
     dispatchAccessMode: process.env.DANINI_DISPATCH_ACCESS_MODE || 'direct-fictitious-pilot',
@@ -75,7 +76,7 @@ app.get('/api/runtime-version', (req, res) => {
     serbianTmsVideoId: 'wGFtA53BirQ',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
-    transportRoomVersion: 'persistent-pilot-v1',
+    transportRoomVersion: 'role-access-pilot-v2',
     contact: 'info@daninihub.com'
   });
 });

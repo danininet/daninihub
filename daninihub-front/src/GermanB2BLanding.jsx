@@ -1,5 +1,6 @@
 import './App.css'
 import './Enhancements.css'
+import ProductSystemSection from './ProductSystemSection'
 
 const problems = [
   ['Unvollständige Statusmeldungen', 'Fahrer, Disposition und Kunde arbeiten nicht mit derselben bestätigten Sachlage.'],
@@ -35,12 +36,14 @@ export default function GermanB2BLanding() {
         <p className="kicker">BALKAN CONTINUITY SUPPORT FÜR DACH-TRANSPORTUNTERNEHMEN</p>
         <h1>Klarere Balkan-Kommunikation. Weniger Unterbrechungen in der Disposition.</h1>
         <p className="lead">DaniniHub unterstützt Transportunternehmen im DACH-Raum bei Status, ETA, Dokumentation, Abweichungen und mehrsprachiger Kommunikation mit Fahrern, Frachtführern, Niederlassungen oder Partnern im Balkanraum — in einem vorab vereinbarten Umfang und ohne Übernahme verbindlicher Entscheidungen.</p>
-        <p><a className="btn" href="/de/pilot-check">Prüfen, ob ein Pilot zu Ihrem Betrieb passt →</a></p>
-        <a className="entry-demo-link" href="/de/operations-desk-demo">Operative Simulation ansehen →</a>
-        <div className="proof"><span>✓ Begrenzter Pilot ohne automatische Verlängerung</span><span>✓ Deutsch + Sprachen des Balkans</span><span>✓ Klar getrennte Befugnisse</span></div>
+        <p><a className="btn" href="/de/transport-network-demo">Transport Network ansehen →</a></p>
+        <a className="entry-demo-link" href="/de/dispolab/check">Kostenlosen Dispo-Check starten →</a>
+        <div className="proof"><span>✓ Gemeinsamer Arbeitsraum statt zusätzlichem TMS-Zwang</span><span>✓ Deutsch + Sprachen des Balkans</span><span>✓ Klar getrennte Befugnisse</span></div>
       </div>
       <div className="route-art" aria-hidden="true"><div className="globe"/><div className="route r1"/><div className="route r2"/><div className="truck">▰</div><span className="city c1">DUISBURG</span><span className="city c2">WIEN</span><span className="city c3">BALKAN</span></div>
     </section>
+
+    <ProductSystemSection lang="de"/>
 
     <section id="services" className="section">
       <p className="kicker">OPERATIVER ENGPASS</p>
@@ -57,7 +60,7 @@ export default function GermanB2BLanding() {
 
     <section className="section split">
       <div><p className="kicker">BEISPIELSITUATION</p><h2>Stau bei Budapest.</h2><p className="big">„Stau Budapest. ETA unklar. Kunde wartet. Entladung bis 10:00.“</p></div>
-      <div><p>Der DaniniHub-Arbeitsrahmen trennt bestätigte Fakten von offenen Punkten, bewertet den operativen Handlungsbedarf, benennt die zuständige Freigabestelle, bereitet Nachrichten vor und definiert den nächsten Prüfzeitpunkt sowie eine arbeitsfähige Übergabe.</p><a className="entry-demo-link" href="/de/operations-desk-demo">Interaktives Beispiel öffnen →</a></div>
+      <div><p>Der DaniniHub-Arbeitsrahmen trennt bestätigte Fakten von offenen Punkten, bewertet den operativen Handlungsbedarf, benennt die zuständige Freigabestelle, bereitet Nachrichten vor und definiert den nächsten Prüfzeitpunkt sowie eine arbeitsfähige Übergabe.</p><a className="entry-demo-link" href="/de/transport-room-demo">Transport Room öffnen →</a></div>
     </section>
 
     <section id="scope" className="section scope">
@@ -82,14 +85,14 @@ export default function GermanB2BLanding() {
       <p className="kicker">NACHWEISE UND ÖFFENTLICHER EINBLICK</p>
       <h2>Prüfen Sie Methode und Arbeitsweise vor einem Gespräch.</h2>
       <div className="start-grid interest-grid">
-        <article><span>01</span><h3>Fachbeitrag und Video</h3><p>Warum ein TMS Disponenten nicht ersetzt und wo Systemdaten allein nicht ausreichen.</p><a href="/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen">Beitrag und Video öffnen →</a></article>
-        <article><span>02</span><h3>Operative Simulation</h3><p>Öffentliches Beispiel für Status, ETA, Abweichung, Eskalation und dokumentierte Übergabe.</p><a href="/de/operations-desk-demo">Demo ansehen →</a></article>
-        <article><span>03</span><h3>Strukturierter Pilot-Check</h3><p>Relationen, Fahrzeuge, Aufgaben, Systeme, Zeitfenster und verantwortliche Freigabestelle.</p><a href="/de/pilot-check">Pilot-Check starten →</a></article>
+        <article><span>01</span><h3>DispoLab</h3><p>Praxisfälle und kostenloser Dispo-Check für operatives Denken und Eskalation.</p><a href="/de/dispolab">DispoLab öffnen →</a></article>
+        <article><span>02</span><h3>Transport Network</h3><p>Unternehmensbereich mit Partnern, Team und mehreren Transport Rooms.</p><a href="/de/transport-network-demo">Network ansehen →</a></article>
+        <article><span>03</span><h3>Transport Room</h3><p>Konkreter Fall mit Status, ETA, Dokumenten, Incident und Übergabe.</p><a href="/de/transport-room-demo">Transport Room öffnen →</a></article>
       </div>
     </section>
 
     <section id="contact" className="section contact">
-      <div><p className="kicker">NÄCHSTER SCHRITT</p><h2>Gibt es einen klar begrenzten operativen Engpass, den wir kontrolliert prüfen können?</h2><p>Beschreiben Sie Relationen, Fahrzeugzahl, zeitintensive Aufgaben, vorhandene Systeme und die verantwortliche Freigabestelle. Sie erhalten eine persönliche Einschätzung, ob ein begrenzter Pilot sinnvoll ist.</p></div>
+      <div><p className="kicker">NÄCHSTER SCHRITT</p><h2>Gibt es einen klar begrenzten operativen Engpass, den wir kontrolliert prüfen können?</h2><p>Beschreiben Sie Relation, Partner, Kommunikationsproblem und die verantwortliche Freigabestelle. Sie erhalten eine persönliche Einschätzung, ob ein begrenzter Pilot sinnvoll ist.</p></div>
       <div><a className="btn" href="/de/pilot-check">Pilot-Check starten →</a></div>
     </section>
   </main>

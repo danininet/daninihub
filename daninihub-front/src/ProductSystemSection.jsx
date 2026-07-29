@@ -8,7 +8,7 @@ const copy={
     cards:[
       ['01','DispoLab','Praxisfälle und Dispo-Check für operatives Denken, Kommunikation, Dokumentation und Eskalation.','/de/dispolab','DispoLab öffnen'],
       ['02','Transport Network','Unternehmensprofile, Teammitglieder, Partner und alle zugänglichen Transport Rooms in einem Arbeitsbereich.','/de/transport-network-demo','Transport Network ansehen'],
-      ['03','Transport Room','Status, ETA, Kommunikation, Dokumente, Incident, Freigaben und Übergabe für einen konkreten Transport.','/de/transport-room-demo','Transport Room ansehen']
+      ['03','Transport Room','Status, ETA, Kommunikation, Dokumente, Incident, Freigaben und Übergabe für einen konkreten Transport.','/de/transport-room-demo?case=DH-TR-0001','Transport Room ansehen']
     ],
     primary:'Transport Network ansehen',secondary:'Dispo-Check starten'
   },
@@ -19,7 +19,7 @@ const copy={
     cards:[
       ['01','DispoLab','Praktični slučajevi i Dispo-Check za operativno razmišljanje, komunikaciju, dokumentovanje i eskalaciju.','/sr/dispo-lab','Otvori DispoLab'],
       ['02','Transport Network','Profili firmi, članovi tima, partneri i sve dostupne transportne sobe u jednom radnom prostoru.','/sr/transportna-mreza-demo','Pogledaj Transport Network'],
-      ['03','Transport Room','Status, ETA, komunikacija, dokumenti, incident, odobrenja i predaja za jedan konkretan transport.','/sr/transportna-soba-demo','Pogledaj Transport Room']
+      ['03','Transport Room','Status, ETA, komunikacija, dokumenti, incident, odobrenja i predaja za jedan konkretan transport.','/sr/transportna-soba-demo?case=DH-TR-0001','Pogledaj Transport Room']
     ],
     primary:'Pogledaj Transport Network',secondary:'Pokreni Dispo-Check'
   }

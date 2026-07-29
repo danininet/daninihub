@@ -14,6 +14,7 @@ const content = {
     after:['bestätigte Fakten','offene Informationen','operatives ETA-Fenster','nächster Prüfzeitpunkt','verantwortliche Rolle','freizugebende Kundennachricht'],
     cta:'Transport Network ansehen',
     secondary:'Transport Room öffnen',
+    problemLabel:'PROBLEM', resultLabel:'ERGEBNIS', demoLabel:'DEMONSTRATION', boundariesLabel:'KLARE GRENZEN',
     next:'Ein sinnvoller Pilot beginnt mit einer Relation, einem Balkan-Partner und klar benannten Freigaben.'
   },
   sr: {
@@ -29,6 +30,7 @@ const content = {
     after:['potvrđene činjenice','informacije koje nedostaju','operativni ETA okvir','vreme sledeće provere','odgovorna uloga','nacrt nemačke poruke za odobrenje'],
     cta:'Pogledaj Transport Network',
     secondary:'Otvori Transport Room',
+    problemLabel:'PROBLEM', resultLabel:'REZULTAT', demoLabel:'DEMONSTRACIJA', boundariesLabel:'JASNE GRANICE',
     next:'Dobar pilot počinje jednom relacijom, jednim DACH partnerom i jasno određenim ovlašćenjima.'
   }
 }
@@ -36,27 +38,29 @@ const content = {
 export default function AudiencePages({lang}) {
   const t = content[lang]
   const sr = lang === 'sr'
+  const network = sr ? '/sr/transportna-mreza-demo' : '/de/transport-network-demo'
+  const room = sr ? '/sr/transportna-soba-demo?case=DH-TR-0001' : '/de/transport-room-demo?case=DH-TR-0001'
   return <main className="audience-page">
     <section className="audience-hero">
-      <div><p className="audience-kicker">{t.kicker}</p><h1>{t.title}</h1><p className="audience-lead">{t.lead}</p><p className="audience-note">{t.audience}</p><div className="audience-actions"><a className="audience-primary" href={sr?'/sr/transportna-mreza-demo':'/de/transport-network-demo'}>{t.cta}</a><a href={sr?'/sr/transportna-soba-demo':'/de/transport-room-demo'}>{t.secondary}</a></div></div>
+      <div><p className="audience-kicker">{t.kicker}</p><h1>{t.title}</h1><p className="audience-lead">{t.lead}</p><p className="audience-note">{t.audience}</p><div className="audience-actions"><a className="audience-primary" href={network}>{t.cta}</a><a href={room}>{t.secondary}</a></div></div>
       <aside><span>BALKAN</span><b>↔</b><span>DACH</span><small>STATUS · ETA · DOCUMENTS · INCIDENTS</small></aside>
     </section>
 
     <section className="audience-grid">
-      <article><p className="audience-kicker">PROBLEM</p><h2>{sr?'Gde se gubi kontrola nad informacijom.':'Wo operative Information verloren geht.'}</h2><ul>{t.problems.map(item=><li key={item}>{item}</li>)}</ul></article>
-      <article><p className="audience-kicker">ERGEBNIS / REZULTAT</p><h2>{sr?'Šta firma dobija.':'Was das Unternehmen erhält.'}</h2><ul>{t.benefits.map(item=><li key={item}>{item}</li>)}</ul></article>
+      <article><p className="audience-kicker">{t.problemLabel}</p><h2>{sr?'Gde se gubi kontrola nad informacijom.':'Wo operative Information verloren geht.'}</h2><ul>{t.problems.map(item=><li key={item}>{item}</li>)}</ul></article>
+      <article><p className="audience-kicker">{t.resultLabel}</p><h2>{sr?'Šta firma dobija.':'Was das Unternehmen erhält.'}</h2><ul>{t.benefits.map(item=><li key={item}>{item}</li>)}</ul></article>
     </section>
 
     <section className="audience-demo">
-      <div><p className="audience-kicker">DEMONSTRATION</p><h2>{t.demoTitle}</h2><blockquote>{t.before}</blockquote></div>
+      <div><p className="audience-kicker">{t.demoLabel}</p><h2>{t.demoTitle}</h2><blockquote>{t.before}</blockquote></div>
       <div className="audience-after">{t.after.map((item,index)=><span key={item}><b>{String(index+1).padStart(2,'0')}</b>{item}</span>)}</div>
     </section>
 
     <section className="audience-boundaries">
-      <div><p className="audience-kicker">KLARE GRENZEN / JASNE GRANICE</p><h2>{sr?'Šta DaniniHub ne preuzima.':'Was DaniniHub nicht übernimmt.'}</h2></div>
+      <div><p className="audience-kicker">{t.boundariesLabel}</p><h2>{sr?'Šta DaniniHub ne preuzima.':'Was DaniniHub nicht übernimmt.'}</h2></div>
       <ul>{t.not.map(item=><li key={item}>{item}</li>)}</ul>
     </section>
 
-    <section className="audience-next"><h2>{t.next}</h2><div className="audience-actions"><a className="audience-primary" href={sr?'/sr/transportna-mreza-demo':'/de/transport-network-demo'}>{t.cta}</a><a href={sr?'/sr/provera-pilota':'/de/pilot-check'}>{sr?'Opiši operativni problem':'Operativen Bedarf beschreiben'}</a></div></section>
+    <section className="audience-next"><h2>{t.next}</h2><div className="audience-actions"><a className="audience-primary" href={network}>{t.cta}</a><a href={sr?'/sr/provera-pilota':'/de/pilot-check'}>{sr?'Opiši operativni problem':'Operativen Bedarf beschreiben'}</a></div></section>
   </main>
 }

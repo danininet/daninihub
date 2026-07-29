@@ -15,7 +15,7 @@ const { mountTransportNetworkRuntime } = require('./server-transport-network-run
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-transport-network-companies-v16';
+const DEPLOYMENT_MARKER = 'daninihub-network-room-connection-v17';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -67,6 +67,7 @@ app.get('/health', (req, res) => {
     transportNetworkCompanies: true,
     transportNetworkMembers: true,
     transportNetworkMultipleRooms: true,
+    transportNetworkRoomConnection: true,
     transportRoomInvitationEmail: Boolean(process.env.BREVO_API_KEY),
     manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY),
     dispatchAccessConfigured: Boolean(signingMaterial()),
@@ -85,8 +86,8 @@ app.get('/api/runtime-version', (req, res) => {
     serbianTmsVideoId: 'wGFtA53BirQ',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
-    transportRoomVersion: 'otp-revocation-audit-pilot-v4',
-    transportNetworkVersion: 'company-members-multi-room-pilot-v1',
+    transportRoomVersion: 'case-specific-company-access-v5',
+    transportNetworkVersion: 'company-room-connection-pilot-v2',
     contact: 'info@daninihub.com'
   });
 });

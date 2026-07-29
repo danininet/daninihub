@@ -5,103 +5,65 @@ const { createContactLeadStore } = require('./contact-lead-store');
 const { adminAuthorized } = require('./server-admin-runtime');
 
 const SOURCES = ['capacity-truck', 'capacity-freight'];
-const STATUSES = [
-  'NEW',
-  'DATA_MISSING',
-  'VERIFIED',
-  'SEARCHING_MATCH',
-  'POSSIBLE_MATCH',
-  'WAITING_CONSENT',
-  'CONTACTS_CONNECTED',
-  'REJECTED',
-  'EXPIRED',
-  'CLOSED'
-];
+const STATUSES = ['NEW','DATA_MISSING','VERIFIED','SEARCHING_MATCH','POSSIBLE_MATCH','WAITING_CONSENT','CONTACTS_CONNECTED','REJECTED','EXPIRED','CLOSED'];
 
-function requireAdmin(req, res, next) {
-  if (!adminAuthorized(req)) return res.status(401).json({ ok:false, error:'ADMIN_NOT_AUTHORIZED' });
+function requireAdmin(req,res,next){
+  if(!adminAuthorized(req)) return res.status(401).json({ok:false,error:'ADMIN_NOT_AUTHORIZED'});
   return next();
 }
-
-function normalizeStatus(value) {
-  const status = String(value || '').trim().toUpperCase();
-  return STATUSES.includes(status) ? status : null;
+function normalizeStatus(value){const status=String(value||'').trim().toUpperCase();return STATUSES.includes(status)?status:null;}
+function text(value){return String(value||'').trim().toLowerCase();}
+function number(value){const parsed=Number(value);return Number.isFinite(parsed)?parsed:null;}
+function dateValue(value){const parsed=Date.parse(value);return Number.isFinite(parsed)?parsed:null;}
+function containsEither(a,b){const left=text(a),right=text(b);return Boolean(left&&right&&(left.includes(right)||right.includes(left)));}
+function publicSignal(lead){
+  const payload=lead.payload&&typeof lead.payload==='object'?lead.payload:lead;
+  return {reference:lead.reference,kind:lead.source==='capacity-truck'?'TRUCK':'FREIGHT',language:lead.language,company:lead.company,email:lead.email,phone:payload.phone||lead.phone||'',contactName:payload.name||lead.name||'',status:normalizeStatus(lead.status)||'NEW',note:lead.reviewNote||'',createdAt:lead.createdAt,updatedAt:lead.updatedAt,route:payload.routes||lead.routes||'',summary:payload.message||lead.message||'',payload};
 }
-
-function publicSignal(lead) {
-  const payload = lead.payload && typeof lead.payload === 'object' ? lead.payload : lead;
-  return {
-    reference: lead.reference,
-    kind: lead.source === 'capacity-truck' ? 'TRUCK' : 'FREIGHT',
-    language: lead.language,
-    company: lead.company,
-    email: lead.email,
-    phone: payload.phone || lead.phone || '',
-    contactName: payload.name || lead.name || '',
-    status: normalizeStatus(lead.status) || 'NEW',
-    note: lead.reviewNote || '',
-    createdAt: lead.createdAt,
-    updatedAt: lead.updatedAt,
-    route: payload.routes || lead.routes || '',
-    summary: payload.message || lead.message || '',
-    payload
-  };
+function counts(signals){return signals.reduce((r,s)=>{r.total+=1;r[s.kind]+=1;r[s.status]=(r[s.status]||0)+1;return r;},{total:0,TRUCK:0,FREIGHT:0});}
+function scorePair(truck,freight){
+  const t=truck.payload||{},f=freight.payload||{};
+  let score=0;const checks=[];
+  const add=(points,label,ok,detail)=>{if(ok)score+=points;checks.push({label,points,matched:Boolean(ok),detail:detail||''});};
+  add(25,'Lokacija i prazan prilaz',containsEither(t.city,f.city)||containsEither(t.postal,f.postal),`${t.city||t.postal||'—'} ↔ ${f.city||f.postal||'—'}`);
+  const truckFrom=dateValue(t.availableFrom),truckUntil=dateValue(t.availableUntil),load=dateValue(f.loadDate&&f.loadFrom?`${f.loadDate}T${f.loadFrom}`:f.loadDate);
+  add(20,'Vremenski prozor',Boolean(load&&(!truckFrom||load>=truckFrom)&&(!truckUntil||load<=truckUntil)),`${t.availableFrom||'—'} / ${t.availableUntil||'—'} ↔ ${f.loadDate||'—'} ${f.loadFrom||''}`);
+  add(20,'Tip vozila',containsEither(t.vehicle,f.vehicleRequired),`${t.vehicle||'—'} ↔ ${f.vehicleRequired||'—'}`);
+  const payload=number(t.payload),weight=number(f.weight),ldmTruck=number(t.loadingMeters),ldmFreight=number(f.loadingMeters);
+  const capacityOk=Boolean((payload===null||weight===null||payload>=weight)&&(ldmTruck===null||ldmFreight===null||ldmTruck>=ldmFreight));
+  add(15,'Kapacitet i dimenzije',capacityOk,`${payload??'—'} kg / ${ldmTruck??'—'} LDM ↔ ${weight??'—'} kg / ${ldmFreight??'—'} LDM`);
+  add(10,'Pravac',containsEither(t.destinationCountry,f.destinationCountry)||containsEither(t.destination,f.unloadCity),`${t.destinationCountry||t.destination||'—'} ↔ ${f.destinationCountry||f.unloadCity||'—'}`);
+  const specialOk=(!f.adr||f.adr==='NO'||t.adr==='YES')&&(!f.temperature||containsEither(t.temperature,f.temperature))&&(!f.customsStatus||f.customsStatus==='NO'||t.customs==='YES');
+  add(10,'ADR / temperatura / carina',specialOk,`ADR ${t.adr||'—'}/${f.adr||'—'} · Temp ${t.temperature||'—'}/${f.temperature||'—'} · Carina ${t.customs||'—'}/${f.customsStatus||'—'}`);
+  return {score,level:score>=85?'STRONG':score>=65?'REVIEW':'WEAK',checks};
 }
-
-function counts(signals) {
-  return signals.reduce((result, signal) => {
-    result.total += 1;
-    result[signal.kind] += 1;
-    result[signal.status] = (result[signal.status] || 0) + 1;
-    return result;
-  }, { total:0, TRUCK:0, FREIGHT:0 });
+function buildMatches(signals){
+  const trucks=signals.filter(s=>s.kind==='TRUCK'&&!['REJECTED','EXPIRED','CLOSED'].includes(s.status));
+  const freight=signals.filter(s=>s.kind==='FREIGHT'&&!['REJECTED','EXPIRED','CLOSED'].includes(s.status));
+  const matches=[];
+  for(const truck of trucks)for(const load of freight){const result=scorePair(truck,load);if(result.score>=45)matches.push({id:`${truck.reference}__${load.reference}`,truck:{reference:truck.reference,company:truck.company,route:truck.route},freight:{reference:load.reference,company:load.company,route:load.route},...result});}
+  return matches.sort((a,b)=>b.score-a.score);
 }
-
-function renderSignalDesk() {
+function renderSignalDesk(){
   return `<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>DaniniHub Signal Desk</title><style>
-  *{box-sizing:border-box}body{margin:0;background:#07131f;color:#eaf2f5;font-family:Inter,Arial,sans-serif}.wrap{max-width:1320px;margin:auto;padding:28px 18px 70px}.brand{font-size:13px;font-weight:900;letter-spacing:.12em;color:#67d7e4}h1{margin:10px 0 4px;font-size:clamp(34px,5vw,54px)}p{color:#b9c9d2}.auth,.filters,.stats,.signal-head,.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.auth{margin:22px 0}.auth input,.filters input,.filters select,textarea,select,button{font:inherit;border:1px solid #3a5262;border-radius:10px;background:#0d2030;color:#fff;padding:11px 12px}button{background:#0d8b98;border-color:#0d8b98;font-weight:800;cursor:pointer}.secondary{background:#193245;border-color:#36556b}.msg{min-height:24px;color:#ffb4a4}.stats{margin:20px 0}.stat{min-width:140px;padding:16px;border:1px solid #284354;border-radius:14px;background:#0b1d2b}.stat strong{display:block;font-size:28px}.stat span{color:#9eb4bf}.filters{margin:20px 0}.filters input{min-width:250px;flex:1}.list{display:grid;gap:16px}.signal{border:1px solid #29495b;border-radius:17px;background:#0b1c2a;padding:18px}.signal-head{justify-content:space-between;align-items:flex-start}.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#123848;color:#8ee8f2;font-size:12px;font-weight:900}.ref{font-family:ui-monospace,monospace;color:#a8c0cb}.signal h2{margin:8px 0 4px;font-size:22px}.meta{display:flex;gap:16px;flex-wrap:wrap;color:#a9bdc7;font-size:14px}.summary{margin-top:14px;padding:13px;border-radius:10px;background:#071722;white-space:pre-wrap;color:#dce8ed;max-height:230px;overflow:auto}.edit{display:grid;grid-template-columns:minmax(180px,.35fr) 1fr auto;gap:10px;margin-top:14px;align-items:start}.edit textarea{min-height:78px;resize:vertical}.empty{padding:28px;border:1px dashed #3a5262;border-radius:14px;text-align:center}.small{font-size:12px;color:#8fa8b4}@media(max-width:760px){.edit{grid-template-columns:1fr}.auth input,.filters input{width:100%;min-width:0}.signal-head{display:block}.signal-head>div:last-child{margin-top:10px}}
-  </style></head><body><main class="wrap"><div class="brand">DANINIHUB · INTERNAL</div><h1>Signal Desk</h1><p>Ručna obrada slobodnih kamiona i tereta koji čekaju. Nema automatskog povezivanja ni ugovaranja.</p><div class="auth"><input id="key" type="password" placeholder="DANINI_ADMIN_SECRET"><button id="load">Učitaj signale</button></div><div id="msg" class="msg"></div><section id="stats" class="stats"></section><section class="filters"><select id="kind"><option value="">Sve vrste</option><option value="TRUCK">Kamioni</option><option value="FREIGHT">Tereti</option></select><select id="status"><option value="">Svi statusi</option>${STATUSES.map(status=>`<option value="${status}">${status}</option>`).join('')}</select><input id="search" placeholder="Pretraži firmu, relaciju ili referencu"></section><section id="list" class="list"></section></main><script>(()=>{
-  const key=document.getElementById('key'),msg=document.getElementById('msg'),stats=document.getElementById('stats'),list=document.getElementById('list'),kind=document.getElementById('kind'),status=document.getElementById('status'),search=document.getElementById('search');let signals=[];
+  *{box-sizing:border-box}body{margin:0;background:#07131f;color:#eaf2f5;font-family:Inter,Arial,sans-serif}.wrap{max-width:1320px;margin:auto;padding:28px 18px 70px}.brand{font-size:13px;font-weight:900;letter-spacing:.12em;color:#67d7e4}h1{margin:10px 0 4px;font-size:clamp(34px,5vw,54px)}p{color:#b9c9d2}.auth,.filters,.stats,.signal-head,.match-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.auth{margin:22px 0}.auth input,.filters input,.filters select,textarea,select,button{font:inherit;border:1px solid #3a5262;border-radius:10px;background:#0d2030;color:#fff;padding:11px 12px}button{background:#0d8b98;border-color:#0d8b98;font-weight:800;cursor:pointer}.secondary{background:#193245;border-color:#36556b}.msg{min-height:24px;color:#ffb4a4}.stats{margin:20px 0}.stat{min-width:140px;padding:16px;border:1px solid #284354;border-radius:14px;background:#0b1d2b}.stat strong{display:block;font-size:28px}.stat span{color:#9eb4bf}.filters{margin:20px 0}.filters input{min-width:250px;flex:1}.list,.matches{display:grid;gap:16px}.signal,.match{border:1px solid #29495b;border-radius:17px;background:#0b1c2a;padding:18px}.signal-head,.match-head{justify-content:space-between;align-items:flex-start}.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#123848;color:#8ee8f2;font-size:12px;font-weight:900}.ref{font-family:ui-monospace,monospace;color:#a8c0cb}.signal h2,.match h2{margin:8px 0 4px;font-size:22px}.meta{display:flex;gap:16px;flex-wrap:wrap;color:#a9bdc7;font-size:14px}.summary{margin-top:14px;padding:13px;border-radius:10px;background:#071722;white-space:pre-wrap;color:#dce8ed;max-height:230px;overflow:auto}.edit{display:grid;grid-template-columns:minmax(180px,.35fr) 1fr auto;gap:10px;margin-top:14px;align-items:start}.edit textarea{min-height:78px;resize:vertical}.empty{padding:28px;border:1px dashed #3a5262;border-radius:14px;text-align:center}.small{font-size:12px;color:#8fa8b4}.match-score{font-size:32px;font-weight:900;color:#75e3ef}.checks{display:grid;gap:7px;margin-top:12px}.check{display:grid;grid-template-columns:28px 1fr auto;gap:8px;padding:9px;background:#071722;border-radius:9px}.ok{color:#81e6c2}.no{color:#ffb4a4}.section-title{margin:34px 0 14px}.warning{padding:14px;border-left:4px solid #e9c46a;background:#1d2732;color:#f6e7b0;margin:12px 0}@media(max-width:760px){.edit{grid-template-columns:1fr}.auth input,.filters input{width:100%;min-width:0}.signal-head,.match-head{display:block}.signal-head>div:last-child,.match-head>div:last-child{margin-top:10px}.check{grid-template-columns:24px 1fr}}
+  </style></head><body><main class="wrap"><div class="brand">DANINIHUB · INTERNAL</div><h1>Signal Desk</h1><p>Ručna obrada slobodnih kamiona i tereta koji čekaju. Nema automatskog povezivanja ni ugovaranja.</p><div class="warning">Predlog podudaranja je samo pomoć za proveru. Ne potvrđuje dostupnost, cenu, vozačko vreme, licencu, osiguranje niti prihvatanje posla.</div><div class="auth"><input id="key" type="password" placeholder="DANINI_ADMIN_SECRET"><button id="load">Učitaj signale</button><button id="match" class="secondary">Predloži podudaranja</button></div><div id="msg" class="msg"></div><section id="stats" class="stats"></section><section class="filters"><select id="kind"><option value="">Sve vrste</option><option value="TRUCK">Kamioni</option><option value="FREIGHT">Tereti</option></select><select id="status"><option value="">Svi statusi</option>${STATUSES.map(s=>`<option value="${s}">${s}</option>`).join('')}</select><input id="search" placeholder="Pretraži firmu, relaciju ili referencu"></section><h2 class="section-title">Signali</h2><section id="list" class="list"></section><h2 class="section-title">Predložena podudaranja</h2><section id="matches" class="matches"><div class="empty">Još nema izračunatih predloga.</div></section></main><script>(()=>{
+  const key=document.getElementById('key'),msg=document.getElementById('msg'),stats=document.getElementById('stats'),list=document.getElementById('list'),matchesEl=document.getElementById('matches'),kind=document.getElementById('kind'),status=document.getElementById('status'),search=document.getElementById('search');let signals=[];
   key.value=sessionStorage.getItem('danini_signal_admin_secret')||'';
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function request(path,options={}){const response=await fetch(path,{...options,headers:{'Content-Type':'application/json','x-danini-admin-secret':key.value,...(options.headers||{})}});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'Greška');return data}
-  function render(){const q=search.value.toLowerCase().trim();const filtered=signals.filter(s=>(!kind.value||s.kind===kind.value)&&(!status.value||s.status===status.value)&&(!q||[s.reference,s.company,s.route,s.summary].join(' ').toLowerCase().includes(q)));const summary={ukupno:signals.length,kamioni:signals.filter(s=>s.kind==='TRUCK').length,tereti:signals.filter(s=>s.kind==='FREIGHT').length,moguca_podudaranja:signals.filter(s=>s.status==='POSSIBLE_MATCH').length};stats.innerHTML=Object.entries(summary).map(([label,value])=>'<div class="stat"><strong>'+value+'</strong><span>'+esc(label.replaceAll('_',' '))+'</span></div>').join('');list.innerHTML=filtered.length?filtered.map(s=>'<article class="signal"><div class="signal-head"><div><span class="tag">'+(s.kind==='TRUCK'?'SLOBODAN KAMION':'TERET')+'</span><h2>'+esc(s.company)+'</h2><div class="ref">'+esc(s.reference)+'</div></div><div class="small">'+esc(new Date(s.createdAt).toLocaleString())+'</div></div><div class="meta"><span>'+esc(s.contactName||'—')+'</span><span>'+esc(s.email)+'</span><span>'+esc(s.phone||'—')+'</span><span>'+esc(s.route||'—')+'</span></div><div class="summary">'+esc(s.summary||'Nema sažetka')+'</div><div class="edit"><select data-status="'+esc(s.reference)+'">${STATUSES.map(st=>'<option value="'+st+'" '+(st===s.status?'selected':'')+'>'+st+'</option>').join('')}</select><textarea data-note="'+esc(s.reference)+'" placeholder="Interna beleška, mogući par, podaci koji nedostaju…">'+esc(s.note||'')+'</textarea><button data-save="'+esc(s.reference)+'">Sačuvaj</button></div></article>').join(''):'<div class="empty">Nema signala za izabrani filter.</div>'}
+  function render(){const q=search.value.toLowerCase().trim();const filtered=signals.filter(s=>(!kind.value||s.kind===kind.value)&&(!status.value||s.status===status.value)&&(!q||[s.reference,s.company,s.route,s.summary].join(' ').toLowerCase().includes(q)));const summary={ukupno:signals.length,kamioni:signals.filter(s=>s.kind==='TRUCK').length,tereti:signals.filter(s=>s.kind==='FREIGHT').length,moguca_podudaranja:signals.filter(s=>s.status==='POSSIBLE_MATCH').length};stats.innerHTML=Object.entries(summary).map(([l,v])=>'<div class="stat"><strong>'+v+'</strong><span>'+esc(l.replaceAll('_',' '))+'</span></div>').join('');list.innerHTML=filtered.length?filtered.map(s=>'<article class="signal"><div class="signal-head"><div><span class="tag">'+(s.kind==='TRUCK'?'SLOBODAN KAMION':'TERET')+'</span><h2>'+esc(s.company)+'</h2><div class="ref">'+esc(s.reference)+'</div></div><div class="small">'+esc(new Date(s.createdAt).toLocaleString())+'</div></div><div class="meta"><span>'+esc(s.contactName||'—')+'</span><span>'+esc(s.email)+'</span><span>'+esc(s.phone||'—')+'</span><span>'+esc(s.route||'—')+'</span></div><div class="summary">'+esc(s.summary||'Nema sažetka')+'</div><div class="edit"><select data-status="'+esc(s.reference)+'">'+${JSON.stringify(STATUSES)}.map(st=>'<option value="'+st+'" '+(st===s.status?'selected':'')+'>'+st+'</option>').join('')+'</select><textarea data-note="'+esc(s.reference)+'" placeholder="Interna beleška, mogući par, podaci koji nedostaju…">'+esc(s.note||'')+'</textarea><button data-save="'+esc(s.reference)+'">Sačuvaj</button></div></article>').join(''):'<div class="empty">Nema signala za izabrani filter.</div>'}
+  function renderMatches(matches){matchesEl.innerHTML=matches.length?matches.map(m=>'<article class="match"><div class="match-head"><div><span class="tag">'+esc(m.level)+'</span><h2>'+esc(m.truck.company)+' ↔ '+esc(m.freight.company)+'</h2><div class="ref">'+esc(m.truck.reference)+' · '+esc(m.freight.reference)+'</div></div><div class="match-score">'+m.score+'/100</div></div><div class="meta"><span>'+esc(m.truck.route||'—')+'</span><span>↔</span><span>'+esc(m.freight.route||'—')+'</span></div><div class="checks">'+m.checks.map(c=>'<div class="check"><b class="'+(c.matched?'ok':'no')+'">'+(c.matched?'✓':'×')+'</b><span>'+esc(c.label)+'<small> · '+esc(c.detail)+'</small></span><strong>'+c.points+'</strong></div>').join('')+'</div></article>').join(''):'<div class="empty">Nema parova iznad minimalnog praga.</div>'}
   async function load(){msg.textContent='';sessionStorage.setItem('danini_signal_admin_secret',key.value);const data=await request('/api/v1/signal-desk/signals');signals=data.signals||[];render()}
-  list.addEventListener('click',async event=>{const button=event.target.closest('button[data-save]');if(!button)return;const reference=button.dataset.save;const statusInput=document.querySelector('[data-status="'+CSS.escape(reference)+'"]');const noteInput=document.querySelector('[data-note="'+CSS.escape(reference)+'"]');button.disabled=true;msg.textContent='Čuvam…';try{const data=await request('/api/v1/signal-desk/signals/'+encodeURIComponent(reference),{method:'PATCH',body:JSON.stringify({status:statusInput.value,note:noteInput.value})});signals=signals.map(signal=>signal.reference===reference?data.signal:signal);msg.textContent='Sačuvano.';render()}catch(error){msg.textContent=error.message}finally{button.disabled=false}});
-  [kind,status,search].forEach(element=>element.addEventListener(element===search?'input':'change',render));document.getElementById('load').onclick=()=>load().catch(error=>msg.textContent=error.message);if(key.value)load().catch(()=>{});
+  list.addEventListener('click',async event=>{const button=event.target.closest('button[data-save]');if(!button)return;const reference=button.dataset.save;const statusInput=document.querySelector('[data-status="'+CSS.escape(reference)+'"]');const noteInput=document.querySelector('[data-note="'+CSS.escape(reference)+'"]');button.disabled=true;msg.textContent='Čuvam…';try{const data=await request('/api/v1/signal-desk/signals/'+encodeURIComponent(reference),{method:'PATCH',body:JSON.stringify({status:statusInput.value,note:noteInput.value})});signals=signals.map(s=>s.reference===reference?data.signal:s);msg.textContent='Sačuvano.';render()}catch(error){msg.textContent=error.message}finally{button.disabled=false}});
+  [kind,status,search].forEach(el=>el.addEventListener(el===search?'input':'change',render));document.getElementById('load').onclick=()=>load().catch(e=>msg.textContent=e.message);document.getElementById('match').onclick=async()=>{msg.textContent='Računam predloge…';try{const data=await request('/api/v1/signal-desk/matches');renderMatches(data.matches||[]);msg.textContent='Predlozi su izračunati za ručnu proveru.'}catch(e){msg.textContent=e.message}};if(key.value)load().catch(()=>{});
 })();</script></body></html>`;
 }
-
-function mountCapacitySignalRuntime(app, options = {}) {
-  const store = options.store || createContactLeadStore();
-  app.use('/api/v1/signal-desk', express.json({ limit:'64kb' }));
-  app.get('/internal/signal-desk', (req, res) => {
-    res.set('Cache-Control', 'no-store');
-    res.set('X-Robots-Tag', 'noindex, nofollow');
-    return res.type('html').send(renderSignalDesk());
-  });
-  app.get('/api/v1/signal-desk/signals', requireAdmin, async (req, res) => {
-    try {
-      const leads = await store.list({ sources:SOURCES, limit:500 });
-      const signals = leads.map(publicSignal);
-      return res.json({ ok:true, counts:counts(signals), signals });
-    } catch (error) {
-      return res.status(500).json({ ok:false, error:'SIGNAL_LIST_FAILED', message:error.message });
-    }
-  });
-  app.patch('/api/v1/signal-desk/signals/:reference', requireAdmin, async (req, res) => {
-    const status = normalizeStatus(req.body?.status);
-    const note = String(req.body?.note || '').trim().slice(0, 5000);
-    if (!status) return res.status(400).json({ ok:false, error:'INVALID_SIGNAL_STATUS' });
-    try {
-      const existing = await store.get(req.params.reference);
-      if (!existing || !SOURCES.includes(existing.source)) return res.status(404).json({ ok:false, error:'SIGNAL_NOT_FOUND' });
-      const updated = await store.update(req.params.reference, { status, reviewNote:note, reviewedAt:new Date().toISOString() });
-      return res.json({ ok:true, signal:publicSignal(updated) });
-    } catch (error) {
-      return res.status(409).json({ ok:false, error:error.message || 'SIGNAL_UPDATE_FAILED' });
-    }
-  });
+function mountCapacitySignalRuntime(app,options={}){
+  const store=options.store||createContactLeadStore();app.use('/api/v1/signal-desk',express.json({limit:'64kb'}));
+  app.get('/internal/signal-desk',(req,res)=>{res.set('Cache-Control','no-store');res.set('X-Robots-Tag','noindex, nofollow');return res.type('html').send(renderSignalDesk());});
+  app.get('/api/v1/signal-desk/signals',requireAdmin,async(req,res)=>{try{const leads=await store.list({sources:SOURCES,limit:500});const signals=leads.map(publicSignal);return res.json({ok:true,counts:counts(signals),signals});}catch(error){return res.status(500).json({ok:false,error:'SIGNAL_LIST_FAILED',message:error.message});}});
+  app.get('/api/v1/signal-desk/matches',requireAdmin,async(req,res)=>{try{const leads=await store.list({sources:SOURCES,limit:500});const signals=leads.map(publicSignal);return res.json({ok:true,matches:buildMatches(signals)});}catch(error){return res.status(500).json({ok:false,error:'MATCH_SUGGESTION_FAILED',message:error.message});}});
+  app.patch('/api/v1/signal-desk/signals/:reference',requireAdmin,async(req,res)=>{const status=normalizeStatus(req.body?.status);const note=String(req.body?.note||'').trim().slice(0,5000);if(!status)return res.status(400).json({ok:false,error:'INVALID_SIGNAL_STATUS'});try{const existing=await store.get(req.params.reference);if(!existing||!SOURCES.includes(existing.source))return res.status(404).json({ok:false,error:'SIGNAL_NOT_FOUND'});const updated=await store.update(req.params.reference,{status,reviewNote:note,reviewedAt:new Date().toISOString()});return res.json({ok:true,signal:publicSignal(updated)});}catch(error){return res.status(409).json({ok:false,error:error.message||'SIGNAL_UPDATE_FAILED'});}});
 }
-
-module.exports = { mountCapacitySignalRuntime, publicSignal, STATUSES };
+module.exports={mountCapacitySignalRuntime,publicSignal,STATUSES,scorePair,buildMatches};

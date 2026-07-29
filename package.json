@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "DaniniHub deploy package.",
   "main": "index.js",
-  "directories": {"doc": "docs"},
+  "directories": {
+    "doc": "docs"
+  },
   "scripts": {
     "build": "npm run build:front",
     "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",
@@ -49,6 +51,7 @@
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
     "@google/generative-ai": "^0.24.1",
+    "body-parser": "2.3.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -56,5 +59,8 @@
     "openai": "^6.35.0",
     "pdfkit": "^0.18.0",
     "stripe": "^22.1.0"
+  },
+  "overrides": {
+    "body-parser": "2.3.0"
   }
 }

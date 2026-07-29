@@ -15,7 +15,21 @@ export default function TransportNetworkDemo({lang}){
  const logout=()=>{sessionStorage.removeItem('tn-token');setToken('');setData(null);setState('idle')}
  const addMember=async e=>{e.preventDefault();const body=Object.fromEntries(new FormData(e.currentTarget));const r=await fetch('/api/v1/transport-network/members',{method:'POST',headers:auth(),body:JSON.stringify(body)});if(r.ok){e.currentTarget.reset();load()}}
  const addRoom=async e=>{e.preventDefault();const body=Object.fromEntries(new FormData(e.currentTarget));const r=await fetch('/api/v1/transport-network/rooms',{method:'POST',headers:auth(),body:JSON.stringify(body)});if(r.ok){e.currentTarget.reset();load()}}
- const openRoom=async caseId=>{setOpening(caseId);setState('idle');try{const r=await fetch(`/api/v1/transport-network/rooms/${caseId}/open`,{method:'POST',headers:auth()});if(!r.ok)throw new Error();const x=await r.json();sessionStorage.setItem('tr-token',x.token);sessionStorage.setItem('tr-role',x.role);sessionStorage.setItem('tr-identity',x.identity);sessionStorage.setItem('tr-case',x.caseId);location.href=`${lang==='sr'?'/sr/transportna-soba-demo':'/de/transport-room-demo'}?case=${encodeURIComponent(x.caseId)}`}catch{setOpening('');setState('open-error')}}
+ const openRoom=async caseId=>{
+  setOpening(caseId);setState('idle')
+  ;['tr-token','tr-role','tr-identity','tr-case'].forEach(key=>sessionStorage.removeItem(key))
+  try{
+   const r=await fetch(`/api/v1/transport-network/rooms/${encodeURIComponent(caseId)}/open`,{method:'POST',headers:auth()})
+   const x=await r.json().catch(()=>({}))
+   if(!r.ok||!x.token||x.caseId!==caseId)throw new Error(x.error||'ROOM_OPEN_FAILED')
+   sessionStorage.setItem('tr-token',x.token)
+   sessionStorage.setItem('tr-role',x.role)
+   sessionStorage.setItem('tr-identity',x.identity)
+   sessionStorage.setItem('tr-case',x.caseId)
+   const target=lang==='sr'?'/sr/transportna-soba-demo':'/de/transport-room-demo'
+   window.location.assign(`${target}?case=${encodeURIComponent(x.caseId)}`)
+  }catch(error){console.error('Transport Room open failed:',error);setOpening('');setState('open-error')}
+ }
  if(!token)return <main className="tn-shell"><section className="tn-card tn-access"><h1>{t.title}</h1><p>{t.sub}</p><h2>{t.choose}</h2><div className="tn-choice"><button onClick={()=>enter('CMP-DACH-001')}>{t.dach}</button><button onClick={()=>enter('CMP-BALKAN-001')}>{t.balkan}</button></div></section></main>
  if(!data)return <main className="tn-shell"><section className="tn-card"><p>{state==='loading'?'Loading…':'Workspace unavailable.'}</p><button onClick={logout}>{t.logout}</button></section></main>
  const partners=data.company.companyId==='CMP-DACH-001'?[{id:'CMP-BALKAN-001',name:'Danube Logistics Demo d.o.o.'}]:[{id:'CMP-DACH-001',name:'RheinCargo Demo GmbH'}]

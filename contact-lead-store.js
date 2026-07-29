@@ -170,6 +170,25 @@ class ContactLeadStore {
     return records[reference] || null;
   }
 
+  async list(options = {}) {
+    await this.init();
+    const sources = Array.isArray(options.sources) ? options.sources.filter(Boolean) : [];
+    const limit = Math.max(1, Math.min(Number(options.limit) || 250, 1000));
+    if (this.mode === 'mysql') {
+      const where = sources.length ? `WHERE source IN (${sources.map(() => '?').join(', ')})` : '';
+      const [rows] = await this.pool.execute(
+        `SELECT * FROM danini_contact_leads ${where} ORDER BY created_at DESC LIMIT ${limit}`,
+        sources
+      );
+      return rows.map(parseLead);
+    }
+    const records = Object.values(JSON.parse(fs.readFileSync(this.storageFile, 'utf8')));
+    return records
+      .filter(record => !sources.length || sources.includes(record.source))
+      .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')))
+      .slice(0, limit);
+  }
+
   async update(reference, changes) {
     await this.init();
     const permitted = Object.fromEntries(Object.entries(changes).filter(([name]) => DB_FIELDS.has(name)));

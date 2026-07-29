@@ -60,7 +60,7 @@ export default function SerbianB2BLanding() {
 
     <section className="section split">
       <div><p className="kicker">PRIMER SITUACIJE</p><h2>Zastoj kod Budimpešte.</h2><p className="big">„Stau Budapest. ETA unklar. Kunde wartet. Entladung bis 10:00.“</p></div>
-      <div><p>DaniniHub odvaja potvrđene činjenice od otvorenih pitanja, označava rizik, određuje ko mora da odobri sledeći korak, priprema nemačku poruku i ostavlja proverljiv trag za predaju.</p><a className="entry-demo-link" href="/sr/transportna-soba-demo">Otvorite Transport Room →</a></div>
+      <div><p>DaniniHub odvaja potvrđene činjenice od otvorenih pitanja, označava rizik, određuje ko mora da odobri sledeći korak, priprema nemačku poruku i ostavlja proverljiv trag za predaju.</p><a className="entry-demo-link" href="/sr/transportna-soba-demo?case=DH-TR-0001">Otvorite Transport Room →</a></div>
     </section>
 
     <section id="scope" className="section scope">
@@ -87,7 +87,7 @@ export default function SerbianB2BLanding() {
       <div className="start-grid interest-grid">
         <article><span>01</span><h3>DispoLab</h3><p>Praktični slučajevi i besplatni Dispo-Check za operativno razmišljanje i eskalaciju.</p><a href="/sr/dispo-lab">Otvori DispoLab →</a></article>
         <article><span>02</span><h3>Transport Network</h3><p>Kompanijski prostor sa partnerima, timom i više transportnih soba.</p><a href="/sr/transportna-mreza-demo">Pogledaj Network →</a></article>
-        <article><span>03</span><h3>Transport Room</h3><p>Konkretan slučaj sa statusom, ETA, dokumentima, incidentom i predajom.</p><a href="/sr/transportna-soba-demo">Otvori Transport Room →</a></article>
+        <article><span>03</span><h3>Transport Room</h3><p>Konkretan slučaj sa statusom, ETA, dokumentima, incidentom i predajom.</p><a href="/sr/transportna-soba-demo?case=DH-TR-0001">Otvori Transport Room →</a></article>
       </div>
     </section>
 

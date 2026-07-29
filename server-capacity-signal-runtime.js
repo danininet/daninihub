@@ -29,21 +29,21 @@ function normalizeStatus(value) {
 }
 
 function publicSignal(lead) {
-  const payload = lead.payload || {};
+  const payload = lead.payload && typeof lead.payload === 'object' ? lead.payload : lead;
   return {
     reference: lead.reference,
     kind: lead.source === 'capacity-truck' ? 'TRUCK' : 'FREIGHT',
     language: lead.language,
     company: lead.company,
     email: lead.email,
-    phone: payload.phone || '',
-    contactName: payload.name || '',
+    phone: payload.phone || lead.phone || '',
+    contactName: payload.name || lead.name || '',
     status: normalizeStatus(lead.status) || 'NEW',
     note: lead.reviewNote || '',
     createdAt: lead.createdAt,
     updatedAt: lead.updatedAt,
-    route: payload.routes || '',
-    summary: payload.message || '',
+    route: payload.routes || lead.routes || '',
+    summary: payload.message || lead.message || '',
     payload
   };
 }
@@ -65,7 +65,7 @@ function renderSignalDesk() {
   key.value=sessionStorage.getItem('danini_signal_admin_secret')||'';
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function request(path,options={}){const response=await fetch(path,{...options,headers:{'Content-Type':'application/json','x-danini-admin-secret':key.value,...(options.headers||{})}});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'Greška');return data}
-  function render(){const q=search.value.toLowerCase().trim();const filtered=signals.filter(s=>(!kind.value||s.kind===kind.value)&&(!status.value||s.status===status.value)&&(!q||[s.reference,s.company,s.route,s.summary].join(' ').toLowerCase().includes(q)));stats.innerHTML='';const summary={ukupno:signals.length,kamioni:signals.filter(s=>s.kind==='TRUCK').length,tereti:signals.filter(s=>s.kind==='FREIGHT').length,moguca_podudaranja:signals.filter(s=>s.status==='POSSIBLE_MATCH').length};stats.innerHTML=Object.entries(summary).map(([label,value])=>'<div class="stat"><strong>'+value+'</strong><span>'+esc(label.replaceAll('_',' '))+'</span></div>').join('');list.innerHTML=filtered.length?filtered.map(s=>'<article class="signal"><div class="signal-head"><div><span class="tag">'+(s.kind==='TRUCK'?'SLOBODAN KAMION':'TERET')+'</span><h2>'+esc(s.company)+'</h2><div class="ref">'+esc(s.reference)+'</div></div><div class="small">'+esc(new Date(s.createdAt).toLocaleString())+'</div></div><div class="meta"><span>'+esc(s.contactName||'—')+'</span><span>'+esc(s.email)+'</span><span>'+esc(s.phone||'—')+'</span><span>'+esc(s.route||'—')+'</span></div><div class="summary">'+esc(s.summary||'Nema sažetka')+'</div><div class="edit"><select data-status="'+esc(s.reference)+'">${STATUSES.map(st=>'<option value="'+st+'" '+(st===s.status?'selected':'')+'>'+st+'</option>').join('')}</select><textarea data-note="'+esc(s.reference)+'" placeholder="Interna beleška, mogući par, podaci koji nedostaju…">'+esc(s.note||'')+'</textarea><button data-save="'+esc(s.reference)+'">Sačuvaj</button></div></article>').join(''):'<div class="empty">Nema signala za izabrani filter.</div>'}
+  function render(){const q=search.value.toLowerCase().trim();const filtered=signals.filter(s=>(!kind.value||s.kind===kind.value)&&(!status.value||s.status===status.value)&&(!q||[s.reference,s.company,s.route,s.summary].join(' ').toLowerCase().includes(q)));const summary={ukupno:signals.length,kamioni:signals.filter(s=>s.kind==='TRUCK').length,tereti:signals.filter(s=>s.kind==='FREIGHT').length,moguca_podudaranja:signals.filter(s=>s.status==='POSSIBLE_MATCH').length};stats.innerHTML=Object.entries(summary).map(([label,value])=>'<div class="stat"><strong>'+value+'</strong><span>'+esc(label.replaceAll('_',' '))+'</span></div>').join('');list.innerHTML=filtered.length?filtered.map(s=>'<article class="signal"><div class="signal-head"><div><span class="tag">'+(s.kind==='TRUCK'?'SLOBODAN KAMION':'TERET')+'</span><h2>'+esc(s.company)+'</h2><div class="ref">'+esc(s.reference)+'</div></div><div class="small">'+esc(new Date(s.createdAt).toLocaleString())+'</div></div><div class="meta"><span>'+esc(s.contactName||'—')+'</span><span>'+esc(s.email)+'</span><span>'+esc(s.phone||'—')+'</span><span>'+esc(s.route||'—')+'</span></div><div class="summary">'+esc(s.summary||'Nema sažetka')+'</div><div class="edit"><select data-status="'+esc(s.reference)+'">${STATUSES.map(st=>'<option value="'+st+'" '+(st===s.status?'selected':'')+'>'+st+'</option>').join('')}</select><textarea data-note="'+esc(s.reference)+'" placeholder="Interna beleška, mogući par, podaci koji nedostaju…">'+esc(s.note||'')+'</textarea><button data-save="'+esc(s.reference)+'">Sačuvaj</button></div></article>').join(''):'<div class="empty">Nema signala za izabrani filter.</div>'}
   async function load(){msg.textContent='';sessionStorage.setItem('danini_signal_admin_secret',key.value);const data=await request('/api/v1/signal-desk/signals');signals=data.signals||[];render()}
   list.addEventListener('click',async event=>{const button=event.target.closest('button[data-save]');if(!button)return;const reference=button.dataset.save;const statusInput=document.querySelector('[data-status="'+CSS.escape(reference)+'"]');const noteInput=document.querySelector('[data-note="'+CSS.escape(reference)+'"]');button.disabled=true;msg.textContent='Čuvam…';try{const data=await request('/api/v1/signal-desk/signals/'+encodeURIComponent(reference),{method:'PATCH',body:JSON.stringify({status:statusInput.value,note:noteInput.value})});signals=signals.map(signal=>signal.reference===reference?data.signal:signal);msg.textContent='Sačuvano.';render()}catch(error){msg.textContent=error.message}finally{button.disabled=false}});
   [kind,status,search].forEach(element=>element.addEventListener(element===search?'input':'change',render));document.getElementById('load').onclick=()=>load().catch(error=>msg.textContent=error.message);if(key.value)load().catch(()=>{});

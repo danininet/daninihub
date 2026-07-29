@@ -60,7 +60,7 @@ export default function GermanB2BLanding() {
 
     <section className="section split">
       <div><p className="kicker">BEISPIELSITUATION</p><h2>Stau bei Budapest.</h2><p className="big">„Stau Budapest. ETA unklar. Kunde wartet. Entladung bis 10:00.“</p></div>
-      <div><p>Der DaniniHub-Arbeitsrahmen trennt bestätigte Fakten von offenen Punkten, bewertet den operativen Handlungsbedarf, benennt die zuständige Freigabestelle, bereitet Nachrichten vor und definiert den nächsten Prüfzeitpunkt sowie eine arbeitsfähige Übergabe.</p><a className="entry-demo-link" href="/de/transport-room-demo">Transport Room öffnen →</a></div>
+      <div><p>Der DaniniHub-Arbeitsrahmen trennt bestätigte Fakten von offenen Punkten, bewertet den operativen Handlungsbedarf, benennt die zuständige Freigabestelle, bereitet Nachrichten vor und definiert den nächsten Prüfzeitpunkt sowie eine arbeitsfähige Übergabe.</p><a className="entry-demo-link" href="/de/transport-room-demo?case=DH-TR-0001">Transport Room öffnen →</a></div>
     </section>
 
     <section id="scope" className="section scope">
@@ -87,7 +87,7 @@ export default function GermanB2BLanding() {
       <div className="start-grid interest-grid">
         <article><span>01</span><h3>DispoLab</h3><p>Praxisfälle und kostenloser Dispo-Check für operatives Denken und Eskalation.</p><a href="/de/dispolab">DispoLab öffnen →</a></article>
         <article><span>02</span><h3>Transport Network</h3><p>Unternehmensbereich mit Partnern, Team und mehreren Transport Rooms.</p><a href="/de/transport-network-demo">Network ansehen →</a></article>
-        <article><span>03</span><h3>Transport Room</h3><p>Konkreter Fall mit Status, ETA, Dokumenten, Incident und Übergabe.</p><a href="/de/transport-room-demo">Transport Room öffnen →</a></article>
+        <article><span>03</span><h3>Transport Room</h3><p>Konkreter Fall mit Status, ETA, Dokumenten, Incident und Übergabe.</p><a href="/de/transport-room-demo?case=DH-TR-0001">Transport Room öffnen →</a></article>
       </div>
     </section>
 

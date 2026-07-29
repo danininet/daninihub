@@ -5,6 +5,7 @@ import SerbianB2BLanding from './SerbianB2BLanding'
 import DispatchPilotWorkspace from './DispatchPilotWorkspaceV5'
 import PilotCheck from './PilotCheck'
 import BusinessPages from './BusinessPages'
+import AudiencePages from './AudiencePages'
 import DispoLabPage from './DispoLabPage'
 import DispoCheck from './DispoCheck'
 import TransportRoomDemo from './TransportRoomDemo'
@@ -30,6 +31,7 @@ export default function App() {
       return
     }
     const sr = lang === 'sr'
+    const audiencePage = /fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)
     const transportNetwork = /transport-network-demo|transportna-mreza-demo/.test(path)
     const transportRoom = /transport-room-demo|transportna-soba-demo/.test(path)
     const freeDispoCheck = /dispolab\/check|dispo-lab\/provera/.test(path)
@@ -39,7 +41,8 @@ export default function App() {
     const businessPage = /leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(path)
     document.documentElement.lang = lang
     document.querySelector('meta[name="robots"]')?.setAttribute('content', 'index,follow')
-    document.title = transportNetwork ? (sr ? 'DaniniHub Transport Network | Kompanijski pilot' : 'DaniniHub Transport Network | Unternehmenspilot')
+    document.title = audiencePage ? (sr ? 'Za balkanske transportne firme | DaniniHub' : 'Für DACH-Speditionen | DaniniHub')
+      : transportNetwork ? (sr ? 'DaniniHub Transport Network | Kompanijski pilot' : 'DaniniHub Transport Network | Unternehmenspilot')
       : transportRoom ? (sr ? 'DaniniHub Transport Room | Interaktivni pilot MVP' : 'DaniniHub Transport Room | Interaktiver Pilot MVP')
       : freeDispoCheck ? (sr ? 'Besplatni Dispo-Check | DaniniHub' : 'Kostenloser Dispo-Check | DaniniHub')
       : dispoLab ? (sr ? 'DaniniHub DispoLab | Praktični trening' : 'DaniniHub DispoLab | Praxistraining')
@@ -47,11 +50,13 @@ export default function App() {
       : knowledgeCenter ? (sr ? 'Praksa i znanje | DaniniHub' : 'Praxis & Wissen | DaniniHub')
       : businessPage ? (sr ? 'Operativne usluge | DaniniHub' : 'Operative Leistungen | DaniniHub')
       : (sr ? 'DaniniHub DACH Operations Desk' : 'DaniniHub Balkan Continuity Support')
-    const description = transportNetwork
-      ? (sr ? 'Fiktivni kompanijski prostor sa profilima firmi, članovima tima i više privatnih transportnih soba.' : 'Fiktiver Unternehmensbereich mit Firmenprofilen, Teammitgliedern und mehreren privaten Transport Rooms.')
-      : transportRoom
-        ? (sr ? 'Interaktivni pilot zajedničke transportne sobe sa statusima, ETA, komunikacijom, dokumentima i incidentima.' : 'Interaktiver Pilot eines gemeinsamen Transport Room mit Status, ETA, Kommunikation, Dokumenten und Incidents.')
-        : (sr ? 'DaniniHub operativna podrška i praktični alati za Balkan–DACH transport.' : 'DaniniHub operative Unterstützung und Praxiswerkzeuge für Balkan–DACH Transporte.')
+    const description = audiencePage
+      ? (sr ? 'Zajednički operativni prostor za balkanske transportne firme i njihove DACH klijente: status, ETA, dokumenti, incidenti i odgovornost.' : 'Gemeinsamer operativer Arbeitsraum für DACH-Auftraggeber und Balkan-Frachtführer: Status, ETA, Dokumente, Incidents und Verantwortung.')
+      : transportNetwork
+        ? (sr ? 'Fiktivni kompanijski prostor sa profilima firmi, članovima tima i više privatnih transportnih soba.' : 'Fiktiver Unternehmensbereich mit Firmenprofilen, Teammitgliedern und mehreren privaten Transport Rooms.')
+        : transportRoom
+          ? (sr ? 'Interaktivni pilot zajedničke transportne sobe sa statusima, ETA, komunikacijom, dokumentima i incidentima.' : 'Interaktiver Pilot eines gemeinsamen Transport Room mit Status, ETA, Kommunikation, Dokumenten und Incidents.')
+          : (sr ? 'DaniniHub operativna podrška i praktični alati za Balkan–DACH transport.' : 'DaniniHub operative Unterstützung und Praxiswerkzeuge für Balkan–DACH Transporte.')
     document.querySelector('meta[name="description"]')?.setAttribute('content', description)
     const canonical = `https://daninihub.com${path}`
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical)
@@ -60,6 +65,7 @@ export default function App() {
     document.querySelector('meta[property="og:url"]')?.setAttribute('href', canonical)
     const pairs = [
       ['/de/','/sr/'],
+      ['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme'],
       ['/de/transport-network-demo','/sr/transportna-mreza-demo'],
       ['/de/transport-room-demo','/sr/transportna-soba-demo'],
       ['/de/dispolab','/sr/dispo-lab'],
@@ -87,7 +93,8 @@ export default function App() {
   if (dispatchWorkspace) return <DispatchPilotWorkspace/>
 
   let page
-  if (/transport-network-demo|transportna-mreza-demo/.test(path)) page = <TransportNetworkDemo lang={lang}/>
+  if (/fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)) page = <AudiencePages lang={lang}/>
+  else if (/transport-network-demo|transportna-mreza-demo/.test(path)) page = <TransportNetworkDemo lang={lang}/>
   else if (/transport-room-demo|transportna-soba-demo/.test(path)) page = <TransportRoomDemo lang={lang}/>
   else if (/dispolab\/check|dispo-lab\/provera/.test(path)) page = <DispoCheck lang={lang}/>
   else if (/dispolab|dispo-lab/.test(path)) page = <DispoLabPage lang={lang}/>

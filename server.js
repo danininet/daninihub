@@ -11,10 +11,11 @@ const { mountPublicRuntime } = require('./server-public-runtime');
 const { mountDispoCheckRuntime } = require('./server-dispo-check-runtime');
 const { mountDispoCheckContactInterceptor } = require('./server-dispo-check-contact-interceptor');
 const { mountTransportRoomRuntime } = require('./server-transport-room-runtime');
+const { mountTransportNetworkRuntime } = require('./server-transport-network-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-transport-room-otp-audit-v15';
+const DEPLOYMENT_MARKER = 'daninihub-transport-network-companies-v16';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -39,6 +40,7 @@ app.get(DISPATCH_PATH, (req, res, next) => {
 
 mountDispatchRuntime(app);
 mountTransportRoomRuntime(app);
+mountTransportNetworkRuntime(app);
 mountDispoCheckRuntime(app);
 mountDispoCheckContactInterceptor(app);
 mountPublicRuntime(app);
@@ -62,6 +64,9 @@ app.get('/health', (req, res) => {
     transportRoomInvitations: true,
     transportRoomOtpVerification: true,
     transportRoomAuditLog: true,
+    transportNetworkCompanies: true,
+    transportNetworkMembers: true,
+    transportNetworkMultipleRooms: true,
     transportRoomInvitationEmail: Boolean(process.env.BREVO_API_KEY),
     manualLeadReview: Boolean(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY),
     dispatchAccessConfigured: Boolean(signingMaterial()),
@@ -81,6 +86,7 @@ app.get('/api/runtime-version', (req, res) => {
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
     transportRoomVersion: 'otp-revocation-audit-pilot-v4',
+    transportNetworkVersion: 'company-members-multi-room-pilot-v1',
     contact: 'info@daninihub.com'
   });
 });

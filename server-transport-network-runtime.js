@@ -4,9 +4,9 @@ const crypto = require('crypto');
 const express = require('express');
 const path = require('path');
 const { createDispatchCaseStore } = require('./dispatch-case-store');
+const { signAccess } = require('./server-transport-room-runtime');
 
 const clean = (value, max = 500) => String(value || '').trim().slice(0, max);
-const allowedCompanyTypes = new Set(['DACH_CUSTOMER','BALKAN_CARRIER']);
 const allowedMemberRoles = new Set(['OWNER','DISPATCHER','VIEWER']);
 
 function secret() {
@@ -54,8 +54,33 @@ function seedWorkspace() {
   };
 }
 
+function roomPayload(room, workspace) {
+  const customer = workspace.companies.find(c => c.companyId === room.customerCompanyId);
+  const carrier = workspace.companies.find(c => c.companyId === room.carrierCompanyId);
+  return {
+    caseId: room.caseId,
+    fictitious: true,
+    route: room.route,
+    partner: carrier?.name || 'Balkan carrier',
+    vehicle: room.caseId === 'DH-TR-0001' ? 'BG-TEST-101' : 'TEST-VEHICLE',
+    driver: room.caseId === 'DH-TR-0001' ? 'TEST DRIVER' : 'Demo driver',
+    owner: customer?.name || 'DACH customer',
+    status: room.status || 'ORDER_RECORDED',
+    eta: room.eta || '—',
+    nextCheck: '—',
+    risk: room.risk || 'LOW',
+    approvedMessage: false,
+    standardizedMessage: `Transport ${room.caseId}: ${room.route}. Current operational status must be confirmed by the responsible human user.`,
+    documents: { order:'PRESENT', cmr:'REVIEW', pod:'MISSING', insurance:'REVIEW' },
+    incident: { status:'OPEN', severity: room.risk === 'HIGH' ? 'HIGH' : 'LOW', decision:'No open decision has been confirmed yet.' },
+    timeline: [{ at:new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}), status:room.status || 'ORDER_RECORDED', note:'Transport Room opened from company workspace.', actor:'company-workspace', role:'SYSTEM' }],
+    updatedAt:new Date().toISOString()
+  };
+}
+
 function mountTransportNetworkRuntime(app, options = {}) {
   const store = options.store || createDispatchCaseStore({ storageFile: path.join(__dirname, 'runtime', 'transport-network-workspace.json') });
+  const roomStore = options.roomStore || createDispatchCaseStore({ storageFile: path.join(__dirname, 'runtime', 'transport-room-cases.json') });
   app.use('/api/v1/transport-network', express.json({ limit:'200kb' }));
 
   async function getWorkspace() {
@@ -89,6 +114,24 @@ function mountTransportNetworkRuntime(app, options = {}) {
     return res.json({ ok:true, storageMode:store.mode, identity:access.identity, memberRole:access.memberRole, company, members, rooms });
   });
 
+  app.post('/api/v1/transport-network/rooms/:caseId/open', async (req, res) => {
+    const access = verify(bearer(req));
+    if (!access) return res.status(401).json({ ok:false, error:'NETWORK_ACCESS_REQUIRED' });
+    const caseId = clean(req.params.caseId, 64).toUpperCase();
+    const workspace = await getWorkspace();
+    const room = workspace.rooms.find(item => item.caseId === caseId && (item.customerCompanyId === access.companyId || item.carrierCompanyId === access.companyId));
+    if (!room) return res.status(404).json({ ok:false, error:'ROOM_NOT_AVAILABLE' });
+    let roomRecord = await roomStore.get(caseId);
+    if (!roomRecord) {
+      const payload = roomPayload(room, workspace);
+      roomRecord = await roomStore.upsert({ caseId, status:payload.status, approval:'PENDING', payload });
+    }
+    const role = access.companyType === 'DACH_CUSTOMER' ? 'DACH_CUSTOMER' : 'BALKAN_CARRIER';
+    const exp = Date.now() + 2 * 60 * 60 * 1000;
+    const token = signAccess({ caseId, role, identity:access.identity, companyId:access.companyId, source:'TRANSPORT_NETWORK', exp });
+    return res.json({ ok:true, caseId, role, identity:access.identity, token, expiresAt:exp });
+  });
+
   app.post('/api/v1/transport-network/members', async (req, res) => {
     const access = verify(bearer(req));
     if (!access || access.memberRole !== 'OWNER') return res.status(403).json({ ok:false, error:'OWNER_ACCESS_REQUIRED' });
@@ -113,7 +156,8 @@ function mountTransportNetworkRuntime(app, options = {}) {
     const ownCompany = workspace.companies.find(item => item.companyId === access.companyId);
     const partner = workspace.companies.find(item => item.companyId === partnerCompanyId && item.companyId !== access.companyId);
     if (!ownCompany || !partner) return res.status(400).json({ ok:false, error:'PARTNER_NOT_FOUND' });
-    const caseId = `DH-TR-${String(workspace.rooms.length + 1).padStart(4,'0')}`;
+    const used = workspace.rooms.map(r => Number(String(r.caseId).split('-').pop()) || 0);
+    const caseId = `DH-TR-${String(Math.max(0,...used) + 1).padStart(4,'0')}`;
     const room = {
       caseId, route,
       customerCompanyId: ownCompany.type === 'DACH_CUSTOMER' ? ownCompany.companyId : partner.companyId,
@@ -122,8 +166,10 @@ function mountTransportNetworkRuntime(app, options = {}) {
     };
     workspace.rooms.push(room);
     await saveWorkspace(workspace);
+    const payload = roomPayload(room, workspace);
+    await roomStore.upsert({ caseId, status:payload.status, approval:'PENDING', payload });
     return res.json({ ok:true, room });
   });
 }
 
-module.exports = { mountTransportNetworkRuntime, seedWorkspace, sign, verify };
+module.exports = { mountTransportNetworkRuntime, seedWorkspace, sign, verify, roomPayload };

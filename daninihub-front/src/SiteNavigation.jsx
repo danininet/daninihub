@@ -9,6 +9,7 @@ const links = {
 const routePairs = [
   ['/de/', '/sr/'],
   ['/de/fuer-dach-speditionen', '/sr/za-balkanske-transportne-firme'],
+  ['/de/vorher-nachher', '/sr/pre-posle'],
   ['/de/dispolab', '/sr/dispo-lab'],
   ['/de/dispolab/check', '/sr/dispo-lab/provera'],
   ['/de/transport-network-demo', '/sr/transportna-mreza-demo'],

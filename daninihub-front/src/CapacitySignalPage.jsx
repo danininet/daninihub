@@ -39,8 +39,10 @@ function Form({kind,lang}){
   const interest=kind==='truck'?t.truck:t.freight
   const lines=Object.entries(f).filter(([key])=>key!=='consent').map(([key,value])=>`${key}: ${value||'—'}`)
   const message=[interest,...lines].join('\n')
+  const routes=`${f.country||''} ${f.postal||''} ${f.city||''} → ${f.destinationCountry||''} ${f.unloadCity||f.destination||''}`.trim()
+  const fleet=kind==='truck'?[f.vehicle,f.payload&&`${f.payload} kg`,f.pallets&&`${f.pallets} EP`,f.loadingMeters&&`${f.loadingMeters} LDM`].filter(Boolean).join(' · '):''
   try{
-   const r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({company:f.company,email:f.email,phone:f.phone,routes:`${f.country||''} ${f.postal||''} ${f.city||''} → ${f.destinationCountry||''} ${f.unloadCity||f.destination||''}`.trim(),fleet:kind==='truck'?[f.vehicle,f.payload&&`${f.payload} kg`,f.pallets&&`${f.pallets} EP`,f.loadingMeters&&`${f.loadingMeters} LDM`].filter(Boolean).join(' · '):'',interest,language:lang,source:kind==='truck'?'capacity-truck':'capacity-freight',message})})
+   const r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({company:f.company,email:f.email,phone:f.phone,routes,fleet,interest,language:lang,source:kind==='truck'?'capacity-truck':'capacity-freight',message,payload:{...f,routes,fleet,kind}})})
    const data=await r.json().catch(()=>({}))
    if(!r.ok)throw new Error(data.error||`HTTP_${r.status}`)
    setRef(data.reference||'');setState('ok');e.currentTarget.reset()

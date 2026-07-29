@@ -15,7 +15,7 @@ const { mountTransportNetworkRuntime } = require('./server-transport-network-run
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-target-audience-pages-v18';
+const DEPLOYMENT_MARKER = 'daninihub-before-after-proof-v19';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -45,7 +45,7 @@ mountDispoCheckRuntime(app);
 mountDispoCheckContactInterceptor(app);
 mountPublicRuntime(app);
 
-app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme'], (req, res) => {
+app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme','/de/vorher-nachher','/sr/pre-posle'], (req, res) => {
   res.set('Cache-Control', 'public, max-age=300');
   return res.sendFile(FRONTEND_INDEX);
 });
@@ -63,6 +63,7 @@ app.get('/health', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
     targetAudiencePages: true,
+    beforeAfterProofPage: true,
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
     transportRoomPersistence: true,
@@ -95,6 +96,7 @@ app.get('/api/runtime-version', (req, res) => {
     transportRoomVersion: 'case-specific-company-access-v5',
     transportNetworkVersion: 'company-room-connection-pilot-v2',
     audiencePagesVersion: 'balkan-dach-target-pages-v1',
+    beforeAfterProofVersion: 'status-and-capacity-signal-v1',
     contact: 'info@daninihub.com'
   });
 });

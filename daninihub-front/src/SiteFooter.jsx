@@ -10,6 +10,10 @@ const copy = {
     continuity: 'Continuity Support',
     drivers: 'Fahrerkommunikation',
     pilot: 'Pilot-Check',
+    dispoLab: 'DispoLab',
+    dispoCheck: 'Kostenloser Dispo-Check',
+    network: 'Transport Network',
+    room: 'Transport Room',
     practice: 'Fachartikel',
     dispatch: 'TMS & Disposition',
     eta: 'ETA & Status',
@@ -33,6 +37,10 @@ const copy = {
     continuity: 'Podrška kontinuitetu',
     drivers: 'Komunikacija sa vozačima',
     pilot: 'Provera pilota',
+    dispoLab: 'DispoLab',
+    dispoCheck: 'Besplatni Dispo-Check',
+    network: 'Transportna mreža',
+    room: 'Transportna soba',
     practice: 'Stručni članci',
     dispatch: 'TMS i dispozicija',
     eta: 'ETA i status',
@@ -53,6 +61,7 @@ export default function SiteFooter({ lang }) {
   const t = copy[lang]
   const sr = lang === 'sr'
   const home = sr ? '/sr/' : '/de/'
+  const href = (de, srPath) => (sr ? srPath : de)
 
   return (
     <footer className="site-footer-pro">
@@ -74,32 +83,36 @@ export default function SiteFooter({ lang }) {
           </div>
         </section>
 
-        <nav>
-          <h2>{t.services}</h2>
-          <a href={sr ? '/sr/obim-usluge' : '/de/leistungsrahmen'}>{t.scope}</a>
-          <a href={sr ? '/sr/kontinuitet-podrska' : '/de/continuity-support'}>{t.continuity}</a>
-          <a href={sr ? '/sr/komunikacija-vozaci' : '/de/fahrerkommunikation'}>{t.drivers}</a>
-          <a href={sr ? '/sr/provera-pilota' : '/de/pilot-check'}>{t.pilot}</a>
+        <nav aria-label={t.services}>
+          <h2><a href={href('/de/leistungsrahmen', '/sr/obim-usluge')}>{t.services}</a></h2>
+          <a href={href('/de/leistungsrahmen', '/sr/obim-usluge')}>{t.scope}</a>
+          <a href={href('/de/continuity-support', '/sr/kontinuitet-podrska')}>{t.continuity}</a>
+          <a href={href('/de/fahrerkommunikation', '/sr/komunikacija-vozaci')}>{t.drivers}</a>
+          <a href={href('/de/pilot-check', '/sr/provera-pilota')}>{t.pilot}</a>
+          <a href={href('/de/dispolab', '/sr/dispo-lab')}>{t.dispoLab}</a>
+          <a href={href('/de/dispolab/check', '/sr/dispo-lab/provera')}>{t.dispoCheck}</a>
+          <a href={href('/de/transport-network-demo', '/sr/transportna-mreza-demo')}>{t.network}</a>
+          <a href={href('/de/transport-room-demo', '/sr/transportna-soba-demo')}>{t.room}</a>
         </nav>
 
-        <nav>
-          <h2>{t.knowledge}</h2>
-          <a href={sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'}>{t.practice}</a>
-          <a href={sr ? '/sr/praksa-znanje/zasto-tms-ne-menja-disponente' : '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen'}>{t.dispatch}</a>
-          <a href={sr ? '/sr/praksa-znanje/eta-nije-obecanje' : '/de/praxis-wissen/eta-ist-keine-zusage'}>{t.eta}</a>
-          <a href={sr ? '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach' : '/de/praxis-wissen/fahrerkommunikation-balkan-dach'}>{t.driver}</a>
-          <a href={sr ? '/sr/praksa-znanje/predaja-smene-dispozicija' : '/de/praxis-wissen/schichtuebergabe-disposition'}>{t.handover}</a>
-          <a href={sr ? '/sr/praksa-znanje/eskalacija-odstupanja' : '/de/praxis-wissen/abweichungen-eskalieren'}>{t.escalation}</a>
-          <a href={sr ? '/sr/praksa-znanje/transportna-dokumenta-cmr-pod' : '/de/praxis-wissen/transportdokumente-cmr-pod'}>{t.documents}</a>
-          <a href={sr ? '/sr/recnik' : '/de/glossar'}>{t.law}</a>
+        <nav aria-label={t.knowledge}>
+          <h2><a href={href('/de/praxis-wissen', '/sr/praksa-znanje')}>{t.knowledge}</a></h2>
+          <a href={href('/de/praxis-wissen', '/sr/praksa-znanje')}>{t.practice}</a>
+          <a href={href('/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente')}>{t.dispatch}</a>
+          <a href={href('/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje')}>{t.eta}</a>
+          <a href={href('/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach')}>{t.driver}</a>
+          <a href={href('/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija')}>{t.handover}</a>
+          <a href={href('/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja')}>{t.escalation}</a>
+          <a href={href('/de/praxis-wissen/transportdokumente-cmr-pod', '/sr/praksa-znanje/transportna-dokumenta-cmr-pod')}>{t.documents}</a>
+          <a href={href('/de/glossar', '/sr/recnik')}>{t.law}</a>
         </nav>
 
-        <nav>
-          <h2>{t.legal}</h2>
-          <a href={sr ? '/sr/impressum' : '/de/impressum'}>{t.imprint}</a>
-          <a href={sr ? '/sr/privatnost' : '/de/datenschutz'}>{t.privacy}</a>
-          <a href={sr ? '/sr/kolacici' : '/de/cookies'}>{t.cookies}</a>
-          <a href={sr ? '/sr/odricanje-odgovornosti' : '/de/haftungsausschluss'}>{t.liability}</a>
+        <nav aria-label={t.legal}>
+          <h2><a href={href('/de/impressum', '/sr/impressum')}>{t.legal}</a></h2>
+          <a href={href('/de/impressum', '/sr/impressum')}>{t.imprint}</a>
+          <a href={href('/de/datenschutz', '/sr/privatnost')}>{t.privacy}</a>
+          <a href={href('/de/cookies', '/sr/kolacici')}>{t.cookies}</a>
+          <a href={href('/de/haftungsausschluss', '/sr/odricanje-odgovornosti')}>{t.liability}</a>
           <a href={`${home}#contact`}>{t.contact}</a>
         </nav>
       </div>

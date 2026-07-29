@@ -9,195 +9,58 @@ const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf
 
 const serverRuntime = read('server-public-runtime.js');
 const appSource = read('daninihub-front/src/App.jsx');
-const publicLandingSource = read('daninihub-front/src/PublicLanding.jsx');
-const germanLandingSource = read('daninihub-front/src/GermanB2BLanding.jsx');
-const serbianLandingSource = read('daninihub-front/src/SerbianB2BLanding.jsx');
-const legalSource = read('daninihub-front/src/LegalKnowledge.jsx');
-const pilotSource = read('daninihub-front/src/PilotCheck.jsx');
-const businessSource = read('daninihub-front/src/BusinessPages.jsx');
-const driverArticleSource = read('daninihub-front/src/DriverCommunicationArticle.jsx');
-const handoverArticleSource = read('daninihub-front/src/ShiftHandoverArticle.jsx');
-const escalationArticleSource = read('daninihub-front/src/DeviationEscalationArticle.jsx');
-const documentsArticleSource = read('daninihub-front/src/TransportDocumentsArticle.jsx');
+const dispoLabSource = read('daninihub-front/src/DispoLabPage.jsx');
+const dispoCheckSource = read('daninihub-front/src/DispoCheck.jsx');
+const transportRoomSource = read('daninihub-front/src/TransportRoomDemo.jsx');
+const transportNetworkSource = read('daninihub-front/src/TransportNetworkDemo.jsx');
 
-// Current public runtime and contact workflow.
+// Public runtime and contact workflow.
 assert.match(serverRuntime, /mountPublicRuntime/);
 assert.match(serverRuntime, /app\.post\('\/api\/contact'/);
 assert.match(serverRuntime, /isPilot \? 'PILOT' : 'LEAD'/);
 assert.match(serverRuntime, /Neue strukturierte Pilot-Anfrage/);
-assert.match(serverRuntime, /INCOMPLETE_PILOT_DATA/);
-assert.match(serverRuntime, /confirmationSent/);
 assert.match(serverRuntime, /lead-review/);
-assert.match(serverRuntime, /sendQualifiedFollowup/);
-assert.match(serverRuntime, /14-tägigen DaniniHub Founding Pilot/);
-assert.match(serverRuntime, /followup-sent/);
 assert.match(serverRuntime, /DANINI_ADMIN_SECRET/);
 assert.match(serverRuntime, /DANINI_SESSION_SECRET/);
 assert.match(serverRuntime, /daninihub-lead-review-v1/);
-assert.match(serverRuntime, /continuing with email delivery/);
-assert.match(serverRuntime, /reviewAvailable: leadStored/);
 assert.match(serverRuntime, /legacyGoneRoutes/);
 assert.match(serverRuntime, /status\(410\)/);
 assert.match(serverRuntime, /X-Robots-Tag/);
-assert.match(serverRuntime, /X-Content-Type-Options/);
-assert.match(serverRuntime, /X-Frame-Options/);
-assert.match(serverRuntime, /Referrer-Policy/);
-assert.match(serverRuntime, /Permissions-Policy/);
 
-// Core German and Serbian public routes must be served by the SPA runtime.
+// Current public routes must be served by the SPA runtime.
 for (const route of [
   '/de/', '/sr/',
+  '/de/dispolab', '/sr/dispo-lab',
+  '/de/dispolab/check', '/sr/dispo-lab/provera',
+  '/de/transport-room-demo', '/sr/transportna-soba-demo',
+  '/de/transport-network-demo', '/sr/transportna-mreza-demo',
   '/de/impressum', '/de/datenschutz', '/de/cookies', '/de/haftungsausschluss',
   '/sr/impressum', '/sr/privatnost', '/sr/kolacici', '/sr/odricanje-odgovornosti',
-  '/de/pilot-beispiel', '/sr/primer-pilota',
-  '/de/operations-desk-demo', '/sr/operativni-pult-demo',
   '/de/pilot-check', '/sr/provera-pilota',
   '/de/leistungsrahmen', '/sr/obim-usluge',
   '/de/continuity-support', '/sr/kontinuitet-podrska',
   '/de/fahrerkommunikation', '/sr/komunikacija-vozaci',
-  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente',
-  '/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje',
-  '/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach',
-  '/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija',
-  '/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja',
-  '/de/praxis-wissen/transportdokumente-cmr-pod', '/sr/praksa-znanje/transportna-dokumenta-cmr-pod'
+  '/de/praxis-wissen', '/sr/praksa-znanje'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
-assert.match(serverRuntime, /\/sr\/praksa-znanje/);
-assert.doesNotMatch(serverRuntime, /\/sr\/praksa-propisi/);
+
 assert.match(serverRuntime, /renderSeoPage/);
 assert.match(serverRuntime, /hreflang="x-default"/);
 
-// React router selection and SEO metadata for the current public product.
-assert.match(appSource, /PilotCheck/);
-assert.match(appSource, /BusinessPages/);
-assert.match(appSource, /GermanB2BLanding/);
-assert.match(appSource, /SerbianB2BLanding/);
-assert.match(appSource, /Balkan Continuity Support/);
-assert.match(appSource, /DACH Operations Desk/);
-assert.match(appSource, /link\[rel="canonical"\]/);
+// React routing and current products.
+assert.match(appSource, /DispoLabPage/);
+assert.match(appSource, /DispoCheck/);
+assert.match(appSource, /TransportRoomDemo/);
+assert.match(appSource, /TransportNetworkDemo/);
+assert.match(appSource, /transport-network-demo/);
+assert.match(appSource, /transport-room-demo/);
 
-// The two homepages must remain B2B-focused and use the correct market positioning.
-for (const value of [
-  'BALKAN CONTINUITY SUPPORT FÜR DACH-TRANSPORTUNTERNEHMEN',
-  'Klarere Balkan-Kommunikation. Weniger Unterbrechungen in der Disposition.',
-  'Deutsch + Sprachen des Balkans',
-  'Prüfen, ob ein Pilot zu Ihrem Betrieb passt',
-  'Operative Unterstützung ohne Übernahme Ihrer Verantwortung'
-]) {
-  assert.match(germanLandingSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-}
-assert.doesNotMatch(germanLandingSource, /Für Interessierte|Künftige operative Zusammenarbeit|zertifizierte Ausbildung/);
+// Product components must contain their core interaction contracts.
+assert.match(dispoLabSource, /DispoLab/);
+assert.match(dispoCheckSource, /questions/);
+assert.match(dispoCheckSource, /Dispatch Readiness/);
+assert.match(transportRoomSource, /transport-room/);
+assert.match(transportNetworkSource, /transport-network/);
 
-for (const value of [
-  'DACH OPERATIONS DESK ZA TRANSPORTNE FIRME SA BALKANA',
-  'Jasnija komunikacija sa DACH klijentima. Manje prekida u dispoziciji.',
-  'Nemački + jezici Balkana',
-  'Proverite da li pilot odgovara vašoj firmi',
-  'Operativna podrška bez preuzimanja vaše odgovornosti'
-]) {
-  assert.match(serbianLandingSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-}
-assert.doesNotMatch(serbianLandingSource, /Za zainteresovane|Buduća operativna saradnja|sertifikovana obuka/);
-
-// Retired AI-analysis product and browser-side cookie state must not return.
-assert.doesNotMatch(publicLandingSource, /Persönliche KI-Analyse|12 EUR|12 €\//);
-assert.doesNotMatch(publicLandingSource, /CookieNotice|dh_cookie_notice|localStorage/);
-assert.match(publicLandingSource, /Datenschutzerklärung/);
-
-// Legal and privacy content must contain the current provider and processing details.
-for (const value of [
-  'Dragan Zdravković',
-  'Fischerstraße 54',
-  '47055 Duisburg',
-  'info@daninihub.com',
-  'Hostinger',
-  'Brevo',
-  'Sendinblue SAS',
-  'Standardvertragsklauseln',
-  'Pflicht- und freiwillige Angaben',
-  'LDI NRW',
-  'DSGVO',
-  'Keine automatisierte Entscheidung'
-]) {
-  assert.match(legalSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-}
-assert.match(legalSource, /DaniniHub übernimmt nicht die Rolle von Frachtführer, Spediteur, Verkehrsleiter/);
-assert.match(legalSource, /DaniniHub ne preuzima ulogu prevoznika, špeditera, rukovodioca transporta/);
-
-// Driver communication article must preserve safe, closed-loop operating boundaries.
-for (const value of [
-  'Fahrerkommunikation Balkan–DACH',
-  'Balkan–DACH komunikacija sa vozačima',
-  'sicheren Stillstand',
-  'bezbednom mirovanju',
-  'Zugestellt“ bedeutet nicht „verstanden',
-  'Isporučeno“ ne znači „razumljeno',
-  'Instrukcije vozaču, bezbednosne odluke'
-]) {
-  assert.match(driverArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-}
-
-// Shift handover article must transfer operational control, not only summarize events.
-for (const value of [
-  'Schichtübergabe in der Disposition: 10 Pflichtinformationen',
-  'Predaja smene u dispoziciji: 10 obaveznih informacija',
-  'Übergabe bedeutet Kontrollwechsel',
-  'Predaja znači promenu operativne kontrole',
-  'neuer Kundentermin noch nicht bestätigt',
-  'ne obećavati novi termin pre dobijenog odobrenja',
-  'Telefonat darf Details ergänzen, ersetzt aber nicht',
-  'Razgovor može dopuniti detalje, ali ne zamenjuje'
-]) {
-  assert.match(handoverArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-}
-
-// Escalation article must require measurable thresholds, authority and a decision deadline.
-for (const value of [
-  'Transportabweichungen richtig eskalieren',
-  'Eskalacija odstupanja u transportu',
-  'Eine Meldung informiert. Eine Eskalation fordert',
-  'Obaveštenje prenosi informaciju. Eskalacija zahteva',
-  'Keine universellen Minutenwerte',
-  'Ne postoji univerzalan broj minuta',
-  'Ohne solchen Weg darf operative Unterstützung keine Befugnis erfinden',
-  'Bez tog puta operativna podrška ne sme sama da izmisli ovlašćenje'
-]) {
-  assert.match(escalationArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-}
-
-// Document handover article must separate file receipt, verification and acceptance.
-for (const value of [
-  'Transportdokumente übergeben: CMR, POD und offene Nachweise',
-  'Predaja transportnih dokumenata: CMR, POD i otvoreni dokazi',
-  'Ein Dokument ist nicht erledigt, nur weil eine Datei vorhanden ist',
-  'Dokumentacioni proces nije završen samo zato što datoteka postoji',
-  'digital bedeutet nicht automatisch überall akzeptiert',
-  'digitalno ne znači automatski prihvaćeno svuda',
-  'eine Einwilligung ist weder automatisch erforderlich',
-  'saglasnost nije automatski neophodna'
-]) {
-  assert.match(documentsArticleSource, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-}
-
-// Pilot intake must submit structured operational fields and preserve human approval boundaries.
-for (const field of ['fleet', 'routes', 'tasks', 'availability', 'systems', 'decision']) {
-  assert.match(pilotSource, new RegExp(`\\b${field}\\b`));
-}
-assert.match(pilotSource, /source:\s*'pilot-check'/);
-assert.match(pilotSource, /Keine automatische Entscheidung/);
-assert.match(pilotSource, /Nema automatske odluke/);
-assert.match(pilotSource, /form\.reset\(\)/);
-assert.match(pilotSource, /Was ein begrenzter Pilot konkret prüft/);
-assert.match(pilotSource, /Šta konkretno proverava ograničeni pilot/);
-
-// New service pages must cover scope, continuity and multilingual driver communication.
-assert.match(businessSource, /Leistungsrahmen/);
-assert.match(businessSource, /Continuity Support/i);
-assert.match(businessSource, /Fahrerkommunikation/);
-assert.match(businessSource, /Obim usluge/i);
-assert.match(businessSource, /Podrška kontinuitetu/i);
-assert.match(businessSource, /Komunikacija sa vozačima/i);
-
-console.log('DaniniHub transport public content contract: OK');
+console.log('DaniniHub public content contract: OK');

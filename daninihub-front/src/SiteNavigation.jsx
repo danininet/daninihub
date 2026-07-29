@@ -10,6 +10,7 @@ const routePairs = [
   ['/de/', '/sr/'],
   ['/de/fuer-dach-speditionen', '/sr/za-balkanske-transportne-firme'],
   ['/de/dispolab', '/sr/dispo-lab'],
+  ['/de/dispolab/check', '/sr/dispo-lab/provera'],
   ['/de/transport-network-demo', '/sr/transportna-mreza-demo'],
   ['/de/transport-room-demo', '/sr/transportna-soba-demo'],
   ['/de/leistungsrahmen', '/sr/obim-usluge'],

@@ -13,10 +13,11 @@ const { mountDispoCheckContactInterceptor } = require('./server-dispo-check-cont
 const { mountTransportRoomRuntime } = require('./server-transport-room-runtime');
 const { mountTransportNetworkRuntime } = require('./server-transport-network-runtime');
 const { mountCapacitySignalRuntime } = require('./server-capacity-signal-runtime');
+const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-signal-desk-v21';
+const DEPLOYMENT_MARKER = 'daninihub-signal-consent-v22';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -45,6 +46,7 @@ mountTransportNetworkRuntime(app);
 mountDispoCheckRuntime(app);
 mountDispoCheckContactInterceptor(app);
 mountCapacitySignalRuntime(app);
+mountCapacityConsentRuntime(app);
 mountPublicRuntime(app);
 
 app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme','/de/vorher-nachher','/sr/pre-posle','/de/capacity-signal','/sr/signal-kapaciteta'], (req, res) => {
@@ -68,6 +70,7 @@ app.get('/health', (req, res) => {
     beforeAfterProofPage: true,
     capacitySignalForms: true,
     capacitySignalDesk: true,
+    capacityMatchConsentDesk: true,
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
     transportRoomPersistence: true,
@@ -102,7 +105,8 @@ app.get('/api/runtime-version', (req, res) => {
     audiencePagesVersion: 'balkan-dach-target-pages-v1',
     beforeAfterProofVersion: 'status-and-capacity-signal-v1',
     capacitySignalVersion: 'manual-review-v2',
-    signalDeskVersion: 'protected-manual-review-v1',
+    signalDeskVersion: 'protected-manual-review-v2',
+    signalConsentVersion: 'two-sided-consent-v1',
     contact: 'info@daninihub.com'
   });
 });

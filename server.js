@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-video-fixes-release-v26';
+const DEPLOYMENT_MARKER = 'daninihub-video-route-cache-fix-v27';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -47,10 +47,24 @@ mountDispoCheckRuntime(app);
 mountDispoCheckContactInterceptor(app);
 mountCapacitySignalRuntime(app);
 mountCapacityConsentRuntime(app);
-mountPublicRuntime(app);
 
-app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme','/de/vorher-nachher','/sr/pre-posle','/de/capacity-signal','/sr/signal-kapaciteta','/de/praxis-wissen/video','/sr/praksa-znanje/video'], (req, res) => {
-  res.set('Cache-Control', 'public, max-age=300');
+const FRESH_FRONTEND_ROUTES = [
+  '/de/fuer-dach-speditionen',
+  '/sr/za-balkanske-transportne-firme',
+  '/de/vorher-nachher',
+  '/sr/pre-posle',
+  '/de/capacity-signal',
+  '/sr/signal-kapaciteta',
+  '/de/praxis-wissen/video',
+  '/sr/praksa-znanje/video',
+  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
+  '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
+];
+
+app.get(FRESH_FRONTEND_ROUTES, (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
   return res.sendFile(FRONTEND_INDEX);
 });
 
@@ -100,6 +114,7 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/api/runtime-version', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   res.json({
     ok: true,
     service: 'Balkan-DACH Transport Operations Support',
@@ -117,10 +132,14 @@ app.get('/api/runtime-version', (req, res) => {
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
     signalConsentVersion: 'two-sided-consent-and-connection-v2',
-    knowledgeVideoVersion: 'drive-library-de-sr-v4',
+    knowledgeVideoVersion: 'drive-library-de-sr-v5-route-cache-fix',
     contact: 'info@daninihub.com'
   });
 });
+
+// Register the broad public runtime only after exact public/API routes.
+// This prevents an earlier fallback from serving a stale or wrong page.
+mountPublicRuntime(app);
 
 app.listen(PORT, () => {
   console.log(`DaniniHub Transport runtime listening on port ${PORT}`);

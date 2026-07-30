@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-drive-video-library-v25';
+const DEPLOYMENT_MARKER = 'daninihub-video-fixes-release-v26';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -117,7 +117,7 @@ app.get('/api/runtime-version', (req, res) => {
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
     signalConsentVersion: 'two-sided-consent-and-connection-v2',
-    knowledgeVideoVersion: 'drive-library-de-sr-v3',
+    knowledgeVideoVersion: 'drive-library-de-sr-v4',
     contact: 'info@daninihub.com'
   });
 });

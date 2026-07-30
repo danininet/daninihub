@@ -1,22 +1,37 @@
 'use strict';
 
 const assert = require('assert');
-const { createCase, caseStatus } = require('../server-capacity-consent-runtime');
+const { createCase, caseStatus, canConnect } = require('../server-capacity-consent-runtime');
 
 const record = createCase('TRUCK-1', 'FREIGHT-1', 88);
 assert.strictEqual(record.status, 'WAITING_CONSENT');
 assert.strictEqual(caseStatus(record), 'WAITING_CONSENT');
+assert.strictEqual(canConnect(record), false);
 
 record.truckConsent.status = 'GRANTED';
 assert.strictEqual(caseStatus(record), 'WAITING_CONSENT');
+assert.strictEqual(canConnect(record), false);
 
 record.freightConsent.status = 'GRANTED';
 assert.strictEqual(caseStatus(record), 'READY_TO_CONNECT');
+assert.strictEqual(canConnect(record), true);
 
-record.freightConsent.status = 'WITHDRAWN';
-assert.strictEqual(caseStatus(record), 'DECLINED');
+record.connection = {
+  confirmedAt: new Date().toISOString(),
+  confirmedBy: 'Dragan Zdravkovic',
+  method: 'PHONE',
+  note: 'Contacts shared after both consents.'
+};
+assert.strictEqual(caseStatus(record), 'CONTACTS_CONNECTED');
+assert.strictEqual(canConnect(record), false);
 
-record.freightConsent.status = 'DECLINED';
-assert.strictEqual(caseStatus(record), 'DECLINED');
+const declined = createCase('TRUCK-2', 'FREIGHT-2', 70);
+declined.truckConsent.status = 'GRANTED';
+declined.freightConsent.status = 'WITHDRAWN';
+assert.strictEqual(caseStatus(declined), 'DECLINED');
+assert.strictEqual(canConnect(declined), false);
 
-console.log('Capacity consent contract OK');
+declined.freightConsent.status = 'DECLINED';
+assert.strictEqual(caseStatus(declined), 'DECLINED');
+
+console.log('Capacity consent and connection contract OK');

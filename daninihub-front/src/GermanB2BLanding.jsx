@@ -36,8 +36,9 @@ export default function GermanB2BLanding() {
         <p className="kicker">BALKAN CONTINUITY SUPPORT FÜR DACH-TRANSPORTUNTERNEHMEN</p>
         <h1>Klarere Balkan-Kommunikation. Weniger Unterbrechungen in der Disposition.</h1>
         <p className="lead">DaniniHub unterstützt Transportunternehmen im DACH-Raum bei Status, ETA, Dokumentation, Abweichungen und mehrsprachiger Kommunikation mit Fahrern, Frachtführern, Niederlassungen oder Partnern im Balkanraum — in einem vorab vereinbarten Umfang und ohne Übernahme verbindlicher Entscheidungen.</p>
-        <p><a className="btn" href="/de/transport-network-demo">Transport Network ansehen →</a></p>
-        <a className="entry-demo-link" href="/de/dispolab/check">Kostenlosen Dispo-Check starten →</a>
+        <p><a className="btn" href="/de/pilot-check">Begrenzten Pilot für 490 € netto anfragen →</a></p>
+        <a className="entry-demo-link" href="/de/transport-network-demo">Arbeitsweise zuerst im Demo prüfen →</a>
+        <p><strong>Klarer Einstieg:</strong> eine Relation oder kleine Fallgruppe, schriftlich definierter Leistungsrahmen, dokumentierte Auswertung und keine automatische Verlängerung.</p>
         <div className="proof"><span>✓ Gemeinsamer Arbeitsraum statt zusätzlichem TMS-Zwang</span><span>✓ Deutsch + Sprachen des Balkans</span><span>✓ Klar getrennte Befugnisse</span></div>
       </div>
       <div className="route-art" aria-hidden="true"><div className="globe"/><div className="route r1"/><div className="route r2"/><div className="truck">▰</div><span className="city c1">DUISBURG</span><span className="city c2">WIEN</span><span className="city c3">BALKAN</span></div>
@@ -75,6 +76,20 @@ export default function GermanB2BLanding() {
       <NumberedCards items={pilotSteps}/>
     </section>
 
+    <section className="section split">
+      <div>
+        <p className="kicker">ERSTER BEZAHLTER AUFTRAG</p>
+        <h2>Begrenzter Einstiegspilot: 490 € netto.</h2>
+        <p className="big">Für die ersten drei bezahlten Pilotaufträge gilt ein transparenter Einführungspreis — ohne automatische Verlängerung und ohne versteckte Folgekosten.</p>
+      </div>
+      <div>
+        <p><strong>Enthalten:</strong> eine Relation oder kleine Fallgruppe, bis zu drei Fahrzeuge oder operative Fälle, ein schriftlich vereinbartes Kommunikationsfenster, bis zu acht operative Arbeitsstunden sowie eine abschließende Auswertung.</p>
+        <p><strong>Nicht enthalten:</strong> vollständige Flottendisposition, Transportaufträge, Preisverhandlungen im Namen des Auftraggebers, rechtsverbindliche Zusagen oder unbegrenzte Erreichbarkeit.</p>
+        <p><a className="btn" href="/de/pilot-check">Pilot verbindlich anfragen →</a></p>
+        <p>Eine Beauftragung entsteht erst nach schriftlicher Bestätigung von Leistungsrahmen, Zeitraum, Zuständigkeiten und Zahlungsbedingungen.</p>
+      </div>
+    </section>
+
     <section className="section scope">
       <p className="kicker">PASSUNG PRÜFEN</p>
       <h2>Für welche Unternehmen der Pilot sinnvoll sein kann.</h2>
@@ -92,8 +107,8 @@ export default function GermanB2BLanding() {
     </section>
 
     <section id="contact" className="section contact">
-      <div><p className="kicker">NÄCHSTER SCHRITT</p><h2>Gibt es einen klar begrenzten operativen Engpass, den wir kontrolliert prüfen können?</h2><p>Beschreiben Sie Relation, Partner, Kommunikationsproblem und die verantwortliche Freigabestelle. Sie erhalten eine persönliche Einschätzung, ob ein begrenzter Pilot sinnvoll ist.</p></div>
-      <div><a className="btn" href="/de/pilot-check">Pilot-Check starten →</a></div>
+      <div><p className="kicker">NÄCHSTER SCHRITT</p><h2>Gibt es einen klar begrenzten operativen Engpass, den wir kontrolliert prüfen können?</h2><p>Beschreiben Sie Relation, Partner, Kommunikationsproblem und die verantwortliche Freigabestelle. Sie erhalten eine persönliche Einschätzung, ob der bezahlte Einstiegspilot fachlich sinnvoll und sauber abgrenzbar ist.</p></div>
+      <div><a className="btn" href="/de/pilot-check">Pilot für 490 € netto anfragen →</a></div>
     </section>
   </main>
 }

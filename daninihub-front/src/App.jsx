@@ -19,6 +19,7 @@ import KnowledgeCenter from './KnowledgeCenter'
 import KnowledgeVideoPage from './KnowledgeVideoPage'
 import './App.css'
 import './Polish.css'
+import './ArticleVideoFix.css'
 
 export default function App() {
   const [lang, setLang] = useState(() => location.pathname.startsWith('/sr') ? 'sr' : 'de')

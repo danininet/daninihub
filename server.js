@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-direct-article-videos-v29';
+const DEPLOYMENT_MARKER = 'daninihub-tms-article-recovery-v30';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -55,6 +55,8 @@ const FRESH_FRONTEND_ROUTES = [
   '/sr/pre-posle',
   '/de/capacity-signal',
   '/sr/signal-kapaciteta',
+  '/de/praxis-wissen',
+  '/sr/praksa-znanje',
   '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
   '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
 ];
@@ -127,7 +129,7 @@ app.get('/api/runtime-version', (req, res) => {
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
     signalConsentVersion: 'two-sided-consent-and-connection-v2',
-    knowledgeVideoVersion: 'direct-youtube-article-v2',
+    knowledgeVideoVersion: 'stable-youtube-article-v3',
     contact: 'info@daninihub.com'
   });
 });

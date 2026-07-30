@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-article-videos-only-v28';
+const DEPLOYMENT_MARKER = 'daninihub-direct-article-videos-v29';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -86,8 +86,8 @@ app.get('/health', (req, res) => {
     transportNetworkSessionRecovery: true,
     transportNetworkWorkspaceRepair: true,
     articleVideos: {
-      de: '1hR5qcUxPX4emg-_YokPLmWSDNMfQbP4F',
-      sr: '1jEKzE64EaHneeMk219tF1WgbIkchINia'
+      de: 'HXJWUm02UlY',
+      sr: 'iV4XA-h0S40'
     },
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
@@ -116,8 +116,8 @@ app.get('/api/runtime-version', (req, res) => {
     ok: true,
     service: 'Balkan-DACH Transport Operations Support',
     deploymentMarker: DEPLOYMENT_MARKER,
-    germanArticleVideoId: '1hR5qcUxPX4emg-_YokPLmWSDNMfQbP4F',
-    serbianArticleVideoId: '1jEKzE64EaHneeMk219tF1WgbIkchINia',
+    germanArticleVideoId: 'HXJWUm02UlY',
+    serbianArticleVideoId: 'iV4XA-h0S40',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
     transportRoomVersion: 'case-specific-company-access-v5',
@@ -127,7 +127,7 @@ app.get('/api/runtime-version', (req, res) => {
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
     signalConsentVersion: 'two-sided-consent-and-connection-v2',
-    knowledgeVideoVersion: 'article-drive-bridge-v1',
+    knowledgeVideoVersion: 'direct-youtube-article-v2',
     contact: 'info@daninihub.com'
   });
 });

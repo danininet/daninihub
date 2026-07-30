@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import './SiteNavigation.css'
 
 const links = {
-  de: { start:'Start', services:'Leistungen', dispoLab:'DispoLab', dach:'Für DACH-Speditionen', balkan:'Für Balkan-Transportunternehmen', scope:'Leistungsrahmen', continuity:'Continuity Support', drivers:'Fahrerkommunikation', pilot:'Pilot-Check', knowledge:'Praxis & Wissen', contact:'Kontakt', menu:'Menü', close:'Schließen' },
-  sr: { start:'Početna', services:'Usluge', dispoLab:'DispoLab', dach:'Za DACH špedicije', balkan:'Za balkanske transportne firme', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', pilot:'Provera pilota', knowledge:'Praksa i znanje', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
+  de: { start:'Start', services:'Leistungen', dispoLab:'DispoLab', dach:'Für DACH-Speditionen', balkan:'Für Balkan-Transportunternehmen', scope:'Leistungsrahmen', continuity:'Continuity Support', drivers:'Fahrerkommunikation', pilot:'Pilot-Check', knowledge:'Praxis & Wissen', videos:'Videos', contact:'Kontakt', menu:'Menü', close:'Schließen' },
+  sr: { start:'Početna', services:'Usluge', dispoLab:'DispoLab', dach:'Za DACH špedicije', balkan:'Za balkanske transportne firme', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', pilot:'Provera pilota', knowledge:'Praksa i znanje', videos:'Video', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
 }
 
 const routePairs = [
@@ -11,6 +11,7 @@ const routePairs = [
   ['/de/fuer-dach-speditionen', '/sr/za-balkanske-transportne-firme'],
   ['/de/vorher-nachher', '/sr/pre-posle'],
   ['/de/capacity-signal', '/sr/signal-kapaciteta'],
+  ['/de/praxis-wissen/video', '/sr/praksa-znanje/video'],
   ['/de/dispolab', '/sr/dispo-lab'],
   ['/de/dispolab/check', '/sr/dispo-lab/provera'],
   ['/de/transport-network-demo', '/sr/transportna-mreza-demo'],
@@ -62,6 +63,7 @@ export default function SiteNavigation({ lang }) {
   const dispoLab = sr ? '/sr/dispo-lab' : '/de/dispolab'
   const pilot = sr ? '/sr/provera-pilota' : '/de/pilot-check'
   const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
+  const videos = sr ? '/sr/praksa-znanje/video' : '/de/praxis-wissen/video'
   const home = sr ? '/sr/' : '/de/'
   const deHref = translatedPath('de')
   const srHref = translatedPath('sr')
@@ -89,6 +91,7 @@ export default function SiteNavigation({ lang }) {
         <a href={dispoLab}>{t.dispoLab}</a>
         <details className="site-nav-dropdown"><summary>{t.services}</summary><div>{serviceLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div></details>
         <a href={knowledge}>{t.knowledge}</a>
+        <a href={videos}>{t.videos}</a>
         <a href={pilot}>{t.pilot}</a>
         <a href={`${home}#contact`}>{t.contact}</a>
       </nav>
@@ -99,7 +102,7 @@ export default function SiteNavigation({ lang }) {
     <aside id="site-mobile-menu" className={`site-nav-mobile-panel ${open ? 'is-open' : ''}`} aria-hidden={!open}>
       <div className="site-nav-mobile-head"><strong>{t.menu}</strong><button type="button" onClick={close} aria-label={t.close}>×</button></div>
       <nav aria-label={sr ? 'Mobilna navigacija' : 'Mobile Navigation'}>
-        <a href={home} onClick={close}>{t.start}</a><a href={dispoLab} onClick={close}>{t.dispoLab}</a><a className="mobile-services-main" href={audience} onClick={close}>{t.services}</a><div className="mobile-services-list">{serviceLinks.map(([label, href]) => <a key={href} href={href} onClick={close}>{label}</a>)}</div><a href={knowledge} onClick={close}>{t.knowledge}</a><a href={pilot} onClick={close}>{t.pilot}</a><a href={`${home}#contact`} onClick={close}>{t.contact}</a>
+        <a href={home} onClick={close}>{t.start}</a><a href={dispoLab} onClick={close}>{t.dispoLab}</a><a className="mobile-services-main" href={audience} onClick={close}>{t.services}</a><div className="mobile-services-list">{serviceLinks.map(([label, href]) => <a key={href} href={href} onClick={close}>{label}</a>)}</div><a href={knowledge} onClick={close}>{t.knowledge}</a><a href={videos} onClick={close}>{t.videos}</a><a href={pilot} onClick={close}>{t.pilot}</a><a href={`${home}#contact`} onClick={close}>{t.contact}</a>
       </nav>
       <div className="site-nav-mobile-langs"><a href={deHref}>DE</a><a href={srHref}>SR</a></div>
     </aside>

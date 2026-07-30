@@ -54,6 +54,46 @@ function seedWorkspace() {
   };
 }
 
+function normalizeWorkspace(value) {
+  const seed = seedWorkspace();
+  const workspace = value && typeof value === 'object' ? value : {};
+  const byCompany = new Map((Array.isArray(workspace.companies) ? workspace.companies : []).map(item => [item?.companyId, item]));
+  const companies = seed.companies.map(base => {
+    const current = byCompany.get(base.companyId) || {};
+    return {
+      ...base,
+      ...current,
+      companyId: base.companyId,
+      routes: Array.isArray(current.routes) ? current.routes.filter(Boolean) : base.routes
+    };
+  });
+
+  const rawMembers = Array.isArray(workspace.members) ? workspace.members.filter(Boolean) : [];
+  const memberIds = new Set(rawMembers.map(item => item.memberId));
+  const members = [...rawMembers, ...seed.members.filter(item => !memberIds.has(item.memberId))]
+    .filter(item => item.companyId && item.name && item.email)
+    .map(item => ({ ...item, role: allowedMemberRoles.has(item.role) ? item.role : 'VIEWER', status:item.status || 'ACTIVE' }));
+
+  const rawRooms = Array.isArray(workspace.rooms) ? workspace.rooms.filter(Boolean) : [];
+  const roomIds = new Set(rawRooms.map(item => String(item.caseId || '').toUpperCase()));
+  const rooms = [...rawRooms, ...seed.rooms.filter(item => !roomIds.has(item.caseId))]
+    .map(item => ({
+      ...item,
+      caseId: clean(item.caseId, 64).toUpperCase(),
+      route: clean(item.route, 160) || 'Demo route',
+      customerCompanyId: clean(item.customerCompanyId, 64).toUpperCase() || 'CMP-DACH-001',
+      carrierCompanyId: clean(item.carrierCompanyId, 64).toUpperCase() || 'CMP-BALKAN-001',
+      status: clean(item.status, 40).toUpperCase() || 'ORDER_RECORDED',
+      eta: clean(item.eta, 40) || '—',
+      risk: clean(item.risk, 20).toUpperCase() || 'LOW',
+      updatedAt: item.updatedAt || new Date().toISOString(),
+      fictitious: true
+    }))
+    .filter(item => item.caseId);
+
+  return { companies, members, rooms };
+}
+
 function roomPayload(room, workspace) {
   const customer = workspace.companies.find(c => c.companyId === room.customerCompanyId);
   const carrier = workspace.companies.find(c => c.companyId === room.carrierCompanyId);
@@ -85,11 +125,16 @@ function mountTransportNetworkRuntime(app, options = {}) {
 
   async function getWorkspace() {
     const record = await store.get('NETWORK-DEMO');
-    return record?.payload || seedWorkspace();
+    const normalized = normalizeWorkspace(record?.payload);
+    if (record?.payload && JSON.stringify(record.payload) !== JSON.stringify(normalized)) {
+      try { await store.upsert({ caseId:'NETWORK-DEMO', status:'ACTIVE', approval:'FICTITIOUS', payload:normalized }); } catch (error) { console.error('Transport Network repair save failed:', error.message); }
+    }
+    return normalized;
   }
 
   async function saveWorkspace(workspace) {
-    const record = await store.upsert({ caseId:'NETWORK-DEMO', status:'ACTIVE', approval:'FICTITIOUS', payload:workspace });
+    const normalized = normalizeWorkspace(workspace);
+    const record = await store.upsert({ caseId:'NETWORK-DEMO', status:'ACTIVE', approval:'FICTITIOUS', payload:normalized });
     return record.payload;
   }
 
@@ -172,4 +217,4 @@ function mountTransportNetworkRuntime(app, options = {}) {
   });
 }
 
-module.exports = { mountTransportNetworkRuntime, seedWorkspace, sign, verify, roomPayload };
+module.exports = { mountTransportNetworkRuntime, seedWorkspace, normalizeWorkspace, sign, verify, roomPayload };

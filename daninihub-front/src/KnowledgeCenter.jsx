@@ -102,7 +102,7 @@ const videoCopy = {
 
 const videoConfig = {
   de: {
-    id: 'FTMCWxUGcig',
+    id: 'HXJWUm02UlY',
     title: 'Balkan–DACH Transport: Wenn ein TMS allein nicht reicht | DaniniHub',
     description: 'Warum TMS-Daten allein operative Abweichungen nicht lösen und wie Faktenprüfung, Entscheidung, Kommunikation, Dokumentation und Recovery zusammenspielen.',
     uploadDate: '2026-07-18',
@@ -110,7 +110,7 @@ const videoConfig = {
     inLanguage: 'de',
   },
   sr: {
-    id: 'wGFtA53BirQ',
+    id: 'iV4XA-h0S40',
     title: 'Dispečeri vs. softver: zašto TMS ne menja disponenta | DaniniHub',
     description: 'Zašto TMS i telematika ne preuzimaju operativnu odgovornost i kako se povezuju provera činjenica, odluka, komunikacija, dokumentacija i predaja.',
     uploadDate: '2026-07-19',

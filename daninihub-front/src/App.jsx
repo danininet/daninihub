@@ -16,7 +16,6 @@ import ServiceQuickNav from './ServiceQuickNav'
 import SiteNavigation from './SiteNavigation'
 import SiteFooter from './SiteFooter'
 import KnowledgeCenter from './KnowledgeCenter'
-import ArticleDriveVideoBridge from './ArticleDriveVideoBridge'
 import './App.css'
 import './Polish.css'
 import './ArticleVideoFix.css'
@@ -122,5 +121,5 @@ export default function App() {
   else page = <PublicLanding lang={lang} setLang={setLang}/>
 
   const isHome = /^\/(de|sr)\/?$/.test(path) || path === '/'
-  return <div className="public-app"><ArticleDriveVideoBridge/><SiteNavigation lang={lang}/>{page}{isHome && <ServiceQuickNav lang={lang}/>}<SiteFooter lang={lang}/></div>
+  return <div className="public-app"><SiteNavigation lang={lang}/>{page}{isHome && <ServiceQuickNav lang={lang}/>}<SiteFooter lang={lang}/></div>
 }

@@ -9,6 +9,7 @@ const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf
 
 const serverRuntime = read('server-public-runtime.js');
 const appSource = read('daninihub-front/src/App.jsx');
+const knowledgeSource = read('daninihub-front/src/KnowledgeCenter.jsx');
 const dispoLabSource = read('daninihub-front/src/DispoLabPage.jsx');
 const dispoCheckSource = read('daninihub-front/src/DispoCheck.jsx');
 const transportRoomSource = read('daninihub-front/src/TransportRoomDemo.jsx');
@@ -40,7 +41,9 @@ for (const route of [
   '/de/leistungsrahmen', '/sr/obim-usluge',
   '/de/continuity-support', '/sr/kontinuitet-podrska',
   '/de/fahrerkommunikation', '/sr/komunikacija-vozaci',
-  '/de/praxis-wissen', '/sr/praksa-znanje'
+  '/de/praxis-wissen', '/sr/praksa-znanje',
+  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
+  '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
 ]) {
   assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
@@ -55,6 +58,13 @@ assert.match(appSource, /TransportRoomDemo/);
 assert.match(appSource, /TransportNetworkDemo/);
 assert.match(appSource, /transport-network-demo/);
 assert.match(appSource, /transport-room-demo/);
+
+// The TMS article must render its own stable YouTube block without a DOM-mutating bridge.
+assert.doesNotMatch(appSource, /ArticleDriveVideoBridge/);
+assert.match(knowledgeSource, /<ArticleVideo lang=\{lang\} \/>/);
+assert.match(knowledgeSource, /id: 'HXJWUm02UlY'/);
+assert.match(knowledgeSource, /id: 'iV4XA-h0S40'/);
+assert.match(knowledgeSource, /youtube-nocookie\.com\/embed/);
 
 // Product components must contain their core interaction contracts.
 assert.match(dispoLabSource, /DispoLab/);

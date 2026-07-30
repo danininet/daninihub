@@ -18,7 +18,6 @@ import SiteFooter from './SiteFooter'
 import KnowledgeCenter from './KnowledgeCenter'
 import './App.css'
 import './Polish.css'
-import './ArticleVideoFix.css'
 
 export default function App() {
   const [lang, setLang] = useState(() => location.pathname.startsWith('/sr') ? 'sr' : 'de')

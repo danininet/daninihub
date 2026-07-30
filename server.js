@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-network-recovery-video-audit-v24';
+const DEPLOYMENT_MARKER = 'daninihub-drive-video-library-v25';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -49,7 +49,7 @@ mountCapacitySignalRuntime(app);
 mountCapacityConsentRuntime(app);
 mountPublicRuntime(app);
 
-app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme','/de/vorher-nachher','/sr/pre-posle','/de/capacity-signal','/sr/signal-kapaciteta'], (req, res) => {
+app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme','/de/vorher-nachher','/sr/pre-posle','/de/capacity-signal','/sr/signal-kapaciteta','/de/praxis-wissen/video','/sr/praksa-znanje/video'], (req, res) => {
   res.set('Cache-Control', 'public, max-age=300');
   return res.sendFile(FRONTEND_INDEX);
 });
@@ -74,6 +74,10 @@ app.get('/health', (req, res) => {
     transportNetworkSessionRecovery: true,
     transportNetworkWorkspaceRepair: true,
     tmsArticleVideos: { de:'FTMCWxUGcig', sr:'wGFtA53BirQ' },
+    driveVideoLibrary: {
+      dispatchersVsSoftware: '1jEKzE64EaHneeMk219tF1WgbIkchINia',
+      balkanDach: '1hR5qcUxPX4emg-_YokPLmWSDNMfQbP4F'
+    },
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
     transportRoomPersistence: true,
@@ -102,6 +106,8 @@ app.get('/api/runtime-version', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
     germanTmsVideoId: 'FTMCWxUGcig',
+    driveDispatchersVideoId: '1jEKzE64EaHneeMk219tF1WgbIkchINia',
+    driveBalkanDachVideoId: '1hR5qcUxPX4emg-_YokPLmWSDNMfQbP4F',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
     transportRoomVersion: 'case-specific-company-access-v5',
@@ -111,7 +117,7 @@ app.get('/api/runtime-version', (req, res) => {
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
     signalConsentVersion: 'two-sided-consent-and-connection-v2',
-    knowledgeVideoVersion: 'de-sr-tms-video-v2',
+    knowledgeVideoVersion: 'drive-library-de-sr-v3',
     contact: 'info@daninihub.com'
   });
 });

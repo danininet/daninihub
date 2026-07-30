@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-controlled-contact-connection-v23';
+const DEPLOYMENT_MARKER = 'daninihub-network-recovery-video-audit-v24';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -71,7 +71,9 @@ app.get('/health', (req, res) => {
     capacitySignalForms: true,
     capacitySignalDesk: true,
     capacityMatchConsentDesk: true,
-    controlledContactConnection: true,
+    transportNetworkSessionRecovery: true,
+    transportNetworkWorkspaceRepair: true,
+    tmsArticleVideos: { de:'FTMCWxUGcig', sr:'wGFtA53BirQ' },
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
     transportRoomPersistence: true,
@@ -99,16 +101,17 @@ app.get('/api/runtime-version', (req, res) => {
     service: 'Balkan-DACH Transport Operations Support',
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'wGFtA53BirQ',
+    germanTmsVideoId: 'FTMCWxUGcig',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
     transportRoomVersion: 'case-specific-company-access-v5',
-    transportNetworkVersion: 'company-room-connection-pilot-v2',
+    transportNetworkVersion: 'session-recovery-workspace-repair-v3',
     audiencePagesVersion: 'balkan-dach-target-pages-v1',
     beforeAfterProofVersion: 'status-and-capacity-signal-v1',
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
-    signalConsentVersion: 'two-sided-consent-v2',
-    controlledConnectionVersion: 'manual-confirmation-v1',
+    signalConsentVersion: 'two-sided-consent-and-connection-v2',
+    knowledgeVideoVersion: 'de-sr-tms-video-v2',
     contact: 'info@daninihub.com'
   });
 });

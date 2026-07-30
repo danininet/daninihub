@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-tms-article-recovery-v30';
+const DEPLOYMENT_MARKER = 'daninihub-stable-knowledge-restore-v31';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -47,24 +47,10 @@ mountDispoCheckRuntime(app);
 mountDispoCheckContactInterceptor(app);
 mountCapacitySignalRuntime(app);
 mountCapacityConsentRuntime(app);
+mountPublicRuntime(app);
 
-const FRESH_FRONTEND_ROUTES = [
-  '/de/fuer-dach-speditionen',
-  '/sr/za-balkanske-transportne-firme',
-  '/de/vorher-nachher',
-  '/sr/pre-posle',
-  '/de/capacity-signal',
-  '/sr/signal-kapaciteta',
-  '/de/praxis-wissen',
-  '/sr/praksa-znanje',
-  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
-  '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
-];
-
-app.get(FRESH_FRONTEND_ROUTES, (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
+app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme','/de/vorher-nachher','/sr/pre-posle','/de/capacity-signal','/sr/signal-kapaciteta'], (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300');
   return res.sendFile(FRONTEND_INDEX);
 });
 
@@ -87,10 +73,7 @@ app.get('/health', (req, res) => {
     capacityMatchConsentDesk: true,
     transportNetworkSessionRecovery: true,
     transportNetworkWorkspaceRepair: true,
-    articleVideos: {
-      de: 'HXJWUm02UlY',
-      sr: 'iV4XA-h0S40'
-    },
+    tmsArticleVideos: { de:'HXJWUm02UlY', sr:'iV4XA-h0S40' },
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     dispoCheckResultEmail: Boolean(process.env.BREVO_API_KEY),
     transportRoomPersistence: true,
@@ -113,13 +96,12 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/api/runtime-version', (req, res) => {
-  res.set('Cache-Control', 'no-store');
   res.json({
     ok: true,
     service: 'Balkan-DACH Transport Operations Support',
     deploymentMarker: DEPLOYMENT_MARKER,
-    germanArticleVideoId: 'HXJWUm02UlY',
-    serbianArticleVideoId: 'iV4XA-h0S40',
+    serbianTmsVideoId: 'iV4XA-h0S40',
+    germanTmsVideoId: 'HXJWUm02UlY',
     dispatchWorkspaceVersion: 'no-startup-email-v9',
     dispoCheckVersion: 'personalized-result-email-v2',
     transportRoomVersion: 'case-specific-company-access-v5',
@@ -129,12 +111,10 @@ app.get('/api/runtime-version', (req, res) => {
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
     signalConsentVersion: 'two-sided-consent-and-connection-v2',
-    knowledgeVideoVersion: 'stable-youtube-article-v3',
+    knowledgeVideoVersion: 'stable-restored-article-v4',
     contact: 'info@daninihub.com'
   });
 });
-
-mountPublicRuntime(app);
 
 app.listen(PORT, () => {
   console.log(`DaniniHub Transport runtime listening on port ${PORT}`);

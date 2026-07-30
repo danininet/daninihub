@@ -16,7 +16,6 @@ import ServiceQuickNav from './ServiceQuickNav'
 import SiteNavigation from './SiteNavigation'
 import SiteFooter from './SiteFooter'
 import KnowledgeCenter from './KnowledgeCenter'
-import KnowledgeVideoPage from './KnowledgeVideoPage'
 import './App.css'
 import './Polish.css'
 import './ArticleVideoFix.css'
@@ -38,7 +37,6 @@ export default function App() {
     const audiencePage = /fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)
     const beforeAfterPage = /vorher-nachher|pre-posle/.test(path)
     const capacityPage = /capacity-signal|signal-kapaciteta/.test(path)
-    const videoPage = /praxis-wissen\/video|praksa-znanje\/video/.test(path)
     const transportNetwork = /transport-network-demo|transportna-mreza-demo/.test(path)
     const transportRoom = /transport-room-demo|transportna-soba-demo/.test(path)
     const freeDispoCheck = /dispolab\/check|dispo-lab\/provera/.test(path)
@@ -51,7 +49,6 @@ export default function App() {
     document.title = audiencePage ? (sr ? 'Za balkanske transportne firme | DaniniHub' : 'Für DACH-Speditionen | DaniniHub')
       : beforeAfterPage ? (sr ? 'Pre i posle DaniniHuba | Operativni dokaz' : 'Vorher und nachher | DaniniHub Operations')
       : capacityPage ? (sr ? 'Prijavi slobodan kamion ili teret | DaniniHub' : 'Freien Lkw oder Ladung melden | DaniniHub')
-      : videoPage ? (sr ? 'DaniniHub video biblioteka | Praksa i znanje' : 'DaniniHub Video-Bibliothek | Praxis & Wissen')
       : transportNetwork ? (sr ? 'DaniniHub Transport Network | Kompanijski pilot' : 'DaniniHub Transport Network | Unternehmenspilot')
       : transportRoom ? (sr ? 'DaniniHub Transport Room | Interaktivni pilot MVP' : 'DaniniHub Transport Room | Interaktiver Pilot MVP')
       : freeDispoCheck ? (sr ? 'Besplatni Dispo-Check | DaniniHub' : 'Kostenloser Dispo-Check | DaniniHub')
@@ -62,8 +59,6 @@ export default function App() {
       : (sr ? 'DaniniHub DACH Operations Desk' : 'DaniniHub Balkan Continuity Support')
     const description = capacityPage
       ? (sr ? 'Ručna prijava slobodnog kamiona ili tereta koji čeka, bez javne objave i bez automatskog ugovaranja.' : 'Manuelle Meldung eines freien Lkw oder wartender Ladung, ohne öffentliche Veröffentlichung oder automatische Vermittlung.')
-      : videoPage
-        ? (sr ? 'Dva DaniniHub praktična videa o odnosu disponenta i softvera i o operativnoj saradnji Balkan–DACH.' : 'Zwei DaniniHub Praxisvideos über Disposition und Software sowie die operative Zusammenarbeit Balkan–DACH.')
       : audiencePage
       ? (sr ? 'Zajednički operativni prostor za balkanske transportne firme i njihove DACH klijente: status, ETA, dokumenti, incidenti i odgovornost.' : 'Gemeinsamer operativer Arbeitsraum für DACH-Auftraggeber und Balkan-Frachtführer: Status, ETA, Dokumente, Incidents und Verantwortung.')
       : beforeAfterPage
@@ -84,7 +79,6 @@ export default function App() {
       ['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme'],
       ['/de/vorher-nachher','/sr/pre-posle'],
       ['/de/capacity-signal','/sr/signal-kapaciteta'],
-      ['/de/praxis-wissen/video','/sr/praksa-znanje/video'],
       ['/de/transport-network-demo','/sr/transportna-mreza-demo'],
       ['/de/transport-room-demo','/sr/transportna-soba-demo'],
       ['/de/dispolab','/sr/dispo-lab'],
@@ -115,7 +109,6 @@ export default function App() {
   if (/fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)) page = <AudiencePages lang={lang}/>
   else if (/vorher-nachher|pre-posle/.test(path)) page = <BeforeAfterPage lang={lang}/>
   else if (/capacity-signal|signal-kapaciteta/.test(path)) page = <CapacitySignalPage lang={lang}/>
-  else if (/praxis-wissen\/video|praksa-znanje\/video/.test(path)) page = <KnowledgeVideoPage lang={lang}/>
   else if (/transport-network-demo|transportna-mreza-demo/.test(path)) page = <TransportNetworkDemo lang={lang}/>
   else if (/transport-room-demo|transportna-soba-demo/.test(path)) page = <TransportRoomDemo lang={lang}/>
   else if (/dispolab\/check|dispo-lab\/provera/.test(path)) page = <DispoCheck lang={lang}/>

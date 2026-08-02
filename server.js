@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-stable-knowledge-restore-v31';
+const DEPLOYMENT_MARKER = 'daninihub-audience-route-fix-v32';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -47,10 +47,24 @@ mountDispoCheckRuntime(app);
 mountDispoCheckContactInterceptor(app);
 mountCapacitySignalRuntime(app);
 mountCapacityConsentRuntime(app);
-mountPublicRuntime(app);
 
-app.get(['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme','/de/vorher-nachher','/sr/pre-posle','/de/capacity-signal','/sr/signal-kapaciteta'], (req, res) => {
-  res.set('Cache-Control', 'public, max-age=300');
+// Exact React routes must be registered before the broad public runtime.
+// This avoids stale/SEO handlers intercepting live application pages.
+const FRESH_FRONTEND_ROUTES = [
+  '/de/fuer-dach-speditionen',
+  '/sr/za-balkanske-transportne-firme',
+  '/de/vorher-nachher',
+  '/sr/pre-posle',
+  '/de/capacity-signal',
+  '/sr/signal-kapaciteta',
+  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
+  '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
+];
+
+app.get(FRESH_FRONTEND_ROUTES, (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
   return res.sendFile(FRONTEND_INDEX);
 });
 
@@ -61,6 +75,7 @@ app.get(DISPATCH_PATH, (req, res) => {
 });
 
 app.get('/health', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   res.json({
     ok: true,
     service: 'DaniniHub Transport & Logistics',
@@ -96,6 +111,7 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/api/runtime-version', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   res.json({
     ok: true,
     service: 'Balkan-DACH Transport Operations Support',
@@ -106,7 +122,7 @@ app.get('/api/runtime-version', (req, res) => {
     dispoCheckVersion: 'personalized-result-email-v2',
     transportRoomVersion: 'case-specific-company-access-v5',
     transportNetworkVersion: 'session-recovery-workspace-repair-v3',
-    audiencePagesVersion: 'balkan-dach-target-pages-v1',
+    audiencePagesVersion: 'balkan-dach-target-pages-v2-route-fix',
     beforeAfterProofVersion: 'status-and-capacity-signal-v1',
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
@@ -115,6 +131,9 @@ app.get('/api/runtime-version', (req, res) => {
     contact: 'info@daninihub.com'
   });
 });
+
+// Register broad public/SEO routes last.
+mountPublicRuntime(app);
 
 app.listen(PORT, () => {
   console.log(`DaniniHub Transport runtime listening on port ${PORT}`);

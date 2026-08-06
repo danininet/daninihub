@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-audience-route-fix-v32';
+const DEPLOYMENT_MARKER = 'daninihub-universal-spa-fallback-v33';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -48,26 +48,6 @@ mountDispoCheckContactInterceptor(app);
 mountCapacitySignalRuntime(app);
 mountCapacityConsentRuntime(app);
 
-// Exact React routes must be registered before the broad public runtime.
-// This avoids stale/SEO handlers intercepting live application pages.
-const FRESH_FRONTEND_ROUTES = [
-  '/de/fuer-dach-speditionen',
-  '/sr/za-balkanske-transportne-firme',
-  '/de/vorher-nachher',
-  '/sr/pre-posle',
-  '/de/capacity-signal',
-  '/sr/signal-kapaciteta',
-  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen',
-  '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'
-];
-
-app.get(FRESH_FRONTEND_ROUTES, (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  return res.sendFile(FRONTEND_INDEX);
-});
-
 app.get(DISPATCH_PATH, (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.set('X-Robots-Tag', 'noindex, nofollow');
@@ -82,6 +62,7 @@ app.get('/health', (req, res) => {
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
     targetAudiencePages: true,
+    universalPublicSpaFallback: true,
     beforeAfterProofPage: true,
     capacitySignalForms: true,
     capacitySignalDesk: true,
@@ -122,7 +103,7 @@ app.get('/api/runtime-version', (req, res) => {
     dispoCheckVersion: 'personalized-result-email-v2',
     transportRoomVersion: 'case-specific-company-access-v5',
     transportNetworkVersion: 'session-recovery-workspace-repair-v3',
-    audiencePagesVersion: 'balkan-dach-target-pages-v2-route-fix',
+    audiencePagesVersion: 'balkan-dach-target-pages-v3-universal-fallback',
     beforeAfterProofVersion: 'status-and-capacity-signal-v1',
     capacitySignalVersion: 'manual-review-v2',
     signalDeskVersion: 'protected-manual-review-v2',
@@ -132,8 +113,18 @@ app.get('/api/runtime-version', (req, res) => {
   });
 });
 
-// Register broad public/SEO routes last.
+// Keep server-rendered SEO/public routes first.
 mountPublicRuntime(app);
+
+// Universal SPA fallback for every public German/Serbian deep link that is not
+// already handled above. This prevents Hostinger/Express 404s when a user opens
+// a React route directly or refreshes it.
+app.get(/^\/(?:de|sr)(?:\/.*)?$/, (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  return res.sendFile(FRONTEND_INDEX);
+});
 
 app.listen(PORT, () => {
   console.log(`DaniniHub Transport runtime listening on port ${PORT}`);

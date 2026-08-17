@@ -16,13 +16,23 @@ import ServiceQuickNav from './ServiceQuickNav'
 import SiteNavigation from './SiteNavigation'
 import SiteFooter from './SiteFooter'
 import KnowledgeCenter from './KnowledgeCenter'
+import LeadLandingPages from './LeadLandingPages'
 import './App.css'
 import './Polish.css'
 
+const leadMeta = {
+  '/de/externe-disposition': ['Externe Disposition für Speditionen | DaniniHub Duisburg', 'Flexible externe Dispositionsunterstützung für Speditionen: Status, ETA, Fahrerkommunikation, Partnerkommunikation und operative Engpässe – aus Duisburg.'],
+  '/de/balkan-desk': ['Balkan Desk für DACH-Speditionen | DaniniHub', 'Operative Unterstützung für DACH-Speditionen mit Balkan-Verkehren: Fahrerkommunikation, Status, ETA, CMR/POD und strukturierte Eskalation.'],
+  '/de/dach-desk': ['DACH Desk für Balkan-Transportunternehmen | DaniniHub', 'Deutschsprachige operative Schnittstelle in Duisburg für Balkan-Transportunternehmen mit Verkehren nach Deutschland und Österreich.'],
+  '/sr/eksterna-dispozicija': ['Eksterna podrška dispoziciji | DaniniHub Duisburg', 'Eksterna operativna podrška transportnim firmama: status, ETA, komunikacija sa vozačima i partnerima i kontrolisane eskalacije.'],
+  '/sr/balkan-desk': ['Balkan Desk za DACH špedicije | DaniniHub', 'Operativna podrška DACH špedicijama na Balkan relacijama: vozači, status, ETA, CMR/POD i eskalacije.'],
+  '/sr/dach-desk': ['DACH Desk za balkanske prevoznike | DaniniHub', 'Nemačka operativna kontakt tačka iz Duisburga za balkanske transportne firme koje rade Nemačku i Austriju.']
+}
+
 export default function App() {
   const [lang, setLang] = useState(() => location.pathname.startsWith('/sr') ? 'sr' : 'de')
-  const path = location.pathname
-  const dispatchWorkspace = /^\/internal\/dispatch-pilot-workspace\/?$/.test(path)
+  const path = location.pathname.replace(/\/$/, '') || '/'
+  const dispatchWorkspace = /^\/internal\/dispatch-pilot-workspace\/?$/.test(location.pathname)
 
   useEffect(() => {
     if (dispatchWorkspace) {
@@ -43,9 +53,11 @@ export default function App() {
     const pilotCheck = /pilot-check|provera-pilota/.test(path)
     const knowledgeCenter = /praxis-wissen|praksa-znanje/.test(path)
     const businessPage = /leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(path)
+    const meta = leadMeta[path]
+
     document.documentElement.lang = lang
-    document.querySelector('meta[name="robots"]')?.setAttribute('content', 'index,follow')
-    document.title = audiencePage ? (sr ? 'Za balkanske transportne firme | DaniniHub' : 'Für DACH-Speditionen | DaniniHub')
+    document.querySelector('meta[name="robots"]')?.setAttribute('content', 'index,follow,max-image-preview:large')
+    document.title = meta?.[0] || (audiencePage ? (sr ? 'Za balkanske transportne firme | DaniniHub' : 'Für DACH-Speditionen | DaniniHub')
       : beforeAfterPage ? (sr ? 'Pre i posle DaniniHuba | Operativni dokaz' : 'Vorher und nachher | DaniniHub Operations')
       : capacityPage ? (sr ? 'Prijavi slobodan kamion ili teret | DaniniHub' : 'Freien Lkw oder Ladung melden | DaniniHub')
       : transportNetwork ? (sr ? 'DaniniHub Transport Network | Kompanijski pilot' : 'DaniniHub Transport Network | Unternehmenspilot')
@@ -55,8 +67,9 @@ export default function App() {
       : pilotCheck ? (sr ? 'Provera pilota | DaniniHub' : 'Pilot-Check | DaniniHub')
       : knowledgeCenter ? (sr ? 'Praksa i znanje | DaniniHub' : 'Praxis & Wissen | DaniniHub')
       : businessPage ? (sr ? 'Operativne usluge | DaniniHub' : 'Operative Leistungen | DaniniHub')
-      : (sr ? 'DaniniHub DACH Operations Desk' : 'DaniniHub Balkan Continuity Support')
-    const description = capacityPage
+      : (sr ? 'DaniniHub DACH Operations Desk' : 'Externe Disposition & Balkan Desk | DaniniHub Duisburg'))
+
+    const description = meta?.[1] || (capacityPage
       ? (sr ? 'Ručna prijava slobodnog kamiona ili tereta koji čeka, bez javne objave i bez automatskog ugovaranja.' : 'Manuelle Meldung eines freien Lkw oder wartender Ladung, ohne öffentliche Veröffentlichung oder automatische Vermittlung.')
       : audiencePage
       ? (sr ? 'Zajednički operativni prostor za balkanske transportne firme i njihove DACH klijente: status, ETA, dokumenti, incidenti i odgovornost.' : 'Gemeinsamer operativer Arbeitsraum für DACH-Auftraggeber und Balkan-Frachtführer: Status, ETA, Dokumente, Incidents und Verantwortung.')
@@ -66,15 +79,21 @@ export default function App() {
           ? (sr ? 'Fiktivni kompanijski prostor sa profilima firmi, članovima tima i više privatnih transportnih soba.' : 'Fiktiver Unternehmensbereich mit Firmenprofilen, Teammitgliedern und mehreren privaten Transport Rooms.')
           : transportRoom
           ? (sr ? 'Interaktivni pilot zajedničke transportne sobe sa statusima, ETA, komunikacijom, dokumentima i incidentima.' : 'Interaktiver Pilot eines gemeinsamen Transport Room mit Status, ETA, Kommunikation, Dokumenten und Incidents.')
-          : (sr ? 'DaniniHub operativna podrška i praktični alati za Balkan–DACH transport.' : 'DaniniHub operative Unterstützung und Praxiswerkzeuge für Balkan–DACH Transporte.')
+          : (sr ? 'DaniniHub operativna podrška i praktični alati za Balkan–DACH transport.' : 'Externe Dispositionsunterstützung und Balkan–DACH Operations Support aus Duisburg.'))
+
     document.querySelector('meta[name="description"]')?.setAttribute('content', description)
-    const canonical = `https://daninihub.com${path}`
+    const canonicalPath = location.pathname === '/' ? '/de/' : location.pathname
+    const canonical = `https://daninihub.com${canonicalPath}`
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical)
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title)
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', description)
-    document.querySelector('meta[property="og:url"]')?.setAttribute('href', canonical)
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical)
+
     const pairs = [
       ['/de/','/sr/'],
+      ['/de/externe-disposition','/sr/eksterna-dispozicija'],
+      ['/de/balkan-desk','/sr/balkan-desk'],
+      ['/de/dach-desk','/sr/dach-desk'],
       ['/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme'],
       ['/de/vorher-nachher','/sr/pre-posle'],
       ['/de/capacity-signal','/sr/signal-kapaciteta'],
@@ -95,8 +114,8 @@ export default function App() {
       ['/de/haftungsausschluss','/sr/odricanje-odgovornosti'],
       ['/de/glossar','/sr/recnik']
     ]
-    const normalizedPath = path === '/de' ? '/de/' : path === '/sr' ? '/sr/' : path
-    const pair = pairs.find(([de, srPath]) => de === normalizedPath || srPath === normalizedPath) || pairs[0]
+    const normalizedPath = location.pathname === '/de' ? '/de/' : location.pathname === '/sr' ? '/sr/' : location.pathname.replace(/\/$/, '')
+    const pair = pairs.find(([de, srPath]) => de.replace(/\/$/, '') === normalizedPath.replace(/\/$/, '') || srPath.replace(/\/$/, '') === normalizedPath.replace(/\/$/, '')) || pairs[0]
     document.querySelector('link[hreflang="de"]')?.setAttribute('href', `https://daninihub.com${pair[0]}`)
     document.querySelector('link[hreflang="sr"]')?.setAttribute('href', `https://daninihub.com${pair[1]}`)
     document.querySelector('link[hreflang="x-default"]')?.setAttribute('href', `https://daninihub.com${pair[0]}`)
@@ -105,7 +124,8 @@ export default function App() {
   if (dispatchWorkspace) return <DispatchPilotWorkspace/>
 
   let page
-  if (/fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)) page = <AudiencePages lang={lang}/>
+  if (leadMeta[path]) page = <LeadLandingPages lang={lang}/>
+  else if (/fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)) page = <AudiencePages lang={lang}/>
   else if (/vorher-nachher|pre-posle/.test(path)) page = <BeforeAfterPage lang={lang}/>
   else if (/capacity-signal|signal-kapaciteta/.test(path)) page = <CapacitySignalPage lang={lang}/>
   else if (/transport-network-demo|transportna-mreza-demo/.test(path)) page = <TransportNetworkDemo lang={lang}/>
@@ -115,10 +135,10 @@ export default function App() {
   else if (/pilot-check|provera-pilota/.test(path)) page = <PilotCheck lang={lang}/>
   else if (/praxis-wissen|praksa-znanje/.test(path)) page = <KnowledgeCenter lang={lang}/>
   else if (/leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(path)) page = <BusinessPages lang={lang}/>
-  else if (/^\/de\/?$/.test(path) || path === '/') page = <GermanB2BLanding/>
-  else if (/^\/sr\/?$/.test(path)) page = <SerbianB2BLanding/>
+  else if (/^\/de\/?$/.test(location.pathname) || location.pathname === '/') page = <GermanB2BLanding/>
+  else if (/^\/sr\/?$/.test(location.pathname)) page = <SerbianB2BLanding/>
   else page = <PublicLanding lang={lang} setLang={setLang}/>
 
-  const isHome = /^\/(de|sr)\/?$/.test(path) || path === '/'
+  const isHome = /^\/(de|sr)\/?$/.test(location.pathname) || location.pathname === '/'
   return <div className="public-app"><SiteNavigation lang={lang}/>{page}{isHome && <ServiceQuickNav lang={lang}/>}<SiteFooter lang={lang}/></div>
 }

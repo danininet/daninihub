@@ -2,6 +2,8 @@ import './App.css'
 import './Enhancements.css'
 import ProductSystemSection from './ProductSystemSection'
 
+const firstTalk = 'mailto:info@daninihub.com?subject=10-Minuten-Gespr%C3%A4ch%20%E2%80%93%20DACH%20%E2%86%94%20Balkan%20Disposition'
+
 const services = [
   ['01', 'Externe Disposition', 'Flexible operative Entlastung bei Status, ETA, Fahrerkommunikation, offenen Punkten und Abweichungen.', '/de/externe-disposition'],
   ['02', 'Balkan Desk', 'Für DACH-Speditionen mit regelmäßigen Balkan-Verkehren und wiederkehrender Fahrer- oder Partnerkommunikation.', '/de/balkan-desk'],
@@ -22,7 +24,7 @@ export default function GermanB2BLanding() {
         <p className="kicker">EXTERNE DISPOSITION · BALKAN DESK · DUISBURG</p>
         <h1>Ich entlaste Ihre Disposition bei DACH ↔ Balkan-Verkehren.</h1>
         <p className="lead">DaniniHub übernimmt klar definierte operative Aufgaben rund um Status, ETA, Fahrer- und Partnerkommunikation, Dokumente und Abweichungen. Nicht als Ersatz Ihrer Disposition, sondern als zusätzliche Kapazität, wenn im Tagesgeschäft Zeit fehlt.</p>
-        <p><a className="btn" href="/de/externe-disposition">In 10 Minuten Einsatzmöglichkeit prüfen →</a></p>
+        <p><a className="btn" href="/de/externe-disposition">Einsatzmöglichkeiten ansehen →</a></p>
         <a className="entry-demo-link" href="/de/praxis-wissen">Arbeitsweise und Praxiswissen ansehen →</a>
         <div className="proof"><span>✓ Standort Duisburg</span><span>✓ DACH ↔ Balkan Fokus</span><span>✓ Mensch entscheidet, KI unterstützt</span></div>
       </div>
@@ -51,7 +53,7 @@ export default function GermanB2BLanding() {
       </div>
       <div>
         <p>Vor dem Start wird schriftlich festgelegt, welche Aufgaben DaniniHub übernimmt, welche Informationen benötigt werden, wer beim Auftraggeber entscheidet und wie Status und Übergabe dokumentiert werden.</p>
-        <p><a className="btn" href="/de/pilot-check">Kurzes Erstgespräch anfragen →</a></p>
+        <p><a className="btn" href={firstTalk}>Kurzes Erstgespräch anfragen →</a></p>
       </div>
     </section>
 
@@ -76,7 +78,7 @@ export default function GermanB2BLanding() {
 
     <section id="contact" className="section contact">
       <div><p className="kicker">NÄCHSTER SCHRITT</p><h2>Wo verliert Ihre Disposition heute am meisten Zeit?</h2><p>Ein kurzes Gespräch reicht, um festzustellen, ob und welchen klar begrenzten Teil DaniniHub sinnvoll übernehmen kann.</p></div>
-      <div><a className="btn" href="/de/pilot-check">10-Minuten-Gespräch anfragen →</a></div>
+      <div><a className="btn" href={firstTalk}>10-Minuten-Gespräch anfragen →</a></div>
     </section>
   </main>
 }

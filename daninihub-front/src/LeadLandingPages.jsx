@@ -9,7 +9,7 @@ const pages = {
     fitTitle: 'Wann das sinnvoll ist',
     fit: 'Wenn Engpässe, Urlaub, Spitzenzeiten oder wiederkehrende Balkan-Verkehre Ihre bestehende Disposition binden, aber eine zusätzliche Vollzeitstelle nicht die erste Lösung sein soll.',
     cta: '10-Minuten-Gespräch anfragen',
-    link: '/de/pilot-check',
+    link: 'mailto:info@daninihub.com?subject=10-Minuten-Gespr%C3%A4ch%20%E2%80%93%20Externe%20Disposition',
     secondary: ['/de/balkan-desk', 'Balkan Desk ansehen →']
   },
   '/de/balkan-desk': {
@@ -20,7 +20,7 @@ const pages = {
     fitTitle: 'Was Sie davon haben',
     fit: 'Weniger Rückfragen in Ihrer Kern-Disposition, klarere Statuslage und eine definierte Schnittstelle zwischen DACH-Auftraggebern und Balkan-Fahrern oder Partnern.',
     cta: 'Balkan-Engpass kurz besprechen',
-    link: '/de/pilot-check',
+    link: 'mailto:info@daninihub.com?subject=Kurzes%20Gespr%C3%A4ch%20%E2%80%93%20Balkan%20Desk',
     secondary: ['/de/externe-disposition', 'Externe Disposition ansehen →']
   },
   '/de/dach-desk': {
@@ -31,7 +31,7 @@ const pages = {
     fitTitle: 'Für wen das gedacht ist',
     fit: 'Für Balkan-Frachtführer, die regelmäßig in Deutschland oder Österreich fahren und eine verlässliche deutschsprachige operative Schnittstelle brauchen, ohne direkt eine eigene Niederlassung aufzubauen.',
     cta: 'DACH Desk besprechen',
-    link: '/de/pilot-check',
+    link: 'mailto:info@daninihub.com?subject=Kurzes%20Gespr%C3%A4ch%20%E2%80%93%20DACH%20Desk',
     secondary: ['/de/balkan-desk', 'Balkan Desk für DACH ansehen →']
   },
   '/sr/eksterna-dispozicija': {
@@ -42,7 +42,7 @@ const pages = {
     fitTitle: 'Kada ima smisla',
     fit: 'Kada gužve, odmori, vršni periodi ili ponavljajući DACH–Balkan transporti opterećuju postojeću dispoziciju, a dodatni zaposleni nije prvo rešenje.',
     cta: 'Zatraži razgovor od 10 minuta',
-    link: '/sr/provera-pilota',
+    link: 'mailto:info@daninihub.com?subject=Razgovor%20od%2010%20minuta%20%E2%80%93%20Eksterna%20dispozicija',
     secondary: ['/sr/balkan-desk', 'Pogledaj Balkan Desk →']
   },
   '/sr/balkan-desk': {
@@ -53,7 +53,7 @@ const pages = {
     fitTitle: 'Šta dobijate',
     fit: 'Manje prekida u centralnoj dispoziciji, jasniji status i definisanu vezu između DACH naručioca i Balkan vozača ili partnera.',
     cta: 'Razgovaraj o Balkan problemu',
-    link: '/sr/provera-pilota',
+    link: 'mailto:info@daninihub.com?subject=Kratak%20razgovor%20%E2%80%93%20Balkan%20Desk',
     secondary: ['/sr/eksterna-dispozicija', 'Pogledaj eksternu dispoziciju →']
   },
   '/sr/dach-desk': {
@@ -64,7 +64,7 @@ const pages = {
     fitTitle: 'Za koga je ovo',
     fit: 'Za Balkan prevoznike koji redovno voze Nemačku ili Austriju i žele pouzdanu nemačku operativnu kontakt tačku bez otvaranja sopstvene poslovnice.',
     cta: 'Razgovaraj o DACH Desk-u',
-    link: '/sr/provera-pilota',
+    link: 'mailto:info@daninihub.com?subject=Kratak%20razgovor%20%E2%80%93%20DACH%20Desk',
     secondary: ['/sr/balkan-desk', 'Pogledaj Balkan Desk za DACH →']
   }
 }

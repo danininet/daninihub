@@ -71,6 +71,7 @@ const pages = {
 
 export default function LeadLandingPages() {
   const page = pages[location.pathname] || pages['/de/externe-disposition']
+  const sr = location.pathname.startsWith('/sr/')
   return <main id="top">
     <section className="hero">
       <div className="hero-copy">
@@ -83,7 +84,7 @@ export default function LeadLandingPages() {
     </section>
 
     <section className="section">
-      <p className="kicker">OPERATIVNI FOKUS</p>
+      <p className="kicker">{sr ? 'OPERATIVNI FOKUS' : 'OPERATIVER FOKUS'}</p>
       <h2>{page.fitTitle}</h2>
       <p className="big">{page.fit}</p>
       <div className="start-grid">
@@ -93,11 +94,11 @@ export default function LeadLandingPages() {
 
     <section className="section split">
       <div>
-        <p className="kicker">KONKRETAN POČETAK</p>
-        <h2>Ne menjamo vaš sistem. Preuzimamo jasno ograničen deo posla.</h2>
+        <p className="kicker">{sr ? 'KONKRETAN POČETAK' : 'KONKRETER START'}</p>
+        <h2>{sr ? 'Ne menjamo vaš sistem. Preuzimamo jasno ograničen deo posla.' : 'Wir ersetzen Ihr System nicht. Wir übernehmen einen klar abgegrenzten Teil der Arbeit.'}</h2>
       </div>
       <div>
-        <p>Početak može biti jedna relacija, nekoliko vozila ili jedan ponavljajući proces. Prvo definišemo šta preuzimam, ko donosi odluke i kako izgleda izveštavanje.</p>
+        <p>{sr ? 'Početak može biti jedna relacija, nekoliko vozila ili jedan ponavljajući proces. Prvo definišemo šta preuzimam, ko donosi odluke i kako izgleda izveštavanje.' : 'Der Einstieg kann eine Relation, wenige Fahrzeuge oder ein wiederkehrender Prozess sein. Zuerst definieren wir Aufgaben, Entscheidungswege und Berichterstattung.'}</p>
         <p><a className="btn" href={page.link}>{page.cta} →</a></p>
       </div>
     </section>
@@ -106,8 +107,8 @@ export default function LeadLandingPages() {
       <p className="kicker">DANINIHUB · DUISBURG</p>
       <h2>DACH ↔ Balkan Logistics Operations Support</h2>
       <div className="scope-grid">
-        <article><span>Operativa</span><p>Status, ETA, vozači, partneri, dokumenti, otvorene tačke i kontrolisane eskalacije.</p></article>
-        <article><span>Odgovornost</span><p>Transportni nalozi, cene, pravno obavezujuće odluke i završna dispozicija ostaju kod naručioca.</p></article>
+        <article><span>{sr ? 'Operativa' : 'Operativ'}</span><p>{sr ? 'Status, ETA, vozači, partneri, dokumenti, otvorene tačke i kontrolisane eskalacije.' : 'Status, ETA, Fahrer, Partner, Dokumente, offene Punkte und kontrollierte Eskalationen.'}</p></article>
+        <article><span>{sr ? 'Odgovornost' : 'Verantwortung'}</span><p>{sr ? 'Transportni nalozi, cene, pravno obavezujuće odluke i završna dispozicija ostaju kod naručioca.' : 'Transportaufträge, Preise, rechtsverbindliche Entscheidungen und finale Disposition bleiben beim Auftraggeber.'}</p></article>
       </div>
     </section>
   </main>

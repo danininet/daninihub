@@ -5,12 +5,24 @@
   <url><loc>https://daninihub.com/de/balkan-desk</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://daninihub.com/de/dach-desk</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://daninihub.com/de/praxis-wissen</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/de/praxis-wissen/eta-ist-keine-zusage</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/de/praxis-wissen/fahrerkommunikation-balkan-dach</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://daninihub.com/de/praxis-wissen/schichtuebergabe-disposition</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/de/praxis-wissen/abweichungen-eskalieren</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/de/praxis-wissen/transportdokumente-cmr-pod</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://daninihub.com/de/dispolab</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://daninihub.com/de/pilot-check</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/de/pilot-check</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://daninihub.com/sr/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://daninihub.com/sr/eksterna-dispozicija</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://daninihub.com/sr/balkan-desk</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://daninihub.com/sr/dach-desk</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://daninihub.com/sr/praksa-znanje</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://daninihub.com/sr/provera-pilota</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://daninihub.com/sr/praksa-znanje/zasto-tms-ne-menja-disponente</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://daninihub.com/sr/praksa-znanje/eta-nije-obecanje</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://daninihub.com/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/sr/praksa-znanje/predaja-smene-dispozicija</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://daninihub.com/sr/praksa-znanje/eskalacija-odstupanja</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://daninihub.com/sr/praksa-znanje/transportna-dokumenta-cmr-pod</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://daninihub.com/sr/provera-pilota</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>

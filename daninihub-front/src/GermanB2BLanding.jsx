@@ -24,20 +24,20 @@ export default function GermanB2BLanding() {
         <p className="kicker">EXTERNE DISPOSITION · BALKAN DESK · DUISBURG</p>
         <h1>Ich entlaste Ihre Disposition bei DACH ↔ Balkan-Verkehren.</h1>
         <p className="lead">DaniniHub übernimmt klar definierte operative Aufgaben rund um Status, ETA, Fahrer- und Partnerkommunikation, Dokumente und Abweichungen. Nicht als Ersatz Ihrer Disposition, sondern als zusätzliche Kapazität, wenn im Tagesgeschäft Zeit fehlt.</p>
-        <p><a className="btn" href="/de/externe-disposition">Einsatzmöglichkeiten ansehen →</a></p>
-        <a className="entry-demo-link" href="/de/praxis-wissen">Arbeitsweise und Praxiswissen ansehen →</a>
+        <p><a className="btn" href={firstTalk}>10-Minuten-Gespräch anfragen →</a></p>
+        <a className="entry-demo-link" href="#services">Leistungen zuerst ansehen →</a>
         <div className="proof"><span>✓ Standort Duisburg</span><span>✓ DACH ↔ Balkan Fokus</span><span>✓ Mensch entscheidet, KI unterstützt</span></div>
       </div>
       <div className="route-art" aria-hidden="true"><div className="globe"/><div className="route r1"/><div className="route r2"/><div className="truck">▰</div><span className="city c1">DUISBURG</span><span className="city c2">DACH</span><span className="city c3">BALKAN</span></div>
     </section>
 
-    <section className="section">
+    <section id="services" className="section">
       <p className="kicker">DREI KLARE EINSTIEGE</p>
       <h2>Finden Sie direkt die Unterstützung, die zu Ihrem Engpass passt.</h2>
       <div className="start-grid interest-grid">{services.map(([n, title, text, href]) => <article key={href}><span>{n}</span><h3>{title}</h3><p>{text}</p><a href={href}>Mehr erfahren →</a></article>)}</div>
     </section>
 
-    <section id="services" className="section">
+    <section className="section">
       <p className="kicker">TYPISCHE ENGPÄSSE</p>
       <h2>Was im Tagesgeschäft unnötig Aufmerksamkeit bindet.</h2>
       <div className="grid">{problems.map(([title, text], index) => <article key={title}><div className="service-card-head"><span className="num">0{index + 1}</span></div><h3>{title}</h3><p>{text}</p></article>)}</div>

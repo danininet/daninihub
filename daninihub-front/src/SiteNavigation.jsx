@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import './SiteNavigation.css'
 
 const links = {
-  de: { start:'Start', services:'Leistungen', capacity:'Lkw / Ladung', dispoLab:'DispoLab', external:'Externe Disposition', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Leistungsrahmen', continuity:'Continuity Support', drivers:'Fahrerkommunikation', pilot:'Pilot-Check', knowledge:'Praxis & Wissen', contact:'Kontakt', menu:'Menü', close:'Schließen' },
-  sr: { start:'Početna', services:'Usluge', capacity:'Kamion / teret', dispoLab:'DispoLab', external:'Eksterna dispozicija', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', pilot:'Provera pilota', knowledge:'Praksa i znanje', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
+  de: { start:'Start', services:'Leistungen', dispoLab:'DispoLab', external:'Externe Disposition', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Leistungsrahmen', continuity:'Continuity Support', drivers:'Fahrerkommunikation', knowledge:'Praxis & Wissen', contact:'Kontakt', menu:'Menü', close:'Schließen' },
+  sr: { start:'Početna', services:'Usluge', dispoLab:'DispoLab', external:'Eksterna dispozicija', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', knowledge:'Praksa i znanje', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
 }
 
 const routePairs = [
@@ -29,8 +29,6 @@ const routePairs = [
   ['/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija'],
   ['/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja'],
   ['/de/praxis-wissen/transportdokumente-cmr-pod', '/sr/praksa-znanje/transportna-dokumenta-cmr-pod'],
-  ['/de/pilot-beispiel', '/sr/primer-pilota'],
-  ['/de/operations-desk-demo', '/sr/operativni-pult-demo'],
   ['/de/impressum', '/sr/impressum'],
   ['/de/datenschutz', '/sr/privatnost'],
   ['/de/cookies', '/sr/kolacici'],
@@ -55,8 +53,6 @@ export default function SiteNavigation({ lang }) {
   const [open, setOpen] = useState(false)
   const t = links[lang]
   const sr = lang === 'sr'
-  const audience = sr ? '/sr/za-balkanske-transportne-firme' : '/de/fuer-dach-speditionen'
-  const capacity = sr ? '/sr/signal-kapaciteta' : '/de/capacity-signal'
   const external = sr ? '/sr/eksterna-dispozicija' : '/de/externe-disposition'
   const balkanDesk = sr ? '/sr/balkan-desk' : '/de/balkan-desk'
   const dachDesk = sr ? '/sr/dach-desk' : '/de/dach-desk'
@@ -64,15 +60,16 @@ export default function SiteNavigation({ lang }) {
     [t.external, external],
     [t.dach, balkanDesk],
     [t.balkan, dachDesk],
-    [sr ? 'Za DACH špedicije' : 'Für DACH-Speditionen', audience],
     [t.scope, sr ? '/sr/obim-usluge' : '/de/leistungsrahmen'],
     [t.continuity, sr ? '/sr/kontinuitet-podrska' : '/de/continuity-support'],
     [t.drivers, sr ? '/sr/komunikacija-vozaci' : '/de/fahrerkommunikation']
   ]
   const dispoLab = sr ? '/sr/dispo-lab' : '/de/dispolab'
-  const pilot = sr ? '/sr/provera-pilota' : '/de/pilot-check'
   const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
   const home = sr ? '/sr/' : '/de/'
+  const contact = sr
+    ? 'mailto:info@daninihub.com?subject=Kratak%20razgovor%20%E2%80%93%20DACH%20%E2%86%94%20Balkan'
+    : 'mailto:info@daninihub.com?subject=10-Minuten-Gespr%C3%A4ch%20%E2%80%93%20DACH%20%E2%86%94%20Balkan'
   const deHref = translatedPath('de')
   const srHref = translatedPath('sr')
 
@@ -96,21 +93,24 @@ export default function SiteNavigation({ lang }) {
       </a>
       <nav className="site-nav-desktop" aria-label={sr ? 'Glavna navigacija' : 'Hauptnavigation'}>
         <a href={home}>{t.start}</a>
-        <a href={capacity}>{t.capacity}</a>
-        <a href={dispoLab}>{t.dispoLab}</a>
         <details className="site-nav-dropdown"><summary>{t.services}</summary><div>{serviceLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div></details>
         <a href={knowledge}>{t.knowledge}</a>
-        <a href={pilot}>{t.pilot}</a>
-        <a href={`${home}#contact`}>{t.contact}</a>
+        <a href={dispoLab}>{t.dispoLab}</a>
+        <a href={contact}>{t.contact}</a>
       </nav>
-      <div className="site-nav-actions"><div className="site-nav-langs" aria-label="Language"><a className={lang === 'de' ? 'active' : ''} href={deHref}>DE</a><a className={lang === 'sr' ? 'active' : ''} href={srHref}>SR</a></div><a className="site-nav-cta" href={external}>{t.external}</a></div>
+      <div className="site-nav-actions"><div className="site-nav-langs" aria-label="Language"><a className={lang === 'de' ? 'active' : ''} href={deHref}>DE</a><a className={lang === 'sr' ? 'active' : ''} href={srHref}>SR</a></div><a className="site-nav-cta" href={contact}>{t.contact}</a></div>
       <button className={`site-nav-toggle ${open ? 'is-open' : ''}`} type="button" aria-expanded={open} aria-controls="site-mobile-menu" aria-label={open ? t.close : t.menu} onClick={() => setOpen(value => !value)}><span></span><span></span><span></span></button>
     </header>
     <button className={`site-nav-overlay ${open ? 'is-open' : ''}`} type="button" aria-label={t.close} onClick={close}/>
     <aside id="site-mobile-menu" className={`site-nav-mobile-panel ${open ? 'is-open' : ''}`} aria-hidden={!open}>
       <div className="site-nav-mobile-head"><strong>{t.menu}</strong><button type="button" onClick={close} aria-label={t.close}>×</button></div>
       <nav aria-label={sr ? 'Mobilna navigacija' : 'Mobile Navigation'}>
-        <a href={home} onClick={close}>{t.start}</a><a href={capacity} onClick={close}>{t.capacity}</a><a href={dispoLab} onClick={close}>{t.dispoLab}</a><a className="mobile-services-main" href={external} onClick={close}>{t.services}</a><div className="mobile-services-list">{serviceLinks.map(([label, href]) => <a key={href} href={href} onClick={close}>{label}</a>)}</div><a href={knowledge} onClick={close}>{t.knowledge}</a><a href={pilot} onClick={close}>{t.pilot}</a><a href={`${home}#contact`} onClick={close}>{t.contact}</a>
+        <a href={home} onClick={close}>{t.start}</a>
+        <a className="mobile-services-main" href={external} onClick={close}>{t.services}</a>
+        <div className="mobile-services-list">{serviceLinks.map(([label, href]) => <a key={href} href={href} onClick={close}>{label}</a>)}</div>
+        <a href={knowledge} onClick={close}>{t.knowledge}</a>
+        <a href={dispoLab} onClick={close}>{t.dispoLab}</a>
+        <a href={contact} onClick={close}>{t.contact}</a>
       </nav>
       <div className="site-nav-mobile-langs"><a href={deHref}>DE</a><a href={srHref}>SR</a></div>
     </aside>

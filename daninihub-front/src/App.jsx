@@ -29,6 +29,93 @@ const leadMeta = {
   '/sr/dach-desk': ['DACH Desk za balkanske prevoznike | DaniniHub', 'Nemačka operativna kontakt tačka iz Duisburga za balkanske transportne firme koje rade Nemačku i Austriju.']
 }
 
+const articleCommercialCtas = {
+  '/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen': {
+    eyebrow: 'OPERATIVE UNTERSTÜTZUNG',
+    title: 'Kostet genau diese operative Lücke Ihrer Disposition regelmäßig Zeit?',
+    text: 'DaniniHub kann einen klar abgegrenzten Teil rund um Status, Nachverfolgung, Kommunikation und dokumentierte Übergabe übernehmen.',
+    label: 'Externe Disposition ansehen',
+    href: '/de/externe-disposition'
+  },
+  '/de/praxis-wissen/eta-ist-keine-zusage': {
+    eyebrow: 'OPERATIVE UNTERSTÜTZUNG',
+    title: 'Binden Status, ETA und Rückfragen regelmäßig Zeit in Ihrer Disposition?',
+    text: 'DaniniHub unterstützt bei Status- und ETA-Nachverfolgung, klarer Kommunikation und dokumentierten nächsten Schritten.',
+    label: 'Externe Disposition ansehen',
+    href: '/de/externe-disposition'
+  },
+  '/de/praxis-wissen/fahrerkommunikation-balkan-dach': {
+    eyebrow: 'BALKAN DESK',
+    title: 'Bindet die Kommunikation mit Fahrern und Balkan-Partnern regelmäßig Ihre Kern-Disposition?',
+    text: 'Der DaniniHub Balkan Desk unterstützt bei Fahrer- und Partnerkommunikation, Status, ETA, Dokumenten und strukturierten Eskalationen.',
+    label: 'Balkan Desk ansehen',
+    href: '/de/balkan-desk'
+  },
+  '/de/praxis-wissen/schichtuebergabe-disposition': {
+    eyebrow: 'EXTERNE DISPOSITION',
+    title: 'Fehlen im Tagesgeschäft Zeit und Kapazität für saubere Nachverfolgung und Übergaben?',
+    text: 'DaniniHub kann klar definierte operative Aufgaben übernehmen und offene Punkte arbeitsfähig dokumentieren.',
+    label: 'Externe Disposition ansehen',
+    href: '/de/externe-disposition'
+  },
+  '/de/praxis-wissen/abweichungen-eskalieren': {
+    eyebrow: 'EXTERNE DISPOSITION',
+    title: 'Kosten Abweichungen, Rückfragen und Eskalationen Ihrer Disposition regelmäßig Zeit?',
+    text: 'DaniniHub unterstützt bei Faktenprüfung, Nachverfolgung, strukturierter Eskalation und dokumentierter Übergabe – innerhalb klarer Freigabegrenzen.',
+    label: 'Externe Disposition ansehen',
+    href: '/de/externe-disposition'
+  },
+  '/de/praxis-wissen/transportdokumente-cmr-pod': {
+    eyebrow: 'BALKAN DESK',
+    title: 'Binden CMR, POD und offene Nachweise bei Balkan-Verkehren unnötig Dispositionszeit?',
+    text: 'Der DaniniHub Balkan Desk unterstützt bei Dokumenten-Nachverfolgung, Status, Fahrerkommunikation und offenen Punkten.',
+    label: 'Balkan Desk ansehen',
+    href: '/de/balkan-desk'
+  },
+  '/sr/praksa-znanje/zasto-tms-ne-menja-disponente': {
+    eyebrow: 'OPERATIVNA PODRŠKA',
+    title: 'Da li upravo ovaj operativni jaz redovno oduzima vreme vašoj dispoziciji?',
+    text: 'DaniniHub može preuzeti jasno ograničen deo posla oko statusa, praćenja, komunikacije i dokumentovane predaje.',
+    label: 'Pogledaj eksternu dispoziciju',
+    href: '/sr/eksterna-dispozicija'
+  },
+  '/sr/praksa-znanje/eta-nije-obecanje': {
+    eyebrow: 'OPERATIVNA PODRŠKA',
+    title: 'Da li statusi, ETA i dodatna pitanja redovno vezuju vreme vaše dispozicije?',
+    text: 'DaniniHub podržava praćenje statusa i ETA, jasnu komunikaciju i dokumentovanje sledećih koraka.',
+    label: 'Pogledaj eksternu dispoziciju',
+    href: '/sr/eksterna-dispozicija'
+  },
+  '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach': {
+    eyebrow: 'DACH DESK',
+    title: 'Da li komunikacija sa DACH klijentima i partnerima redovno opterećuje vašu dispoziciju?',
+    text: 'DaniniHub DACH Desk pomaže balkanskim prevoznicima u nemačkoj operativnoj komunikaciji, statusima, ETA i otvorenim pitanjima.',
+    label: 'Pogledaj DACH Desk',
+    href: '/sr/dach-desk'
+  },
+  '/sr/praksa-znanje/predaja-smene-dispozicija': {
+    eyebrow: 'EKSTERNA DISPOZICIJA',
+    title: 'Nedostaju li vreme i kapacitet za uredno praćenje i predaju otvorenih slučajeva?',
+    text: 'DaniniHub može preuzeti jasno definisane operativne zadatke i dokumentovati otvorene tačke tako da se rad nastavlja bez ponovnog prikupljanja podataka.',
+    label: 'Pogledaj eksternu dispoziciju',
+    href: '/sr/eksterna-dispozicija'
+  },
+  '/sr/praksa-znanje/eskalacija-odstupanja': {
+    eyebrow: 'EKSTERNA DISPOZICIJA',
+    title: 'Da li odstupanja, dodatna pitanja i eskalacije redovno oduzimaju vreme dispoziciji?',
+    text: 'DaniniHub podržava proveru činjenica, praćenje, strukturisanu eskalaciju i dokumentovanu predaju u jasno definisanim granicama.',
+    label: 'Pogledaj eksternu dispoziciju',
+    href: '/sr/eksterna-dispozicija'
+  },
+  '/sr/praksa-znanje/transportna-dokumenta-cmr-pod': {
+    eyebrow: 'DACH DESK',
+    title: 'Da li CMR, POD i otvoreni dokazi redovno vezuju vreme vaše dispozicije na DACH relacijama?',
+    text: 'DaniniHub DACH Desk može pomoći u praćenju dokumentacije, statusa i komunikaciji sa nemačkim i austrijskim partnerima.',
+    label: 'Pogledaj DACH Desk',
+    href: '/sr/dach-desk'
+  }
+}
+
 export default function App() {
   const [lang, setLang] = useState(() => location.pathname.startsWith('/sr') ? 'sr' : 'de')
   const path = location.pathname.replace(/\/$/, '') || '/'
@@ -106,6 +193,12 @@ export default function App() {
       ['/de/fahrerkommunikation','/sr/komunikacija-vozaci'],
       ['/de/pilot-check','/sr/provera-pilota'],
       ['/de/praxis-wissen','/sr/praksa-znanje'],
+      ['/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen','/sr/praksa-znanje/zasto-tms-ne-menja-disponente'],
+      ['/de/praxis-wissen/eta-ist-keine-zusage','/sr/praksa-znanje/eta-nije-obecanje'],
+      ['/de/praxis-wissen/fahrerkommunikation-balkan-dach','/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'],
+      ['/de/praxis-wissen/schichtuebergabe-disposition','/sr/praksa-znanje/predaja-smene-dispozicija'],
+      ['/de/praxis-wissen/abweichungen-eskalieren','/sr/praksa-znanje/eskalacija-odstupanja'],
+      ['/de/praxis-wissen/transportdokumente-cmr-pod','/sr/praksa-znanje/transportna-dokumenta-cmr-pod'],
       ['/de/pilot-beispiel','/sr/primer-pilota'],
       ['/de/operations-desk-demo','/sr/operativni-pult-demo'],
       ['/de/impressum','/sr/impressum'],
@@ -120,6 +213,33 @@ export default function App() {
     document.querySelector('link[hreflang="sr"]')?.setAttribute('href', `https://daninihub.com${pair[1]}`)
     document.querySelector('link[hreflang="x-default"]')?.setAttribute('href', `https://daninihub.com${pair[0]}`)
   }, [dispatchWorkspace, lang, path])
+
+  useEffect(() => {
+    const commercial = articleCommercialCtas[path]
+    if (!commercial) return
+
+    const cta = document.querySelector('.article-cta')
+    if (!cta) return
+
+    const eyebrow = cta.querySelector('span')
+    const title = cta.querySelector('h2')
+    const link = cta.querySelector('a')
+    let text = cta.querySelector('p')
+
+    if (eyebrow) eyebrow.textContent = commercial.eyebrow
+    if (title) title.textContent = commercial.title
+    if (link) {
+      link.textContent = `${commercial.label} →`
+      link.setAttribute('href', commercial.href)
+    }
+    if (text) {
+      text.textContent = commercial.text
+    } else if (title && commercial.text) {
+      text = document.createElement('p')
+      text.textContent = commercial.text
+      title.insertAdjacentElement('afterend', text)
+    }
+  }, [path, lang])
 
   if (dispatchWorkspace) return <DispatchPilotWorkspace/>
 

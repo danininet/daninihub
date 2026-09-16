@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import PublicLanding from './PublicLanding'
-import GermanB2BLanding from './GermanB2BLanding'
-import SerbianB2BLanding from './SerbianB2BLanding'
 import DispatchPilotWorkspace from './DispatchPilotWorkspaceV5'
 import PilotCheck from './PilotCheck'
 import BusinessPages from './BusinessPages'
@@ -12,11 +10,11 @@ import DispoLabPage from './DispoLabPage'
 import DispoCheck from './DispoCheck'
 import TransportRoomDemo from './TransportRoomDemo'
 import TransportNetworkDemo from './TransportNetworkDemo'
-import ServiceQuickNav from './ServiceQuickNav'
 import SiteNavigation from './SiteNavigation'
 import SiteFooter from './SiteFooter'
 import KnowledgeCenter from './KnowledgeCenter'
 import LeadLandingPages from './LeadLandingPages'
+import BusinessHubLanding from './BusinessHubLanding'
 import './App.css'
 import './Polish.css'
 
@@ -154,7 +152,7 @@ export default function App() {
       : pilotCheck ? (sr ? 'Provera pilota | DaniniHub' : 'Pilot-Check | DaniniHub')
       : knowledgeCenter ? (sr ? 'Praksa i znanje | DaniniHub' : 'Praxis & Wissen | DaniniHub')
       : businessPage ? (sr ? 'Operativne usluge | DaniniHub' : 'Operative Leistungen | DaniniHub')
-      : (sr ? 'DaniniHub DACH Operations Desk' : 'Externe Disposition & Balkan Desk | DaniniHub Duisburg'))
+      : (sr ? 'DaniniHub Biznis | Operativa, lokacije i sopstveni projekti' : 'DaniniHub Business | Operations, Standorte und eigene Projekte'))
 
     const description = meta?.[1] || (capacityPage
       ? (sr ? 'Ručna prijava slobodnog kamiona ili tereta koji čeka, bez javne objave i bez automatskog ugovaranja.' : 'Manuelle Meldung eines freien Lkw oder wartender Ladung, ohne öffentliche Veröffentlichung oder automatische Vermittlung.')
@@ -166,7 +164,7 @@ export default function App() {
           ? (sr ? 'Fiktivni kompanijski prostor sa profilima firmi, članovima tima i više privatnih transportnih soba.' : 'Fiktiver Unternehmensbereich mit Firmenprofilen, Teammitgliedern und mehreren privaten Transport Rooms.')
           : transportRoom
           ? (sr ? 'Interaktivni pilot zajedničke transportne sobe sa statusima, ETA, komunikacijom, dokumentima i incidentima.' : 'Interaktiver Pilot eines gemeinsamen Transport Room mit Status, ETA, Kommunikation, Dokumenten und Incidents.')
-          : (sr ? 'DaniniHub operativna podrška i praktični alati za Balkan–DACH transport.' : 'Externe Dispositionsunterstützung und Balkan–DACH Operations Support aus Duisburg.'))
+          : (sr ? 'DaniniHub povezuje DACH–Balkan operativnu podršku, digitalnu validaciju lokacija i sopstvene poslovne projekte.' : 'DaniniHub verbindet DACH–Balkan Operations, digitale Standortvalidierung und eigene Geschäftsprojekte.'))
 
     document.querySelector('meta[name="description"]')?.setAttribute('content', description)
     const canonicalPath = location.pathname === '/' ? '/de/' : location.pathname
@@ -255,10 +253,9 @@ export default function App() {
   else if (/pilot-check|provera-pilota/.test(path)) page = <PilotCheck lang={lang}/>
   else if (/praxis-wissen|praksa-znanje/.test(path)) page = <KnowledgeCenter lang={lang}/>
   else if (/leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(path)) page = <BusinessPages lang={lang}/>
-  else if (/^\/de\/?$/.test(location.pathname) || location.pathname === '/') page = <GermanB2BLanding/>
-  else if (/^\/sr\/?$/.test(location.pathname)) page = <SerbianB2BLanding/>
+  else if (/^\/de\/?$/.test(location.pathname) || location.pathname === '/') page = <BusinessHubLanding lang="de"/>
+  else if (/^\/sr\/?$/.test(location.pathname)) page = <BusinessHubLanding lang="sr"/>
   else page = <PublicLanding lang={lang} setLang={setLang}/>
 
-  const isHome = /^\/(de|sr)\/?$/.test(location.pathname) || location.pathname === '/'
-  return <div className="public-app"><SiteNavigation lang={lang}/>{page}{isHome && <ServiceQuickNav lang={lang}/>}<SiteFooter lang={lang}/></div>
+  return <div className="public-app"><SiteNavigation lang={lang}/>{page}<SiteFooter lang={lang}/></div>
 }

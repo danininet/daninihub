@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import './SiteNavigation.css'
 
 const links = {
-  de: { start:'Start', services:'Leistungen', dispoLab:'DispoLab', external:'Externe Disposition', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Leistungsrahmen', continuity:'Continuity Support', drivers:'Fahrerkommunikation', knowledge:'Praxis & Wissen', contact:'Kontakt', menu:'Menü', close:'Schließen' },
-  sr: { start:'Početna', services:'Usluge', dispoLab:'DispoLab', external:'Eksterna dispozicija', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', knowledge:'Praksa i znanje', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
+  de: { start:'Start', services:'Operations', projects:'Projekte', location:'Location Launch', calije:'Čalije Parking', dispoLab:'DispoLab', external:'Externe Disposition', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Leistungsrahmen', continuity:'Continuity Support', drivers:'Fahrerkommunikation', knowledge:'Praxis & Wissen', contact:'Kontakt', menu:'Menü', close:'Schließen' },
+  sr: { start:'Početna', services:'Operativa', projects:'Projekti', location:'Location Launch', calije:'Čalije Parking', dispoLab:'DispoLab', external:'Eksterna dispozicija', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', knowledge:'Praksa i znanje', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
 }
 
 const routePairs = [
@@ -66,6 +66,8 @@ export default function SiteNavigation({ lang }) {
   ]
   const dispoLab = sr ? '/sr/dispo-lab' : '/de/dispolab'
   const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
+  const locationLaunch = sr ? 'mailto:info@daninihub.com?subject=Digitalna%20validacija%20lokacije' : 'mailto:info@daninihub.com?subject=Digital%20Location%20Launch'
+  const calije = sr ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
   const home = sr ? '/sr/' : '/de/'
   const contact = sr
     ? 'mailto:info@daninihub.com?subject=Kratak%20razgovor%20%E2%80%93%20DACH%20%E2%86%94%20Balkan'
@@ -89,11 +91,12 @@ export default function SiteNavigation({ lang }) {
     <header className="site-nav">
       <a className="site-nav-brand" href={home} aria-label="DaniniHub">
         <img src="/logo-mark.svg" alt="" width="52" height="52"/>
-        <strong>DaniniHub<small>TRANSPORT &amp; LOGISTICS</small></strong>
+        <strong>DaniniHub<small>BUSINESS &amp; OPERATIONS</small></strong>
       </a>
       <nav className="site-nav-desktop" aria-label={sr ? 'Glavna navigacija' : 'Hauptnavigation'}>
         <a href={home}>{t.start}</a>
         <details className="site-nav-dropdown"><summary>{t.services}</summary><div>{serviceLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div></details>
+        <details className="site-nav-dropdown"><summary>{t.projects}</summary><div><a href={locationLaunch}>{t.location}</a><a href={calije} target="_blank" rel="noreferrer">{t.calije} ↗</a></div></details>
         <a href={knowledge}>{t.knowledge}</a>
         <a href={dispoLab}>{t.dispoLab}</a>
         <a href={contact}>{t.contact}</a>
@@ -108,6 +111,8 @@ export default function SiteNavigation({ lang }) {
         <a href={home} onClick={close}>{t.start}</a>
         <a className="mobile-services-main" href={external} onClick={close}>{t.services}</a>
         <div className="mobile-services-list">{serviceLinks.map(([label, href]) => <a key={href} href={href} onClick={close}>{label}</a>)}</div>
+        <a className="mobile-services-main" href={locationLaunch} onClick={close}>{t.location}</a>
+        <a href={calije} target="_blank" rel="noreferrer" onClick={close}>{t.calije} ↗</a>
         <a href={knowledge} onClick={close}>{t.knowledge}</a>
         <a href={dispoLab} onClick={close}>{t.dispoLab}</a>
         <a href={contact} onClick={close}>{t.contact}</a>

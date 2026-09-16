@@ -8,6 +8,7 @@ const links = {
 
 const routePairs = [
   ['/de/', '/sr/'],
+  ['/de/location-launch', '/sr/location-launch'],
   ['/de/externe-disposition', '/sr/eksterna-dispozicija'],
   ['/de/balkan-desk', '/sr/balkan-desk'],
   ['/de/dach-desk', '/sr/dach-desk'],
@@ -66,7 +67,7 @@ export default function SiteNavigation({ lang }) {
   ]
   const dispoLab = sr ? '/sr/dispo-lab' : '/de/dispolab'
   const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
-  const locationLaunch = sr ? 'mailto:info@daninihub.com?subject=Digitalna%20validacija%20lokacije' : 'mailto:info@daninihub.com?subject=Digital%20Location%20Launch'
+  const locationLaunch = sr ? '/sr/location-launch' : '/de/location-launch'
   const calije = sr ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
   const home = sr ? '/sr/' : '/de/'
   const contact = sr

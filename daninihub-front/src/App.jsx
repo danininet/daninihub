@@ -15,10 +15,13 @@ import SiteFooter from './SiteFooter'
 import KnowledgeCenter from './KnowledgeCenter'
 import LeadLandingPages from './LeadLandingPages'
 import BusinessHubLanding from './BusinessHubLanding'
+import LocationLaunchPage from './LocationLaunchPage'
 import './App.css'
 import './Polish.css'
 
 const leadMeta = {
+  '/de/location-launch': ['Standort-Nachfrage testen vor der Investition | DaniniHub', 'Digital Location Launch prüft die reale Nachfrage nach Parkflächen, Grundstücken und lokalen Angeboten – mit Landingpage, direkter Ansprache und Demand Validation Report.'],
+  '/sr/location-launch': ['Provera potražnje za lokacijom pre ulaganja | DaniniHub', 'Digital Location Launch proverava realnu potražnju za parkingom, parcelom ili lokalnom ponudom kroz prodajnu stranicu, direktan kontakt i izveštaj.'],
   '/de/externe-disposition': ['Externe Disposition für Speditionen | DaniniHub Duisburg', 'Flexible externe Dispositionsunterstützung für Speditionen: Status, ETA, Fahrerkommunikation, Partnerkommunikation und operative Engpässe – aus Duisburg.'],
   '/de/balkan-desk': ['Balkan Desk für DACH-Speditionen | DaniniHub', 'Operative Unterstützung für DACH-Speditionen mit Balkan-Verkehren: Fahrerkommunikation, Status, ETA, CMR/POD und strukturierte Eskalation.'],
   '/de/dach-desk': ['DACH Desk für Balkan-Transportunternehmen | DaniniHub', 'Deutschsprachige operative Schnittstelle in Duisburg für Balkan-Transportunternehmen mit Verkehren nach Deutschland und Österreich.'],
@@ -176,6 +179,7 @@ export default function App() {
 
     const pairs = [
       ['/de/','/sr/'],
+      ['/de/location-launch','/sr/location-launch'],
       ['/de/externe-disposition','/sr/eksterna-dispozicija'],
       ['/de/balkan-desk','/sr/balkan-desk'],
       ['/de/dach-desk','/sr/dach-desk'],
@@ -242,7 +246,8 @@ export default function App() {
   if (dispatchWorkspace) return <DispatchPilotWorkspace/>
 
   let page
-  if (leadMeta[path]) page = <LeadLandingPages lang={lang}/>
+  if (/location-launch/.test(path)) page = <LocationLaunchPage lang={lang}/>
+  else if (leadMeta[path]) page = <LeadLandingPages lang={lang}/>
   else if (/fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)) page = <AudiencePages lang={lang}/>
   else if (/vorher-nachher|pre-posle/.test(path)) page = <BeforeAfterPage lang={lang}/>
   else if (/capacity-signal|signal-kapaciteta/.test(path)) page = <CapacitySignalPage lang={lang}/>

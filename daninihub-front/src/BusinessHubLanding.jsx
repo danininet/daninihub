@@ -12,7 +12,7 @@ const copy = {
     systemTitle: 'DaniniHub baut Geschäft dort, wo operative Erfahrung auf überprüfbare Nachfrage trifft.',
     pillars: [
       { code: '01', tag: 'B2B SERVICE', title: 'DACH–Balkan Operations', text: 'Externe Dispositionsunterstützung, Fahrerkommunikation, Status, ETA, Dokumente und klare Übergaben für Transportteams.', action: 'Operations-Angebot öffnen', href: '/de/externe-disposition', accent: 'cyan' },
-      { code: '02', tag: 'DIGITALER MARKTTEST', title: 'Digital Location Launch', text: 'Standorte und ungenutzte Flächen werden vor größeren Investitionen digital positioniert, mit Interessenten validiert und als belastbarer Business Case dokumentiert.', action: 'Location Launch anfragen', href: 'mailto:info@daninihub.com?subject=Digital%20Location%20Launch', accent: 'amber' },
+      { code: '02', tag: 'DIGITALER MARKTTEST', title: 'Digital Location Launch', text: 'Standorte und ungenutzte Flächen werden vor größeren Investitionen digital positioniert, mit Interessenten validiert und als belastbarer Business Case dokumentiert.', action: 'Methode und Angebot ansehen', href: '/de/location-launch', accent: 'amber' },
       { code: '03', tag: 'EIGENES PROJEKT', title: 'Čalije Parking · Niš', text: 'Unser eigenes Standortprojekt auf zwei privaten Grundstücksflächen: Nachfrage nach Monatsparkplätzen, Firmenkontingenten, Werbung und Partnerschaften wird bereits digital erfasst.', action: 'Čalije Parking ansehen', href: 'https://calije.daninihub.com/de', accent: 'lime', external: true }
     ],
     modelEyebrow: 'DAS DANINIHUB-MODELL',
@@ -32,7 +32,7 @@ const copy = {
     audienceTitle: 'Ein Einstieg pro konkretem Ziel.',
     audiences: [
       ['Transportfirma', 'Sie brauchen Entlastung bei Fahrerkommunikation, Status, ETA oder Dokumenten.', '/de/balkan-desk', 'Balkan Desk prüfen'],
-      ['Eigentümer einer Fläche', 'Sie möchten Nachfrage und Erlösmodell prüfen, bevor Sie größer investieren.', 'mailto:info@daninihub.com?subject=Standort%20digital%20validieren', 'Standort besprechen'],
+      ['Eigentümer einer Fläche', 'Sie möchten Nachfrage und Erlösmodell prüfen, bevor Sie größer investieren.', '/de/location-launch', 'Methode und Angebot ansehen'],
       ['Firma in Niš', 'Sie benötigen planbare Stellplätze oder möchten als lokaler Partner sichtbar werden.', 'https://calije.daninihub.com/de', 'Čalije-Angebot ansehen']
     ],
     founderEyebrow: 'VERANTWORTLICH',
@@ -54,7 +54,7 @@ const copy = {
     systemTitle: 'DaniniHub razvija posao tamo gde se praktično iskustvo susreće sa merljivom potražnjom.',
     pillars: [
       { code: '01', tag: 'B2B USLUGA', title: 'DACH–Balkan Operations', text: 'Eksterna podrška dispoziciji, komunikacija sa vozačima, status, ETA, dokumentacija i jasna predaja za transportne timove.', action: 'Pogledajte operativnu ponudu', href: '/sr/eksterna-dispozicija', accent: 'cyan' },
-      { code: '02', tag: 'DIGITALNA PROVERA TRŽIŠTA', title: 'Digital Location Launch', text: 'Lokaciju ili neiskorišćen prostor prvo pozicioniramo online, proveravamo interesovanje i pretvaramo rezultate u argumentovan poslovni slučaj.', action: 'Zatražite Location Launch', href: 'mailto:info@daninihub.com?subject=Digital%20Location%20Launch', accent: 'amber' },
+      { code: '02', tag: 'DIGITALNA PROVERA TRŽIŠTA', title: 'Digital Location Launch', text: 'Lokaciju ili neiskorišćen prostor prvo pozicioniramo online, proveravamo interesovanje i pretvaramo rezultate u argumentovan poslovni slučaj.', action: 'Pogledajte metod i ponudu', href: '/sr/location-launch', accent: 'amber' },
       { code: '03', tag: 'SOPSTVENI PROJEKAT', title: 'Čalije Parking · Niš', text: 'Naš projekat na dve privatne parcele: već se prikuplja interesovanje za mesečna mesta, poslovna vozila, oglašavanje i lokalna partnerstva.', action: 'Pogledajte Čalije Parking', href: 'https://calije.daninihub.com/sr', accent: 'lime', external: true }
     ],
     modelEyebrow: 'DANINIHUB MODEL',
@@ -74,7 +74,7 @@ const copy = {
     audienceTitle: 'Jedan jasan ulaz za svaki konkretan cilj.',
     audiences: [
       ['Transportna firma', 'Treba vam rasterećenje za komunikaciju sa vozačima, status, ETA ili dokumentaciju.', '/sr/balkan-desk', 'Proverite Balkan Desk'],
-      ['Vlasnik placa ili lokacije', 'Želite da proverite potražnju i model prihoda pre većeg ulaganja.', 'mailto:info@daninihub.com?subject=Digitalna%20validacija%20lokacije', 'Razgovarajmo o lokaciji'],
+      ['Vlasnik placa ili lokacije', 'Želite da proverite potražnju i model prihoda pre većeg ulaganja.', '/sr/location-launch', 'Pogledajte metod i ponudu'],
       ['Firma ili korisnik u Nišu', 'Potrebna su vam planirana parking mesta ili želite lokalno partnerstvo.', 'https://calije.daninihub.com/sr', 'Pogledajte Čalije ponudu']
     ],
     founderEyebrow: 'ODGOVORNO LICE',
@@ -91,6 +91,7 @@ export default function BusinessHubLanding({ lang }) {
   const t = copy[lang]
   const calije = lang === 'sr' ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
   const contact = `mailto:info@daninihub.com?subject=${lang === 'sr' ? 'DaniniHub%20biznis%20upit' : 'DaniniHub%20Business-Anfrage'}`
+  const locationLaunch = lang === 'sr' ? '/sr/location-launch' : '/de/location-launch'
 
   return <main className="business-hub" id="top">
     <section className="hub-hero">
@@ -104,7 +105,7 @@ export default function BusinessHubLanding({ lang }) {
       <div className="hub-map" aria-label={lang === 'sr' ? 'DaniniHub poslovni sistem' : 'DaniniHub Geschäftssystem'}>
         <div className="hub-map-core"><small>DANINI</small><strong>HUB</strong><span>Business Engine</span></div>
         <a className="hub-orbit orbit-one" href={lang === 'sr' ? '/sr/eksterna-dispozicija' : '/de/externe-disposition'}><b>01</b><span>OPERATIONS</span></a>
-        <a className="hub-orbit orbit-two" href={contact}><b>02</b><span>LOCATION</span></a>
+        <a className="hub-orbit orbit-two" href={locationLaunch}><b>02</b><span>LOCATION</span></a>
         <a className="hub-orbit orbit-three" href={calije}><b>03</b><span>ČALIJE</span></a>
       </div>
     </section>

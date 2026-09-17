@@ -17,10 +17,13 @@ import LeadLandingPages from './LeadLandingPages'
 import BusinessHubLanding from './BusinessHubLanding'
 import LocationLaunchPage from './LocationLaunchPage'
 import AiOpportunityCheck from './AiOpportunityCheck'
+import OpportunityMapPage from './OpportunityMapPage'
 import './App.css'
 import './Polish.css'
 
 const leadMeta = {
+  '/de/opportunity-map': ['AI Opportunity Map | Arbeitsbuch für den ersten Markttest', 'Das zweisprachige DaniniHub Workbook führt von vorhandenen Ressourcen und einem realen Problem zu einem messbaren 30-Tage-Markttest.'],
+  '/sr/opportunity-map': ['AI Opportunity Map | Radna sveska za prvi tržišni test', 'Dvojezična DaniniHub radna sveska vodi od postojećih resursa i stvarnog problema do merljivog tržišnog testa za 30 dana.'],
   '/de/opportunity-check': ['AI Opportunity Check | Von Problem zu erstem Markttest', 'Strukturieren Sie Ihr Problem, Wissen, Ihre Idee oder vorhandenen Werte und prüfen Sie mit DaniniHub den nächsten realistischen Markttest.'],
   '/sr/opportunity-check': ['AI Opportunity Check | Od problema do prvog tržišnog testa', 'Strukturirajte problem, znanje, ideju ili ono što već posedujete i proverite sa DaniniHubom sledeći realan tržišni test.'],
   '/de/location-launch': ['Standort-Nachfrage testen vor der Investition | DaniniHub', 'Digital Location Launch prüft die reale Nachfrage nach Parkflächen, Grundstücken und lokalen Angeboten – mit Landingpage, direkter Ansprache und Demand Validation Report.'],
@@ -142,9 +145,9 @@ export default function App() {
     const freeDispoCheck = /dispolab\/check|dispo-lab\/provera/.test(path)
     const dispoLab = /dispolab|dispo-lab/.test(path)
     const pilotCheck = /pilot-check|provera-pilota/.test(path)
-    const knowledgeCenter = /praxis-wissen|praksa-znanje/.test(path)
-    const businessPage = /leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(path)
     const meta = leadMeta[path]
+    const serverTitle = document.title
+    const serverDescription = document.querySelector('meta[name="description"]')?.getAttribute('content') || ''
 
     document.documentElement.lang = lang
     document.querySelector('meta[name="robots"]')?.setAttribute('content', 'index,follow,max-image-preview:large')
@@ -156,9 +159,7 @@ export default function App() {
       : freeDispoCheck ? (sr ? 'Besplatni Dispo-Check | DaniniHub' : 'Kostenloser Dispo-Check | DaniniHub')
       : dispoLab ? (sr ? 'DaniniHub DispoLab | Praktični trening' : 'DaniniHub DispoLab | Praxistraining')
       : pilotCheck ? (sr ? 'Provera pilota | DaniniHub' : 'Pilot-Check | DaniniHub')
-      : knowledgeCenter ? (sr ? 'Praksa i znanje | DaniniHub' : 'Praxis & Wissen | DaniniHub')
-      : businessPage ? (sr ? 'Operativne usluge | DaniniHub' : 'Operative Leistungen | DaniniHub')
-      : (sr ? 'DaniniHub Biznis | Operativa, lokacije i sopstveni projekti' : 'DaniniHub Business | Operations, Standorte und eigene Projekte'))
+      : serverTitle)
 
     const description = meta?.[1] || (capacityPage
       ? (sr ? 'Ručna prijava slobodnog kamiona ili tereta koji čeka, bez javne objave i bez automatskog ugovaranja.' : 'Manuelle Meldung eines freien Lkw oder wartender Ladung, ohne öffentliche Veröffentlichung oder automatische Vermittlung.')
@@ -170,7 +171,7 @@ export default function App() {
           ? (sr ? 'Fiktivni kompanijski prostor sa profilima firmi, članovima tima i više privatnih transportnih soba.' : 'Fiktiver Unternehmensbereich mit Firmenprofilen, Teammitgliedern und mehreren privaten Transport Rooms.')
           : transportRoom
           ? (sr ? 'Interaktivni pilot zajedničke transportne sobe sa statusima, ETA, komunikacijom, dokumentima i incidentima.' : 'Interaktiver Pilot eines gemeinsamen Transport Room mit Status, ETA, Kommunikation, Dokumenten und Incidents.')
-          : (sr ? 'DaniniHub povezuje DACH–Balkan operativnu podršku, digitalnu validaciju lokacija i sopstvene poslovne projekte.' : 'DaniniHub verbindet DACH–Balkan Operations, digitale Standortvalidierung und eigene Geschäftsprojekte.'))
+          : serverDescription)
 
     document.querySelector('meta[name="description"]')?.setAttribute('content', description)
     const canonicalPath = location.pathname === '/' ? '/de/' : location.pathname
@@ -183,6 +184,7 @@ export default function App() {
     const pairs = [
       ['/de/','/sr/'],
       ['/de/opportunity-check','/sr/opportunity-check'],
+      ['/de/opportunity-map','/sr/opportunity-map'],
       ['/de/location-launch','/sr/location-launch'],
       ['/de/externe-disposition','/sr/eksterna-dispozicija'],
       ['/de/balkan-desk','/sr/balkan-desk'],
@@ -250,7 +252,8 @@ export default function App() {
   if (dispatchWorkspace) return <DispatchPilotWorkspace/>
 
   let page
-  if (/opportunity-check/.test(path)) page = <AiOpportunityCheck lang={lang}/>
+  if (/opportunity-map/.test(path)) page = <OpportunityMapPage lang={lang}/>
+  else if (/opportunity-check/.test(path)) page = <AiOpportunityCheck lang={lang}/>
   else if (/location-launch/.test(path)) page = <LocationLaunchPage lang={lang}/>
   else if (leadMeta[path]) page = <LeadLandingPages lang={lang}/>
   else if (/fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)) page = <AudiencePages lang={lang}/>

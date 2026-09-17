@@ -7,7 +7,7 @@ const links = {
 }
 
 const routePairs = [
-  ['/de/', '/sr/'], ['/de/opportunity-check', '/sr/opportunity-check'], ['/de/location-launch', '/sr/location-launch'], ['/de/externe-disposition', '/sr/eksterna-dispozicija'],
+  ['/de/', '/sr/'], ['/de/opportunity-check', '/sr/opportunity-check'], ['/de/opportunity-map', '/sr/opportunity-map'], ['/de/location-launch', '/sr/location-launch'], ['/de/externe-disposition', '/sr/eksterna-dispozicija'],
   ['/de/balkan-desk', '/sr/balkan-desk'], ['/de/dach-desk', '/sr/dach-desk'], ['/de/dispolab', '/sr/dispo-lab'],
   ['/de/praxis-wissen', '/sr/praksa-znanje'], ['/de/impressum', '/sr/impressum'], ['/de/datenschutz', '/sr/privatnost']
 ]
@@ -30,8 +30,8 @@ export default function SiteNavigation({ lang }) {
   const t = links[lang]
   const sr = lang === 'sr'
   const home = sr ? '/sr/' : '/de/'
-  const opportunity = sr ? 'https://danininet.com/sr/pocni' : 'https://danininet.com/de/start'
-  const companyContact = sr ? 'mailto:info@daninihub.com?subject=DaniniHub%20problem%20firme' : 'mailto:info@daninihub.com?subject=DaniniHub%20Firmenproblem'
+  const opportunity = sr ? '/sr/opportunity-map' : '/de/opportunity-map'
+  const companyContact = sr ? '/sr/opportunity-check' : '/de/opportunity-check'
   const contact = sr ? '/sr/opportunity-check' : '/de/opportunity-check'
   const locationLaunch = sr ? '/sr/location-launch' : '/de/location-launch'
   const calije = sr ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
@@ -58,7 +58,7 @@ export default function SiteNavigation({ lang }) {
       </a>
       <nav className="site-nav-desktop" aria-label={sr ? 'Glavna navigacija' : 'Hauptnavigation'}>
         <a href={home}>{t.start}</a>
-        <a href={opportunity} target="_blank" rel="noreferrer">{t.people}</a>
+        <a href={opportunity}>{t.people}</a>
         <a href={companyContact}>{t.companies}</a>
         <details className="site-nav-dropdown"><summary>{t.cases}</summary><div><a href={calije} target="_blank" rel="noreferrer">{t.calije} ↗</a><a href={locationLaunch}>{t.location}</a><a href={transport}>{t.transport}</a></div></details>
         <details className="site-nav-dropdown"><summary>{t.methods}</summary><div><a href={knowledge}>{t.knowledge}</a><a href={dispoLab}>{t.dispoLab}</a></div></details>
@@ -72,7 +72,7 @@ export default function SiteNavigation({ lang }) {
       <div className="site-nav-mobile-head"><strong>{t.menu}</strong><button type="button" onClick={close} aria-label={t.close}>×</button></div>
       <nav aria-label={sr ? 'Mobilna navigacija' : 'Mobile Navigation'}>
         <a href={home} onClick={close}>{t.start}</a>
-        <a href={opportunity} target="_blank" rel="noreferrer" onClick={close}>{t.people}</a>
+        <a href={opportunity} onClick={close}>{t.people}</a>
         <a href={companyContact} onClick={close}>{t.companies}</a>
         <a href={calije} target="_blank" rel="noreferrer" onClick={close}>{t.calije} ↗</a>
         <a href={locationLaunch} onClick={close}>{t.location}</a>

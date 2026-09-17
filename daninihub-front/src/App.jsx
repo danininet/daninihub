@@ -145,8 +145,6 @@ export default function App() {
     const freeDispoCheck = /dispolab\/check|dispo-lab\/provera/.test(path)
     const dispoLab = /dispolab|dispo-lab/.test(path)
     const pilotCheck = /pilot-check|provera-pilota/.test(path)
-    const knowledgeCenter = /praxis-wissen|praksa-znanje/.test(path)
-    const businessPage = /leistungsrahmen|obim-usluge|continuity-support|kontinuitet-podrska|fahrerkommunikation|komunikacija-vozaci/.test(path)
     const meta = leadMeta[path]
     const serverTitle = document.title
     const serverDescription = document.querySelector('meta[name="description"]')?.getAttribute('content') || ''

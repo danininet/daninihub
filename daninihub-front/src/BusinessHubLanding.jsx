@@ -2,96 +2,95 @@ import './BusinessHubLanding.css'
 
 const copy = {
   de: {
-    eyebrow: 'DANINIHUB · BUSINESS & OPERATIONS · DUISBURG / NIŠ',
-    title: 'Aus realen Engpässen entstehen klare, verkaufbare Lösungen.',
-    lead: 'DaniniHub verbindet operative DACH–Balkan-Unterstützung, digitale Marktvalidierung und eigene Standortprojekte. Wir entwickeln keine Konzepte für die Schublade – wir prüfen Nachfrage, strukturieren Abläufe und führen Interessenten zum nächsten konkreten Schritt.',
-    primary: 'Geschäftsbereiche ansehen',
-    secondary: 'Projekt besprechen',
-    proof: ['Eigene Projekte als Praxisnachweis', 'DACH ↔ Balkan Erfahrung', 'Mensch entscheidet, KI unterstützt'],
-    systemEyebrow: 'EIN SYSTEM · DREI GESCHÄFTSBEREICHE',
-    systemTitle: 'DaniniHub baut Geschäft dort, wo operative Erfahrung auf überprüfbare Nachfrage trifft.',
+    eyebrow: 'DANINIHUB · HUMAN + AI OPPORTUNITY ENGINE',
+    title: 'Finde heraus, was du bereits hast – und welcher reale Markt dafür bezahlt.',
+    lead: 'DaniniHub ist kein weiterer KI-Blog und kein Versprechen vom schnellen Geld. Das System verbindet Fähigkeiten, Erfahrung, Zeit, Besitz und reale Probleme mit überprüfbarer Nachfrage. KI beschleunigt Analyse und Umsetzung; der Mensch entscheidet.',
+    primary: 'So funktioniert das System',
+    secondary: 'Konkreten Fall beschreiben',
+    proof: ['Menschen statt Guru-Versprechen', 'Reale Marktprobleme statt Ideenlisten', 'Mensch entscheidet · KI beschleunigt'],
+    systemEyebrow: 'EIN SYSTEM · DREI EINSTIEGE',
+    systemTitle: 'Menschen finden verwertbare Möglichkeiten. Unternehmen finden fehlende Fähigkeiten. Reale Projekte liefern den Beweis.',
     pillars: [
-      { code: '01', tag: 'B2B SERVICE', title: 'DACH–Balkan Operations', text: 'Externe Dispositionsunterstützung, Fahrerkommunikation, Status, ETA, Dokumente und klare Übergaben für Transportteams.', action: 'Operations-Angebot öffnen', href: '/de/externe-disposition', accent: 'cyan' },
-      { code: '02', tag: 'DIGITALER MARKTTEST', title: 'Digital Location Launch', text: 'Standorte und ungenutzte Flächen werden vor größeren Investitionen digital positioniert, mit Interessenten validiert und als belastbarer Business Case dokumentiert.', action: 'Methode und Angebot ansehen', href: '/de/location-launch', accent: 'amber' },
-      { code: '03', tag: 'EIGENES PROJEKT', title: 'Čalije Parking · Niš', text: 'Unser eigenes Standortprojekt auf zwei privaten Grundstücksflächen: Nachfrage nach Monatsparkplätzen, Firmenkontingenten, Werbung und Partnerschaften wird bereits digital erfasst.', action: 'Čalije Parking ansehen', href: 'https://calije.daninihub.com/de', accent: 'lime', external: true }
+      { code: '01', tag: 'FÜR MENSCHEN', title: 'Opportunity Map', text: 'Erfahrung, Fähigkeiten, Zeit, Kontakte, Besitz und Grenzen werden in wenige realistische Optionen übersetzt – jeweils mit erstem Markttest.', action: 'Opportunity Map starten', href: 'https://danininet.com/de/start', accent: 'cyan', external: true },
+      { code: '02', tag: 'FÜR UNTERNEHMEN', title: 'Problem → Mensch → Prozess → KI', text: 'Ein konkreter Engpass wird zuerst diagnostiziert: Fehlt eine Person, eine Fähigkeit, ein besserer Prozess oder eine sinnvolle Automatisierung?', action: 'Problem beschreiben', href: 'mailto:info@daninihub.com?subject=DaniniHub%20B2B%20Problem', accent: 'amber' },
+      { code: '03', tag: 'REALER BEWEIS', title: 'Čalije · Monetarisierung einer Fläche', text: 'Ein ungenutztes Grundstück in Niš wird als öffentlicher Testfall genutzt: Nachfrage prüfen, Angebot bauen, Interessenten messen und erst danach investieren.', action: 'Čalije Case ansehen', href: 'https://calije.daninihub.com/de', accent: 'lime', external: true }
     ],
-    modelEyebrow: 'DAS DANINIHUB-MODELL',
-    modelTitle: 'Nicht zuerst investieren. Zuerst das Problem, die Nachfrage und den nächsten zahlenden Schritt klären.',
+    modelEyebrow: 'DIE DANINIHUB-METHODE',
+    modelTitle: 'Nicht zuerst ein Produkt bauen. Zuerst vorhandene Ressourcen, ein echtes Problem und den kleinsten zahlenden Schritt finden.',
     steps: [
-      ['01', 'Engpass erkennen', 'Wir beginnen mit einem realen operativen oder lokalen Problem – nicht mit einer erfundenen Produktidee.'],
-      ['02', 'Nachfrage sichtbar machen', 'Landingpage, direkte Ansprache und strukturierte Formulare zeigen, wer wirklich Interesse hat und wofür.'],
-      ['03', 'Kleinen Pilot verkaufen', 'Ein klar begrenzter Pilot liefert schneller Beweise, Referenzen und Umsatz als ein großes, unfertiges System.'],
-      ['04', 'Wiederholbar machen', 'Erst nach der Validierung werden Ablauf, Angebot und digitale Werkzeuge zu einem skalierbaren Produkt.']
+      ['01', 'Inventar statt Wunschdenken', 'Was kann die Person oder Firma bereits: Erfahrung, Fähigkeiten, Zeit, Besitz, Beziehungen, Daten, Prozesse?'],
+      ['02', 'Problem und Käufer finden', 'Wir suchen nicht nach 50 Ideen, sondern nach wenigen Problemen, für deren Lösung heute bereits Geld ausgegeben wird.'],
+      ['03', 'Kleinen Markttest bauen', 'Landingpage, direkte Ansprache, Angebot oder Pilot prüfen Nachfrage, bevor viel Geld und Zeit investiert werden.'],
+      ['04', 'Ergebnis messen und wiederholen', 'Kontakt, Anfrage, Kauf, Zeitersparnis oder messbarer Nutzen entscheiden, ob die Richtung ausgebaut oder verworfen wird.']
     ],
-    caseEyebrow: 'EIGENER PRAXISFALL',
-    caseTitle: 'Čalije Parking ist mehr als eine Unterseite. Es ist der erste Beweis für Digital Location Launch.',
-    caseText: 'Dragan Zdravković ist Eigentümer der Flächen hinter dem Projekt. Dadurch kann DaniniHub den vollständigen Weg öffentlich und nachvollziehbar erproben: von Standort und Nachfrage über Interessenten und Firmenpartner bis zur wirtschaftlichen Entscheidung über die Umsetzung.',
-    caseItems: ['Monatsparken für Privatpersonen', 'Kontingente für Firmenfahrzeuge', 'Werbe- und Standortpartnerschaften', 'Datengrundlage für Ausbau und Finanzierung'],
-    caseCta: 'Zum Projekt Čalije Parking',
-    audienceEyebrow: 'WOMIT KÖNNEN WIR HELFEN?',
-    audienceTitle: 'Ein Einstieg pro konkretem Ziel.',
+    caseEyebrow: 'ERSTER ÖFFENTLICHER PRAXISFALL',
+    caseTitle: 'Čalije zeigt die Methode an echtem Eigentum – nicht an einer erfundenen Online-Challenge.',
+    caseText: 'Dragan Zdravković nutzt die eigene Fläche in Niš als nachvollziehbaren Test: Welche Nutzung erzeugt Nachfrage? Was kostet der kleinste Start? Wie viele Interessenten kommen über Website, lokale Ansprache und Video? Welche Variante erzeugt tatsächlich Umsatz?',
+    caseItems: ['Monatsparken und Firmenkontingente testen', 'Werbe- und Standortpartnerschaften prüfen', 'Investition erst nach messbarer Nachfrage', 'Ergebnisse als öffentlicher DaniniNet Case dokumentieren'],
+    caseCta: 'Zum Čalije Projekt',
+    audienceEyebrow: 'WELCHER EINSTIEG PASST?',
+    audienceTitle: 'Nicht jeder muss online Geld verdienen. Jeder Fall beginnt mit dem, was real vorhanden ist.',
     audiences: [
-      ['Transportfirma', 'Sie brauchen Entlastung bei Fahrerkommunikation, Status, ETA oder Dokumenten.', '/de/balkan-desk', 'Balkan Desk prüfen'],
-      ['Eigentümer einer Fläche', 'Sie möchten Nachfrage und Erlösmodell prüfen, bevor Sie größer investieren.', '/de/location-launch', 'Methode und Angebot ansehen'],
-      ['Firma in Niš', 'Sie benötigen planbare Stellplätze oder möchten als lokaler Partner sichtbar werden.', 'https://calije.daninihub.com/de', 'Čalije-Angebot ansehen']
+      ['Ich suche meinen Weg', 'Ich habe Erfahrung oder Ressourcen, weiß aber nicht, welches Angebot und welcher Markt realistisch sind.', 'https://danininet.com/de/start', 'Opportunity Map starten'],
+      ['Wir haben ein Firmenproblem', 'Uns fehlt Kapazität, Kompetenz, ein besserer Ablauf oder eine sinnvolle KI-Unterstützung.', 'mailto:info@daninihub.com?subject=DaniniHub%20Firmenproblem', 'Problem beschreiben'],
+      ['Ich besitze eine Fläche / Ressource', 'Ich möchte Nachfrage und Erlösmodell prüfen, bevor ich größer investiere.', '/de/location-launch', 'Markttest ansehen']
     ],
-    founderEyebrow: 'VERANTWORTLICH',
+    founderEyebrow: 'INITIATOR UND ERSTER TESTFALL',
     founderTitle: 'Dragan Zdravković',
-    founderText: 'Initiator von DaniniHub, operativer Ansprechpartner in Duisburg und Eigentümer der Flächen des Projekts Čalije Parking in Niš. DaniniHub verbindet praktische Transporterfahrung, digitale Vermarktung und KI-gestützte Analyse – Entscheidungen und Verantwortung bleiben beim Menschen.',
+    founderText: 'Nach Jahren mit verschiedenen Online- und Offline-Ideen wird DaniniHub bewusst anders aufgebaut: weniger Theorie, weniger Guru-Stil, mehr reale Tests. Eigene Projekte, eigene Ressourcen und echte Marktreaktionen werden zum Lernmaterial für andere.',
     contactEyebrow: 'NÄCHSTER SCHRITT',
-    contactTitle: 'Welches konkrete Problem soll zuerst Umsatz erzeugen?',
-    contactText: 'Schreiben Sie kurz, ob es um Transport Operations, die Validierung eines Standorts oder eine Zusammenarbeit rund um Čalije Parking geht. Sie erhalten keine allgemeine Präsentation, sondern einen Vorschlag für den kleinsten sinnvollen Pilot.',
-    contactCta: 'Projekt kurz beschreiben'
+    contactTitle: 'Welches reale Problem oder welche ungenutzte Ressource sollen wir zuerst prüfen?',
+    contactText: 'Beschreiben Sie kurz Person, Firma, Fähigkeit, Fläche oder Problem. Der erste Vorschlag soll kein großes Projekt sein, sondern der kleinste sinnvolle Test, der echte Marktreaktion erzeugen kann.',
+    contactCta: 'Fall beschreiben'
   },
   sr: {
-    eyebrow: 'DANINIHUB · BIZNIS I OPERATIVA · DUISBURG / NIŠ',
-    title: 'Od stvarnih problema pravimo jasna i prodajna rešenja.',
-    lead: 'DaniniHub povezuje operativnu DACH–Balkan podršku, digitalnu proveru tržišta i sopstvene lokacijske projekte. Ne pravimo planove za fioku – proveravamo potražnju, uređujemo proces i vodimo zainteresovane do sledećeg konkretnog koraka.',
-    primary: 'Pogledajte poslovne oblasti',
-    secondary: 'Predložite projekat',
-    proof: ['Sopstveni projekti kao dokaz', 'DACH ↔ Balkan iskustvo', 'Čovek odlučuje, AI podržava'],
-    systemEyebrow: 'JEDAN SISTEM · TRI POSLOVNE OBLASTI',
-    systemTitle: 'DaniniHub razvija posao tamo gde se praktično iskustvo susreće sa merljivom potražnjom.',
+    eyebrow: 'DANINIHUB · HUMAN + AI OPPORTUNITY ENGINE',
+    title: 'Otkrij šta već imaš – i ko je na tržištu spreman da plati vrednost koju možeš da napraviš.',
+    lead: 'DaniniHub nije još jedan AI blog niti obećanje lake zarade. Sistem povezuje iskustvo, znanje, vreme, imovinu i stvarne probleme sa merljivom potražnjom. AI ubrzava analizu i realizaciju; čovek odlučuje.',
+    primary: 'Kako sistem radi',
+    secondary: 'Opišite konkretan slučaj',
+    proof: ['Ljudi umesto guru obećanja', 'Stvarni problemi umesto liste ideja', 'Čovek odlučuje · AI ubrzava'],
+    systemEyebrow: 'JEDAN SISTEM · TRI ULAZA',
+    systemTitle: 'Ljudi pronalaze realne mogućnosti. Firme pronalaze ono što im nedostaje. Stvarni projekti daju dokaz.',
     pillars: [
-      { code: '01', tag: 'B2B USLUGA', title: 'DACH–Balkan Operations', text: 'Eksterna podrška dispoziciji, komunikacija sa vozačima, status, ETA, dokumentacija i jasna predaja za transportne timove.', action: 'Pogledajte operativnu ponudu', href: '/sr/eksterna-dispozicija', accent: 'cyan' },
-      { code: '02', tag: 'DIGITALNA PROVERA TRŽIŠTA', title: 'Digital Location Launch', text: 'Lokaciju ili neiskorišćen prostor prvo pozicioniramo online, proveravamo interesovanje i pretvaramo rezultate u argumentovan poslovni slučaj.', action: 'Pogledajte metod i ponudu', href: '/sr/location-launch', accent: 'amber' },
-      { code: '03', tag: 'SOPSTVENI PROJEKAT', title: 'Čalije Parking · Niš', text: 'Naš projekat na dve privatne parcele: već se prikuplja interesovanje za mesečna mesta, poslovna vozila, oglašavanje i lokalna partnerstva.', action: 'Pogledajte Čalije Parking', href: 'https://calije.daninihub.com/sr', accent: 'lime', external: true }
+      { code: '01', tag: 'ZA LJUDE', title: 'Opportunity Map', text: 'Iskustvo, veštine, vreme, kontakti, imovina i ograničenja pretvaraju se u nekoliko realnih opcija – svaka sa prvim tržišnim testom.', action: 'Pokrenite Opportunity Map', href: 'https://danininet.com/sr/pocni', accent: 'cyan', external: true },
+      { code: '02', tag: 'ZA FIRME', title: 'Problem → čovek → proces → AI', text: 'Konkretno usko grlo prvo dijagnostikujemo: nedostaje li čovek, određena veština, bolji proces ili smislena automatizacija?', action: 'Opišite problem firme', href: 'mailto:info@daninihub.com?subject=DaniniHub%20B2B%20problem', accent: 'amber' },
+      { code: '03', tag: 'STVARNI DOKAZ', title: 'Čalije · monetizacija imovine', text: 'Neiskorišćena parcela u Nišu koristi se kao javni test: proveriti potražnju, napraviti ponudu, meriti interesovanje i tek onda ulagati.', action: 'Pogledajte Čalije case', href: 'https://calije.daninihub.com/sr', accent: 'lime', external: true }
     ],
-    modelEyebrow: 'DANINIHUB MODEL',
-    modelTitle: 'Ne ulažemo prvo veliki novac. Prvo razjasnimo problem, potražnju i sledeći korak koji neko želi da plati.',
+    modelEyebrow: 'DANINIHUB METOD',
+    modelTitle: 'Ne pravimo prvo proizvod. Prvo nalazimo ono što već postoji, stvarni problem i najmanji korak za koji je neko spreman da plati.',
     steps: [
-      ['01', 'Prepoznajemo usko grlo', 'Počinjemo od stvarnog operativnog ili lokalnog problema, a ne od izmišljene ideje za proizvod.'],
-      ['02', 'Potražnju činimo vidljivom', 'Prodajna stranica, direktan kontakt i strukturisani formulari pokazuju ko je zainteresovan i za šta.'],
-      ['03', 'Prodajemo mali pilot', 'Jasno ograničen pilot brže donosi dokaz, preporuku i prihod nego veliki nedovršen sistem.'],
-      ['04', 'Pretvaramo ga u sistem', 'Tek nakon potvrde tržišta standardizujemo ponudu, proces i digitalne alate za ponovljivu prodaju.']
+      ['01', 'Inventar umesto maštanja', 'Šta osoba ili firma već ima: iskustvo, znanje, vreme, imovinu, kontakte, podatke, procese?'],
+      ['02', 'Problem i kupac', 'Ne tražimo 50 ideja. Tražimo nekoliko problema za čije rešavanje tržište već izdvaja novac.'],
+      ['03', 'Mali tržišni test', 'Landing stranica, direktan kontakt, ponuda ili pilot proveravaju interesovanje pre većeg ulaganja novca i vremena.'],
+      ['04', 'Merimo i ponavljamo', 'Kontakt, upit, kupovina, ušteda vremena ili druga merljiva korist odlučuju da li pravac razvijamo ili odbacujemo.']
     ],
-    caseEyebrow: 'SOPSTVENI PRIMER IZ PRAKSE',
-    caseTitle: 'Čalije Parking nije samo poddomen. To je prvi dokaz kako radi Digital Location Launch.',
-    caseText: 'Dragan Zdravković je vlasnik parcela obuhvaćenih projektom. Zato DaniniHub može javno i proverljivo da testira ceo put: od lokacije i interesovanja, preko privatnih korisnika i firmi, do ekonomske odluke o uređenju i razvoju.',
-    caseItems: ['Mesečni parking za privatne korisnike', 'Paketi mesta za službena vozila', 'Reklamni i lokacijski partneri', 'Podaci za ulaganje i finansiranje'],
-    caseCta: 'Otvorite projekat Čalije Parking',
-    audienceEyebrow: 'GDE MOŽEMO DA POMOGNEMO?',
-    audienceTitle: 'Jedan jasan ulaz za svaki konkretan cilj.',
+    caseEyebrow: 'PRVI JAVNI PRAKTIČNI SLUČAJ',
+    caseTitle: 'Čalije pokazuje metod na stvarnoj imovini – ne na izmišljenom online izazovu.',
+    caseText: 'Dragan Zdravković koristi sopstvenu parcelu u Nišu kao proverljiv test: koja namena stvara tražnju, koliko košta minimalni početak, koliko interesenata dolazi preko sajta, lokalnog kontakta i videa i koja varijanta zaista pravi prihod.',
+    caseItems: ['Test mesečnog parkinga i poslovnih paketa', 'Provera reklamnih i lokacijskih partnerstava', 'Ulaganje tek posle merljive potražnje', 'Rezultati kao javni DaniniNet case study'],
+    caseCta: 'Otvorite projekat Čalije',
+    audienceEyebrow: 'ODAKLE VI KREĆETE?',
+    audienceTitle: 'Ne mora svako da zarađuje online. Svaki slučaj kreće od onoga što realno postoji.',
     audiences: [
-      ['Transportna firma', 'Treba vam rasterećenje za komunikaciju sa vozačima, status, ETA ili dokumentaciju.', '/sr/balkan-desk', 'Proverite Balkan Desk'],
-      ['Vlasnik placa ili lokacije', 'Želite da proverite potražnju i model prihoda pre većeg ulaganja.', '/sr/location-launch', 'Pogledajte metod i ponudu'],
-      ['Firma ili korisnik u Nišu', 'Potrebna su vam planirana parking mesta ili želite lokalno partnerstvo.', 'https://calije.daninihub.com/sr', 'Pogledajte Čalije ponudu']
+      ['Tražim svoj pravac', 'Imam iskustvo ili resurse, ali ne znam koja ponuda i koje tržište su realni.', 'https://danininet.com/sr/pocni', 'Pokrenite Opportunity Map'],
+      ['Imamo problem u firmi', 'Nedostaje nam kapacitet, veština, bolji proces ili smislena AI podrška.', 'mailto:info@daninihub.com?subject=DaniniHub%20problem%20firme', 'Opišite problem'],
+      ['Imam plac ili drugi resurs', 'Želim da proverim potražnju i model prihoda pre većeg ulaganja.', '/sr/location-launch', 'Pogledajte tržišni test']
     ],
-    founderEyebrow: 'ODGOVORNO LICE',
+    founderEyebrow: 'INICIJATOR I PRVI TEST SLUČAJ',
     founderTitle: 'Dragan Zdravković',
-    founderText: 'Osnivač DaniniHuba, operativni kontakt u Duisburgu i vlasnik parcela projekta Čalije Parking u Nišu. DaniniHub spaja praktično iskustvo u transportu, digitalni marketing i AI analizu – ali odluke i odgovornost ostaju kod čoveka.',
+    founderText: 'Posle godina različitih online i offline ideja, DaniniHub se namerno gradi drugačije: manje teorije i guru stila, više stvarnih testova. Sopstveni projekti, resursi i reakcije tržišta postaju materijal iz kojeg drugi mogu da uče.',
     contactEyebrow: 'SLEDEĆI KORAK',
-    contactTitle: 'Koji konkretan problem prvo treba da pretvorimo u prihod?',
-    contactText: 'Napišite ukratko da li se radi o transportnoj operativi, proveri tržišta za lokaciju ili saradnji oko Čalije Parkinga. Ne šaljemo generičku prezentaciju, već predlog najmanjeg smislenog pilota.',
-    contactCta: 'Ukratko opišite projekat'
+    contactTitle: 'Koji stvarni problem ili neiskorišćen resurs prvo proveravamo?',
+    contactText: 'Ukratko opišite osobu, firmu, veštinu, plac ili problem. Prvi predlog neće biti veliki projekat, već najmanji smislen test koji može da proizvede stvarnu reakciju tržišta.',
+    contactCta: 'Opišite slučaj'
   }
 }
 
 export default function BusinessHubLanding({ lang }) {
   const t = copy[lang]
   const calije = lang === 'sr' ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
-  const contact = `mailto:info@daninihub.com?subject=${lang === 'sr' ? 'DaniniHub%20biznis%20upit' : 'DaniniHub%20Business-Anfrage'}`
-  const locationLaunch = lang === 'sr' ? '/sr/location-launch' : '/de/location-launch'
+  const contact = `mailto:info@daninihub.com?subject=${lang === 'sr' ? 'DaniniHub%20konkretan%20slucaj' : 'DaniniHub%20konkreter%20Fall'}`
 
   return <main className="business-hub" id="top">
     <section className="hub-hero">
@@ -102,11 +101,11 @@ export default function BusinessHubLanding({ lang }) {
         <div className="hub-actions"><a className="hub-btn hub-btn-primary" href="#business-system">{t.primary}</a><a className="hub-btn hub-btn-quiet" href={contact}>{t.secondary}</a></div>
         <div className="hub-proof">{t.proof.map(item => <span key={item}>{item}</span>)}</div>
       </div>
-      <div className="hub-map" aria-label={lang === 'sr' ? 'DaniniHub poslovni sistem' : 'DaniniHub Geschäftssystem'}>
-        <div className="hub-map-core"><small>DANINI</small><strong>HUB</strong><span>Business Engine</span></div>
-        <a className="hub-orbit orbit-one" href={lang === 'sr' ? '/sr/eksterna-dispozicija' : '/de/externe-disposition'}><b>01</b><span>OPERATIONS</span></a>
-        <a className="hub-orbit orbit-two" href={locationLaunch}><b>02</b><span>LOCATION</span></a>
-        <a className="hub-orbit orbit-three" href={calije}><b>03</b><span>ČALIJE</span></a>
+      <div className="hub-map" aria-label={lang === 'sr' ? 'DaniniHub sistem mogućnosti' : 'DaniniHub Opportunity System'}>
+        <div className="hub-map-core"><small>DANINI</small><strong>HUB</strong><span>Opportunity Engine</span></div>
+        <a className="hub-orbit orbit-one" href={lang === 'sr' ? 'https://danininet.com/sr/pocni' : 'https://danininet.com/de/start'}><b>01</b><span>PEOPLE</span></a>
+        <a className="hub-orbit orbit-two" href={contact}><b>02</b><span>COMPANIES</span></a>
+        <a className="hub-orbit orbit-three" href={calije}><b>03</b><span>CASES</span></a>
       </div>
     </section>
 
@@ -122,7 +121,7 @@ export default function BusinessHubLanding({ lang }) {
 
     <section className="hub-section hub-case">
       <div className="hub-case-copy"><p className="hub-eyebrow">{t.caseEyebrow}</p><h2>{t.caseTitle}</h2><p>{t.caseText}</p><a className="hub-btn hub-btn-primary" href={calije} target="_blank" rel="noreferrer">{t.caseCta} ↗</a></div>
-      <div className="hub-case-card"><div className="hub-case-card-top"><span>CAL-01</span><strong>NIŠ · ČALIJE</strong></div><div className="hub-case-status"><i></i><span>{lang === 'sr' ? 'PRIKUPLJANJE INTERESOVANJA' : 'INTERESSE WIRD ERFASST'}</span></div><ul>{t.caseItems.map(item => <li key={item}>{item}</li>)}</ul><div className="hub-case-owner"><small>{lang === 'sr' ? 'VLASNIK / ODGOVORNO LICE' : 'EIGENTÜMER / VERANTWORTLICH'}</small><strong>Dragan Zdravković</strong></div></div>
+      <div className="hub-case-card"><div className="hub-case-card-top"><span>CASE-01</span><strong>NIŠ · ČALIJE</strong></div><div className="hub-case-status"><i></i><span>{lang === 'sr' ? 'TRŽIŠNI TEST U TOKU' : 'MARKTTEST LÄUFT'}</span></div><ul>{t.caseItems.map(item => <li key={item}>{item}</li>)}</ul><div className="hub-case-owner"><small>{lang === 'sr' ? 'VLASNIK / ODGOVORNO LICE' : 'EIGENTÜMER / VERANTWORTLICH'}</small><strong>Dragan Zdravković</strong></div></div>
     </section>
 
     <section className="hub-section">

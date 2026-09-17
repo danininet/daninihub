@@ -16,10 +16,13 @@ import KnowledgeCenter from './KnowledgeCenter'
 import LeadLandingPages from './LeadLandingPages'
 import BusinessHubLanding from './BusinessHubLanding'
 import LocationLaunchPage from './LocationLaunchPage'
+import AiOpportunityCheck from './AiOpportunityCheck'
 import './App.css'
 import './Polish.css'
 
 const leadMeta = {
+  '/de/opportunity-check': ['AI Opportunity Check | Von Problem zu erstem Markttest', 'Strukturieren Sie Ihr Problem, Wissen, Ihre Idee oder vorhandenen Werte und prüfen Sie mit DaniniHub den nächsten realistischen Markttest.'],
+  '/sr/opportunity-check': ['AI Opportunity Check | Od problema do prvog tržišnog testa', 'Strukturirajte problem, znanje, ideju ili ono što već posedujete i proverite sa DaniniHubom sledeći realan tržišni test.'],
   '/de/location-launch': ['Standort-Nachfrage testen vor der Investition | DaniniHub', 'Digital Location Launch prüft die reale Nachfrage nach Parkflächen, Grundstücken und lokalen Angeboten – mit Landingpage, direkter Ansprache und Demand Validation Report.'],
   '/sr/location-launch': ['Provera potražnje za lokacijom pre ulaganja | DaniniHub', 'Digital Location Launch proverava realnu potražnju za parkingom, parcelom ili lokalnom ponudom kroz prodajnu stranicu, direktan kontakt i izveštaj.'],
   '/de/externe-disposition': ['Externe Disposition für Speditionen | DaniniHub Duisburg', 'Flexible externe Dispositionsunterstützung für Speditionen: Status, ETA, Fahrerkommunikation, Partnerkommunikation und operative Engpässe – aus Duisburg.'],
@@ -179,6 +182,7 @@ export default function App() {
 
     const pairs = [
       ['/de/','/sr/'],
+      ['/de/opportunity-check','/sr/opportunity-check'],
       ['/de/location-launch','/sr/location-launch'],
       ['/de/externe-disposition','/sr/eksterna-dispozicija'],
       ['/de/balkan-desk','/sr/balkan-desk'],
@@ -246,7 +250,8 @@ export default function App() {
   if (dispatchWorkspace) return <DispatchPilotWorkspace/>
 
   let page
-  if (/location-launch/.test(path)) page = <LocationLaunchPage lang={lang}/>
+  if (/opportunity-check/.test(path)) page = <AiOpportunityCheck lang={lang}/>
+  else if (/location-launch/.test(path)) page = <LocationLaunchPage lang={lang}/>
   else if (leadMeta[path]) page = <LeadLandingPages lang={lang}/>
   else if (/fuer-dach-speditionen|za-balkanske-transportne-firme/.test(path)) page = <AudiencePages lang={lang}/>
   else if (/vorher-nachher|pre-posle/.test(path)) page = <BeforeAfterPage lang={lang}/>

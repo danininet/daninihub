@@ -22,8 +22,8 @@ import './App.css'
 import './Polish.css'
 
 const leadMeta = {
-  '/de/opportunity-map': ['AI Opportunity Map | Arbeitsbuch für den ersten Markttest', 'Das zweisprachige DaniniHub Workbook führt von vorhandenen Ressourcen und einem realen Problem zu einem messbaren 30-Tage-Markttest.'],
-  '/sr/opportunity-map': ['AI Opportunity Map | Radna sveska za prvi tržišni test', 'Dvojezična DaniniHub radna sveska vodi od postojećih resursa i stvarnog problema do merljivog tržišnog testa za 30 dana.'],
+  '/de/opportunity-map': ['DaniniHub Markt-Pilot | Von der Idee zum ersten Kundentest', 'Konkrete Marktanalyse und Umsetzung: Angebot, Zielkunde, Landingpage und messbarer Pilot statt allgemeiner KI-Beratung.'],
+  '/sr/opportunity-map': ['DaniniHub tržišni pilot | Od ideje do prvog kupca', 'Konkretna analiza i realizacija: ponuda, ciljni kupac, landing stranica i merljiv pilot umesto opšte AI priče.'],
   '/de/opportunity-check': ['AI Opportunity Check | Von Problem zu erstem Markttest', 'Strukturieren Sie Ihr Problem, Wissen, Ihre Idee oder vorhandenen Werte und prüfen Sie mit DaniniHub den nächsten realistischen Markttest.'],
   '/sr/opportunity-check': ['AI Opportunity Check | Od problema do prvog tržišnog testa', 'Strukturirajte problem, znanje, ideju ili ono što već posedujete i proverite sa DaniniHubom sledeći realan tržišni test.'],
   '/de/location-launch': ['Standort-Nachfrage testen vor der Investition | DaniniHub', 'Digital Location Launch prüft die reale Nachfrage nach Parkflächen, Grundstücken und lokalen Angeboten – mit Landingpage, direkter Ansprache und Demand Validation Report.'],

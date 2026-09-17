@@ -246,7 +246,23 @@ function mountPublicRuntime(app, options = {}) {
   };
 
   const siteRoutes = routePairs.flat();
-  app.get('/', (req, res) => res.redirect(308, '/de/'));
+  app.get('/', (req, res) => {
+    const accepted = String(req.headers['accept-language'] || '').toLowerCase();
+    const preferences = accepted
+      .split(',')
+      .map((entry, index) => {
+        const [tag, qualityValue] = entry.trim().split(';q=');
+        const quality = qualityValue === undefined ? 1 : Number(qualityValue);
+        return { tag, quality: Number.isFinite(quality) ? quality : 0, index };
+      })
+      .filter(({ tag }) => tag)
+      .sort((left, right) => right.quality - left.quality || left.index - right.index);
+    const preferred = preferences.find(({ tag }) => /^(sr|bs|hr|sh|cnr|de)(-|$)/.test(tag));
+    const language = preferred && /^(sr|bs|hr|sh|cnr)(-|$)/.test(preferred.tag) ? 'sr' : 'de';
+    res.set('Vary', 'Accept-Language');
+    res.set('Cache-Control', 'private, no-store');
+    return res.redirect(302, `/${language}/`);
+  });
   app.get(/^\/(?:de|sr)$/, (req, res) => res.redirect(308, `${req.path}/`));
   siteRoutes.forEach(route => app.get(route, (req, res) => { res.type('html').send(renderSeoPage(route)); }));
   app.get('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nAllow: /\nSitemap: https://daninihub.com/sitemap.xml\n'));

@@ -29,12 +29,13 @@ function brevo() {
 function sender() {
   const email = process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM;
   if (!email) throw new Error('BREVO_SENDER_NOT_CONFIGURED');
-  return { email, name: process.env.BREVO_SENDER_NAME || process.env.DANINIHUB_SENDER_NAME || 'DaniniHub Transport & Logistics' };
+  return { email, name: process.env.BREVO_SENDER_NAME || process.env.DANINIHUB_SENDER_NAME || 'DaniniHub Human + AI Opportunity Engine' };
 }
 
-function leadReference(isPilot) {
+function leadReference(source) {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  return `DH-${isPilot ? 'PILOT' : 'LEAD'}-${date}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  const type = source === 'pilot-check' ? 'PILOT' : source === 'ai-opportunity-check' ? 'OPP' : 'LEAD';
+  return `DH-${type}-${date}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 }
 
 function publicUrl() {
@@ -72,12 +73,21 @@ function standardAdminEmail(data, reference, reviewAvailable = true) {
   return `<h2>Neue DaniniHub Transport-Anfrage</h2><p><strong>Referenz:</strong> ${html(reference)}</p><p><strong>Firma/Name:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Fahrzeuge:</strong> ${valueOrDash(data.fleet)}<br><strong>Relationen:</strong> ${valueOrDash(data.routes)}<br><strong>Interesse:</strong> ${html(data.interest)}</p><p><strong>Nachricht:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p>${reviewAction(reference, reviewAvailable)}<p style="color:#607180;font-size:13px">Die Vorprüfung ist nur eine Entscheidungshilfe. Ein Follow-up wird erst nach Ihrer persönlichen Freigabe versendet.</p>`;
 }
 
+function opportunityAdminEmail(data, reference, reviewAvailable = true) {
+  return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b"><div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0"><div style="font-size:12px;letter-spacing:1.4px;color:#62d7e5;font-weight:700">DANINIHUB OPPORTUNITY DESK</div><h1 style="margin:8px 0 4px;font-size:28px">Neue AI Opportunity Check-Anfrage</h1><div style="color:#b8c7d3">Referenz ${html(reference)}</div></div><div style="border:1px solid #d8e1e8;border-top:0;padding:28px 30px;border-radius:0 0 14px 14px"><h2 style="font-size:18px">Kontakt und Ausgangslage</h2><p><strong>Name / Unternehmen:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Sprache:</strong> ${data.language === 'sr' ? 'Serbisch' : 'Deutsch'}</p><p><strong>Opportunity-Zusammenfassung:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p><div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8"><strong>Nächster Schritt</strong><br>Persönlich prüfen, ob ein kostenloser Hinweis genügt oder die AI Opportunity Map als nächster strukturierter Schritt passt.</div>${reviewAction(reference, reviewAvailable)}<p style="margin-top:24px;color:#607180;font-size:13px">Kein Einkommensversprechen und keine automatische Verpflichtung.</p></div></div>`;
+}
+
 function pilotAdminEmail(data, reference, reviewAvailable = true) {
   return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b"><div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0"><div style="font-size:12px;letter-spacing:1.4px;color:#62d7e5;font-weight:700">DANINIHUB PILOT DESK</div><h1 style="margin:8px 0 4px;font-size:28px">Neue strukturierte Pilot-Anfrage</h1><div style="color:#b8c7d3">Referenz ${html(reference)}</div></div><div style="border:1px solid #d8e1e8;border-top:0;padding:28px 30px;border-radius:0 0 14px 14px"><h2 style="font-size:18px;margin:0 0 14px">Kontakt</h2><table style="width:100%;border-collapse:collapse"><tr><td style="padding:8px 0;color:#607180;width:180px">Unternehmen / Name</td><td style="padding:8px 0;font-weight:700">${html(data.company)}</td></tr><tr><td style="padding:8px 0;color:#607180">E-Mail</td><td style="padding:8px 0"><a href="mailto:${html(data.email)}">${html(data.email)}</a></td></tr><tr><td style="padding:8px 0;color:#607180">Telefon</td><td style="padding:8px 0">${valueOrDash(data.phone)}</td></tr><tr><td style="padding:8px 0;color:#607180">Sprache</td><td style="padding:8px 0">${data.language === 'sr' ? 'Serbisch' : 'Deutsch'}</td></tr></table><h2 style="font-size:18px;margin:28px 0 14px">Operativer Bedarf</h2><table style="width:100%;border-collapse:collapse"><tr><td style="padding:8px 0;color:#607180;width:180px">Fahrzeuge</td><td style="padding:8px 0;font-weight:700">${valueOrDash(data.fleet)}</td></tr><tr><td style="padding:8px 0;color:#607180">Relationen</td><td style="padding:8px 0">${valueOrDash(data.routes)}</td></tr><tr><td style="padding:8px 0;color:#607180">Zeitfresser / Aufgaben</td><td style="padding:8px 0">${valueOrDash(data.tasks)}</td></tr><tr><td style="padding:8px 0;color:#607180">Benötigtes Zeitfenster</td><td style="padding:8px 0">${valueOrDash(data.availability)}</td></tr><tr><td style="padding:8px 0;color:#607180">Systeme / Kanäle</td><td style="padding:8px 0">${valueOrDash(data.systems)}</td></tr><tr><td style="padding:8px 0;color:#607180">Operative Freigabe</td><td style="padding:8px 0">${valueOrDash(data.decision)}</td></tr></table><div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8"><strong>Nächster Schritt</strong><br>Bedarf prüfen, Rückfragen vorbereiten und entscheiden, ob ein klar begrenztes Pilotprojekt sinnvoll ist.</div>${reviewAction(reference, reviewAvailable)}<p style="margin-top:24px;color:#607180;font-size:13px">Diese Anfrage ist noch kein Transportauftrag, kein Angebot und keine Annahme eines Leistungsumfangs.</p></div></div>`;
 }
 
 function confirmationEmail(data, reference) {
   const isSr = data.language === 'sr' || /podrška|upoznavanje|organizacijom/i.test(data.interest);
+  if (data.source === 'ai-opportunity-check') {
+    return isSr
+      ? `<h2>Hvala na AI Opportunity Check upitu.</h2><p>Vaši podaci su primljeni pod referencom <strong>${html(reference)}</strong>.</p><p>Lično ću pregledati početno stanje, problem, moguće korisnike, postojeće dokaze i cilj za narednih 30 dana. Dobićete jasan predlog da li je dovoljan besplatan sledeći korak ili ima smisla AI Opportunity Map.</p><p>Ovo nije obećanje zarade niti automatska kupovina ili obaveza.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
+      : `<h2>Vielen Dank für Ihren AI Opportunity Check.</h2><p>Ihre Angaben wurden unter der Referenz <strong>${html(reference)}</strong> empfangen.</p><p>Ich prüfe Ausgangslage, Problem, mögliche Nutzer, vorhandene Belege und Ihr 30-Tage-Ziel persönlich. Danach erhalten Sie eine klare Rückmeldung, ob ein kostenloser nächster Schritt genügt oder die AI Opportunity Map sinnvoll ist.</p><p>Dies ist kein Einkommensversprechen und löst keinen automatischen Kauf oder Auftrag aus.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
+  }
   if (data.source === 'pilot-check') {
     return isSr
       ? `<h2>Hvala na strukturisanom upitu za pilot-projekat.</h2><p>Vaši podaci su bezbedno primljeni pod referencom <strong>${html(reference)}</strong>.</p><p>Lično ću proveriti relacije, broj vozila, zadatke, traženo vreme podrške, sisteme i ovlašćenja. Nakon provere dobićete jasan predlog sledećeg koraka.</p><p>Ova potvrda nije prihvatanje transportnog naloga niti pravno obavezujuća ponuda.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
@@ -108,13 +118,13 @@ function mountPublicRuntime(app, options = {}) {
     const data = req.body || {};
     if (!contactAllowed(req.ip)) return res.status(429).json({ ok:false, error:'RATE_LIMITED' });
     if (!clean(data.company) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(data.email, 180))) return res.status(400).json({ ok:false, error:'INVALID_CONTACT' });
-    const reference = leadReference(data.source === 'pilot-check');
+    const reference = leadReference(data.source);
     let stored = true;
     try { await leadStore.create({ ...data, reference, status:'NEW' }); } catch { stored = false; }
     try {
       const api = brevo();
       const from = sender();
-      await api.sendTransacEmail({ sender:from, to:[{ email:'info@daninihub.com', name:'DaniniHub' }], replyTo:{ email:clean(data.email,180), name:clean(data.company,180) }, subject:`DaniniHub Anfrage ${reference}`, htmlContent:data.source === 'pilot-check' ? pilotAdminEmail(data, reference, stored) : standardAdminEmail(data, reference, stored) });
+      await api.sendTransacEmail({ sender:from, to:[{ email:'info@daninihub.com', name:'DaniniHub' }], replyTo:{ email:clean(data.email,180), name:clean(data.company,180) }, subject:`DaniniHub ${data.source === 'ai-opportunity-check' ? 'Opportunity Check' : data.source === 'pilot-check' ? 'Pilot-Anfrage' : 'Anfrage'} ${reference}`, htmlContent:data.source === 'ai-opportunity-check' ? opportunityAdminEmail(data, reference, stored) : data.source === 'pilot-check' ? pilotAdminEmail(data, reference, stored) : standardAdminEmail(data, reference, stored) });
       await api.sendTransacEmail({ sender:from, to:[{ email:clean(data.email,180), name:clean(data.company,180) }], replyTo:{ email:'info@daninihub.com', name:'DaniniHub' }, subject:`DaniniHub – Bestätigung ${reference}`, htmlContent:confirmationEmail(data, reference) });
       return res.json({ ok:true, reference });
     } catch (error) {
@@ -148,6 +158,7 @@ function mountPublicRuntime(app, options = {}) {
   const routePairs = [
     ['/de/', '/sr/'],
     ['/de/opportunity-check', '/sr/opportunity-check'],
+    ['/de/opportunity-map', '/sr/opportunity-map'],
     ['/de/dispolab', '/sr/dispo-lab'],
     ['/de/dispolab/check', '/sr/dispo-lab/provera'],
     ['/de/transport-room-demo', '/sr/transportna-soba-demo'],
@@ -173,10 +184,12 @@ function mountPublicRuntime(app, options = {}) {
   ];
 
   const seo = {
+    '/de/opportunity-map': ['AI Opportunity Map | Arbeitsbuch für den ersten Markttest', 'Das zweisprachige DaniniHub Workbook führt von vorhandenen Ressourcen und einem realen Problem zu einem messbaren 30-Tage-Markttest.'],
+    '/sr/opportunity-map': ['AI Opportunity Map | Radna sveska za prvi tržišni test', 'Dvojezična DaniniHub radna sveska vodi od postojećih resursa i stvarnog problema do merljivog tržišnog testa za 30 dana.'],
     '/de/opportunity-check': ['AI Opportunity Check | Von Problem zu erstem Markttest', 'Strukturieren Sie Ihr Problem, Wissen, Ihre Idee oder vorhandenen Werte und prüfen Sie mit DaniniHub den nächsten realistischen Markttest.'],
     '/sr/opportunity-check': ['AI Opportunity Check | Od problema do prvog tržišnog testa', 'Strukturirajte problem, znanje, ideju ili ono što već posedujete i proverite sa DaniniHubom sledeći realan tržišni test.'],
-    '/de/': ['DaniniHub Transport & Logistics | Balkan–DACH Operations Support', 'Operative Transport-Unterstützung zwischen Balkan und DACH: Kommunikation, Status, Termine, Dokumente und klar begrenzte Zuständigkeiten.'],
-    '/sr/': ['DaniniHub Transport & Logistics | Balkan–DACH operativna podrška', 'Operativna podrška transportnim firmama između Balkana i DACH regiona: komunikacija, statusi, termini i dokumentacija.'],
+    '/de/': ['DaniniHub | Human + AI Opportunity Engine', 'DaniniHub verbindet Erfahrung, Wissen, Zeit, Besitz und reale Probleme mit überprüfbarer Nachfrage und kleinen messbaren Markttests.'],
+    '/sr/': ['DaniniHub | Human + AI Opportunity Engine', 'DaniniHub povezuje iskustvo, znanje, vreme, imovinu i stvarne probleme sa proverljivom potražnjom i malim merljivim tržišnim testovima.'],
     '/de/dispolab': ['DaniniHub DispoLab | Praxistraining für Disponenten', 'Interaktive Balkan–DACH-Fallsimulationen für operatives Denken, Kommunikation, Risiko, Dokumentation und Eskalation.'],
     '/sr/dispo-lab': ['DaniniHub DispoLab | Praktični trening za disponente', 'Interaktivne Balkan–DACH simulacije za operativno razmišljanje, komunikaciju, rizik, dokumentovanje i eskalaciju.'],
     '/de/dispolab/check': ['Kostenloser Dispo-Check | DaniniHub', 'Kostenloser interaktiver Praxischeck mit drei simulierten Transportfällen zu ETA, CMR und Schichtübergabe.'],

@@ -11,7 +11,7 @@ const copy = {
     systemEyebrow: 'EIN SYSTEM · DREI EINSTIEGE',
     systemTitle: 'Menschen finden verwertbare Möglichkeiten. Unternehmen finden fehlende Fähigkeiten. Reale Projekte liefern den Beweis.',
     pillars: [
-      { code: '01', tag: 'FÜR MENSCHEN', title: 'Opportunity Map', text: 'Erfahrung, Fähigkeiten, Zeit, Kontakte, Besitz und Grenzen werden in wenige realistische Optionen übersetzt – jeweils mit erstem Markttest.', action: 'Opportunity Map starten', href: 'https://danininet.com/de/start', accent: 'cyan', external: true },
+      { code: '01', tag: 'FÜR MENSCHEN', title: 'Opportunity Map', text: 'Erfahrung, Fähigkeiten, Zeit, Kontakte, Besitz und Grenzen werden in wenige realistische Optionen übersetzt – jeweils mit erstem Markttest.', action: 'Opportunity Map starten', href: '/de/opportunity-map', accent: 'cyan' },
       { code: '02', tag: 'FÜR UNTERNEHMEN', title: 'Problem → Mensch → Prozess → KI', text: 'Ein konkreter Engpass wird zuerst diagnostiziert: Fehlt eine Person, eine Fähigkeit, ein besserer Prozess oder eine sinnvolle Automatisierung?', action: 'Problem beschreiben', href: 'mailto:info@daninihub.com?subject=DaniniHub%20B2B%20Problem', accent: 'amber' },
       { code: '03', tag: 'REALER BEWEIS', title: 'Čalije · Monetarisierung einer Fläche', text: 'Ein ungenutztes Grundstück in Niš wird als öffentlicher Testfall genutzt: Nachfrage prüfen, Angebot bauen, Interessenten messen und erst danach investieren.', action: 'Čalije Case ansehen', href: 'https://calije.daninihub.com/de', accent: 'lime', external: true }
     ],
@@ -31,7 +31,7 @@ const copy = {
     audienceEyebrow: 'WELCHER EINSTIEG PASST?',
     audienceTitle: 'Nicht jeder muss online Geld verdienen. Jeder Fall beginnt mit dem, was real vorhanden ist.',
     audiences: [
-      ['Ich suche meinen Weg', 'Ich habe Erfahrung oder Ressourcen, weiß aber nicht, welches Angebot und welcher Markt realistisch sind.', 'https://danininet.com/de/start', 'Opportunity Map starten'],
+      ['Ich suche meinen Weg', 'Ich habe Erfahrung oder Ressourcen, weiß aber nicht, welches Angebot und welcher Markt realistisch sind.', '/de/opportunity-map', 'Opportunity Map starten'],
       ['Wir haben ein Firmenproblem', 'Uns fehlt Kapazität, Kompetenz, ein besserer Ablauf oder eine sinnvolle KI-Unterstützung.', 'mailto:info@daninihub.com?subject=DaniniHub%20Firmenproblem', 'Problem beschreiben'],
       ['Ich besitze eine Fläche / Ressource', 'Ich möchte Nachfrage und Erlösmodell prüfen, bevor ich größer investiere.', '/de/location-launch', 'Markttest ansehen']
     ],
@@ -53,7 +53,7 @@ const copy = {
     systemEyebrow: 'JEDAN SISTEM · TRI ULAZA',
     systemTitle: 'Ljudi pronalaze realne mogućnosti. Firme pronalaze ono što im nedostaje. Stvarni projekti daju dokaz.',
     pillars: [
-      { code: '01', tag: 'ZA LJUDE', title: 'Opportunity Map', text: 'Iskustvo, veštine, vreme, kontakti, imovina i ograničenja pretvaraju se u nekoliko realnih opcija – svaka sa prvim tržišnim testom.', action: 'Pokrenite Opportunity Map', href: 'https://danininet.com/sr/pocni', accent: 'cyan', external: true },
+      { code: '01', tag: 'ZA LJUDE', title: 'Opportunity Map', text: 'Iskustvo, veštine, vreme, kontakti, imovina i ograničenja pretvaraju se u nekoliko realnih opcija – svaka sa prvim tržišnim testom.', action: 'Pokrenite Opportunity Map', href: '/sr/opportunity-map', accent: 'cyan', external: true },
       { code: '02', tag: 'ZA FIRME', title: 'Problem → čovek → proces → AI', text: 'Konkretno usko grlo prvo dijagnostikujemo: nedostaje li čovek, određena veština, bolji proces ili smislena automatizacija?', action: 'Opišite problem firme', href: 'mailto:info@daninihub.com?subject=DaniniHub%20B2B%20problem', accent: 'amber' },
       { code: '03', tag: 'STVARNI DOKAZ', title: 'Čalije · monetizacija imovine', text: 'Neiskorišćena parcela u Nišu koristi se kao javni test: proveriti potražnju, napraviti ponudu, meriti interesovanje i tek onda ulagati.', action: 'Pogledajte Čalije case', href: 'https://calije.daninihub.com/sr', accent: 'lime', external: true }
     ],
@@ -73,7 +73,7 @@ const copy = {
     audienceEyebrow: 'ODAKLE VI KREĆETE?',
     audienceTitle: 'Ne mora svako da zarađuje online. Svaki slučaj kreće od onoga što realno postoji.',
     audiences: [
-      ['Tražim svoj pravac', 'Imam iskustvo ili resurse, ali ne znam koja ponuda i koje tržište su realni.', 'https://danininet.com/sr/pocni', 'Pokrenite Opportunity Map'],
+      ['Tražim svoj pravac', 'Imam iskustvo ili resurse, ali ne znam koja ponuda i koje tržište su realni.', '/sr/opportunity-map', 'Pokrenite Opportunity Map'],
       ['Imamo problem u firmi', 'Nedostaje nam kapacitet, veština, bolji proces ili smislena AI podrška.', 'mailto:info@daninihub.com?subject=DaniniHub%20problem%20firme', 'Opišite problem'],
       ['Imam plac ili drugi resurs', 'Želim da proverim potražnju i model prihoda pre većeg ulaganja.', '/sr/location-launch', 'Pogledajte tržišni test']
     ],
@@ -90,7 +90,7 @@ const copy = {
 export default function BusinessHubLanding({ lang }) {
   const t = copy[lang]
   const calije = lang === 'sr' ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
-  const contact = `mailto:info@daninihub.com?subject=${lang === 'sr' ? 'DaniniHub%20konkretan%20slucaj' : 'DaniniHub%20konkreter%20Fall'}`
+  const contact = lang === 'sr' ? '/sr/opportunity-check' : '/de/opportunity-check'
 
   return <main className="business-hub" id="top">
     <section className="hub-hero">
@@ -103,7 +103,7 @@ export default function BusinessHubLanding({ lang }) {
       </div>
       <div className="hub-map" aria-label={lang === 'sr' ? 'DaniniHub sistem mogućnosti' : 'DaniniHub Opportunity System'}>
         <div className="hub-map-core"><small>DANINI</small><strong>HUB</strong><span>Opportunity Engine</span></div>
-        <a className="hub-orbit orbit-one" href={lang === 'sr' ? 'https://danininet.com/sr/pocni' : 'https://danininet.com/de/start'}><b>01</b><span>PEOPLE</span></a>
+        <a className="hub-orbit orbit-one" href={lang === 'sr' ? '/sr/opportunity-map' : '/de/opportunity-map'}><b>01</b><span>PEOPLE</span></a>
         <a className="hub-orbit orbit-two" href={contact}><b>02</b><span>COMPANIES</span></a>
         <a className="hub-orbit orbit-three" href={calije}><b>03</b><span>CASES</span></a>
       </div>

@@ -3,17 +3,17 @@ import './BusinessHubLanding.css'
 const copy = {
   de: {
     eyebrow: 'DANINIHUB · HUMAN + AI OPPORTUNITY ENGINE',
-    title: 'Finde heraus, was du bereits hast – und welcher reale Markt dafür bezahlt.',
-    lead: 'DaniniHub ist kein weiterer KI-Blog und kein Versprechen vom schnellen Geld. Das System verbindet Fähigkeiten, Erfahrung, Zeit, Besitz und reale Probleme mit überprüfbarer Nachfrage. KI beschleunigt Analyse und Umsetzung; der Mensch entscheidet.',
-    primary: 'So funktioniert das System',
-    secondary: 'Konkreten Fall beschreiben',
-    proof: ['Menschen statt Guru-Versprechen', 'Reale Marktprobleme statt Ideenlisten', 'Mensch entscheidet · KI beschleunigt'],
-    systemEyebrow: 'EIN SYSTEM · DREI EINSTIEGE',
-    systemTitle: 'Menschen finden verwertbare Möglichkeiten. Unternehmen finden fehlende Fähigkeiten. Reale Projekte liefern den Beweis.',
+    title: 'Von Ihrem realen Problem zum ersten messbaren Markttest.',
+    lead: 'DaniniHub prüft eine konkrete Geschäftsidee, Fähigkeit, Website, Fläche oder ein Firmenproblem. Sie erhalten kein allgemeines KI-Gerede, sondern ein klares Angebot, einen erreichbaren Käufer und auf Wunsch einen veröffentlichten Pilot.',
+    primary: 'Angebot und Preise ansehen',
+    secondary: 'Fall kostenlos prüfen',
+    proof: ['Kostenlose Erstprüfung', 'Persönliche Analyse · 149 €', 'Umgesetzter Marktpilot · ab 590 €'],
+    systemEyebrow: 'DREI KLARE STUFEN',
+    systemTitle: 'Erst kostenlos prüfen. Dann gezielt analysieren. Nur sinnvolle Fälle werden umgesetzt.',
     pillars: [
-      { code: '01', tag: 'FÜR MENSCHEN', title: 'Opportunity Map', text: 'Erfahrung, Fähigkeiten, Zeit, Kontakte, Besitz und Grenzen werden in wenige realistische Optionen übersetzt – jeweils mit erstem Markttest.', action: 'Opportunity Map starten', href: '/de/opportunity-map', accent: 'cyan' },
-      { code: '02', tag: 'FÜR UNTERNEHMEN', title: 'Problem → Mensch → Prozess → KI', text: 'Ein konkreter Engpass wird zuerst diagnostiziert: Fehlt eine Person, eine Fähigkeit, ein besserer Prozess oder eine sinnvolle Automatisierung?', action: 'Problem beschreiben', href: 'mailto:info@daninihub.com?subject=DaniniHub%20B2B%20Problem', accent: 'amber' },
-      { code: '03', tag: 'REALER BEWEIS', title: 'Čalije · Monetarisierung einer Fläche', text: 'Ein ungenutztes Grundstück in Niš wird als öffentlicher Testfall genutzt: Nachfrage prüfen, Angebot bauen, Interessenten messen und erst danach investieren.', action: 'Čalije Case ansehen', href: 'https://calije.daninihub.com/de', accent: 'lime', external: true }
+      { code: '01', tag: 'KOSTENLOS · 0 €', title: 'Opportunity Check', text: 'Wir prüfen kurz, ob Ihr Fall einen realen Käufer, ein bezahltes Problem und einen sinnvollen nächsten Schritt hat.', action: 'Fall kostenlos senden', href: '/de/opportunity-check', accent: 'cyan' },
+      { code: '02', tag: 'PERSÖNLICHE ANALYSE · 149 €', title: 'Opportunity Map für Ihren Fall', text: 'Marktprüfung, drei Erlöswege, klare Empfehlung, Preislogik und ein konkreter 30-Tage-Plan.', action: 'Leistung ansehen', href: '/de/opportunity-map', accent: 'amber' },
+      { code: '03', tag: 'UMSETZUNG · AB 590 €', title: 'DaniniHub Markt-Pilot', text: 'Wir bauen Angebot, Landingpage, Kontaktweg und erstes Vertriebspaket und messen echte Marktreaktionen.', action: 'Pilot und Lieferumfang ansehen', href: '/de/opportunity-map', accent: 'lime' }
     ],
     modelEyebrow: 'DIE DANINIHUB-METHODE',
     modelTitle: 'Nicht zuerst ein Produkt bauen. Zuerst vorhandene Ressourcen, ein echtes Problem und den kleinsten zahlenden Schritt finden.',
@@ -45,17 +45,17 @@ const copy = {
   },
   sr: {
     eyebrow: 'DANINIHUB · HUMAN + AI OPPORTUNITY ENGINE',
-    title: 'Otkrij šta već imaš – i ko je na tržištu spreman da plati vrednost koju možeš da napraviš.',
-    lead: 'DaniniHub nije još jedan AI blog niti obećanje lake zarade. Sistem povezuje iskustvo, znanje, vreme, imovinu i stvarne probleme sa merljivom potražnjom. AI ubrzava analizu i realizaciju; čovek odlučuje.',
-    primary: 'Kako sistem radi',
-    secondary: 'Opišite konkretan slučaj',
-    proof: ['Ljudi umesto guru obećanja', 'Stvarni problemi umesto liste ideja', 'Čovek odlučuje · AI ubrzava'],
-    systemEyebrow: 'JEDAN SISTEM · TRI ULAZA',
-    systemTitle: 'Ljudi pronalaze realne mogućnosti. Firme pronalaze ono što im nedostaje. Stvarni projekti daju dokaz.',
+    title: 'Od vašeg stvarnog problema do prvog merljivog tržišnog testa.',
+    lead: 'DaniniHub proverava konkretnu poslovnu ideju, znanje, sajt, plac ili problem firme. Ne dobijate opštu AI priču, već jasnu ponudu, dostupnog kupca i, kada ima smisla, objavljen tržišni pilot.',
+    primary: 'Pogledajte ponudu i cene',
+    secondary: 'Besplatno proverite slučaj',
+    proof: ['Besplatna početna provera', 'Lična analiza · 149 €', 'Izveden tržišni pilot · od 590 €'],
+    systemEyebrow: 'TRI JASNA KORAKA',
+    systemTitle: 'Prvo besplatno proveravamo. Zatim analiziramo. Realizujemo samo slučajeve koji imaju smisla.',
     pillars: [
-      { code: '01', tag: 'ZA LJUDE', title: 'Opportunity Map', text: 'Iskustvo, veštine, vreme, kontakti, imovina i ograničenja pretvaraju se u nekoliko realnih opcija – svaka sa prvim tržišnim testom.', action: 'Pokrenite Opportunity Map', href: '/sr/opportunity-map', accent: 'cyan', external: true },
-      { code: '02', tag: 'ZA FIRME', title: 'Problem → čovek → proces → AI', text: 'Konkretno usko grlo prvo dijagnostikujemo: nedostaje li čovek, određena veština, bolji proces ili smislena automatizacija?', action: 'Opišite problem firme', href: 'mailto:info@daninihub.com?subject=DaniniHub%20B2B%20problem', accent: 'amber' },
-      { code: '03', tag: 'STVARNI DOKAZ', title: 'Čalije · monetizacija imovine', text: 'Neiskorišćena parcela u Nišu koristi se kao javni test: proveriti potražnju, napraviti ponudu, meriti interesovanje i tek onda ulagati.', action: 'Pogledajte Čalije case', href: 'https://calije.daninihub.com/sr', accent: 'lime', external: true }
+      { code: '01', tag: 'BESPLATNO · 0 €', title: 'Opportunity Check', text: 'Kratko proveravamo da li vaš slučaj ima stvarnog kupca, plaćeni problem i smislen sledeći korak.', action: 'Pošaljite slučaj', href: '/sr/opportunity-check', accent: 'cyan' },
+      { code: '02', tag: 'LIČNA ANALIZA · 149 €', title: 'Opportunity Map za vaš slučaj', text: 'Provera tržišta, tri puta do prihoda, jasna preporuka, logika cene i akcioni plan za 30 dana.', action: 'Pogledajte isporuku', href: '/sr/opportunity-map', accent: 'amber' },
+      { code: '03', tag: 'REALIZACIJA · OD 590 €', title: 'DaniniHub tržišni pilot', text: 'Pravimo ponudu, landing stranicu, kontakt i početni prodajni paket i merimo stvarne reakcije tržišta.', action: 'Pogledajte pilot i isporuku', href: '/sr/opportunity-map', accent: 'lime' }
     ],
     modelEyebrow: 'DANINIHUB METOD',
     modelTitle: 'Ne pravimo prvo proizvod. Prvo nalazimo ono što već postoji, stvarni problem i najmanji korak za koji je neko spreman da plati.',

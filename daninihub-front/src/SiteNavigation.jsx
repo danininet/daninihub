@@ -2,39 +2,14 @@ import { useEffect, useState } from 'react'
 import './SiteNavigation.css'
 
 const links = {
-  de: { start:'Start', services:'Operations', projects:'Projekte', location:'Location Launch', calije:'Čalije Parking', dispoLab:'DispoLab', external:'Externe Disposition', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Leistungsrahmen', continuity:'Continuity Support', drivers:'Fahrerkommunikation', knowledge:'Praxis & Wissen', contact:'Kontakt', menu:'Menü', close:'Schließen' },
-  sr: { start:'Početna', services:'Operativa', projects:'Projekti', location:'Location Launch', calije:'Čalije Parking', dispoLab:'DispoLab', external:'Eksterna dispozicija', dach:'Balkan Desk', balkan:'DACH Desk', scope:'Obim usluge', continuity:'Podrška kontinuitetu', drivers:'Komunikacija sa vozačima', knowledge:'Praksa i znanje', contact:'Kontakt', menu:'Meni', close:'Zatvori' }
+  de: { start:'Start', people:'Für Menschen', companies:'Für Unternehmen', cases:'Praxisfälle', methods:'Methoden', transport:'Transport-Archiv', location:'Location Launch', calije:'Čalije Case', knowledge:'Praxis & Wissen', dispoLab:'DispoLab', contact:'Fall beschreiben', menu:'Menü', close:'Schließen' },
+  sr: { start:'Početna', people:'Za ljude', companies:'Za firme', cases:'Praktični slučajevi', methods:'Metode', transport:'Transport arhiva', location:'Location Launch', calije:'Čalije Case', knowledge:'Praksa i znanje', dispoLab:'DispoLab', contact:'Opišite slučaj', menu:'Meni', close:'Zatvori' }
 }
 
 const routePairs = [
-  ['/de/', '/sr/'],
-  ['/de/location-launch', '/sr/location-launch'],
-  ['/de/externe-disposition', '/sr/eksterna-dispozicija'],
-  ['/de/balkan-desk', '/sr/balkan-desk'],
-  ['/de/dach-desk', '/sr/dach-desk'],
-  ['/de/fuer-dach-speditionen', '/sr/za-balkanske-transportne-firme'],
-  ['/de/vorher-nachher', '/sr/pre-posle'],
-  ['/de/capacity-signal', '/sr/signal-kapaciteta'],
-  ['/de/dispolab', '/sr/dispo-lab'],
-  ['/de/dispolab/check', '/sr/dispo-lab/provera'],
-  ['/de/transport-network-demo', '/sr/transportna-mreza-demo'],
-  ['/de/transport-room-demo', '/sr/transportna-soba-demo'],
-  ['/de/leistungsrahmen', '/sr/obim-usluge'],
-  ['/de/continuity-support', '/sr/kontinuitet-podrska'],
-  ['/de/fahrerkommunikation', '/sr/komunikacija-vozaci'],
-  ['/de/pilot-check', '/sr/provera-pilota'],
-  ['/de/praxis-wissen', '/sr/praksa-znanje'],
-  ['/de/praxis-wissen/warum-tms-disponenten-nicht-ersetzen', '/sr/praksa-znanje/zasto-tms-ne-menja-disponente'],
-  ['/de/praxis-wissen/eta-ist-keine-zusage', '/sr/praksa-znanje/eta-nije-obecanje'],
-  ['/de/praxis-wissen/fahrerkommunikation-balkan-dach', '/sr/praksa-znanje/komunikacija-sa-vozacima-balkan-dach'],
-  ['/de/praxis-wissen/schichtuebergabe-disposition', '/sr/praksa-znanje/predaja-smene-dispozicija'],
-  ['/de/praxis-wissen/abweichungen-eskalieren', '/sr/praksa-znanje/eskalacija-odstupanja'],
-  ['/de/praxis-wissen/transportdokumente-cmr-pod', '/sr/praksa-znanje/transportna-dokumenta-cmr-pod'],
-  ['/de/impressum', '/sr/impressum'],
-  ['/de/datenschutz', '/sr/privatnost'],
-  ['/de/cookies', '/sr/kolacici'],
-  ['/de/haftungsausschluss', '/sr/odricanje-odgovornosti'],
-  ['/de/glossar', '/sr/recnik']
+  ['/de/', '/sr/'], ['/de/location-launch', '/sr/location-launch'], ['/de/externe-disposition', '/sr/eksterna-dispozicija'],
+  ['/de/balkan-desk', '/sr/balkan-desk'], ['/de/dach-desk', '/sr/dach-desk'], ['/de/dispolab', '/sr/dispo-lab'],
+  ['/de/praxis-wissen', '/sr/praksa-znanje'], ['/de/impressum', '/sr/impressum'], ['/de/datenschutz', '/sr/privatnost']
 ]
 
 function translatedPath(targetLang) {
@@ -54,25 +29,15 @@ export default function SiteNavigation({ lang }) {
   const [open, setOpen] = useState(false)
   const t = links[lang]
   const sr = lang === 'sr'
-  const external = sr ? '/sr/eksterna-dispozicija' : '/de/externe-disposition'
-  const balkanDesk = sr ? '/sr/balkan-desk' : '/de/balkan-desk'
-  const dachDesk = sr ? '/sr/dach-desk' : '/de/dach-desk'
-  const serviceLinks = [
-    [t.external, external],
-    [t.dach, balkanDesk],
-    [t.balkan, dachDesk],
-    [t.scope, sr ? '/sr/obim-usluge' : '/de/leistungsrahmen'],
-    [t.continuity, sr ? '/sr/kontinuitet-podrska' : '/de/continuity-support'],
-    [t.drivers, sr ? '/sr/komunikacija-vozaci' : '/de/fahrerkommunikation']
-  ]
-  const dispoLab = sr ? '/sr/dispo-lab' : '/de/dispolab'
-  const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
+  const home = sr ? '/sr/' : '/de/'
+  const opportunity = sr ? 'https://danininet.com/sr/pocni' : 'https://danininet.com/de/start'
+  const companyContact = sr ? 'mailto:info@daninihub.com?subject=DaniniHub%20problem%20firme' : 'mailto:info@daninihub.com?subject=DaniniHub%20Firmenproblem'
+  const contact = sr ? 'mailto:info@daninihub.com?subject=DaniniHub%20konkretan%20slucaj' : 'mailto:info@daninihub.com?subject=DaniniHub%20konkreter%20Fall'
   const locationLaunch = sr ? '/sr/location-launch' : '/de/location-launch'
   const calije = sr ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
-  const home = sr ? '/sr/' : '/de/'
-  const contact = sr
-    ? 'mailto:info@daninihub.com?subject=Kratak%20razgovor%20%E2%80%93%20DACH%20%E2%86%94%20Balkan'
-    : 'mailto:info@daninihub.com?subject=10-Minuten-Gespr%C3%A4ch%20%E2%80%93%20DACH%20%E2%86%94%20Balkan'
+  const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'
+  const dispoLab = sr ? '/sr/dispo-lab' : '/de/dispolab'
+  const transport = sr ? '/sr/eksterna-dispozicija' : '/de/externe-disposition'
   const deHref = translatedPath('de')
   const srHref = translatedPath('sr')
 
@@ -80,10 +45,7 @@ export default function SiteNavigation({ lang }) {
     const onEscape = event => event.key === 'Escape' && setOpen(false)
     document.addEventListener('keydown', onEscape)
     document.body.classList.toggle('mobile-nav-open', open)
-    return () => {
-      document.removeEventListener('keydown', onEscape)
-      document.body.classList.remove('mobile-nav-open')
-    }
+    return () => { document.removeEventListener('keydown', onEscape); document.body.classList.remove('mobile-nav-open') }
   }, [open])
 
   const close = () => setOpen(false)
@@ -92,14 +54,14 @@ export default function SiteNavigation({ lang }) {
     <header className="site-nav">
       <a className="site-nav-brand" href={home} aria-label="DaniniHub">
         <img src="/logo-mark.svg" alt="" width="52" height="52"/>
-        <strong>DaniniHub<small>BUSINESS &amp; OPERATIONS</small></strong>
+        <strong>DaniniHub<small>HUMAN + AI OPPORTUNITY ENGINE</small></strong>
       </a>
       <nav className="site-nav-desktop" aria-label={sr ? 'Glavna navigacija' : 'Hauptnavigation'}>
         <a href={home}>{t.start}</a>
-        <details className="site-nav-dropdown"><summary>{t.services}</summary><div>{serviceLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div></details>
-        <details className="site-nav-dropdown"><summary>{t.projects}</summary><div><a href={locationLaunch}>{t.location}</a><a href={calije} target="_blank" rel="noreferrer">{t.calije} ↗</a></div></details>
-        <a href={knowledge}>{t.knowledge}</a>
-        <a href={dispoLab}>{t.dispoLab}</a>
+        <a href={opportunity} target="_blank" rel="noreferrer">{t.people}</a>
+        <a href={companyContact}>{t.companies}</a>
+        <details className="site-nav-dropdown"><summary>{t.cases}</summary><div><a href={calije} target="_blank" rel="noreferrer">{t.calije} ↗</a><a href={locationLaunch}>{t.location}</a><a href={transport}>{t.transport}</a></div></details>
+        <details className="site-nav-dropdown"><summary>{t.methods}</summary><div><a href={knowledge}>{t.knowledge}</a><a href={dispoLab}>{t.dispoLab}</a></div></details>
         <a href={contact}>{t.contact}</a>
       </nav>
       <div className="site-nav-actions"><div className="site-nav-langs" aria-label="Language"><a className={lang === 'de' ? 'active' : ''} href={deHref}>DE</a><a className={lang === 'sr' ? 'active' : ''} href={srHref}>SR</a></div><a className="site-nav-cta" href={contact}>{t.contact}</a></div>
@@ -110,12 +72,13 @@ export default function SiteNavigation({ lang }) {
       <div className="site-nav-mobile-head"><strong>{t.menu}</strong><button type="button" onClick={close} aria-label={t.close}>×</button></div>
       <nav aria-label={sr ? 'Mobilna navigacija' : 'Mobile Navigation'}>
         <a href={home} onClick={close}>{t.start}</a>
-        <a className="mobile-services-main" href={external} onClick={close}>{t.services}</a>
-        <div className="mobile-services-list">{serviceLinks.map(([label, href]) => <a key={href} href={href} onClick={close}>{label}</a>)}</div>
-        <a className="mobile-services-main" href={locationLaunch} onClick={close}>{t.location}</a>
+        <a href={opportunity} target="_blank" rel="noreferrer" onClick={close}>{t.people}</a>
+        <a href={companyContact} onClick={close}>{t.companies}</a>
         <a href={calije} target="_blank" rel="noreferrer" onClick={close}>{t.calije} ↗</a>
+        <a href={locationLaunch} onClick={close}>{t.location}</a>
         <a href={knowledge} onClick={close}>{t.knowledge}</a>
         <a href={dispoLab} onClick={close}>{t.dispoLab}</a>
+        <a href={transport} onClick={close}>{t.transport}</a>
         <a href={contact} onClick={close}>{t.contact}</a>
       </nav>
       <div className="site-nav-mobile-langs"><a href={deHref}>DE</a><a href={srHref}>SR</a></div>

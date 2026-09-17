@@ -34,7 +34,8 @@ function sender() {
 
 function leadReference(source) {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const type = source === 'pilot-check' ? 'PILOT' : source === 'ai-opportunity-check' ? 'OPP' : 'LEAD';
+  const isPilot = source === 'pilot-check';
+  const type = source === 'ai-opportunity-check' ? 'OPP' : (isPilot ? 'PILOT' : 'LEAD');
   return `DH-${type}-${date}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 }
 

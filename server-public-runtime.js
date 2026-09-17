@@ -147,7 +147,6 @@ function mountPublicRuntime(app, options = {}) {
 
   const routePairs = [
     ['/de/', '/sr/'],
-    ['/de/opportunity-check', '/sr/opportunity-check'],
     ['/de/dispolab', '/sr/dispo-lab'],
     ['/de/dispolab/check', '/sr/dispo-lab/provera'],
     ['/de/transport-room-demo', '/sr/transportna-soba-demo'],
@@ -173,8 +172,6 @@ function mountPublicRuntime(app, options = {}) {
   ];
 
   const seo = {
-    '/de/opportunity-check': ['AI Opportunity Check | Von Problem zu erstem Markttest', 'Strukturieren Sie Ihr Problem, Wissen, Ihre Idee oder vorhandenen Werte und prüfen Sie mit DaniniHub den nächsten realistischen Markttest.'],
-    '/sr/opportunity-check': ['AI Opportunity Check | Od problema do prvog tržišnog testa', 'Strukturirajte problem, znanje, ideju ili ono što već posedujete i proverite sa DaniniHubom sledeći realan tržišni test.'],
     '/de/': ['DaniniHub Transport & Logistics | Balkan–DACH Operations Support', 'Operative Transport-Unterstützung zwischen Balkan und DACH: Kommunikation, Status, Termine, Dokumente und klar begrenzte Zuständigkeiten.'],
     '/sr/': ['DaniniHub Transport & Logistics | Balkan–DACH operativna podrška', 'Operativna podrška transportnim firmama između Balkana i DACH regiona: komunikacija, statusi, termini i dokumentacija.'],
     '/de/dispolab': ['DaniniHub DispoLab | Praxistraining für Disponenten', 'Interaktive Balkan–DACH-Fallsimulationen für operatives Denken, Kommunikation, Risiko, Dokumentation und Eskalation.'],
@@ -249,26 +246,7 @@ function mountPublicRuntime(app, options = {}) {
   };
 
   const siteRoutes = routePairs.flat();
-  app.get('/', (req, res) => {
-    const accepted = String(req.get('accept-language') || '').toLowerCase();
-    const preferences = accepted
-      .split(',')
-      .map((entry, index) => {
-        const [tag, ...parameters] = entry.trim().split(';');
-        const qualityParameter = parameters.find(parameter => parameter.trim().startsWith('q='));
-        const quality = qualityParameter ? Number(qualityParameter.trim().slice(2)) : 1;
-        return { tag, quality: Number.isFinite(quality) ? quality : 0, index };
-      })
-      .filter(preference => preference.tag)
-      .sort((left, right) => right.quality - left.quality || left.index - right.index);
-
-    const supportedPreference = preferences.find(({ tag }) => /^(?:sr|bs|hr|sh|cnr)(?:-|$)|^de(?:-|$)/.test(tag));
-    const language = supportedPreference && /^(?:sr|bs|hr|sh|cnr)(?:-|$)/.test(supportedPreference.tag) ? 'sr' : 'de';
-
-    res.set('Vary', 'Accept-Language');
-    res.set('Cache-Control', 'private, no-store');
-    return res.redirect(302, `/${language}/`);
-  });
+  app.get('/', (req, res) => res.redirect(308, '/de/'));
   app.get(/^\/(?:de|sr)$/, (req, res) => res.redirect(308, `${req.path}/`));
   siteRoutes.forEach(route => app.get(route, (req, res) => { res.type('html').send(renderSeoPage(route)); }));
   app.get('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nAllow: /\nSitemap: https://daninihub.com/sitemap.xml\n'));

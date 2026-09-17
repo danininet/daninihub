@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import './SiteNavigation.css'
 
 const links = {
-  de: { start:'Start', people:'Für Menschen', companies:'Für Unternehmen', cases:'Praxisfälle', methods:'Methoden', transport:'Transport-Archiv', location:'Location Launch', calije:'Čalije Case', knowledge:'Praxis & Wissen', dispoLab:'DispoLab', contact:'Opportunity Check', menu:'Menü', close:'Schließen' },
-  sr: { start:'Početna', people:'Za ljude', companies:'Za firme', cases:'Praktični slučajevi', methods:'Metode', transport:'Transport arhiva', location:'Location Launch', calije:'Čalije Case', knowledge:'Praksa i znanje', dispoLab:'DispoLab', contact:'Opportunity Check', menu:'Meni', close:'Zatvori' }
+  de: { start:'Start', people:'Für Menschen', companies:'Für Unternehmen', cases:'Praxisfälle', methods:'Methoden', transport:'Transport-Archiv', location:'Location Launch', calije:'Čalije Case', knowledge:'Praxis & Wissen', dispoLab:'DispoLab', contact:'Fall beschreiben', menu:'Menü', close:'Schließen' },
+  sr: { start:'Početna', people:'Za ljude', companies:'Za firme', cases:'Praktični slučajevi', methods:'Metode', transport:'Transport arhiva', location:'Location Launch', calije:'Čalije Case', knowledge:'Praksa i znanje', dispoLab:'DispoLab', contact:'Opišite slučaj', menu:'Meni', close:'Zatvori' }
 }
 
 const routePairs = [
-  ['/de/', '/sr/'], ['/de/opportunity-check', '/sr/opportunity-check'], ['/de/location-launch', '/sr/location-launch'], ['/de/externe-disposition', '/sr/eksterna-dispozicija'],
+  ['/de/', '/sr/'], ['/de/location-launch', '/sr/location-launch'], ['/de/externe-disposition', '/sr/eksterna-dispozicija'],
   ['/de/balkan-desk', '/sr/balkan-desk'], ['/de/dach-desk', '/sr/dach-desk'], ['/de/dispolab', '/sr/dispo-lab'],
   ['/de/praxis-wissen', '/sr/praksa-znanje'], ['/de/impressum', '/sr/impressum'], ['/de/datenschutz', '/sr/privatnost']
 ]
@@ -32,7 +32,7 @@ export default function SiteNavigation({ lang }) {
   const home = sr ? '/sr/' : '/de/'
   const opportunity = sr ? 'https://danininet.com/sr/pocni' : 'https://danininet.com/de/start'
   const companyContact = sr ? 'mailto:info@daninihub.com?subject=DaniniHub%20problem%20firme' : 'mailto:info@daninihub.com?subject=DaniniHub%20Firmenproblem'
-  const contact = sr ? '/sr/opportunity-check' : '/de/opportunity-check'
+  const contact = sr ? 'mailto:info@daninihub.com?subject=DaniniHub%20konkretan%20slucaj' : 'mailto:info@daninihub.com?subject=DaniniHub%20konkreter%20Fall'
   const locationLaunch = sr ? '/sr/location-launch' : '/de/location-launch'
   const calije = sr ? 'https://calije.daninihub.com/sr' : 'https://calije.daninihub.com/de'
   const knowledge = sr ? '/sr/praksa-znanje' : '/de/praxis-wissen'

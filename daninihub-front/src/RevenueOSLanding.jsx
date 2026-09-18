@@ -23,18 +23,20 @@ const COPY = {
     unitTitle: 'AI Office 24/7 für lokale DACH-Betriebe',
     unitLead: 'Für kleine Dienstleistungsbetriebe, die Anfragen verlieren, weil Telefon, WhatsApp, E-Mail, Terminabstimmung und Follow-up zwischen Tagesgeschäft und Feierabend hängen bleiben.',
     unitItems: ['Anfragen aufnehmen und vorsortieren','Kontaktdaten, Bedarf, Ort, Fotos und Wunschzeit erfassen','Termine vorbereiten oder buchen','Offene Angebote nachfassen','Nach erledigter Leistung Feedback anstoßen','Unklare Fälle an einen Menschen eskalieren'],
-    priceTitle: 'Start-Hypothese für den Markttest',
-    price1: 'Pilot · 199 € einmalig',
-    price2: 'Standard · 349 € / Monat',
-    priceNote: 'Diese Preise sind bewusst Testpreise. Sie werden anhand echter Verkaufs- und Nutzungsdaten bestätigt, angepasst oder verworfen.',
+    priceTitle: 'Kommerzieller Test erst nach Fit-Prüfung',
+    price1: 'Pilotpreis wird im konkreten Angebot festgelegt',
+    price2: 'Monatlicher Betrieb erst nach messbarem Pilot-Signal',
+    priceNote: 'Öffentliche Preisangaben sind noch kein verbindliches Angebot. Endpreis und steuerliche Behandlung werden vor Auftragserteilung eindeutig ausgewiesen.',
     caseTitle: 'Case 01 · Čalije',
     caseText: 'Ein reales Grundstück in Niš wird nach demselben Prinzip behandelt: Verfahren klären, Nachfrage testen, Minimal-MVP definieren, erste Transaktion messen und erst danach investieren.',
     caseCta: 'Case 01 öffnen',
     contactTitle: 'Wo verliert Ihr Betrieb heute Zeit oder Anfragen?',
     contactText: 'Schreiben Sie den Engpass in eigenen Worten. Wir prüfen nicht, ob „KI interessant“ ist, sondern ob ein kleiner bezahlbarer Test einen realen Nutzen zeigen kann.',
-    name: 'Unternehmen / Name', email: 'E-Mail', phone: 'Telefon / WhatsApp (optional)', message: 'Was läuft heute schlecht oder kostet unnötig Zeit?', consent: 'Ich stimme der Verarbeitung meiner Angaben zur Bearbeitung dieser Anfrage zu.', send: 'Markttest anfragen', success: 'Anfrage erhalten. Der nächste Schritt ist die Fit-Prüfung und ein kleiner, klar abgegrenzter Test.', error: 'Senden fehlgeschlagen. Bitte schreiben Sie an info@daninihub.com.',
-    footer: 'DaniniHub · Revenue OS · Duisburg',
-    privacy: 'Datenschutz', imprint: 'Impressum', ai: 'AI Transparenz'
+    name: 'Unternehmen / Name', email: 'E-Mail', phone: 'Telefon / WhatsApp (optional)', message: 'Was läuft heute schlecht oder kostet unnötig Zeit?', consent: 'Ich habe die Datenschutzerklärung zur Kenntnis genommen. Diese Bestätigung ist keine Marketing-Einwilligung.', send: 'Markttest anfragen', success: 'Anfrage erhalten. Der nächste Schritt ist die Fit-Prüfung und ein kleiner, klar abgegrenzter Test.', error: 'Senden fehlgeschlagen. Bitte schreiben Sie an info@daninihub.com.',
+    footer: 'DaniniHub · Revenue OS · Duisburg · B2B',
+    b2b: 'Angebot ausschließlich für Unternehmer und Unternehmen. Kein automatischer Vertragsschluss über das Formular.',
+    sensitive: 'Bitte keine Passwörter, Ausweisdaten, Gesundheitsdaten oder Geschäftsgeheimnisse über das öffentliche Formular senden.',
+    privacy: 'Datenschutz', imprint: 'Impressum', cookies: 'Cookies', terms: 'B2B-Rahmen', ai: 'KI-Transparenz'
   },
   sr: {
     nav: ['Sistem','AI Office','Case 01','Kontakt'],
@@ -57,18 +59,20 @@ const COPY = {
     unitTitle: 'AI Office 24/7 za lokalne DACH firme',
     unitLead: 'Za male uslužne firme koje gube upite zato što telefon, WhatsApp, email, termini i follow-up ostaju između dnevnog posla i večernje administracije.',
     unitItems: ['Prijem i osnovna kvalifikacija upita','Prikupljanje kontakta, potrebe, lokacije, fotografija i željenog termina','Priprema ili rezervacija termina','Praćenje otvorenih ponuda','Traženje povratne informacije posle usluge','Prosleđivanje nejasnih slučajeva čoveku'],
-    priceTitle: 'Početna cenovna hipoteza za tržišni test',
-    price1: 'Pilot · 199 € jednokratno',
-    price2: 'Standard · 349 € / mesec',
-    priceNote: 'Ovo su test cene. Potvrđujemo ih, menjamo ili odbacujemo na osnovu stvarnih prodajnih i korisničkih podataka.',
+    priceTitle: 'Komercijalni test tek posle provere fit-a',
+    price1: 'Cena pilota se definiše u konkretnoj ponudi',
+    price2: 'Mesečni rad tek nakon merljivog signala iz pilota',
+    priceNote: 'Javni navodi nisu obavezujuća ponuda. Konačna cena i poreski tretman biće jasno navedeni pre prihvatanja posla.',
     caseTitle: 'Case 01 · Čalije',
     caseText: 'Stvarni plac u Nišu tretiramo istim principom: prvo procedura, zatim test potražnje, minimalni MVP, prva transakcija i tek onda veće ulaganje.',
     caseCta: 'Otvori Case 01',
     contactTitle: 'Gde vaša firma danas gubi vreme ili upite?',
     contactText: 'Napišite problem svojim rečima. Ne proveravamo da li je „AI zanimljiv“, nego da li mali plaćeni test može da pokaže stvarnu korist.',
-    name: 'Firma / ime', email: 'E-mail', phone: 'Telefon / WhatsApp (opciono)', message: 'Šta danas ne radi kako treba ili bespotrebno troši vreme?', consent: 'Saglasan sam da se podaci obrade radi odgovora na ovaj upit.', send: 'Zatraži tržišni test', success: 'Upit je primljen. Sledeći korak je provera fit-a i mali jasno ograničen test.', error: 'Slanje nije uspelo. Pišite na info@daninihub.com.',
-    footer: 'DaniniHub · Revenue OS · Duisburg',
-    privacy: 'Privatnost', imprint: 'Impresum', ai: 'AI transparentnost'
+    name: 'Firma / ime', email: 'E-mail', phone: 'Telefon / WhatsApp (opciono)', message: 'Šta danas ne radi kako treba ili bespotrebno troši vreme?', consent: 'Pročitao/la sam obaveštenje o privatnosti. Ova potvrda nije saglasnost za marketing.', send: 'Zatraži tržišni test', success: 'Upit je primljen. Sledeći korak je provera fit-a i mali jasno ograničen test.', error: 'Slanje nije uspelo. Pišite na info@daninihub.com.',
+    footer: 'DaniniHub · Revenue OS · Duisburg · B2B',
+    b2b: 'Ponuda je namenjena isključivo preduzetnicima i kompanijama. Kontakt forma sama ne zaključuje ugovor.',
+    sensitive: 'Ne šaljite lozinke, podatke iz ličnih dokumenata, zdravstvene podatke ni poslovne tajne kroz javnu formu.',
+    privacy: 'Privatnost', imprint: 'Impresum', cookies: 'Kolačići', terms: 'B2B okvir', ai: 'AI transparentnost'
   }
 }
 
@@ -101,8 +105,9 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
       interest:'Danini Revenue OS / AI Office 24/7',
       message:String(d.get('message')||''),
       language:lang,
-      source:'ai-opportunity-check',
-      consent:d.get('consent')==='yes'
+      source:'revenue-os-intake',
+      privacy_acknowledged:d.get('privacy_ack')==='yes',
+      website:String(d.get('website')||'')
     }
     try{
       const r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
@@ -123,7 +128,7 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
         <h1>{t.title}</h1>
         <p className="ros-lead">{t.lead}</p>
         <div className="ros-actions"><a className="ros-btn primary" href="#contact">{t.primary}</a><a className="ros-btn secondary" href="https://calije.daninihub.com/">{t.secondary}</a></div>
-        <p className="ros-rule">{t.rule}</p>
+        <p className="ros-rule">{t.rule}</p><p className="ros-muted">{t.b2b}</p>
       </section>
 
       <section className="ros-section">
@@ -148,7 +153,9 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
           <label>{t.email}<input name="email" type="email" required maxLength="180"/></label>
           <label>{t.phone}<input name="phone" maxLength="80"/></label>
           <label>{t.message}<textarea name="message" required minLength="20" maxLength="3000"/></label>
-          <label className="ros-consent"><input name="consent" type="checkbox" value="yes" required/><span>{t.consent}</span></label>
+          <label style={{display:'none'}} aria-hidden="true">Website<input name="website" tabIndex="-1" autoComplete="off"/></label>
+          <p className="ros-muted" style={{margin:0}}>{t.sensitive}</p>
+          <label className="ros-consent"><input name="privacy_ack" type="checkbox" value="yes" required/><span>{t.consent} <a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'}>{t.privacy}</a></span></label>
           <button className="ros-btn primary" disabled={state==='sending'}>{state==='sending'?'…':t.send}</button>
           {state==='success'&&<p className="ros-success">{t.success}</p>}
           {state==='error'&&<p className="ros-error">{t.error}</p>}
@@ -156,6 +163,6 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
       </section>
     </main>
 
-    <footer className="ros-footer"><span>{t.footer}</span><div><a href={lang==='sr'?'/sr/impressum':'/de/impressum'}>{t.imprint}</a><a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'}>{t.privacy}</a><a href={lang==='sr'?'/sr/odricanje-odgovornosti':'/de/haftungsausschluss'}>{t.ai}</a></div></footer>
+    <footer className="ros-footer"><span>{t.footer}</span><div><a href={lang==='sr'?'/sr/impressum':'/de/impressum'}>{t.imprint}</a><a href={lang==='sr'?'/sr/privatnost':'/de/datenschutz'}>{t.privacy}</a><a href={lang==='sr'?'/sr/kolacici':'/de/cookies'}>{t.cookies}</a><a href={lang==='sr'?'/sr/uslovi':'/de/bedingungen'}>{t.terms}</a><a href={lang==='sr'?'/sr/ai-transparentnost':'/de/ai-transparenz'}>{t.ai}</a></div></footer>
   </div>
 }

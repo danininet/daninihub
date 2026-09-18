@@ -36,6 +36,7 @@ const COPY = {
     footer: 'DaniniHub · Revenue OS · Duisburg · B2B',
     b2b: 'Angebot ausschließlich für Unternehmer und Unternehmen. Kein automatischer Vertragsschluss über das Formular.',
     sensitive: 'Bitte keine Passwörter, Ausweisdaten, Gesundheitsdaten oder Geschäftsgeheimnisse über das öffentliche Formular senden.',
+    frictionEyebrow: 'PROCESS FRICTION CHECK', frictionTitle: 'Wie viel Reibung steckt heute im Anfrageprozess?', frictionLead: 'Vier Betriebswerte reichen für eine erste Orientierung. Die Berechnung bleibt lokal im Browser und ist keine Umsatzprognose.', adminHours: 'Admin-Stunden pro Woche', missedCalls: 'Verpasste oder unbeantwortete Anfragen pro Woche', responseHours: 'Typische Antwortzeit in Stunden', channels: 'Aktive Anfragekanäle', frictionScore: 'Friction Score', monthlyHours: 'Admin-Zeit pro Monat', frictionLow: 'niedrig', frictionMed: 'mittel', frictionHigh: 'hoch', frictionNote: 'Orientierungswert, keine Garantie für Einsparung oder Mehrumsatz.', useResult: 'Ergebnis wird dem Fit-Check beigefügt.',
     privacy: 'Datenschutz', imprint: 'Impressum', cookies: 'Cookies', terms: 'B2B-Rahmen', ai: 'KI-Transparenz'
   },
   sr: {
@@ -72,6 +73,7 @@ const COPY = {
     footer: 'DaniniHub · Revenue OS · Duisburg · B2B',
     b2b: 'Ponuda je namenjena isključivo preduzetnicima i kompanijama. Kontakt forma sama ne zaključuje ugovor.',
     sensitive: 'Ne šaljite lozinke, podatke iz ličnih dokumenata, zdravstvene podatke ni poslovne tajne kroz javnu formu.',
+    frictionEyebrow: 'PROCESS FRICTION CHECK', frictionTitle: 'Koliko trenja danas postoji u prijemu upita?', frictionLead: 'Četiri operativna podatka daju početnu orijentaciju. Račun ostaje lokalno u pregledaču i nije prognoza prihoda.', adminHours: 'Sati administracije nedeljno', missedCalls: 'Propušteni ili neobrađeni upiti nedeljno', responseHours: 'Tipično vreme odgovora u satima', channels: 'Aktivni kanali za upite', frictionScore: 'Friction Score', monthlyHours: 'Administracija mesečno', frictionLow: 'nisko', frictionMed: 'srednje', frictionHigh: 'visoko', frictionNote: 'Orijentacioni rezultat, bez garancije uštede ili dodatnog prihoda.', useResult: 'Rezultat se dodaje fit-check upitu.',
     privacy: 'Privatnost', imprint: 'Impresum', cookies: 'Kolačići', terms: 'B2B okvir', ai: 'AI transparentnost'
   }
 }
@@ -79,6 +81,16 @@ const COPY = {
 export default function RevenueOSLanding({ lang='de', onLanguage }) {
   const t = COPY[lang] || COPY.de
   const [state,setState] = useState('idle')
+  const [friction,setFriction] = useState({adminHours:6,missedCalls:3,responseHours:4,channels:3})
+  const frictionScore = Math.min(100,
+    Math.max(0,Number(friction.adminHours)||0)*4 +
+    Math.max(0,Number(friction.missedCalls)||0)*8 +
+    Math.max(0,Number(friction.responseHours)||0)*3 +
+    Math.max(0,(Number(friction.channels)||1)-1)*5
+  )
+  const frictionBand = frictionScore >= 60 ? t.frictionHigh : frictionScore >= 30 ? t.frictionMed : t.frictionLow
+  const monthlyHours = Math.round((Math.max(0,Number(friction.adminHours)||0)*4.33)*10)/10
+  const frictionSummary = `${t.frictionScore}: ${frictionScore}/100 (${frictionBand}); ${t.monthlyHours}: ${monthlyHours}h; ${t.adminHours}: ${friction.adminHours}; ${t.missedCalls}: ${friction.missedCalls}; ${t.responseHours}: ${friction.responseHours}; ${t.channels}: ${friction.channels}.`
 
   useEffect(()=>{
     document.documentElement.lang = lang
@@ -103,7 +115,7 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
       email:String(d.get('email')||''),
       phone:String(d.get('phone')||''),
       interest:'Danini Revenue OS / AI Office 24/7',
-      message:String(d.get('message')||''),
+      message:[String(d.get('message')||''),frictionSummary].filter(Boolean).join('\n\n'),
       language:lang,
       source:'revenue-os-intake',
       privacy_acknowledged:d.get('privacy_ack')==='yes',
@@ -139,6 +151,17 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
       <section className="ros-office" id="office">
         <div className="ros-office-copy"><p className="ros-eyebrow">{t.unitEyebrow}</p><h2>{t.unitTitle}</h2><p>{t.unitLead}</p></div>
         <div className="ros-office-list">{t.unitItems.map((x,i)=><div key={x}><span>{String(i+1).padStart(2,'0')}</span><p>{x}</p></div>)}</div>
+      </section>
+
+      <section className="ros-section ros-friction" id="friction-check">
+        <div className="ros-friction-copy"><p className="ros-eyebrow">{t.frictionEyebrow}</p><h2>{t.frictionTitle}</h2><p className="ros-muted">{t.frictionLead}</p></div>
+        <div className="ros-friction-grid">
+          <label>{t.adminHours}<input type="number" min="0" max="80" value={friction.adminHours} onChange={e=>setFriction({...friction,adminHours:e.target.value})}/></label>
+          <label>{t.missedCalls}<input type="number" min="0" max="100" value={friction.missedCalls} onChange={e=>setFriction({...friction,missedCalls:e.target.value})}/></label>
+          <label>{t.responseHours}<input type="number" min="0" max="168" value={friction.responseHours} onChange={e=>setFriction({...friction,responseHours:e.target.value})}/></label>
+          <label>{t.channels}<input type="number" min="1" max="10" value={friction.channels} onChange={e=>setFriction({...friction,channels:e.target.value})}/></label>
+        </div>
+        <div className="ros-friction-result"><div><span>{t.frictionScore}</span><strong>{frictionScore}/100 · {frictionBand}</strong></div><div><span>{t.monthlyHours}</span><strong>{monthlyHours} h</strong></div><p>{t.frictionNote}</p><a href="#contact">{t.useResult} →</a></div>
       </section>
 
       <section className="ros-section ros-pricing">

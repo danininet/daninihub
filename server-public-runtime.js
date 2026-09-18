@@ -29,7 +29,7 @@ function brevo() {
 function sender() {
   const email = process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM;
   if (!email) throw new Error('BREVO_SENDER_NOT_CONFIGURED');
-  return { email, name: process.env.BREVO_SENDER_NAME || process.env.DANINIHUB_SENDER_NAME || 'DaniniHub Human + AI Opportunity Engine' };
+  return { email, name: process.env.BREVO_SENDER_NAME || process.env.DANINIHUB_SENDER_NAME || 'DaniniHub Revenue OS' };
 }
 
 function leadReference(source) {
@@ -71,45 +71,41 @@ function reviewAction(reference, reviewAvailable = true) {
 }
 
 function standardAdminEmail(data, reference, reviewAvailable = true) {
-  return `<h2>Neue DaniniHub Transport-Anfrage</h2><p><strong>Referenz:</strong> ${html(reference)}</p><p><strong>Firma/Name:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Fahrzeuge:</strong> ${valueOrDash(data.fleet)}<br><strong>Relationen:</strong> ${valueOrDash(data.routes)}<br><strong>Interesse:</strong> ${html(data.interest)}</p><p><strong>Nachricht:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p>${reviewAction(reference, reviewAvailable)}<p style="color:#607180;font-size:13px">Die Vorprüfung ist nur eine Entscheidungshilfe. Ein Follow-up wird erst nach Ihrer persönlichen Freigabe versendet.</p>`;
+  return `<h2>Neue DaniniHub Anfrage</h2><p><strong>Referenz:</strong> ${html(reference)}</p><p><strong>Firma/Name:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Fahrzeuge:</strong> ${valueOrDash(data.fleet)}<br><strong>Relationen:</strong> ${valueOrDash(data.routes)}<br><strong>Interesse:</strong> ${html(data.interest)}</p><p><strong>Nachricht:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p>${reviewAction(reference, reviewAvailable)}<p style="color:#607180;font-size:13px">Die Vorprüfung ist nur eine Entscheidungshilfe. Ein Follow-up wird erst nach Ihrer persönlichen Freigabe versendet.</p>`;
 }
 
 function opportunityAdminEmail(data, reference, reviewAvailable = true) {
-  return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b"><div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0"><div style="font-size:12px;letter-spacing:1.4px;color:#62d7e5;font-weight:700">DANINIHUB OPPORTUNITY DESK</div><h1 style="margin:8px 0 4px;font-size:28px">Neue AI Opportunity Check-Anfrage</h1><div style="color:#b8c7d3">Referenz ${html(reference)}</div></div><div style="border:1px solid #d8e1e8;border-top:0;padding:28px 30px;border-radius:0 0 14px 14px"><h2 style="font-size:18px">Kontakt und Ausgangslage</h2><p><strong>Name / Unternehmen:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Sprache:</strong> ${data.language === 'sr' ? 'Serbisch' : 'Deutsch'}</p><p><strong>Opportunity-Zusammenfassung:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p><div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8"><strong>Nächster Schritt</strong><br>Persönlich prüfen, ob ein kostenloser Hinweis genügt oder die AI Opportunity Map als nächster strukturierter Schritt passt.</div>${reviewAction(reference, reviewAvailable)}<p style="margin-top:24px;color:#607180;font-size:13px">Kein Einkommensversprechen und keine automatische Verpflichtung.</p></div></div>`;
+  return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b"><div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0"><div style="font-size:12px;letter-spacing:1.4px;color:#62d7e5;font-weight:700">DANINIHUB REVENUE OS</div><h1 style="margin:8px 0 4px;font-size:28px">Neue B2B-Fit-Check-Anfrage</h1><div style="color:#b8c7d3">Referenz ${html(reference)}</div></div><div style="border:1px solid #d8e1e8;border-top:0;padding:28px 30px;border-radius:0 0 14px 14px"><h2 style="font-size:18px">Kontakt und Engpass</h2><p><strong>Name / Unternehmen:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Sprache:</strong> ${data.language === 'sr' ? 'Serbisch' : 'Deutsch'}</p><p><strong>Beschreibung:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p><div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8"><strong>Nächster Schritt</strong><br>Prüfen, ob ein kleiner, klar begrenzter und messbarer Markttest sinnvoll ist. Kein Preis, Vertrag oder externer Versand ohne die vorgesehenen Freigaben.</div>${reviewAction(reference, reviewAvailable)}<p style="margin-top:24px;color:#607180;font-size:13px">Kein Einkommensversprechen und keine automatische Auftragsannahme.</p></div></div>`;
 }
-
 function pilotAdminEmail(data, reference, reviewAvailable = true) {
   return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b"><div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0"><div style="font-size:12px;letter-spacing:1.4px;color:#62d7e5;font-weight:700">DANINIHUB PILOT DESK</div><h1 style="margin:8px 0 4px;font-size:28px">Neue strukturierte Pilot-Anfrage</h1><div style="color:#b8c7d3">Referenz ${html(reference)}</div></div><div style="border:1px solid #d8e1e8;border-top:0;padding:28px 30px;border-radius:0 0 14px 14px"><h2 style="font-size:18px;margin:0 0 14px">Kontakt</h2><table style="width:100%;border-collapse:collapse"><tr><td style="padding:8px 0;color:#607180;width:180px">Unternehmen / Name</td><td style="padding:8px 0;font-weight:700">${html(data.company)}</td></tr><tr><td style="padding:8px 0;color:#607180">E-Mail</td><td style="padding:8px 0"><a href="mailto:${html(data.email)}">${html(data.email)}</a></td></tr><tr><td style="padding:8px 0;color:#607180">Telefon</td><td style="padding:8px 0">${valueOrDash(data.phone)}</td></tr><tr><td style="padding:8px 0;color:#607180">Sprache</td><td style="padding:8px 0">${data.language === 'sr' ? 'Serbisch' : 'Deutsch'}</td></tr></table><h2 style="font-size:18px;margin:28px 0 14px">Operativer Bedarf</h2><table style="width:100%;border-collapse:collapse"><tr><td style="padding:8px 0;color:#607180;width:180px">Fahrzeuge</td><td style="padding:8px 0;font-weight:700">${valueOrDash(data.fleet)}</td></tr><tr><td style="padding:8px 0;color:#607180">Relationen</td><td style="padding:8px 0">${valueOrDash(data.routes)}</td></tr><tr><td style="padding:8px 0;color:#607180">Zeitfresser / Aufgaben</td><td style="padding:8px 0">${valueOrDash(data.tasks)}</td></tr><tr><td style="padding:8px 0;color:#607180">Benötigtes Zeitfenster</td><td style="padding:8px 0">${valueOrDash(data.availability)}</td></tr><tr><td style="padding:8px 0;color:#607180">Systeme / Kanäle</td><td style="padding:8px 0">${valueOrDash(data.systems)}</td></tr><tr><td style="padding:8px 0;color:#607180">Operative Freigabe</td><td style="padding:8px 0">${valueOrDash(data.decision)}</td></tr></table><div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8"><strong>Nächster Schritt</strong><br>Bedarf prüfen, Rückfragen vorbereiten und entscheiden, ob ein klar begrenztes Pilotprojekt sinnvoll ist.</div>${reviewAction(reference, reviewAvailable)}<p style="margin-top:24px;color:#607180;font-size:13px">Diese Anfrage ist noch kein Transportauftrag, kein Angebot und keine Annahme eines Leistungsumfangs.</p></div></div>`;
 }
 
 function confirmationEmail(data, reference) {
-  const isSr = data.language === 'sr' || /podrška|upoznavanje|organizacijom/i.test(data.interest);
-  if (data.source === 'ai-opportunity-check') {
+  const isSr = data.language === 'sr';
+  const revenue = data.source === 'revenue-os-intake' || data.source === 'ai-opportunity-check';
+  if (revenue) {
     return isSr
-      ? `<h2>Hvala na AI Opportunity Check upitu.</h2><p>Vaši podaci su primljeni pod referencom <strong>${html(reference)}</strong>.</p><p>Lično ću pregledati početno stanje, problem, moguće korisnike, postojeće dokaze i cilj za narednih 30 dana. Dobićete jasan predlog da li je dovoljan besplatan sledeći korak ili ima smisla AI Opportunity Map.</p><p>Ovo nije obećanje zarade niti automatska kupovina ili obaveza.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
-      : `<h2>Vielen Dank für Ihren AI Opportunity Check.</h2><p>Ihre Angaben wurden unter der Referenz <strong>${html(reference)}</strong> empfangen.</p><p>Ich prüfe Ausgangslage, Problem, mögliche Nutzer, vorhandene Belege und Ihr 30-Tage-Ziel persönlich. Danach erhalten Sie eine klare Rückmeldung, ob ein kostenloser nächster Schritt genügt oder die AI Opportunity Map sinnvoll ist.</p><p>Dies ist kein Einkommensversprechen und löst keinen automatischen Kauf oder Auftrag aus.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
-  }
-  if (data.source === 'pilot-check') {
-    return isSr
-      ? `<h2>Hvala na strukturisanom upitu za pilot-projekat.</h2><p>Vaši podaci su bezbedno primljeni pod referencom <strong>${html(reference)}</strong>.</p><p>Lično ću proveriti relacije, broj vozila, zadatke, traženo vreme podrške, sisteme i ovlašćenja. Nakon provere dobićete jasan predlog sledećeg koraka.</p><p>Ova potvrda nije prihvatanje transportnog naloga niti pravno obavezujuća ponuda.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
-      : `<h2>Vielen Dank für Ihre strukturierte Pilot-Anfrage.</h2><p>Ihre Angaben wurden unter der Referenz <strong>${html(reference)}</strong> sicher empfangen.</p><p>Ich prüfe Relationen, Fahrzeugzahl, Aufgaben, gewünschtes Zeitfenster, Systeme und Freigaben persönlich. Anschließend erhalten Sie einen klaren Vorschlag für den nächsten Schritt.</p><p>Diese Bestätigung ist weder die Annahme eines Transportauftrags noch ein rechtsverbindliches Angebot.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
+      ? `<h2>Hvala na DaniniHub B2B upitu.</h2><p>Upit je primljen pod referencom <strong>${html(reference)}</strong>.</p><p>Sledeći korak je ručna provera da li problem ima smisla pretvoriti u mali i merljiv tržišni test. Ova potvrda nije ponuda, ugovor, garancija zarade niti automatsko prihvatanje posla.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
+      : `<h2>Vielen Dank für Ihre DaniniHub-B2B-Anfrage.</h2><p>Ihre Anfrage wurde unter der Referenz <strong>${html(reference)}</strong> empfangen.</p><p>Als Nächstes wird manuell geprüft, ob sich der Engpass für einen kleinen und messbaren Markttest eignet. Diese Bestätigung ist kein Angebot, kein Vertrag, keine Umsatzgarantie und keine automatische Auftragsannahme.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
   }
   return isSr
-    ? `<h2>Hvala na upitu.</h2><p>Vaša poruka je primljena pod referencom <strong>${html(reference)}</strong>. Lično ću proveriti podatke i poslati vam jasan predlog sledećeg koraka.</p><p>Ova potvrda nije prihvatanje transportnog naloga niti pravno obavezujuća ponuda.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
-    : `<h2>Vielen Dank für Ihre Anfrage.</h2><p>Ihre Nachricht wurde unter der Referenz <strong>${html(reference)}</strong> empfangen. Ich prüfe die Angaben persönlich und sende Ihnen anschließend einen klaren Vorschlag für den nächsten Schritt.</p><p>Diese Bestätigung ist weder die Annahme eines Transportauftrags noch ein rechtsverbindliches Angebot.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
+    ? `<h2>Hvala na upitu.</h2><p>Vaša poruka je primljena pod referencom <strong>${html(reference)}</strong> i biće ručno pregledana.</p><p>Ova potvrda nije pravno obavezujuća ponuda niti prihvatanje naloga.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
+    : `<h2>Vielen Dank für Ihre Anfrage.</h2><p>Ihre Nachricht wurde unter der Referenz <strong>${html(reference)}</strong> empfangen und wird manuell geprüft.</p><p>Diese Bestätigung ist kein rechtsverbindliches Angebot und keine Auftragsannahme.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
 }
-
 function qualifiedFollowupEmail(lead) {
   const isSr = lead.language === 'sr';
-  const pilotCheck = `${publicUrl()}${isSr ? '/sr/provera-pilota' : '/de/pilot-check'}`;
-  const defaultBrief = `${publicUrl()}${isSr ? '/sr/primer-pilota' : '/de/pilot-beispiel'}`;
-  const brief = clean(isSr ? process.env.DANINI_PILOT_BRIEF_SR_URL : process.env.DANINI_PILOT_BRIEF_DE_URL, 1000) || defaultBrief;
-  const demo = `${publicUrl()}${isSr ? '/sr/operativni-pult-demo' : '/de/operations-desk-demo'}`;
-  const isPilot = lead.source === 'pilot-check';
-  if (!isPilot) return isSr ? { subject:`DaniniHub – sledeći korak za vaš upit ${lead.reference}`, htmlContent:`<h2>Vaš upit je lično pregledan.</h2><p>Hvala, ${html(lead.company)}.</p><p><a href="${html(pilotCheck)}">Pokreni proveru pilota</a></p>` } : { subject:`DaniniHub – nächster Schritt zu Ihrer Anfrage ${lead.reference}`, htmlContent:`<h2>Ihre Anfrage wurde persönlich geprüft.</h2><p>Vielen Dank, ${html(lead.company)}.</p><p><a href="${html(pilotCheck)}">Pilot-Check starten</a></p>` };
-  return isSr ? { subject:`DaniniHub – predlog pilota ${lead.reference}`, htmlContent:`<h2>Vaša provera pilota je lično pregledana.</h2><p><a href="${html(brief)}">Pogledaj predlog</a></p><p><a href="${html(demo)}">Otvori demo</a></p>` } : { subject:`DaniniHub – Pilotvorschlag ${lead.reference}`, htmlContent:`<h2>Ihr Pilot-Check wurde persönlich geprüft.</h2><p><a href="${html(brief)}">Vorschlag ansehen</a></p><p><a href="${html(demo)}">Demo öffnen</a></p>` };
+  const home = `${publicUrl()}/${isSr ? 'sr' : 'de'}/`;
+  return isSr
+    ? {
+        subject: `DaniniHub – ručna provera upita ${lead.reference}`,
+        htmlContent: `<h2>Vaš upit je ručno pregledan.</h2><p>Hvala, ${html(lead.company)}.</p><p>Sledeći korak se dogovara samo ako postoji jasan problem, merljiv test i odgovarajući B2B okvir. <a href="${html(home)}">DaniniHub Revenue OS</a></p><p>Ova poruka nije garancija rezultata niti automatsko prihvatanje posla.</p>`
+      }
+    : {
+        subject: `DaniniHub – manuelle Prüfung Ihrer Anfrage ${lead.reference}`,
+        htmlContent: `<h2>Ihre Anfrage wurde manuell geprüft.</h2><p>Vielen Dank, ${html(lead.company)}.</p><p>Ein nächster Schritt wird nur vereinbart, wenn ein klarer Engpass, ein messbarer Test und ein passender B2B-Rahmen vorliegen. <a href="${html(home)}">DaniniHub Revenue OS</a></p><p>Diese Nachricht ist keine Ergebnisgarantie und keine automatische Auftragsannahme.</p>`
+      };
 }
-
 function mountPublicRuntime(app, options = {}) {
   const front = options.front || path.join(__dirname, 'daninihub-front', 'dist');
   const leadStore = options.leadStore || createContactLeadStore();
@@ -117,6 +113,8 @@ function mountPublicRuntime(app, options = {}) {
 
   app.post('/api/contact', express.json({ limit: '100kb' }), async (req, res) => {
     const data = req.body || {};
+    if (clean(data.website, 200)) return res.status(400).json({ ok:false, error:'SPAM_REJECTED' });
+    if (data.source === 'revenue-os-intake' && data.privacy_acknowledged !== true) return res.status(400).json({ ok:false, error:'PRIVACY_NOTICE_REQUIRED' });
     if (!contactAllowed(req.ip)) return res.status(429).json({ ok:false, error:'RATE_LIMITED' });
     if (!clean(data.company) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(data.email, 180))) return res.status(400).json({ ok:false, error:'INVALID_CONTACT' });
     const reference = leadReference(data.source);
@@ -125,7 +123,7 @@ function mountPublicRuntime(app, options = {}) {
     try {
       const api = brevo();
       const from = sender();
-      await api.sendTransacEmail({ sender:from, to:[{ email:'info@daninihub.com', name:'DaniniHub' }], replyTo:{ email:clean(data.email,180), name:clean(data.company,180) }, subject:`DaniniHub ${data.source === 'ai-opportunity-check' ? 'Opportunity Check' : data.source === 'pilot-check' ? 'Pilot-Anfrage' : 'Anfrage'} ${reference}`, htmlContent:data.source === 'ai-opportunity-check' ? opportunityAdminEmail(data, reference, stored) : data.source === 'pilot-check' ? pilotAdminEmail(data, reference, stored) : standardAdminEmail(data, reference, stored) });
+      await api.sendTransacEmail({ sender:from, to:[{ email:'info@daninihub.com', name:'DaniniHub' }], replyTo:{ email:clean(data.email,180), name:clean(data.company,180) }, subject:`DaniniHub ${data.source === 'revenue-os-intake' || data.source === 'ai-opportunity-check' ? 'Revenue-OS-Anfrage' : data.source === 'pilot-check' ? 'Pilot-Anfrage' : 'Anfrage'} ${reference}`, htmlContent:(data.source === 'revenue-os-intake' || data.source === 'ai-opportunity-check') ? opportunityAdminEmail(data, reference, stored) : data.source === 'pilot-check' ? pilotAdminEmail(data, reference, stored) : standardAdminEmail(data, reference, stored) });
       await api.sendTransacEmail({ sender:from, to:[{ email:clean(data.email,180), name:clean(data.company,180) }], replyTo:{ email:'info@daninihub.com', name:'DaniniHub' }, subject:`DaniniHub – Bestätigung ${reference}`, htmlContent:confirmationEmail(data, reference) });
       return res.json({ ok:true, reference });
     } catch (error) {
@@ -153,28 +151,68 @@ function mountPublicRuntime(app, options = {}) {
     return res.type('html').send('<h1>Follow-up sent</h1>');
   });
 
-  const legacyGoneRoutes = ['/de/ki-beratung','/sr/ki-savetovanje','/de/ki-produkte','/sr/ki-proizvodi','/de/vertrauenszentrum','/sr/centar-poverenja','/api/entry/12-eur/checkout'];
-  legacyGoneRoutes.forEach(route => app.get(route, (req, res) => { res.set('X-Robots-Tag', 'noindex'); res.status(410).type('text/plain').send('Gone'); }));
+  const legacyRedirects = new Map([
+    ['/de/opportunity-check','/de/'],
+    ['/sr/opportunity-check','/sr/'],
+    ['/de/opportunity-map','/de/'],
+    ['/sr/opportunity-map','/sr/'],
+    ['/de/location-launch','/de/'],
+    ['/sr/location-launch','/sr/'],
+    ['/de/haftungsausschluss','/de/ai-transparenz'],
+    ['/sr/odricanje-odgovornosti','/sr/ai-transparentnost'],
+    ['/de/agb','/de/bedingungen'],
+    ['/sr/opsti-uslovi','/sr/uslovi']
+  ]);
+  legacyRedirects.forEach((target, route) => app.get(route, (req, res) => res.redirect(308, target)));
+
+  const discontinuedRoutes = [
+    '/de/ki-beratung','/sr/ki-savetovanje','/de/ki-produkte','/sr/ki-proizvodi',
+    '/de/vertrauenszentrum','/sr/centar-poverenja','/api/entry/12-eur/checkout',
+    '/de/externe-disposition','/sr/eksterna-dispozicija',
+    '/de/balkan-desk','/sr/balkan-desk','/de/dach-desk','/sr/dach-desk',
+    '/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme',
+    '/de/vorher-nachher','/sr/pre-posle',
+    '/de/capacity-signal','/sr/signal-kapaciteta',
+    '/de/transport-network-demo','/sr/transportna-mreza-demo',
+    '/de/transport-room-demo','/sr/transportna-soba-demo',
+    '/de/dispolab','/sr/dispo-lab','/de/dispolab/check','/sr/dispo-lab/provera',
+    '/de/leistungsrahmen','/sr/obim-usluge',
+    '/de/continuity-support','/sr/kontinuitet-podrska',
+    '/de/fahrerkommunikation','/sr/komunikacija-vozaci',
+    '/de/pilot-check','/sr/provera-pilota',
+    '/de/praxis-wissen','/sr/praksa-znanje',
+    '/de/pilot-beispiel','/sr/primer-pilota',
+    '/de/operations-desk-demo','/sr/operativni-pult-demo',
+    '/de/glossar','/sr/recnik'
+  ];
+  discontinuedRoutes.forEach(route => app.get(route, (req, res) => {
+    const sr = route.startsWith('/sr/');
+    res.set('X-Robots-Tag', 'noindex');
+    return res.status(410).type('html').send(`<!doctype html><html lang="${sr?'sr':'de'}"><meta charset="utf-8"><title>DaniniHub</title><body style="font-family:system-ui;max-width:760px;margin:60px auto;padding:20px"><h1>${sr?'Ova ranija ponuda je ugašena.':'Dieses frühere Angebot wurde eingestellt.'}</h1><p>${sr?'DaniniHub je konsolidovan na Revenue OS. Stari sadržaj se ne prikazuje kao aktivna usluga.':'DaniniHub wurde auf Revenue OS konsolidiert. Der alte Inhalt wird nicht mehr als aktive Leistung angeboten.'}</p><p><a href="/${sr?'sr':'de'}/">DaniniHub Revenue OS →</a></p></body></html>`);
+  }));
 
   const routePairs = [
     ['/de/', '/sr/'],
-    ['/de/opportunity-check', '/sr/opportunity-check'],
     ['/de/impressum', '/sr/impressum'],
     ['/de/datenschutz', '/sr/privatnost'],
-    ['/de/haftungsausschluss', '/sr/odricanje-odgovornosti']
+    ['/de/cookies', '/sr/kolacici'],
+    ['/de/ai-transparenz', '/sr/ai-transparentnost'],
+    ['/de/bedingungen', '/sr/uslovi']
   ];
 
   const seo = {
     '/de/': ['DaniniHub Revenue OS | Vom Problem zum bezahlten Markttest', 'Human+AI-System für reale Geschäftsprobleme: Angebot testen, Käuferreaktionen messen und erst danach automatisieren oder skalieren.'],
     '/sr/': ['DaniniHub Revenue OS | Od problema do plaćenog tržišnog testa', 'Human + AI sistem za stvarne poslovne probleme: test ponude, reakcija kupaca i automatizacija tek nakon merljivog tržišnog signala.'],
-    '/de/opportunity-check': ['DaniniHub Market Check | Reales Problem, kleines Angebot, echter Test', 'Beschreiben Sie einen Engpass. DaniniHub prüft, ob daraus ein kleiner messbarer Markttest mit klarer Human+AI-Aufgabenteilung entstehen kann.'],
-    '/sr/opportunity-check': ['DaniniHub Market Check | Stvarni problem, mala ponuda, realan test', 'Opišite usko grlo. DaniniHub proverava da li od njega može nastati mali merljiv tržišni test sa jasnom podelom AI i ljudske odgovornosti.'],
     '/de/impressum': ['Impressum | DaniniHub', 'Anbieterkennzeichnung und Kontaktdaten von DaniniHub in Duisburg.'],
     '/sr/impressum': ['Impresum | DaniniHub', 'Podaci o pružaocu usluge i kontakt DaniniHub u Duisburgu.'],
     '/de/datenschutz': ['Datenschutz | DaniniHub', 'Informationen zur Verarbeitung von Kontakt-, Hosting- und E-Mail-Daten bei DaniniHub gemäß DSGVO.'],
     '/sr/privatnost': ['Privatnost | DaniniHub', 'Informacije o obradi kontaktnih, hosting i e-mail podataka u DaniniHub-u prema GDPR-u.'],
-    '/de/haftungsausschluss': ['AI-Transparenz und Grenzen | DaniniHub', 'Wie DaniniHub KI für Recherche, Analyse und risikoarme Automatisierung nutzt und wo menschliche Freigaben erforderlich bleiben.'],
-    '/sr/odricanje-odgovornosti': ['AI transparentnost i granice | DaniniHub', 'Kako DaniniHub koristi AI za istraživanje, analizu i niskorizičnu automatizaciju i gde ostaje obavezna ljudska potvrda.']
+    '/de/cookies': ['Cookies und lokale Speicherung | DaniniHub', 'Aktueller Einsatz technisch notwendiger Speicherung und Regeln für künftige optionale Tracking-Technologien.'],
+    '/sr/kolacici': ['Kolačići i lokalna memorija | DaniniHub', 'Trenutna upotreba tehnički neophodne memorije i pravila za budući opcioni tracking.'],
+    '/de/ai-transparenz': ['KI-Transparenz und Grenzen | DaniniHub', 'Human-in-the-loop, Kennzeichnung direkter KI-Interaktion und klare Grenzen von Markt- und Ergebnisversprechen.'],
+    '/sr/ai-transparentnost': ['AI transparentnost i granice | DaniniHub', 'Human-in-the-loop, označavanje direktne AI interakcije i jasne granice tržišnih i rezultatskih tvrdnji.'],
+    '/de/bedingungen': ['B2B-Leistungsrahmen | DaniniHub', 'Öffentlicher Leistungsrahmen: kein automatischer Vertragsschluss, keine Erfolgsgarantie, klare Freigaben und konkrete Angebote.'],
+    '/sr/uslovi': ['B2B okvir usluge | DaniniHub', 'Javni okvir usluge: nema automatskog ugovora, nema garancije uspeha, jasne potvrde i konkretne ponude.']
   };
 
   const htmlTemplate = () => fs.readFileSync(path.join(front, 'index.html'), 'utf8');
@@ -201,32 +239,6 @@ function mountPublicRuntime(app, options = {}) {
       .replace(/<meta property="og:url" content="[^"]*"\/>/, `<meta property="og:url" content="${canonical}"/>`)
       .replace('</head>', `${articleSchema}</head>`);
   };
-
-  const legacyPublicRoutes = [
-    '/de/opportunity-map','/sr/opportunity-map',
-    '/de/location-launch','/sr/location-launch',
-    '/de/externe-disposition','/sr/eksterna-dispozicija',
-    '/de/balkan-desk','/sr/balkan-desk','/de/dach-desk','/sr/dach-desk',
-    '/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme',
-    '/de/vorher-nachher','/sr/pre-posle',
-    '/de/capacity-signal','/sr/signal-kapaciteta',
-    '/de/transport-network-demo','/sr/transportna-mreza-demo',
-    '/de/transport-room-demo','/sr/transportna-soba-demo',
-    '/de/dispolab','/sr/dispo-lab','/de/dispolab/check','/sr/dispo-lab/provera',
-    '/de/leistungsrahmen','/sr/obim-usluge',
-    '/de/continuity-support','/sr/kontinuitet-podrska',
-    '/de/fahrerkommunikation','/sr/komunikacija-vozaci',
-    '/de/pilot-check','/sr/provera-pilota',
-    '/de/praxis-wissen','/sr/praksa-znanje',
-    '/de/pilot-beispiel','/sr/primer-pilota',
-    '/de/operations-desk-demo','/sr/operativni-pult-demo',
-    '/de/glossar','/sr/recnik'
-  ];
-  legacyPublicRoutes.forEach(route => app.get(route, (req, res) => {
-    const lang = route.startsWith('/sr/') ? 'sr' : 'de';
-    const target = /opportunity-map/.test(route) ? `/${lang}/opportunity-check` : `/${lang}/`;
-    return res.redirect(308, target);
-  }));
 
   const siteRoutes = routePairs.flat();
   app.get('/', (req, res) => {

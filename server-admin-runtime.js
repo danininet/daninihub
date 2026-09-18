@@ -8,12 +8,13 @@ const { resendSessionDelivery, retryFailedSession } = require('./core/guided-ana
 const { createContactLeadStore } = require('./contact-lead-store');
 const { evaluateMarketTest } = require('./core/revenue-os');
 const { getCampaignState, approveCampaign, pauseCampaign } = require('./revenue-campaign-store');
+const prospectStore = require('./revenue-prospect-store');
 
 const SESSION_DIR = path.join(process.cwd(), 'runtime', 'guided-sessions');
 const REVENUE_SOURCES = ['revenue-os-intake', 'ai-opportunity-check'];
 const ALLOWED_REVENUE_STATUSES = new Set([
   'NEW', 'QUALIFIED', 'NEEDS_INFO', 'NOT_FIT',
-  'OFFER_READY', 'APPROVED_TO_SEND', 'OFFER_SENT', 'PAID'
+  'OFFER_READY', 'APPROVED_TO_SEND', 'OFFER_SENT', 'FOLLOWUP_SENT', 'PAID'
 ]);
 
 function adminAuthorized(req) {
@@ -90,7 +91,7 @@ function publicRevenueLead(lead) {
   };
 }
 
-function summarizeRevenue(leads) {
+function summarizeRevenue(leads, prospects = []) {
   const counts = {
     total: leads.length,
     new: 0,
@@ -100,6 +101,7 @@ function summarizeRevenue(leads) {
     offer_ready: 0,
     approved_to_send: 0,
     offer_sent: 0,
+    followup_sent: 0,
     paid: 0
   };
   for (const lead of leads) {
@@ -107,13 +109,14 @@ function summarizeRevenue(leads) {
     const key = status.toLowerCase();
     if (Object.prototype.hasOwnProperty.call(counts, key)) counts[key] += 1;
   }
+  const prospectCounts = prospectStore.summarize(prospects);
   const metrics = {
-    targeted_contacts: 0,
-    positive_replies: leads.length,
-    qualified_conversations: counts.qualified + counts.offer_ready + counts.approved_to_send + counts.offer_sent + counts.paid,
+    targeted_contacts: prospectCounts.contacted,
+    positive_replies: prospectCounts.replied + leads.length,
+    qualified_conversations: prospectCounts.qualified + counts.qualified + counts.offer_ready + counts.approved_to_send + counts.offer_sent + counts.followup_sent + counts.paid,
     paid_customers: counts.paid
   };
-  return { counts, metrics, marketDecision: evaluateMarketTest(metrics) };
+  return { counts, prospectCounts, metrics, marketDecision: evaluateMarketTest(metrics) };
 }
 
 function renderAdminPage() {
@@ -123,9 +126,10 @@ function renderAdminPage() {
   <div class="top"><div><div class="brand">DANINI · REVENUE OS</div><h1>Control Center</h1><p class="muted">Ti potvrđuješ važne odluke. Sistem prati upite, kvalifikaciju, ponude i dokaz.</p></div><div><input id="key" type="password" placeholder="Admin secret"><button id="load">Učitaj</button></div></div>
   <p id="msg" class="error"></p>
   <section class="section"><h2>Revenue Unit #1</h2><div id="campaign" class="card" style="margin-bottom:14px"></div><div id="revenueStats" class="grid"></div><p id="decision" class="decision muted"></p></section>
-  <section class="card table"><div class="row head"><div>Firma / kontakt</div><div>Status</div><div>Jezik</div><div>Problem / poruka</div><div>Kontrola</div></div><div id="leadRows"></div></section>
+  <section class="section"><h2>Prospect research</h2><div id="prospectStats" class="grid"></div><div class="card table"><div class="row head"><div>Firma</div><div>Status</div><div>Lokacija</div><div>Signal / razlog</div><div>Kontrola</div></div><div id="prospectRows"></div></div></section>
+  <section class="section"><h2>Inbound leads</h2><div class="card table"><div class="row head"><div>Firma / kontakt</div><div>Status</div><div>Jezik</div><div>Problem / poruka</div><div>Kontrola</div></div><div id="leadRows"></div></div></section>
   <section class="section"><details><summary>Legacy interne sesije</summary><div id="legacyStats" class="grid" style="margin-top:16px"></div></details></section>
-  </main><script>(()=>{const key=document.getElementById('key'),msg=document.getElementById('msg'),leadRows=document.getElementById('leadRows'),revenueStats=document.getElementById('revenueStats'),legacyStats=document.getElementById('legacyStats'),decision=document.getElementById('decision'),campaign=document.getElementById('campaign');key.value=sessionStorage.getItem('danini_admin_secret')||'';function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}async function request(path,options={}){const r=await fetch(path,{...options,headers:{'Content-Type':'application/json','x-danini-admin-secret':key.value,...(options.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||d.error||'Greška');return d}function statCards(obj){return Object.entries(obj).map(([k,v])=>'<div class="card"><div class="value">'+esc(v)+'</div><div class="label">'+esc(k)+'</div></div>').join('')}async function setStatus(reference,status){const note=prompt('Interna beleška (opciono):','')||'';await request('/api/v1/admin/revenue/leads/'+encodeURIComponent(reference),{method:'POST',body:JSON.stringify({status,note})});await load()}async function load(){msg.textContent='';sessionStorage.setItem('danini_admin_secret',key.value);const d=await request('/api/v1/admin/revenue');revenueStats.innerHTML=statCards(d.summary.counts);legacyStats.innerHTML=statCards(d.legacy.counts);decision.textContent='Market decision: '+d.summary.marketDecision.decision+' — '+d.summary.marketDecision.reason;campaign.innerHTML='<strong>Campaign:</strong> '+esc(d.campaign.campaignId)+' · <span class="pill">'+esc(d.campaign.status)+'</span><p class="small muted">Mode: '+esc(d.campaign.mode)+' · cold bulk email and automated cold calls remain blocked.</p><div class="actions"><button data-campaign="approve">ODOBRI COMPLIANT CAMPAIGN</button><button class="secondary" data-campaign="pause">PAUZIRAJ</button></div>';leadRows.innerHTML=(d.leads||[]).map(l=>'<div class="row"><div><strong>'+esc(l.company)+'</strong><div class="small">'+esc(l.email)+'</div><div class="small">'+esc(l.phone)+'</div><div class="small">'+esc(l.reference)+'</div></div><div><span class="pill">'+esc(l.status)+'</span><div class="small muted">'+esc(l.reviewNote||'')+'</div></div><div>'+esc(l.language||'—')+'</div><div class="lead-message">'+esc(l.message||'—')+'</div><div class="actions"><button data-ref="'+esc(l.reference)+'" data-status="QUALIFIED">Kvalifikuj</button><button class="secondary" data-ref="'+esc(l.reference)+'" data-status="NEEDS_INFO">Treba info</button><button class="secondary" data-ref="'+esc(l.reference)+'" data-status="NOT_FIT">Nije fit</button><button data-ref="'+esc(l.reference)+'" data-status="OFFER_READY">Ponuda spremna</button><button data-ref="'+esc(l.reference)+'" data-status="APPROVED_TO_SEND">ODOBRI SLANJE</button><button data-ref="'+esc(l.reference)+'" data-status="PAID">Plaćeno</button></div></div>').join('')||'<p class="muted">Još nema Revenue OS upita.</p>'}leadRows.addEventListener('click',e=>{const b=e.target.closest('button[data-ref]');if(!b)return;b.disabled=true;setStatus(b.dataset.ref,b.dataset.status).catch(err=>msg.textContent=err.message).finally(()=>b.disabled=false)});campaign.addEventListener('click',e=>{const b=e.target.closest('button[data-campaign]');if(!b)return;b.disabled=true;const note=prompt('Interna beleška (opciono):','')||'';request('/api/v1/admin/revenue/campaign/'+b.dataset.campaign,{method:'POST',body:JSON.stringify({note})}).then(load).catch(err=>msg.textContent=err.message).finally(()=>b.disabled=false)});document.getElementById('load').onclick=()=>load().catch(e=>msg.textContent=e.message);if(key.value)load().catch(()=>{});})();</script></body></html>`;
+  </main><script>(()=>{const key=document.getElementById('key'),msg=document.getElementById('msg'),leadRows=document.getElementById('leadRows'),prospectRows=document.getElementById('prospectRows'),prospectStats=document.getElementById('prospectStats'),revenueStats=document.getElementById('revenueStats'),legacyStats=document.getElementById('legacyStats'),decision=document.getElementById('decision'),campaign=document.getElementById('campaign');key.value=sessionStorage.getItem('danini_admin_secret')||'';function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}async function request(path,options={}){const r=await fetch(path,{...options,headers:{'Content-Type':'application/json','x-danini-admin-secret':key.value,...(options.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||d.error||'Greška');return d}function statCards(obj){return Object.entries(obj).map(([k,v])=>'<div class="card"><div class="value">'+esc(v)+'</div><div class="label">'+esc(k)+'</div></div>').join('')}async function setStatus(reference,status){const note=prompt('Interna beleška (opciono):','')||'';await request('/api/v1/admin/revenue/leads/'+encodeURIComponent(reference),{method:'POST',body:JSON.stringify({status,note})});await load()}async function setProspect(id,status){const note=prompt('Interna beleška (opciono):','')||'';await request('/api/v1/admin/revenue/prospects/'+encodeURIComponent(id),{method:'POST',body:JSON.stringify({status,note,ownerApproved:status==='APPROVED_TO_CONTACT'})});await load()}async function load(){msg.textContent='';sessionStorage.setItem('danini_admin_secret',key.value);const d=await request('/api/v1/admin/revenue');revenueStats.innerHTML=statCards(d.summary.counts);prospectStats.innerHTML=statCards(d.summary.prospectCounts||{});legacyStats.innerHTML=statCards(d.legacy.counts);decision.textContent='Market decision: '+d.summary.marketDecision.decision+' — '+d.summary.marketDecision.reason;campaign.innerHTML='<strong>Campaign:</strong> '+esc(d.campaign.campaignId)+' · <span class="pill">'+esc(d.campaign.status)+'</span><p class="small muted">Mode: '+esc(d.campaign.mode)+' · cold bulk email and automated cold calls remain blocked.</p><div class="actions"><button data-campaign="approve">ODOBRI COMPLIANT CAMPAIGN</button><button class="secondary" data-campaign="pause">PAUZIRAJ</button></div>';prospectRows.innerHTML=(d.prospects||[]).map(p=>'<div class="row"><div><strong>'+esc(p.company)+'</strong><div class="small">'+esc(p.website||'')+'</div><div class="small">'+esc(p.segment||'')+'</div></div><div><span class="pill">'+esc(p.status)+'</span><div class="small muted">'+esc(p.contactBasis||'')+'</div></div><div>'+esc(p.city||'—')+'</div><div class="lead-message">'+esc(p.painSignal||p.fitReason||'—')+'</div><div class="actions"><button data-prospect="'+esc(p.id)+'" data-pstatus="FIT">FIT</button><button class="secondary" data-prospect="'+esc(p.id)+'" data-pstatus="NOT_FIT">NOT FIT</button><button data-prospect="'+esc(p.id)+'" data-pstatus="CONTACT_ALLOWED">CONTACT ALLOWED</button><button data-prospect="'+esc(p.id)+'" data-pstatus="APPROVED_TO_CONTACT">ODOBRI KONTAKT</button><button class="secondary" data-prospect="'+esc(p.id)+'" data-pstatus="CONTACTED">CONTACTED</button><button class="secondary" data-prospect="'+esc(p.id)+'" data-pstatus="REPLIED">REPLIED</button><button class="secondary" data-prospect="'+esc(p.id)+'" data-pstatus="QUALIFIED">QUALIFIED</button></div></div>').join('')||'<p class="muted">Prospekti još nisu uneti.</p>';leadRows.innerHTML=(d.leads||[]).map(l=>'<div class="row"><div><strong>'+esc(l.company)+'</strong><div class="small">'+esc(l.email)+'</div><div class="small">'+esc(l.phone)+'</div><div class="small">'+esc(l.reference)+'</div></div><div><span class="pill">'+esc(l.status)+'</span><div class="small muted">'+esc(l.reviewNote||'')+'</div></div><div>'+esc(l.language||'—')+'</div><div class="lead-message">'+esc(l.message||'—')+'</div><div class="actions"><button data-ref="'+esc(l.reference)+'" data-status="QUALIFIED">Kvalifikuj</button><button class="secondary" data-ref="'+esc(l.reference)+'" data-status="NEEDS_INFO">Treba info</button><button class="secondary" data-ref="'+esc(l.reference)+'" data-status="NOT_FIT">Nije fit</button><button data-ref="'+esc(l.reference)+'" data-status="OFFER_READY">Ponuda spremna</button><button data-ref="'+esc(l.reference)+'" data-status="APPROVED_TO_SEND">ODOBRI SLANJE</button><button data-ref="'+esc(l.reference)+'" data-status="PAID">Plaćeno</button></div></div>').join('')||'<p class="muted">Još nema Revenue OS upita.</p>'}prospectRows.addEventListener('click',e=>{const b=e.target.closest('button[data-prospect]');if(!b)return;b.disabled=true;setProspect(b.dataset.prospect,b.dataset.pstatus).catch(err=>msg.textContent=err.message).finally(()=>b.disabled=false)});leadRows.addEventListener('click',e=>{const b=e.target.closest('button[data-ref]');if(!b)return;b.disabled=true;setStatus(b.dataset.ref,b.dataset.status).catch(err=>msg.textContent=err.message).finally(()=>b.disabled=false)});campaign.addEventListener('click',e=>{const b=e.target.closest('button[data-campaign]');if(!b)return;b.disabled=true;const note=prompt('Interna beleška (opciono):','')||'';request('/api/v1/admin/revenue/campaign/'+b.dataset.campaign,{method:'POST',body:JSON.stringify({note})}).then(load).catch(err=>msg.textContent=err.message).finally(()=>b.disabled=false)});document.getElementById('load').onclick=()=>load().catch(e=>msg.textContent=e.message);if(key.value)load().catch(()=>{});})();</script></body></html>`;
 }
 
 function mountAdminRuntime(app, options = {}) {
@@ -140,10 +144,12 @@ function mountAdminRuntime(app, options = {}) {
   app.get('/api/v1/admin/revenue', requireAdmin, async (req, res) => {
     const leads = await leadStore.list({ sources: REVENUE_SOURCES, limit: 500 });
     const sessions = readSessions(250);
+    const prospects = prospectStore.list(500);
     return res.json({
       ok: true,
-      summary: summarizeRevenue(leads),
+      summary: summarizeRevenue(leads, prospects),
       campaign: getCampaignState(),
+      prospects,
       leads: leads.map(publicRevenueLead),
       legacy: { counts: summarizeSessions(sessions), sessions: sessions.map(publicAdminSession) },
       audit: readLastAudit(50)
@@ -175,6 +181,28 @@ function mountAdminRuntime(app, options = {}) {
       return res.json({ ok:true, lead:publicRevenueLead(lead) });
     } catch (error) {
       return res.status(404).json({ ok:false, error:error.message || 'LEAD_UPDATE_FAILED' });
+    }
+  });
+
+  app.post('/api/v1/admin/revenue/prospects', requireAdmin, (req, res) => {
+    try {
+      const prospect = prospectStore.upsert(req.body || {});
+      return res.json({ ok:true, prospect });
+    } catch (error) {
+      return res.status(400).json({ ok:false, error:error.message || 'PROSPECT_SAVE_FAILED' });
+    }
+  });
+
+  app.post('/api/v1/admin/revenue/prospects/:id', requireAdmin, (req, res) => {
+    try {
+      const patch = { ...req.body };
+      if (patch.status === 'APPROVED_TO_CONTACT' && patch.ownerApproved !== true) {
+        return res.status(400).json({ ok:false, error:'OWNER_APPROVAL_REQUIRED' });
+      }
+      const prospect = prospectStore.update(String(req.params.id || ''), patch);
+      return res.json({ ok:true, prospect });
+    } catch (error) {
+      return res.status(400).json({ ok:false, error:error.message || 'PROSPECT_UPDATE_FAILED' });
     }
   });
 

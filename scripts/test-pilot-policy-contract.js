@@ -42,6 +42,6 @@ assert.match(landingSource, /SCALE, CHANGE oder KILL|SCALE, CHANGE ili KILL/);
 // active sales pages. Internal workspace may remain protected for technical use.
 assert.match(serverSource, /discontinuedRoutes/);
 assert.match(serverSource, /status\(410\)/);
-assert.match(appSource, /internal\/dispatch-pilot-workspace/);
+assert.match(appSource, /DispatchPilotWorkspace/);
 
 console.log('DaniniHub Revenue OS pilot policy contract: OK');

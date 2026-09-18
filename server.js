@@ -14,6 +14,7 @@ const { mountTransportRoomRuntime } = require('./server-transport-room-runtime')
 const { mountTransportNetworkRuntime } = require('./server-transport-network-runtime');
 const { mountCapacitySignalRuntime } = require('./server-capacity-signal-runtime');
 const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runtime');
+const { mountAdminRuntime } = require('./server-admin-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
@@ -47,6 +48,7 @@ mountDispoCheckRuntime(app);
 mountDispoCheckContactInterceptor(app);
 mountCapacitySignalRuntime(app);
 mountCapacityConsentRuntime(app);
+mountAdminRuntime(app);
 
 app.get(DISPATCH_PATH, (req, res) => {
   res.set('Cache-Control', 'no-store');
@@ -127,5 +129,5 @@ app.get(/^\/(?:de|sr)(?:\/.*)?$/, (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`DaniniHub Transport runtime listening on port ${PORT}`);
+  console.log(`DaniniHub Revenue OS runtime listening on port ${PORT}`);
 });

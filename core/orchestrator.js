@@ -3,6 +3,20 @@ const path = require('path');
 const { writeAudit } = require('./audit');
 
 const MODE_AGENT_FLOW = {
+  REVENUE_OS: [
+    'core.meta.commander',
+    'core.orchestrator',
+    'research.audience.deep',
+    'research.intent.analyst',
+    'research.intel.competitive',
+    'monetization.product.manager',
+    'content.copywriter',
+    'legal.dach.analyst',
+    'core.guard.zero_hallucination',
+    'core.validator',
+    'core.audit.log'
+  ],
+
   DEV_FIX: [
     'core.meta.commander',
     'core.orchestrator',
@@ -119,6 +133,10 @@ function normalizeMode(mode, input = '') {
   }
 
   const text = String(input || '').toLowerCase();
+
+  if (/revenue os|revenue|kupac|customer|lead|prospect|outreach|ponuda|offer|sales|prodaj|booking|follow-up|followup|mr+r|mrr/.test(text)) {
+    return 'REVENUE_OS';
+  }
 
   if (/stripe|checkout|webhook|brevo|email|pdf|artifact|activation|success|status|db|database|hostinger/.test(text)) {
     return 'SUPPORT_OPS';
@@ -243,6 +261,7 @@ module.exports = {
 
 function resolveAgentFlowForMode(mode) {
   const flows = {
+    REVENUE_OS: ['core.meta.commander', 'core.orchestrator', 'research.audience.deep', 'research.intent.analyst', 'research.intel.competitive', 'monetization.product.manager', 'content.copywriter', 'legal.dach.analyst', 'core.guard.zero_hallucination', 'core.validator', 'core.audit.log'],
     DEV_FIX: ['core.meta.commander', 'core.orchestrator', 'internal.dev.cto', 'tech.support.diag', 'core.guard.zero_hallucination', 'core.validator', 'core.audit.log'],
     SUPPORT_OPS: ['core.meta.commander', 'core.orchestrator', 'tech.support.diag', 'tech.db.sync', 'tech.brevo.sync', 'monetization.stripe.webhook', 'core.guard.zero_hallucination', 'core.validator', 'core.audit.log'],
     CONTENT_STUDIO: ['core.meta.commander', 'core.orchestrator', 'content.gen.main', 'content.structure.v2', 'content.copywriter', 'content.ebook.formatter', 'core.guard.zero_hallucination', 'core.validator', 'core.audit.log'],

@@ -9,58 +9,64 @@ const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf
 
 const serverRuntime = read('server-public-runtime.js');
 const appSource = read('daninihub-front/src/App.jsx');
-const dispoLabSource = read('daninihub-front/src/DispoLabPage.jsx');
-const dispoCheckSource = read('daninihub-front/src/DispoCheck.jsx');
-const transportRoomSource = read('daninihub-front/src/TransportRoomDemo.jsx');
-const transportNetworkSource = read('daninihub-front/src/TransportNetworkDemo.jsx');
+const landingSource = read('daninihub-front/src/RevenueOSLanding.jsx');
+const legalSource = read('daninihub-front/src/RevenueLegal.jsx');
 
-// Public runtime and contact workflow.
 assert.match(serverRuntime, /mountPublicRuntime/);
 assert.match(serverRuntime, /app\.post\('\/api\/contact'/);
-assert.match(serverRuntime, /isPilot \? 'PILOT' : 'LEAD'/);
-assert.match(serverRuntime, /Neue strukturierte Pilot-Anfrage/);
+assert.match(serverRuntime, /revenue-os-intake/);
+assert.match(serverRuntime, /privacy_acknowledged/);
+assert.match(serverRuntime, /SPAM_REJECTED/);
 assert.match(serverRuntime, /lead-review/);
 assert.match(serverRuntime, /DANINI_ADMIN_SECRET/);
 assert.match(serverRuntime, /DANINI_SESSION_SECRET/);
 assert.match(serverRuntime, /daninihub-lead-review-v1/);
-assert.match(serverRuntime, /legacyGoneRoutes/);
+assert.match(serverRuntime, /discontinuedRoutes/);
 assert.match(serverRuntime, /status\(410\)/);
 assert.match(serverRuntime, /X-Robots-Tag/);
 
-// Current public routes must be served by the SPA runtime.
 for (const route of [
   '/de/', '/sr/',
-  '/de/dispolab', '/sr/dispo-lab',
-  '/de/dispolab/check', '/sr/dispo-lab/provera',
-  '/de/transport-room-demo', '/sr/transportna-soba-demo',
-  '/de/transport-network-demo', '/sr/transportna-mreza-demo',
-  '/de/impressum', '/de/datenschutz', '/de/cookies', '/de/haftungsausschluss',
-  '/sr/impressum', '/sr/privatnost', '/sr/kolacici', '/sr/odricanje-odgovornosti',
-  '/de/pilot-check', '/sr/provera-pilota',
-  '/de/leistungsrahmen', '/sr/obim-usluge',
-  '/de/continuity-support', '/sr/kontinuitet-podrska',
-  '/de/fahrerkommunikation', '/sr/komunikacija-vozaci',
-  '/de/praxis-wissen', '/sr/praksa-znanje'
+  '/de/impressum', '/sr/impressum',
+  '/de/datenschutz', '/sr/privatnost',
+  '/de/cookies', '/sr/kolacici',
+  '/de/ai-transparenz', '/sr/ai-transparentnost',
+  '/de/bedingungen', '/sr/uslovi'
 ]) {
-  assert.match(serverRuntime, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.equal(serverRuntime.includes(route), true, 'missing current route: ' + route);
 }
+
+for (const route of [
+  '/de/externe-disposition',
+  '/sr/eksterna-dispozicija',
+  '/de/dispolab',
+  '/sr/dispo-lab',
+  '/de/transport-room-demo',
+  '/sr/transportna-soba-demo'
+]) {
+  assert.equal(serverRuntime.includes(route), true, 'missing discontinued route: ' + route);
+}
+assert.match(serverRuntime, /Dieses frühere Angebot wurde eingestellt/);
+assert.match(serverRuntime, /Ova ranija ponuda je ugašena/);
 
 assert.match(serverRuntime, /renderSeoPage/);
 assert.match(serverRuntime, /hreflang="x-default"/);
 
-// React routing and current products.
-assert.match(appSource, /DispoLabPage/);
-assert.match(appSource, /DispoCheck/);
-assert.match(appSource, /TransportRoomDemo/);
-assert.match(appSource, /TransportNetworkDemo/);
-assert.match(appSource, /transport-network-demo/);
-assert.match(appSource, /transport-room-demo/);
+assert.match(appSource, /RevenueOSLanding/);
+assert.match(appSource, /RevenueLegal/);
+assert.match(appSource, /DispatchPilotWorkspace/);
+assert.doesNotMatch(appSource, /DispoLabPage/);
+assert.doesNotMatch(appSource, /TransportRoomDemo/);
+assert.doesNotMatch(appSource, /TransportNetworkDemo/);
 
-// Product components must contain their core interaction contracts.
-assert.match(dispoLabSource, /DispoLab/);
-assert.match(dispoCheckSource, /questions/);
-assert.match(dispoCheckSource, /Dispatch Readiness/);
-assert.match(transportRoomSource, /transport-room/);
-assert.match(transportNetworkSource, /transport-network/);
+assert.match(landingSource, /B2B/);
+assert.match(landingSource, /privacy_ack/);
+assert.match(landingSource, /name="website"/);
+assert.match(landingSource, /kein verbindliches Angebot|nije obavezujuća ponuda/i);
+assert.match(legalSource, /§ 5 DDG/);
+assert.match(legalSource, /Art\. 6 Abs\. 1 lit\. b DSGVO/);
+assert.match(legalSource, /§ 25 Abs\. 2 TDDDG/);
+assert.match(legalSource, /KI-System/);
+assert.match(legalSource, /Kein automatischer Vertragsschluss/i);
 
-console.log('DaniniHub public content contract: OK');
+console.log('DaniniHub Revenue OS public/legal contract: OK');

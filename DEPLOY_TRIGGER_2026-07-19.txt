@@ -1,4 +1,7 @@
 DaniniHub production deploy trigger
-Date: 2026-07-19
-Target main commit before trigger: 91b5b513a2bbcfa998b82a4b09b1e61227b13e9f
-Purpose: force Hostinger GitHub-connected Node.js application to rebuild and deploy the latest main branch, including the German Balkan Continuity Support landing page and the current 14-day Founding Pilot runtime.
+Date: 2026-09-18
+Purpose: consolidate daninihub.com on Danini Revenue OS public frontend.
+Expected public marker: daninihub-revenue-os-v1
+Expected root titles:
+DE: DaniniHub Revenue OS | Vom Problem zum bezahlten Markttest
+SR: DaniniHub Revenue OS | Od problema do plaćenog tržišnog testa

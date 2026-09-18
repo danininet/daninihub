@@ -46,7 +46,8 @@
     "server": "node server.js",
     "dev:server": "node server.js",
     "agent:cli": "node danini.js",
-    "test:revenue-os": "node scripts/test-revenue-os-policy.js"
+    "test:revenue-os": "node scripts/test-revenue-os-policy.js && node scripts/test-revenue-unit-01.js",
+    "test:revenue-unit": "node scripts/test-revenue-unit-01.js"
   },
   "keywords": [],
   "author": "",

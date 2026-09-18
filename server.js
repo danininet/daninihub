@@ -17,7 +17,7 @@ const { mountCapacityConsentRuntime } = require('./server-capacity-consent-runti
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-universal-spa-fallback-v33';
+const DEPLOYMENT_MARKER = 'daninihub-revenue-os-v1';
 const DISPATCH_PATH = '/internal/dispatch-pilot-workspace';
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const COOKIE_NAME = 'danini_dispatch_session';
@@ -58,7 +58,7 @@ app.get('/health', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({
     ok: true,
-    service: 'DaniniHub Transport & Logistics',
+    service: 'DaniniHub Revenue OS',
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
     targetAudiencePages: true,
@@ -95,7 +95,7 @@ app.get('/api/runtime-version', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({
     ok: true,
-    service: 'Balkan-DACH Transport Operations Support',
+    service: 'DaniniHub Revenue OS',
     deploymentMarker: DEPLOYMENT_MARKER,
     serbianTmsVideoId: 'iV4XA-h0S40',
     germanTmsVideoId: 'HXJWUm02UlY',

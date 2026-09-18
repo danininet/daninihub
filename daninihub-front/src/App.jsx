@@ -9,7 +9,9 @@ function languageFromPath(){
 
 function legalType(path){
   if (/datenschutz|privatnost/.test(path)) return 'privacy'
-  if (/haftungsausschluss|odricanje-odgovornosti/.test(path)) return 'disclaimer'
+  if (/cookies|kolacici/.test(path)) return 'cookies'
+  if (/ai-transparenz|ai-transparentnost|haftungsausschluss|odricanje-odgovornosti/.test(path)) return 'ai'
+  if (/bedingungen|uslovi/.test(path)) return 'terms'
   if (/impressum/.test(path)) return 'imprint'
   return null
 }
@@ -33,7 +35,9 @@ export default function App(){
   function changeLanguage(next){
     setLang(next)
     const suffix=type==='privacy'?(next==='sr'?'/privatnost':'/datenschutz')
-      :type==='disclaimer'?(next==='sr'?'/odricanje-odgovornosti':'/haftungsausschluss')
+      :type==='cookies'?(next==='sr'?'/kolacici':'/cookies')
+      :type==='ai'?(next==='sr'?'/ai-transparentnost':'/ai-transparenz')
+      :type==='terms'?(next==='sr'?'/uslovi':'/bedingungen')
       :type==='imprint'?'/impressum':'/'
     history.pushState({},'',`/${next}${suffix}`)
   }

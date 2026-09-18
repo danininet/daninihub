@@ -7,8 +7,10 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const serverSource = fs.readFileSync(path.join(root, 'server-public-runtime.js'), 'utf8');
 const appSource = fs.readFileSync(path.join(root, 'daninihub-front', 'src', 'App.jsx'), 'utf8');
+const landingSource = fs.readFileSync(path.join(root, 'daninihub-front', 'src', 'RevenueOSLanding.jsx'), 'utf8');
 
-// The current DaniniHub offer must not promise an automatic fixed-duration trial.
+// The current DaniniHub offer must not promise an automatic fixed-duration trial
+// or preserve transport products as active public offers.
 const obsoleteFixedPilotClaims = [
   '30-dnevnog pilot-projekta',
   '30-dnevnom pilot-projektu',
@@ -24,14 +26,22 @@ const obsoleteFixedPilotClaims = [
 ];
 
 for (const phrase of obsoleteFixedPilotClaims) {
-  assert(!serverSource.includes(phrase), `Obsolete fixed-duration pilot wording found: ${phrase}`);
-  assert(!appSource.includes(phrase), `Obsolete fixed-duration pilot wording found in frontend: ${phrase}`);
+  assert(!landingSource.includes(phrase), 'Obsolete fixed-duration pilot wording found: ' + phrase);
 }
 
-// Current product direction must remain present.
-assert.match(appSource, /DispoLab/);
-assert.match(appSource, /TransportRoomDemo/);
-assert.match(appSource, /TransportNetworkDemo/);
-assert.match(serverSource, /Keine reale Transportsteuerung|fiktiv|Fiktiv|FICTITIOUS/);
+// Current public product direction.
+assert.match(appSource, /RevenueOSLanding/);
+assert.match(appSource, /RevenueLegal/);
+assert.doesNotMatch(appSource, /DispoLabPage/);
+assert.doesNotMatch(appSource, /TransportRoomDemo/);
+assert.doesNotMatch(appSource, /TransportNetworkDemo/);
+assert.match(landingSource, /AI Office 24\/7/);
+assert.match(landingSource, /SCALE, CHANGE oder KILL|SCALE, CHANGE ili KILL/);
 
-console.log('DaniniHub current pilot policy contract: OK');
+// Retired transport URLs must be explicitly discontinued instead of remaining
+// active sales pages. Internal workspace may remain protected for technical use.
+assert.match(serverSource, /discontinuedRoutes/);
+assert.match(serverSource, /status\(410\)/);
+assert.match(appSource, /internal\/dispatch-pilot-workspace/);
+
+console.log('DaniniHub Revenue OS pilot policy contract: OK');

@@ -3,13 +3,21 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { WAVE_01 } = require('./core/revenue-prospect-seed');
 
 const FILE = path.join(process.cwd(),'runtime','revenue-prospects.json');
 const STATUSES = new Set(['RESEARCHED','FIT','CONTACT_ALLOWED','APPROVED_TO_CONTACT','CONTACTED','REPLIED','QUALIFIED','NOT_FIT']);
 
 function ensure(){
   fs.mkdirSync(path.dirname(FILE),{recursive:true});
-  if(!fs.existsSync(FILE)) fs.writeFileSync(FILE,'{}\n',{mode:0o600});
+  if(!fs.existsSync(FILE)){
+    const seeded={};
+    for(const item of WAVE_01){
+      const record=sanitize(item);
+      seeded[record.id]=record;
+    }
+    fs.writeFileSync(FILE,JSON.stringify(seeded,null,2)+'\n',{mode:0o600});
+  }
 }
 
 function readAll(){

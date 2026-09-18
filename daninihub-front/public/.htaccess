@@ -1,3 +1,1 @@
-RewriteEngine On
-RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
-RewriteRule ^ https://danininet.daninihub.com/sr/ [R=302,L]
+# DaniniHub public app is served by the Node/Express runtime.\n# No external redirect is configured here.\n

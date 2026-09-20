@@ -51,8 +51,9 @@ function mountPublicRuntime(app){
   app.get('/de',(req,res)=>res.redirect(308,'/de/'));
   app.get('/sr',(req,res)=>res.redirect(308,'/sr/'));
   app.get('/en',(req,res)=>res.redirect(308,'/de/'));
+  app.get('/owner/importos',(req,res)=>{res.set('X-Robots-Tag','noindex,nofollow');res.set('Cache-Control','no-store');return res.sendFile(INDEX)});
 
-  app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nSitemap: https://daninihub.com/sitemap.xml\n'));
+  app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
     const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-21</lastmod></url>').join('');
     res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+urls+'</urlset>');

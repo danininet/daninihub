@@ -191,7 +191,7 @@ function mountPublicRuntime(app, options = {}) {
   ];
   const gonePage = route => {
     const sr = route.startsWith('/sr/');
-    return `<!doctype html><html lang="${sr?'sr':'de'}"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DaniniHub</title></head><body style="font-family:system-ui;max-width:760px;margin:60px auto;padding:20px"><h1>${sr?'Ova ranija ponuda je ugašena.':'Dieses frühere Angebot wurde eingestellt.'}</h1><p>${sr?'DaniniHub je konsolidovan na AI Office 24/7 i Revenue OS. Stari transportni sadržaj se više ne nudi kao aktivna usluga.':'DaniniHub wurde auf AI Office 24/7 und Revenue OS konsolidiert. Der frühere Transport-Inhalt wird nicht mehr als aktive Leistung angeboten.'}</p><p><a href="/${sr?'sr':'de'}/">${sr?'Aktuelna ponuda':'Aktuelles Angebot'} →</a></p></body></html>`;
+    return `<!doctype html><html lang="${sr?'sr':'de'}"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DaniniHub</title></head><body style="font-family:system-ui;max-width:760px;margin:60px auto;padding:20px"><h1>${sr?'Ova ranija ponuda je ugašena.':'Dieses frühere Angebot wurde eingestellt.'}</h1><p>${sr?'DaniniHub je fokusiran na Danini ImportOS. Raniji transportni sadržaj se više ne nudi kao aktivna usluga.':'DaniniHub ist auf Danini ImportOS fokussiert. Der frühere Transport-Inhalt wird nicht mehr als aktive Leistung angeboten.'}</p><p><a href="/${sr?'sr':'de'}/">${sr?'Aktuelna ponuda':'Aktuelles Angebot'} →</a></p></body></html>`;
   };
   discontinuedRoutes.forEach(route => app.get(route, (req, res) => {
     res.set('X-Robots-Tag', 'noindex, follow');
@@ -216,42 +216,42 @@ function mountPublicRuntime(app, options = {}) {
   ];
 
   const seo = {
-    '/de/': ['AI Office 24/7 für Dienstleister | DaniniHub', 'AI Office 24/7 für lokale Dienstleister: Anfragen strukturieren, Rückrufe und Termine vorbereiten, Follow-up sichtbar halten – mit menschlicher Kontrolle.'],
-    '/sr/': ['AI Office 24/7 za uslužne firme | DaniniHub', 'AI Office 24/7 za lokalne uslužne firme: strukturisan prijem upita, priprema poziva i termina, follow-up i ljudska kontrola važnih odluka.'],
+    '/de/': ['Danini ImportOS | Fahrzeugimport DE/CH → Serbien prüfen', 'Import Passport für Fahrzeuge aus Deutschland und der Schweiz nach Serbien: Importfähigkeit, Herkunft/EUR.1, Zoll und PDV, Fraud Shield, Model DNA und realistische Gesamtkosten.'],
+    '/sr/': ['Danini ImportOS | Provera uvoza automobila DE/CH → Srbija', 'Import Passport za automobile iz Nemačke i Švajcarske ka Srbiji: mogućnost uvoza, poreklo/EUR.1, carina i PDV, Fraud Shield, Model DNA i realna ukupna cena.'],
     '/de/impressum': ['Impressum & Anbieterkennzeichnung | DaniniHub', 'Impressum und Anbieterkennzeichnung von DaniniHub in Duisburg mit Kontaktangaben und B2B-Hinweisen.'],
     '/sr/impressum': ['Impresum i podaci o pružaocu | DaniniHub', 'Podaci o pružaocu usluge DaniniHub u Duisburgu, kontakt i B2B pravne napomene.'],
-    '/de/datenschutz': ['Datenschutz & DSGVO | DaniniHub AI Office', 'Datenschutzhinweise für DaniniHub AI Office 24/7: Kontaktanfragen, Hosting, E-Mail, KI-Verarbeitung, Speicherdauer und Betroffenenrechte.'],
-    '/sr/privatnost': ['Privatnost i GDPR | DaniniHub AI Office', 'Obaveštenje o privatnosti za DaniniHub AI Office 24/7: upiti, hosting, email, AI obrada, čuvanje i prava korisnika.'],
+    '/de/datenschutz': ['Datenschutz | DaniniHub ImportOS', 'Datenschutzhinweise für DaniniHub und ImportOS: Kontakt, Hosting, technische Verarbeitung, Speicherdauer und Betroffenenrechte.'],
+    '/sr/privatnost': ['Privatnost | DaniniHub ImportOS', 'Obaveštenje o privatnosti za DaniniHub i ImportOS: kontakt, hosting, tehnička obrada, čuvanje i prava korisnika.'],
     '/de/cookies': ['Cookies & lokale Speicherung | DaniniHub', 'Informationen zu technisch notwendiger Speicherung und zum Umgang mit künftigem optionalem Tracking bei DaniniHub.'],
     '/sr/kolacici': ['Kolačići i lokalna memorija | DaniniHub', 'Informacije o tehnički neophodnoj memoriji i pravilima za eventualni budući opcioni tracking na DaniniHub-u.'],
     '/de/ai-transparenz': ['KI-Transparenz & Human Control | DaniniHub', 'Wie DaniniHub KI einsetzt: klare Kennzeichnung, Human-in-the-loop, keine Erfolgsversprechen und menschliche Freigabe bei Preis, Vertrag und Risiko.'],
     '/sr/ai-transparentnost': ['AI transparentnost i ljudska kontrola | DaniniHub', 'Kako DaniniHub koristi AI: jasno označavanje, human-in-the-loop, bez garancije rezultata i ljudska potvrda kod cene, ugovora i rizika.'],
-    '/de/bedingungen': ['B2B-Leistungsrahmen für AI Office | DaniniHub', 'Öffentlicher B2B-Leistungsrahmen für DaniniHub AI Office 24/7: kein automatischer Vertragsschluss, klare Leistung, Preis und Haftungsgrenzen.'],
-    '/sr/uslovi': ['B2B okvir za AI Office | DaniniHub', 'Javni B2B okvir za DaniniHub AI Office 24/7: nema automatskog ugovora, jasan obim rada, cena i granice odgovornosti.']
+    '/de/bedingungen': ['Nutzungsrahmen | DaniniHub ImportOS', 'Öffentlicher Nutzungsrahmen für DaniniHub ImportOS: Berechnungen sind Entscheidungshilfen und keine behördliche Zoll-, Steuer- oder Zulassungsentscheidung.'],
+    '/sr/uslovi': ['Okvir korišćenja | DaniniHub ImportOS', 'Javni okvir korišćenja za DaniniHub ImportOS: proračuni su pomoć pri odluci, a ne zvanična carinska, poreska ili registraciona odluka.']
   };
 
   const rootSnapshot = language => language === 'sr'
-    ? `<main><h1>AI Office 24/7 za lokalne uslužne firme</h1><p>DaniniHub pomaže malim B2B uslužnim firmama da nove upite prime uredno, pripreme povratne pozive i termine i drže otvorene slučajeve vidljivim. Sistem je namenjen svakodnevnom radu između terena i kancelarije: manje rasutih informacija, manje nepotrebnih dodatnih pitanja i jasnija predaja čoveku koji donosi stručnu i komercijalnu odluku.</p><h2>Za čišćenje objekata, Hausmeister servis i održavanje</h2><p>Prvi tržišni test je usmeren na lokalne firme u Nemačkoj, posebno u NRW. Tipični slučajevi su čišćenje objekata, Hausmeister servis, bašte i održavanje. Pre povratnog poziva mogu se strukturisano prikupiti usluga, adresa, vrsta objekta, hitnost, fotografije i željeni termin. Postojeći sajt, telefon i email treba da ostanu u upotrebi gde god je to moguće.</p><h2>Šta AI Office 24/7 radi</h2><p>Workflow može da strukturira web i email upite, pripremi nedostajuće informacije, napravi red za povratni poziv ili termin, drži otvorene upite i ponude vidljivim za follow-up i prosledi nejasne ili osetljive slučajeve čoveku. Cena, ugovor i pravno važne odluke se ne donose autonomno.</p><h2>Mali merljiv pilot umesto velike platforme</h2><p>Počinjemo sa jednim jasnim uskim grlom i ograničenim pilotom. Merimo vreme odgovora, kompletnost upita, otvorene follow-upove i administrativni rad. Pilot nije garancija prihoda ili konverzije. Tek kada postoji smislen merljiv rezultat, odlučuje se o stalnom radu ili dodatnoj automatizaciji.</p><h2>Fit-check pre ponude</h2><p>Prvi korak je kratak opis trenutnog problema. Zatim ručno proveravamo da li mali test ima smisla. Kontakt forma nije narudžbina i ne zaključuje ugovor automatski.</p><nav><a href="/sr/privatnost">Privatnost</a> <a href="/sr/uslovi">B2B okvir</a> <a href="/sr/ai-transparentnost">AI transparentnost</a> <a href="/sr/impressum">Impresum</a></nav></main>`
-    : `<main><h1>AI Office 24/7 für lokale Dienstleister</h1><p>DaniniHub hilft kleinen B2B-Dienstleistern dabei, neue Anfragen sauber zu erfassen, Rückrufe und Termine vorzubereiten und offene Vorgänge sichtbar zu halten. Das System ist für den Alltag zwischen Außendienst und Büro gedacht: weniger verstreute Informationen, weniger unnötige Rückfragen und eine klarere Übergabe an den Menschen, der die fachliche und kommerzielle Entscheidung trifft.</p><h2>Für Gebäudereinigung, Hausmeisterservice und Objektservice</h2><p>Im ersten Markt-Test konzentrieren wir uns auf lokale Servicebetriebe in Deutschland, besonders in Nordrhein-Westfalen. Typische Fälle sind Anfragen zu Gebäudereinigung, Hausmeisterservice, Garten- und Objektpflege. Vor einem Rückruf können Leistung, Adresse, Objektart, Dringlichkeit, Fotos und Wunschtermin strukturiert gesammelt werden. Bestehende Website, Telefon und E-Mail sollen dabei möglichst erhalten bleiben.</p><h2>Was AI Office 24/7 übernimmt</h2><p>Der Workflow kann Web- und E-Mail-Anfragen strukturieren, fehlende Angaben vorbereiten, Rückruf- oder Terminlisten erzeugen, offene Anfragen und Angebote für den Follow-up sichtbar halten und unklare oder sensible Fälle an einen Menschen eskalieren. Preiszusagen, Verträge und rechtlich relevante Entscheidungen werden nicht autonom getroffen.</p><h2>Kleiner messbarer Pilot statt großer Plattform</h2><p>Wir starten mit genau einem Engpass und einem klar begrenzten Pilot. Gemessen werden zum Beispiel Reaktionszeit, Vollständigkeit der Anfrage, offene Follow-ups und administrativer Aufwand. Der Pilot ist keine Umsatz- oder Conversion-Garantie. Erst wenn ein sinnvoller messbarer Nutzen sichtbar wird, wird über einen dauerhaften Betrieb oder weitere Automatisierung entschieden.</p><h2>Fit-Check vor Angebot</h2><p>Der erste Schritt ist eine kurze Beschreibung des heutigen Problems. Danach prüfen wir manuell, ob ein kleiner Test sinnvoll ist. Das Kontaktformular ist keine Bestellung und führt nicht automatisch zu einem Vertrag.</p><nav><a href="/de/datenschutz">Datenschutz</a> <a href="/de/bedingungen">B2B-Rahmen</a> <a href="/de/ai-transparenz">KI-Transparenz</a> <a href="/de/impressum">Impressum</a></nav></main>`;
+    ? `<main><h1>Danini ImportOS — proveri auto pre nego što platiš</h1><p>ImportOS povezuje mogućnost uvoza, poreklo i EUR.1, carinu i PDV, dokumentacioni i prevarni rizik, dugoročnu istoriju modela i realnu cenu do Srbije u jedan Import Passport.</p><h2>Ne jedan kalkulator, nego sistem odluke</h2><p>Za neproveren dokaz porekla ImportOS prikazuje preferencijalni i standardni scenario, umesto jedne lažno precizne cifre. SafeBuy upozorava na avans, račun trećeg lica, nedostatak VIN-a i neslaganje prodavca sa dokumentima. Model DNA dodaje dugoročne prednosti i slabosti konkretne generacije na osnovu označenih izvora.</p><h2>Nemačka i Švajcarska → Srbija</h2><p>Sistem razlikuje nemački i švajcarski izvozni tok, osnovni Euro 3 prag, oldtimer/historic put, dokaz porekla i troškove do srpske granice. Proračun je pomoć pri odluci; konačnu carinsku, poresku, homologacionu i registracionu odluku donose nadležni organi.</p><h2>Za privatnog kupca i profesionalnog uvoznika</h2><p>DIY režim vodi kroz korake samostalnog uvoza. Posrednički režim traži stavkovne ponude. Dealer Radar koristi tržišnu vrednost u Srbiji i scenarije troška da prikaže rizikom korigovanu bruto razliku.</p><nav><a href="/sr/privatnost">Privatnost</a> <a href="/sr/uslovi">Uslovi</a> <a href="/sr/ai-transparentnost">AI transparentnost</a> <a href="/sr/impressum">Impresum</a></nav></main>`
+    : `<main><h1>Danini ImportOS — Fahrzeug prüfen, bevor Geld fließt</h1><p>ImportOS verbindet Importfähigkeit, Herkunft/EUR.1, Zoll und PDV, Dokument- und Betrugsrisiko, langfristige Modelldaten und realistische Gesamtkosten nach Serbien in einem Import Passport.</p><h2>Kein weiterer Zollrechner, sondern ein Entscheidungssystem</h2><p>Bei ungeklärter Herkunft zeigt ImportOS den präferenziellen und den Standardszenario-Korridor statt einer künstlich exakten Zahl. SafeBuy markiert Vorkasse, Dritt-Konten, fehlende VIN und Abweichungen zwischen Verkäufer und Dokumenten. Model DNA ergänzt langfristige Stärken und Schwächen einer Baureihe mit gekennzeichneten Quellen.</p><h2>Deutschland und Schweiz → Serbien</h2><p>Der Workflow unterscheidet deutsche und schweizerische Exportwege, den Euro-3-Baseline-Check, Historic/Oldtimer-Fälle, Herkunftsnachweise und Kosten bis zur serbischen Grenze. Die Analyse ist eine Entscheidungshilfe; verbindliche Zoll-, Steuer-, Homologations- und Zulassungsentscheidungen treffen die zuständigen Behörden.</p><h2>Für Privatkäufer und professionelle Importeure</h2><p>Der DIY-Modus strukturiert den Eigenimport. Der Vermittler-Modus verlangt aufgeschlüsselte Angebote. Dealer Radar vergleicht Serbia-Marktwert und Kostenszenarien zur risikoadjustierten Bruttospanne.</p><nav><a href="/de/datenschutz">Datenschutz</a> <a href="/de/bedingungen">Nutzungsrahmen</a> <a href="/de/ai-transparenz">KI-Transparenz</a> <a href="/de/impressum">Impressum</a></nav></main>`;
 
   const legalSnapshot = (normalized, language) => {
     const [title, description] = seo[normalized] || seo[language === 'sr' ? '/sr/' : '/de/'];
     const home = language === 'sr' ? '/sr/' : '/de/';
-    return `<main><h1>${html(title.replace(/ \| DaniniHub(?: AI Office)?$/,''))}</h1><p>${html(description)}</p><p><a href="${home}">${language==='sr'?'Nazad na AI Office 24/7':'Zurück zu AI Office 24/7'}</a></p></main>`;
+    return `<main><h1>${html(title.replace(/ \| DaniniHub(?: AI Office)?$/,''))}</h1><p>${html(description)}</p><p><a href="${home}">${language==='sr'?'Nazad na ImportOS':'Zurück zu ImportOS'}</a></p></main>`;
   };
 
   const rootFaq = {
     de: [
-      ['Ist AI Office 24/7 ein Chatbot?','Nein. Ein Chat kann Teil des Workflows sein, aber das Produkt ist ein betreuter Prozess für Intake, Rückruf, Termin, Follow-up und Eskalation.'],
-      ['Muss bestehende Software ersetzt werden?','Nein. Der Pilot soll vorhandene Kanäle möglichst nutzen und nur einen klaren Engpass verbessern.'],
-      ['Entscheidet KI über Preise oder Verträge?','Nein. Preis, Vertrag, rechtlich relevante Zusagen und unklare Fälle bleiben unter menschlicher Kontrolle.'],
-      ['Garantiert der Pilot mehr Umsatz?','Nein. Gemessen werden operative Signale wie Reaktionszeit, Vollständigkeit, offene Vorgänge und Admin-Aufwand.']
+      ['Ist ImportOS eine verbindliche Zollberechnung?','Nein. ImportOS ist eine datenbasierte Entscheidungshilfe. Verbindliche Entscheidungen treffen Zoll, Steuer- und Zulassungsbehörden.'],
+      ['Warum gibt es mehrere Kostenszenarien?','Weil ungeklärte Herkunft/EUR.1 und andere offene Punkte den Endpreis erheblich verändern können. ImportOS zeigt diese Unsicherheit sichtbar statt sie zu verstecken.'],
+      ['Was ist Model DNA?','Eine quellenbasierte Langzeitansicht zu Stärken, Schwächen, Pannen- und Prüfhinweisen einer konkreten Baureihe.'],
+      ['Kann ImportOS vor Betrug schützen?','Es kann Risikosignale markieren und Zahlungen blockieren helfen, aber keine Verkäuferidentität oder Fahrzeughistorie ohne belastbare Nachweise garantieren.']
     ],
     sr: [
-      ['Da li je AI Office 24/7 chatbot?','Ne. Chat može biti deo toka, ali proizvod je vođeni proces za prijem upita, poziv, termin, follow-up i eskalaciju.'],
-      ['Da li moram menjati postojeći softver?','Ne. Pilot pokušava da koristi postojeće kanale i unapredi samo jedno jasno usko grlo.'],
-      ['Da li AI odlučuje o cenama ili ugovorima?','Ne. Cena, ugovor, pravno važne izjave i nejasni slučajevi ostaju pod ljudskom kontrolom.'],
-      ['Da li pilot garantuje više prihoda?','Ne. Mere se operativni signali kao brzina odgovora, kompletnost, otvoreni slučajevi i administrativno vreme.']
+      ['Da li je ImportOS zvaničan carinski obračun?','Ne. ImportOS je podatkovna pomoć pri odluci. Konačne odluke donose carina, poreski, homologacioni i registracioni organi.'],
+      ['Zašto sistem daje više scenarija troška?','Zato što neprovereno poreklo/EUR.1 i druge otvorene stavke mogu značajno promeniti konačnu cenu. ImportOS tu neizvesnost prikazuje, ne skriva.'],
+      ['Šta je Model DNA?','Izvorima potkrepljen pregled dugoročnih prednosti, slabosti, kvarova i inspekcijskih signala konkretne generacije vozila.'],
+      ['Da li ImportOS može da spreči prevaru?','Može da označi rizike i pomogne da se uplata zaustavi dok dokazi nisu potpuni, ali bez pouzdanih dokumenata ne garantuje identitet prodavca ni istoriju vozila.']
     ]
   };
 
@@ -280,11 +280,11 @@ function mountPublicRuntime(app, options = {}) {
       schemas.push({
         '@context':'https://schema.org',
         '@type':'Service',
-        name:'Danini AI Office 24/7',
-        serviceType:'B2B Anfrage- und Follow-up-Automation für lokale Dienstleister',
+        name:'Danini ImportOS',
+        serviceType:'Vehicle import decision intelligence for Germany/Switzerland to Serbia',
         provider:{ '@type':'Organization', name:'DaniniHub', url:'https://daninihub.com', logo:'https://daninihub.com/logo-mark.svg' },
-        areaServed:[{ '@type':'Country', name:'Germany' },{ '@type':'AdministrativeArea', name:'North Rhine-Westphalia' }],
-        audience:{ '@type':'BusinessAudience', audienceType:'Gebäudereinigung, Hausmeisterservice, Garten- und Objektservice' },
+        areaServed:[{ '@type':'Country', name:'Germany' },{ '@type':'Country', name:'Switzerland' },{ '@type':'Country', name:'Serbia' }],
+        audience:{ '@type':'Audience', audienceType:'Private vehicle buyers and professional vehicle importers' },
         description
       });
       schemas.push({
@@ -331,7 +331,7 @@ function mountPublicRuntime(app, options = {}) {
   siteRoutes.forEach(route => app.get(route, (req, res) => { res.type('html').send(renderSeoPage(route)); }));
   app.get('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /internal/\nDisallow: /lead-review/\nDisallow: /api/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml', (req, res) => res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + siteRoutes.map(route => `<url><loc>https://daninihub.com${route}</loc><lastmod>2026-09-20</lastmod><changefreq>${route === "/de/" || route === "/sr/" ? "weekly" : "monthly"}</changefreq><priority>${route === "/de/" || route === "/sr/" ? "1.0" : "0.3"}</priority></url>`).join('') + '</urlset>'));
-  app.get('/api/public-layer', (req, res) => res.json({ ok:true, service:'DaniniHub Revenue OS', languages:['de','sr'], contact:'info@daninihub.com' }));
+  app.get('/api/public-layer', (req, res) => res.json({ ok:true, service:'Danini ImportOS', languages:['de','sr'], routes:['DE→RS','CH→RS'], contact:'info@daninihub.com' }));
 }
 
 module.exports = { mountPublicRuntime };

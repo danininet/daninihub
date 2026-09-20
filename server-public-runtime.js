@@ -152,8 +152,8 @@ function mountPublicRuntime(app, options = {}) {
   });
 
   const legacyRedirects = new Map([
-    ['/de/opportunity-check','/de/'],
-    ['/sr/opportunity-check','/sr/'],
+    ['/de/opportunity-check','/de/#contact'],
+    ['/sr/opportunity-check','/sr/#contact'],
     ['/de/opportunity-map','/de/'],
     ['/sr/opportunity-map','/sr/'],
     ['/de/location-launch','/de/'],
@@ -161,7 +161,13 @@ function mountPublicRuntime(app, options = {}) {
     ['/de/haftungsausschluss','/de/ai-transparenz'],
     ['/sr/odricanje-odgovornosti','/sr/ai-transparentnost'],
     ['/de/agb','/de/bedingungen'],
-    ['/sr/opsti-uslovi','/sr/uslovi']
+    ['/sr/opsti-uslovi','/sr/uslovi'],
+    ['/de/leistungsrahmen','/de/bedingungen'],
+    ['/sr/obim-usluge','/sr/uslovi'],
+    ['/de/pilot-check','/de/#contact'],
+    ['/sr/provera-pilota','/sr/#contact'],
+    ['/en','/de/'],
+    ['/en/','/de/']
   ]);
   legacyRedirects.forEach((target, route) => app.get(route, (req, res) => res.redirect(308, target)));
 
@@ -176,20 +182,29 @@ function mountPublicRuntime(app, options = {}) {
     '/de/transport-network-demo','/sr/transportna-mreza-demo',
     '/de/transport-room-demo','/sr/transportna-soba-demo',
     '/de/dispolab','/sr/dispo-lab','/de/dispolab/check','/sr/dispo-lab/provera',
-    '/de/leistungsrahmen','/sr/obim-usluge',
     '/de/continuity-support','/sr/kontinuitet-podrska',
     '/de/fahrerkommunikation','/sr/komunikacija-vozaci',
-    '/de/pilot-check','/sr/provera-pilota',
     '/de/praxis-wissen','/sr/praksa-znanje',
     '/de/pilot-beispiel','/sr/primer-pilota',
     '/de/operations-desk-demo','/sr/operativni-pult-demo',
     '/de/glossar','/sr/recnik'
   ];
-  discontinuedRoutes.forEach(route => app.get(route, (req, res) => {
+  const gonePage = route => {
     const sr = route.startsWith('/sr/');
-    res.set('X-Robots-Tag', 'noindex');
-    return res.status(410).type('html').send(`<!doctype html><html lang="${sr?'sr':'de'}"><meta charset="utf-8"><title>DaniniHub</title><body style="font-family:system-ui;max-width:760px;margin:60px auto;padding:20px"><h1>${sr?'Ova ranija ponuda je ugašena.':'Dieses frühere Angebot wurde eingestellt.'}</h1><p>${sr?'DaniniHub je konsolidovan na Revenue OS. Stari sadržaj se ne prikazuje kao aktivna usluga.':'DaniniHub wurde auf Revenue OS konsolidiert. Der alte Inhalt wird nicht mehr als aktive Leistung angeboten.'}</p><p><a href="/${sr?'sr':'de'}/">DaniniHub Revenue OS →</a></p></body></html>`);
+    return `<!doctype html><html lang="${sr?'sr':'de'}"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DaniniHub</title></head><body style="font-family:system-ui;max-width:760px;margin:60px auto;padding:20px"><h1>${sr?'Ova ranija ponuda je ugašena.':'Dieses frühere Angebot wurde eingestellt.'}</h1><p>${sr?'DaniniHub je konsolidovan na AI Office 24/7 i Revenue OS. Stari transportni sadržaj se više ne nudi kao aktivna usluga.':'DaniniHub wurde auf AI Office 24/7 und Revenue OS konsolidiert. Der frühere Transport-Inhalt wird nicht mehr als aktive Leistung angeboten.'}</p><p><a href="/${sr?'sr':'de'}/">${sr?'Aktuelna ponuda':'Aktuelles Angebot'} →</a></p></body></html>`;
+  };
+  discontinuedRoutes.forEach(route => app.get(route, (req, res) => {
+    res.set('X-Robots-Tag', 'noindex, follow');
+    return res.status(410).type('html').send(gonePage(route));
   }));
+  app.get(/^\/(?:de|sr)\/(?:praxis-wissen|praksa-znanje)\/.+$/, (req, res) => {
+    res.set('X-Robots-Tag', 'noindex, follow');
+    return res.status(410).type('html').send(gonePage(req.path));
+  });
+  app.get(/^\/en\/.+$/, (req, res) => {
+    res.set('X-Robots-Tag', 'noindex, follow');
+    return res.status(410).type('html').send(gonePage('/de/old'));
+  });
 
   const routePairs = [
     ['/de/', '/sr/'],
@@ -201,18 +216,43 @@ function mountPublicRuntime(app, options = {}) {
   ];
 
   const seo = {
-    '/de/': ['DaniniHub Revenue OS | Vom Problem zum bezahlten Markttest', 'Human+AI-System für reale Geschäftsprobleme: Angebot testen, Käuferreaktionen messen und erst danach automatisieren oder skalieren.'],
-    '/sr/': ['DaniniHub Revenue OS | Od problema do plaćenog tržišnog testa', 'Human + AI sistem za stvarne poslovne probleme: test ponude, reakcija kupaca i automatizacija tek nakon merljivog tržišnog signala.'],
-    '/de/impressum': ['Impressum | DaniniHub', 'Anbieterkennzeichnung und Kontaktdaten von DaniniHub in Duisburg.'],
-    '/sr/impressum': ['Impresum | DaniniHub', 'Podaci o pružaocu usluge i kontakt DaniniHub u Duisburgu.'],
-    '/de/datenschutz': ['Datenschutz | DaniniHub', 'Informationen zur Verarbeitung von Kontakt-, Hosting- und E-Mail-Daten bei DaniniHub gemäß DSGVO.'],
-    '/sr/privatnost': ['Privatnost | DaniniHub', 'Informacije o obradi kontaktnih, hosting i e-mail podataka u DaniniHub-u prema GDPR-u.'],
-    '/de/cookies': ['Cookies und lokale Speicherung | DaniniHub', 'Aktueller Einsatz technisch notwendiger Speicherung und Regeln für künftige optionale Tracking-Technologien.'],
-    '/sr/kolacici': ['Kolačići i lokalna memorija | DaniniHub', 'Trenutna upotreba tehnički neophodne memorije i pravila za budući opcioni tracking.'],
-    '/de/ai-transparenz': ['KI-Transparenz und Grenzen | DaniniHub', 'Human-in-the-loop, Kennzeichnung direkter KI-Interaktion und klare Grenzen von Markt- und Ergebnisversprechen.'],
-    '/sr/ai-transparentnost': ['AI transparentnost i granice | DaniniHub', 'Human-in-the-loop, označavanje direktne AI interakcije i jasne granice tržišnih i rezultatskih tvrdnji.'],
-    '/de/bedingungen': ['B2B-Leistungsrahmen | DaniniHub', 'Öffentlicher Leistungsrahmen: kein automatischer Vertragsschluss, keine Erfolgsgarantie, klare Freigaben und konkrete Angebote.'],
-    '/sr/uslovi': ['B2B okvir usluge | DaniniHub', 'Javni okvir usluge: nema automatskog ugovora, nema garancije uspeha, jasne potvrde i konkretne ponude.']
+    '/de/': ['AI Office 24/7 für Dienstleister | DaniniHub', 'AI Office 24/7 für lokale Dienstleister: Anfragen strukturieren, Rückrufe und Termine vorbereiten, Follow-up sichtbar halten und wichtige Entscheidungen beim Menschen lassen.'],
+    '/sr/': ['AI Office 24/7 za uslužne firme | DaniniHub', 'AI Office 24/7 za lokalne uslužne firme: strukturisan prijem upita, priprema poziva i termina, follow-up i ljudska kontrola važnih odluka.'],
+    '/de/impressum': ['Impressum & Anbieterkennzeichnung | DaniniHub', 'Impressum und Anbieterkennzeichnung von DaniniHub in Duisburg mit Kontaktangaben und B2B-Hinweisen.'],
+    '/sr/impressum': ['Impresum i podaci o pružaocu | DaniniHub', 'Podaci o pružaocu usluge DaniniHub u Duisburgu, kontakt i B2B pravne napomene.'],
+    '/de/datenschutz': ['Datenschutz & DSGVO | DaniniHub AI Office', 'Datenschutzhinweise für DaniniHub AI Office 24/7: Kontaktanfragen, Hosting, E-Mail, KI-Verarbeitung, Speicherdauer und Betroffenenrechte.'],
+    '/sr/privatnost': ['Privatnost i GDPR | DaniniHub AI Office', 'Obaveštenje o privatnosti za DaniniHub AI Office 24/7: upiti, hosting, email, AI obrada, čuvanje i prava korisnika.'],
+    '/de/cookies': ['Cookies & lokale Speicherung | DaniniHub', 'Informationen zu technisch notwendiger Speicherung und zum Umgang mit künftigem optionalem Tracking bei DaniniHub.'],
+    '/sr/kolacici': ['Kolačići i lokalna memorija | DaniniHub', 'Informacije o tehnički neophodnoj memoriji i pravilima za eventualni budući opcioni tracking na DaniniHub-u.'],
+    '/de/ai-transparenz': ['KI-Transparenz & Human Control | DaniniHub', 'Wie DaniniHub KI einsetzt: klare Kennzeichnung, Human-in-the-loop, keine Erfolgsversprechen und menschliche Freigabe bei Preis, Vertrag und Risiko.'],
+    '/sr/ai-transparentnost': ['AI transparentnost i ljudska kontrola | DaniniHub', 'Kako DaniniHub koristi AI: jasno označavanje, human-in-the-loop, bez garancije rezultata i ljudska potvrda kod cene, ugovora i rizika.'],
+    '/de/bedingungen': ['B2B-Leistungsrahmen für AI Office | DaniniHub', 'Öffentlicher B2B-Leistungsrahmen für DaniniHub AI Office 24/7: kein automatischer Vertragsschluss, klare Leistung, Preis und Haftungsgrenzen.'],
+    '/sr/uslovi': ['B2B okvir za AI Office | DaniniHub', 'Javni B2B okvir za DaniniHub AI Office 24/7: nema automatskog ugovora, jasan obim rada, cena i granice odgovornosti.']
+  };
+
+  const rootSnapshot = language => language === 'sr'
+    ? `<main><h1>AI Office 24/7 za lokalne uslužne firme</h1><p>Strukturisan prijem upita, priprema povratnih poziva i termina, follow-up i ljudska kontrola važnih odluka.</p><h2>Za čišćenje objekata, Hausmeister servis i održavanje</h2><p>AI Office 24/7 pomaže malim B2B firmama da prikupe podatke o usluzi, lokaciji, objektu, hitnosti, fotografijama i željenom terminu pre nego što čovek preuzme komercijalnu odluku.</p><h2>Mali merljiv pilot</h2><p>Prvo proveravamo jedan konkretan problem. Merimo vreme odgovora, kompletnost upita, otvorene follow-upove i administrativni rad. Ne garantujemo prihod ili konverziju.</p><nav><a href="/sr/privatnost">Privatnost</a> <a href="/sr/uslovi">B2B okvir</a> <a href="/sr/ai-transparentnost">AI transparentnost</a> <a href="/sr/impressum">Impresum</a></nav></main>`
+    : `<main><h1>AI Office 24/7 für lokale Dienstleister</h1><p>Anfragen strukturieren, Rückrufe und Termine vorbereiten, Follow-up sichtbar halten und wichtige Entscheidungen beim Menschen lassen.</p><h2>Für Gebäudereinigung, Hausmeisterservice und Objektservice</h2><p>AI Office 24/7 hilft kleinen B2B-Dienstleistern, Leistung, Ort, Objekt, Dringlichkeit, Fotos und Wunschtermin vor dem menschlichen Rückruf strukturiert zu erfassen.</p><h2>Kleiner messbarer Pilot</h2><p>Wir testen zuerst genau einen Engpass. Gemessen werden Reaktionszeit, Vollständigkeit, offene Follow-ups und administrativer Aufwand. Umsatz oder Conversion werden nicht garantiert.</p><nav><a href="/de/datenschutz">Datenschutz</a> <a href="/de/bedingungen">B2B-Rahmen</a> <a href="/de/ai-transparenz">KI-Transparenz</a> <a href="/de/impressum">Impressum</a></nav></main>`;
+
+  const legalSnapshot = (normalized, language) => {
+    const [title, description] = seo[normalized] || seo[language === 'sr' ? '/sr/' : '/de/'];
+    const home = language === 'sr' ? '/sr/' : '/de/';
+    return `<main><h1>${html(title.replace(/ \| DaniniHub(?: AI Office)?$/,''))}</h1><p>${html(description)}</p><p><a href="${home}">${language==='sr'?'Nazad na AI Office 24/7':'Zurück zu AI Office 24/7'}</a></p></main>`;
+  };
+
+  const rootFaq = {
+    de: [
+      ['Ist AI Office 24/7 ein Chatbot?','Nein. Ein Chat kann Teil des Workflows sein, aber das Produkt ist ein betreuter Prozess für Intake, Rückruf, Termin, Follow-up und Eskalation.'],
+      ['Muss bestehende Software ersetzt werden?','Nein. Der Pilot soll vorhandene Kanäle möglichst nutzen und nur einen klaren Engpass verbessern.'],
+      ['Entscheidet KI über Preise oder Verträge?','Nein. Preis, Vertrag, rechtlich relevante Zusagen und unklare Fälle bleiben unter menschlicher Kontrolle.'],
+      ['Garantiert der Pilot mehr Umsatz?','Nein. Gemessen werden operative Signale wie Reaktionszeit, Vollständigkeit, offene Vorgänge und Admin-Aufwand.']
+    ],
+    sr: [
+      ['Da li je AI Office 24/7 chatbot?','Ne. Chat može biti deo toka, ali proizvod je vođeni proces za prijem upita, poziv, termin, follow-up i eskalaciju.'],
+      ['Da li moram menjati postojeći softver?','Ne. Pilot pokušava da koristi postojeće kanale i unapredi samo jedno jasno usko grlo.'],
+      ['Da li AI odlučuje o cenama ili ugovorima?','Ne. Cena, ugovor, pravno važne izjave i nejasni slučajevi ostaju pod ljudskom kontrolom.'],
+      ['Da li pilot garantuje više prihoda?','Ne. Mere se operativni signali kao brzina odgovora, kompletnost, otvoreni slučajevi i administrativno vreme.']
+    ]
   };
 
   const htmlTemplate = () => fs.readFileSync(path.join(front, 'index.html'), 'utf8');
@@ -220,12 +260,40 @@ function mountPublicRuntime(app, options = {}) {
     const normalized = route === '/de' ? '/de/' : route === '/sr' ? '/sr/' : route;
     const language = normalized.startsWith('/sr') ? 'sr' : 'de';
     const pair = routePairs.find(([de, sr]) => de === normalized || sr === normalized) || routePairs[0];
-    const [title, description] = seo[normalized] || (language === 'sr' ? seo['/sr/'] : seo['/de/']);
+    const [title, description] = seo[normalized] || seo[language === 'sr' ? '/sr/' : '/de/'];
     const canonical = `https://daninihub.com${normalized}`;
-    const isArticle = /warum-tms-disponenten-nicht-ersetzen|zasto-tms-ne-menja-disponente|eta-ist-keine-zusage|eta-nije-obecanje|fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija|abweichungen-eskalieren|eskalacija-odstupanja|transportdokumente-cmr-pod|transportna-dokumenta-cmr-pod/.test(normalized);
-    const datePublished = /fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija|abweichungen-eskalieren|eskalacija-odstupanja|transportdokumente-cmr-pod|transportna-dokumenta-cmr-pod/.test(normalized) ? '2026-07-19' : '2026-07-18';
-    const dateModified = /eta-ist-keine-zusage|eta-nije-obecanje|fahrerkommunikation-balkan-dach|komunikacija-sa-vozacima-balkan-dach|schichtuebergabe-disposition|predaja-smene-dispozicija|abweichungen-eskalieren|eskalacija-odstupanja|transportdokumente-cmr-pod|transportna-dokumenta-cmr-pod/.test(normalized) ? '2026-07-19' : '2026-07-18';
-    const articleSchema = isArticle ? `<script type="application/ld+json">${JSON.stringify({ '@context':'https://schema.org', '@type':'Article', headline:title.replace(' | DaniniHub',''), description, datePublished, dateModified, inLanguage:language === 'sr' ? 'sr' : 'de', mainEntityOfPage:canonical, author:{ '@type':'Person', name:'Dragan Zdravković' }, publisher:{ '@type':'Organization', name:'DaniniHub', url:'https://daninihub.com', logo:{ '@type':'ImageObject', url:'https://daninihub.com/logo-mark.svg' } } })}</script>` : '';
+    const isRoot = normalized === '/de/' || normalized === '/sr/';
+    const bodySnapshot = isRoot ? rootSnapshot(language) : legalSnapshot(normalized, language);
+    const schemas = [
+      {
+        '@context':'https://schema.org',
+        '@type':'Organization',
+        name:'DaniniHub',
+        url:'https://daninihub.com',
+        email:'info@daninihub.com',
+        telephone:'+49 1573 0916621',
+        address:{ '@type':'PostalAddress', streetAddress:'Fischerstraße 54', postalCode:'47055', addressLocality:'Duisburg', addressCountry:'DE' },
+        founder:{ '@type':'Person', name:'Dragan Zdravković' }
+      }
+    ];
+    if (isRoot) {
+      schemas.push({
+        '@context':'https://schema.org',
+        '@type':'Service',
+        name:'Danini AI Office 24/7',
+        serviceType:'B2B Anfrage- und Follow-up-Automation für lokale Dienstleister',
+        provider:{ '@type':'Organization', name:'DaniniHub', url:'https://daninihub.com' },
+        areaServed:[{ '@type':'Country', name:'Germany' },{ '@type':'AdministrativeArea', name:'North Rhine-Westphalia' }],
+        audience:{ '@type':'BusinessAudience', audienceType:'Gebäudereinigung, Hausmeisterservice, Garten- und Objektservice' },
+        description
+      });
+      schemas.push({
+        '@context':'https://schema.org',
+        '@type':'FAQPage',
+        mainEntity:rootFaq[language].map(([name,answer])=>({ '@type':'Question', name, acceptedAnswer:{ '@type':'Answer', text:answer } }))
+      });
+    }
+    const structured = schemas.map(schema=>`<script type="application/ld+json">${JSON.stringify(schema)}</script>`).join('');
     return htmlTemplate()
       .replace('<html lang="de">', `<html lang="${language}">`)
       .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
@@ -237,7 +305,8 @@ function mountPublicRuntime(app, options = {}) {
       .replace(/<meta property="og:title" content="[^"]*"\/>/, `<meta property="og:title" content="${title}"/>`)
       .replace(/<meta property="og:description" content="[^"]*"\/>/, `<meta property="og:description" content="${description}"/>`)
       .replace(/<meta property="og:url" content="[^"]*"\/>/, `<meta property="og:url" content="${canonical}"/>`)
-      .replace('</head>', `${articleSchema}</head>`);
+      .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, structured)
+      .replace('<div id="root"></div>', `<div id="root">${bodySnapshot}</div>`);
   };
 
   const siteRoutes = routePairs.flat();
@@ -260,8 +329,8 @@ function mountPublicRuntime(app, options = {}) {
   });
   app.get(/^\/(?:de|sr)$/, (req, res) => res.redirect(308, `${req.path}/`));
   siteRoutes.forEach(route => app.get(route, (req, res) => { res.type('html').send(renderSeoPage(route)); }));
-  app.get('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nAllow: /\nSitemap: https://daninihub.com/sitemap.xml\n'));
-  app.get('/sitemap.xml', (req, res) => res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + siteRoutes.map(route => `<url><loc>https://daninihub.com${route}</loc></url>`).join('') + '</urlset>'));
+  app.get('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /internal/\nDisallow: /lead-review/\nDisallow: /api/\nSitemap: https://daninihub.com/sitemap.xml\n'));
+  app.get('/sitemap.xml', (req, res) => res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + siteRoutes.map(route => `<url><loc>https://daninihub.com${route}</loc><lastmod>2026-09-20</lastmod><changefreq>${route === "/de/" || route === "/sr/" ? "weekly" : "monthly"}</changefreq><priority>${route === "/de/" || route === "/sr/" ? "1.0" : "0.3"}</priority></url>`).join('') + '</urlset>'));
   app.get('/api/public-layer', (req, res) => res.json({ ok:true, service:'DaniniHub Revenue OS', languages:['de','sr'], contact:'info@daninihub.com' }));
 }
 

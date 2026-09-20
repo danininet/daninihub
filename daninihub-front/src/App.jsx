@@ -2,6 +2,7 @@ import {useEffect,useState} from 'react'
 import ImportOSLanding from './ImportOSLanding'
 import ImportOSLegal from './ImportOSLegal'
 import ImportOSKnowledge from './ImportOSKnowledge'
+import ImportOSOwner from './ImportOSOwner'
 
 function languageFromPath(){return location.pathname.startsWith('/sr')?'sr':'de'}
 function legalType(path){
@@ -21,6 +22,7 @@ export default function App(){
   const path=location.pathname.replace(/\/$/,'')||'/'
   const type=legalType(path)
   const slug=knowledgeSlug(path)
+  const owner=path==='/owner/importos'
 
   useEffect(()=>{
     document.documentElement.lang=lang
@@ -38,6 +40,7 @@ export default function App(){
     history.pushState({},'',`/${next}${suffix}`)
   }
 
+  if(owner)return <ImportOSOwner/>
   if(type)return <ImportOSLegal lang={lang} type={type}/>
   if(slug)return <ImportOSKnowledge lang={lang} slug={slug}/>
   return <ImportOSLanding lang={lang} onLanguage={changeLanguage}/>

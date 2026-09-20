@@ -159,6 +159,7 @@ const COPY = {
 export default function RevenueOSLanding({ lang='de', onLanguage }) {
   const t = COPY[lang] || COPY.de
   const [state,setState] = useState('idle')
+  const [menuOpen,setMenuOpen] = useState(false)
   const [friction,setFriction] = useState({adminHours:6,missedCalls:3,responseHours:4,channels:3})
   const frictionScore = Math.min(100,
     Math.max(0,Number(friction.adminHours)||0)*4 +
@@ -211,9 +212,12 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
       <a className="ros-brand" href={`/${lang}/`} aria-label="DaniniHub">
         <span className="ros-mark">D</span><span><strong>DaniniHub</strong><small>AI Office 24/7 · Human + AI</small></span>
       </a>
-      <nav aria-label="Main navigation">
-        {t.nav.map((x,i)=><a key={x} href={['#office','#fit','#pilot','#friction-check','https://calije.daninihub.com/','#contact'][i]}>{x}</a>)}
-        <div className="ros-lang"><button className={lang==='de'?'active':''} onClick={()=>onLanguage?.('de')}>DE</button><button className={lang==='sr'?'active':''} onClick={()=>onLanguage?.('sr')}>SR</button></div>
+      <button className="ros-menu-toggle" aria-expanded={menuOpen} aria-controls="ros-main-nav" aria-label={menuOpen?'Close menu':'Open menu'} onClick={()=>setMenuOpen(v=>!v)}>
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="ros-main-nav" className={menuOpen?'open':''} aria-label="Main navigation">
+        {t.nav.map((x,i)=><a key={x} onClick={()=>setMenuOpen(false)} href={['#office','#fit','#pilot','#friction-check','https://calije.daninihub.com/','#contact'][i]}>{x}</a>)}
+        <div className="ros-lang"><button className={lang==='de'?'active':''} onClick={()=>{setMenuOpen(false);onLanguage?.('de')}}>DE</button><button className={lang==='sr'?'active':''} onClick={()=>{setMenuOpen(false);onLanguage?.('sr')}}>SR</button></div>
       </nav>
     </header>
 

@@ -6,10 +6,11 @@ const cors = require('cors');
 const express = require('express');
 const { mountPublicRuntime } = require('./server-public-runtime');
 const { mountAdminRuntime } = require('./server-admin-runtime');
+const { mountAiOfficeRuntime } = require('./server-ai-office-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-revenue-os-v2';
+const DEPLOYMENT_MARKER = 'daninihub-ai-office-mvp-v1';
 const FRONTEND_INDEX = path.join(__dirname, 'daninihub-front', 'dist', 'index.html');
 
 app.set('trust proxy', 1);
@@ -28,11 +29,12 @@ app.get('/health', (req, res) => {
     service: 'DaniniHub Revenue OS',
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
-    publicProduct: 'AI Office 24/7 market test',
+    publicProduct: 'AI Office 24/7 working pilot MVP',
     revenueControlCenter: Boolean(process.env.DANINI_ADMIN_SECRET),
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     durableLeadDatabase: Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME),
     aiPublicDecisioning: false,
+    aiOfficeWorkflowMounted: true,
     legacyTransportPublicRuntimeMounted: false
   });
 });
@@ -49,6 +51,9 @@ app.get('/api/runtime-version', (req, res) => {
     contact: 'info@daninihub.com'
   });
 });
+
+// Working AI Office pilot runtime: client intake + protected office dashboard.
+mountAiOfficeRuntime(app);
 
 // Server-rendered SEO/legal/public routes and contact intake.
 mountPublicRuntime(app);

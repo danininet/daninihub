@@ -50,6 +50,10 @@ assert.match(serverRuntime, /Dieses frühere Angebot wurde eingestellt/);
 assert.match(serverRuntime, /Ova ranija ponuda je ugašena/);
 
 assert.match(serverRuntime, /renderSeoPage/);
+assert.match(serverRuntime, /rootSnapshot/);
+assert.match(serverRuntime, /AI Office 24\/7 für lokale Dienstleister/);
+assert.match(serverRuntime, /FAQPage/);
+assert.match(serverRuntime, /Disallow: \/admin/);
 assert.match(serverRuntime, /hreflang="x-default"/);
 
 assert.match(appSource, /RevenueOSLanding/);
@@ -60,6 +64,9 @@ assert.doesNotMatch(appSource, /TransportRoomDemo/);
 assert.doesNotMatch(appSource, /TransportNetworkDemo/);
 
 assert.match(landingSource, /B2B/);
+assert.match(landingSource, /Gebäudereinigung/);
+assert.match(landingSource, /Hausmeisterservice/);
+assert.match(landingSource, /Fit-Check/);
 assert.match(landingSource, /privacy_ack/);
 assert.match(landingSource, /name="website"/);
 assert.match(landingSource, /kein verbindliches Angebot|nije obavezujuća ponuda/i);

@@ -1,8 +1,10 @@
 'use strict';
 
 const express = require('express');
+const crypto = require('crypto');
+const path = require('path');
 const { BrevoClient } = require('@getbrevo/brevo');
-const store = require('./ai-office-store');
+const { createContactLeadStore } = require('./contact-lead-store');
 
 const clean=(v,max=3000)=>String(v||'').trim().slice(0,max);
 const html=v=>clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -46,6 +48,44 @@ function brevo(){
 function sender(){
   const email=process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM;
   return email ? {email,name:process.env.BREVO_SENDER_NAME || 'DaniniHub AI Office'} : null;
+}
+
+function officeSource(slug){ return 'ai-office:' + slug; }
+
+function caseReference(slug){
+  const date=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  return 'AO-' + clean(slug,24).toUpperCase() + '-' + date + '-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+}
+
+function caseView(lead){
+  const p=lead?.payload || {};
+  return {
+    id:lead.reference,
+    tenant:p.tenant || String(lead.source||'').replace(/^ai-office:/,''),
+    status:String(lead.status||'NEW').toUpperCase(),
+    customerName:lead.company || '',
+    email:lead.email || '',
+    phone:p.phone || '',
+    service:p.service || '',
+    address:p.address || '',
+    objectType:p.objectType || '',
+    urgency:p.urgency || '',
+    preferredTime:p.preferredTime || '',
+    message:p.message || '',
+    summary:p.summary || '',
+    createdAt:lead.createdAt,
+    updatedAt:lead.updatedAt,
+    reviewNote:lead.reviewNote || ''
+  };
+}
+
+function summarizeCases(items){
+  const counts={total:items.length,new:0,ready_for_callback:0,callback_planned:0,appointment_planned:0,followup:0,done:0,not_fit:0};
+  for(const item of items){
+    const key=String(item.status||'').toLowerCase();
+    if(Object.prototype.hasOwnProperty.call(counts,key)) counts[key]+=1;
+  }
+  return counts;
 }
 
 function makeSummary(data){
@@ -99,7 +139,8 @@ function dashboardPage(slug,tenant){
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Office Desk · ${html(tenant.name)}</title><style>${baseCss()}</style></head><body><main class="wrap"><div class="top"><div><div class="tag">DANINI AI OFFICE</div><div class="brand">${html(tenant.name)} · Office Desk</div></div><button onclick="load()">AKTUALISIEREN</button></div><div id="stats" class="stats"></div><div id="msg"></div><div id="cases"></div></main><script>const key=new URLSearchParams(location.search).get('key')||'';const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));async function api(path,opt={}){const r=await fetch(path,{...opt,headers:{'Content-Type':'application/json','x-office-key':key,...(opt.headers||{})}});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Fehler');return j}async function setStatus(id,status){const note=prompt('Interne Notiz (optional)','')||'';await api('/api/office/${encodeURIComponent(slug)}/cases/'+encodeURIComponent(id)+'/status',{method:'POST',body:JSON.stringify({status,note})});load()}async function load(){try{const d=await api('/api/office/${encodeURIComponent(slug)}/cases');document.getElementById('stats').innerHTML=Object.entries(d.summary).map(([k,v])=>'<div class="stat"><strong>'+esc(v)+'</strong><span>'+esc(k)+'</span></div>').join('');document.getElementById('cases').innerHTML=d.cases.map(x=>'<article class="case"><div class="case-head"><div><strong>'+esc(x.customerName||'Ohne Name')+'</strong><div class="meta">'+esc(x.phone)+' · '+esc(x.email)+'</div></div><span class="pill">'+esc(x.status)+'</span></div><p>'+esc(x.summary)+'</p><div class="meta">Ref: '+esc(x.id)+' · '+new Date(x.createdAt).toLocaleString()+'</div><div class="actions">'+['READY_FOR_CALLBACK','CALLBACK_PLANNED','APPOINTMENT_PLANNED','FOLLOWUP','DONE','NOT_FIT'].map(s=>'<button onclick="setStatus(\''+esc(x.id)+'\',\''+s+'\')">'+s+'</button>').join('')+'</div></article>').join('')||'<p>Noch keine Anfragen.</p>';document.getElementById('msg').textContent=''}catch(e){document.getElementById('msg').className='err';document.getElementById('msg').textContent=e.message}}load()</script></body></html>`;
 }
 
-function mountAiOfficeRuntime(app){
+function mountAiOfficeRuntime(app, options = {}){
+  const officeStore = options.store || createContactLeadStore({ storageFile:path.join(__dirname,'runtime','ai-office-cases.json') });
   app.get('/office/:tenant', (req,res)=>{
     const tenant=getTenant(clean(req.params.tenant,80));
     if(!tenant) return res.status(404).type('text/plain').send('Unknown office');
@@ -123,30 +164,62 @@ function mountAiOfficeRuntime(app){
     if(data.privacyAcknowledged!==true) return res.status(400).json({ok:false,error:'PRIVACY_NOTICE_REQUIRED'});
     if(!clean(data.customerName,180) || !clean(data.phone,120) || !clean(data.service,180) || !clean(data.address,300)) return res.status(400).json({ok:false,error:'MISSING_REQUIRED_FIELDS'});
     const summary=makeSummary(data);
-    const record=store.create(slug,{...data,summary});
+    const reference=caseReference(slug);
+    const lead=await officeStore.create({
+      reference,
+      source:officeSource(slug),
+      language:tenant.language || 'de',
+      email:clean(data.email,180),
+      company:clean(data.customerName,180),
+      status:'NEW',
+      recommendation:'manual-review',
+      payload:{
+        tenant:slug,
+        phone:clean(data.phone,120),
+        service:clean(data.service,180),
+        address:clean(data.address,300),
+        objectType:clean(data.objectType,180),
+        urgency:clean(data.urgency,80),
+        preferredTime:clean(data.preferredTime,180),
+        message:clean(data.message,4000),
+        summary,
+        privacyAcknowledged:true
+      }
+    });
+    const record=caseView(lead);
     const notified=await notify(tenant,record);
-    return res.json({ok:true,case:{id:record.id,status:record.status},notified});
+    return res.json({ok:true,case:{id:record.id,status:record.status},notified,durableMode:officeStore.mode});
   });
 
-  app.get('/api/office/:tenant/cases',(req,res)=>{
+  app.get('/api/office/:tenant/cases',async (req,res)=>{
     const slug=clean(req.params.tenant,80);
     if(!getTenant(slug)) return res.status(404).json({ok:false,error:'UNKNOWN_OFFICE'});
     if(!dashboardAuthorized(req,slug)) return res.status(401).json({ok:false,error:'OFFICE_NOT_AUTHORIZED'});
-    const cases=store.list(slug,500);
-    return res.json({ok:true,summary:store.summarize(cases),cases});
+    const leads=await officeStore.list({sources:[officeSource(slug)],limit:500});
+    const cases=leads.map(caseView);
+    return res.json({ok:true,summary:summarizeCases(cases),cases,durableMode:officeStore.mode});
   });
 
-  app.post('/api/office/:tenant/cases/:id/status',express.json({limit:'20kb'}),(req,res)=>{
+  app.post('/api/office/:tenant/cases/:id/status',express.json({limit:'20kb'}),async (req,res)=>{
     const slug=clean(req.params.tenant,80);
     if(!getTenant(slug)) return res.status(404).json({ok:false,error:'UNKNOWN_OFFICE'});
     if(!dashboardAuthorized(req,slug)) return res.status(401).json({ok:false,error:'OFFICE_NOT_AUTHORIZED'});
+    const allowed=new Set(['NEW','READY_FOR_CALLBACK','CALLBACK_PLANNED','APPOINTMENT_PLANNED','FOLLOWUP','DONE','NOT_FIT']);
+    const status=String(req.body?.status||'').toUpperCase();
+    if(!allowed.has(status)) return res.status(400).json({ok:false,error:'INVALID_OFFICE_STATUS'});
     try{
-      const item=store.updateStatus(slug,clean(req.params.id,160),req.body?.status,req.body?.note||'');
-      return res.json({ok:true,case:item});
+      const current=await officeStore.get(clean(req.params.id,160));
+      if(!current || current.source!==officeSource(slug)) return res.status(404).json({ok:false,error:'OFFICE_CASE_NOT_FOUND'});
+      const lead=await officeStore.update(current.reference,{
+        status,
+        reviewedAt:new Date().toISOString(),
+        reviewNote:clean(req.body?.note,1000)
+      });
+      return res.json({ok:true,case:caseView(lead)});
     }catch(error){
       return res.status(400).json({ok:false,error:error.message});
     }
   });
 }
 
-module.exports={mountAiOfficeRuntime,getTenant,makeSummary,dashboardAuthorized};
+module.exports={mountAiOfficeRuntime,getTenant,makeSummary,dashboardAuthorized,caseView,summarizeCases,officeSource};

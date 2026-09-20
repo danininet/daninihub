@@ -1,6 +1,7 @@
 import {useEffect,useState} from 'react'
 import ImportOSLanding from './ImportOSLanding'
 import ImportOSLegal from './ImportOSLegal'
+import ImportOSKnowledge from './ImportOSKnowledge'
 
 function languageFromPath(){return location.pathname.startsWith('/sr')?'sr':'de'}
 function legalType(path){
@@ -10,11 +11,16 @@ function legalType(path){
   if(/impressum/.test(path))return 'imprint'
   return null
 }
+function knowledgeSlug(path){
+  const m=path.match(/^\/(?:de\/wissen|sr\/vodic)\/([^/]+)$/)
+  return m?.[1]||null
+}
 
 export default function App(){
   const [lang,setLang]=useState(languageFromPath)
   const path=location.pathname.replace(/\/$/,'')||'/'
   const type=legalType(path)
+  const slug=knowledgeSlug(path)
 
   useEffect(()=>{
     document.documentElement.lang=lang
@@ -26,10 +32,13 @@ export default function App(){
     const suffix=type==='privacy'?(next==='sr'?'/privatnost':'/datenschutz')
       :type==='cookies'?(next==='sr'?'/kolacici':'/cookies')
       :type==='terms'?(next==='sr'?'/uslovi':'/bedingungen')
-      :type==='imprint'?'/impressum':'/'
+      :type==='imprint'?'/impressum'
+      :slug?(next==='sr'?'/vodic/':'/wissen/')+slug
+      :'/'
     history.pushState({},'',`/${next}${suffix}`)
   }
 
   if(type)return <ImportOSLegal lang={lang} type={type}/>
+  if(slug)return <ImportOSKnowledge lang={lang} slug={slug}/>
   return <ImportOSLanding lang={lang} onLanguage={changeLanguage}/>
 }

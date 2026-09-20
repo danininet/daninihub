@@ -36,7 +36,8 @@ assert.doesNotMatch(appSource, /DispoLabPage/);
 assert.doesNotMatch(appSource, /TransportRoomDemo/);
 assert.doesNotMatch(appSource, /TransportNetworkDemo/);
 assert.match(landingSource, /AI Office 24\/7/);
-assert.match(landingSource, /SCALE, CHANGE oder KILL|SCALE, CHANGE ili KILL/);
+assert.match(landingSource, /messbarer Pilot|merljiv pilot/i);
+assert.match(landingSource, /keine Umsatzgarantie|bez garancije.*prihoda|ne garantujemo prihod/i);
 
 // Retired transport URLs must be explicitly discontinued instead of remaining
 // active sales pages. Internal workspace may remain protected for technical use.

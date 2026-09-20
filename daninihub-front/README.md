@@ -1,16 +1,18 @@
-# React + Vite
+# Danini ImportOS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Public React/Vite frontend for Danini ImportOS.
 
-Currently, two official plugins are available:
+## Product surface
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Free QuickCheck
+- Paid Import Passport (€9.90 launch price, checkout gated until legal/tax activation)
+- SafeBuy / Fraud Shield
+- Model DNA
+- FieldCheck Live from Duisburg
+- Pro Mechanic Check by an independent mechanic with multi-year BRABUS work experience, subject to availability
+- Original / Genuine / OEM parts sourcing
+- Vehicle delivery: driver-only, trailer partner, truck/car-carrier partner
+- Import Base Čalije in Niš
+- Dealer Radar Pro
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+BRABUS is referenced only to describe the independent mechanic's work experience. Danini ImportOS is not presented as a BRABUS service, partner or authorized representative.

@@ -7,38 +7,42 @@ const path=require('path');
 const FRONT=path.join(__dirname,'daninihub-front','dist');
 const INDEX=path.join(FRONT,'index.html');
 
+const articles=[
+  ['deutschland-selbstimport','Auto selbst aus Deutschland nach Serbien importieren','Kako samostalno uvesti auto iz Nemačke u Srbiju','Eigentum, VIN, Ausfuhr, Ursprung und Gesamtkosten in der richtigen Reihenfolge.','Vlasništvo, VIN, izvoz, poreklo i ukupni trošak pravilnim redosledom.'],
+  ['schweiz-import','Fahrzeug aus der Schweiz importieren','Uvoz automobila iz Švajcarske','Exportdeklaration, Ursprung, Kennzeichen und CH-spezifische Kosten.','Izvozna deklaracija, poreklo, tablice i troškovi specifični za Švajcarsku.'],
+  ['eur1-herkunft','EUR.1 und Ursprungsrisiko','EUR.1 i rizik porekla','Warum Verkaufsland und präferenzieller Ursprung nicht dasselbe sind.','Zašto zemlja prodaje i preferencijalno poreklo nisu ista stvar.'],
+  ['safebuy-vor-kaution','SafeBuy vor Anzahlung','SafeBuy pre kapare','VIN, Verkäufer, Zahlungsweg und Preisabweichung vor Geldtransfer prüfen.','VIN, prodavac, način uplate i odstupanje cene pre slanja novca.'],
+  ['oldtimer-30-plus','Oldtimer 30+: was wirklich geprüft wird','Oldtajmer 30+: šta se stvarno proverava','Alter, Originalität, Fahrbereitschaft und Dokumentation.','Starost, originalnost, vozno stanje i dokumentacija.'],
+  ['transport-entscheidung','Eigene Achse, Trailer oder Lkw?','Točkovi, prikolica ili kamion?','Transportweg nach Fahrbereitschaft, Zulassung, Distanz, Wert und Stückzahl wählen.','Način dovoza birati prema ispravnosti, tablicama, udaljenosti, vrednosti i broju vozila.']
+];
+
 const ROUTES={
-  '/de/':{
-    lang:'de',
-    title:'Danini ImportOS | Fahrzeugimport DE/CH → Serbien',
-    description:'Import Passport, SafeBuy, Model DNA, Fahrzeugprüfung in Deutschland, Originalteile, Überführung und Import Base Čalije für Importe aus Deutschland und der Schweiz nach Serbien.',
-    snapshot:'<main><h1>Danini ImportOS – vom Inserat bis zur sicheren Import-Entscheidung</h1><p>ImportOS verbindet Importfähigkeit, Herkunft/EUR.1, Zoll und PDV, Fraud Shield, Model DNA, reale Fahrzeugprüfung, Originalteile, Überführung und eine optionale Import-Basis in Niš.</p><h2>DECIDE · VERIFY · EXECUTE</h2><p>Kostenkorridor statt Fake-Präzision, Vor-Ort-Prüfung ab Duisburg, unabhängige professionelle Kaufprüfung, Teilebeschaffung und Fahrzeugüberführung auf eigener Achse oder über Transportpartner.</p></main>'
-  },
-  '/sr/':{
-    lang:'sr',
-    title:'Danini ImportOS | Uvoz automobila DE/CH → Srbija',
-    description:'Import Passport, SafeBuy, Model DNA, pregled vozila u Nemačkoj, originalni delovi, dovoz i Import Base Čalije za uvoz iz Nemačke i Švajcarske u Srbiju.',
-    snapshot:'<main><h1>Danini ImportOS – od oglasa do sigurne odluke o uvozu</h1><p>ImportOS spaja mogućnost uvoza, poreklo/EUR.1, carinu i PDV, Fraud Shield, Model DNA, stvarni pregled vozila, originalne delove, dovoz i opcionu Import Base lokaciju u Nišu.</p><h2>DECIDE · VERIFY · EXECUTE</h2><p>Raspon troška umesto lažne preciznosti, obilazak vozila iz Duisburga, nezavisni profesionalni pregled, nabavka delova i dovoz na točkovima ili preko transportnog partnera.</p></main>'
-  },
-  '/de/impressum':{lang:'de',title:'Impressum | Danini ImportOS',description:'Anbieterkennzeichnung und Kontakt von Danini ImportOS.',snapshot:'<main><h1>Impressum</h1><p>Dragan Zdravković · DaniniHub / Danini ImportOS · Fischerstraße 54 · 47055 Duisburg · Deutschland · info@daninihub.com</p></main>'},
-  '/sr/impressum':{lang:'sr',title:'Impresum | Danini ImportOS',description:'Podaci o pružaocu Danini ImportOS.',snapshot:'<main><h1>Impresum</h1><p>Dragan Zdravković · DaniniHub / Danini ImportOS · Fischerstraße 54 · 47055 Duisburg · Nemačka · info@daninihub.com</p></main>'},
-  '/de/datenschutz':{lang:'de',title:'Datenschutz | Danini ImportOS',description:'Datenschutzhinweise für ImportOS QuickCheck, Passport und Serviceanfragen.',snapshot:'<main><h1>Datenschutz</h1><p>Hinweise zur Verarbeitung von Fahrzeug-, Kontakt-, Zahlungs- und Servicedaten bei Danini ImportOS.</p></main>'},
-  '/sr/privatnost':{lang:'sr',title:'Privatnost | Danini ImportOS',description:'Privatnost za ImportOS QuickCheck, Passport i servisne upite.',snapshot:'<main><h1>Privatnost</h1><p>Informacije o obradi podataka o vozilu, kontaktu, plaćanju i servisnim upitima.</p></main>'},
-  '/de/cookies':{lang:'de',title:'Cookies | Danini ImportOS',description:'Technisch notwendige Speicherung bei Danini ImportOS.',snapshot:'<main><h1>Cookies</h1><p>ImportOS aktiviert derzeit keine Werbe- oder Marketing-Cookies.</p></main>'},
-  '/sr/kolacici':{lang:'sr',title:'Kolačići | Danini ImportOS',description:'Tehnički neophodna memorija na Danini ImportOS.',snapshot:'<main><h1>Kolačići</h1><p>ImportOS trenutno ne aktivira reklamne ili marketinške kolačiće.</p></main>'},
-  '/de/bedingungen':{lang:'de',title:'Nutzungsrahmen | Danini ImportOS',description:'Rahmen für Import Passport, Fahrzeugprüfung, Teile, Überführung und Import Base.',snapshot:'<main><h1>Nutzungs- und Leistungsrahmen</h1><p>ImportOS ist eine Entscheidungshilfe. Fachprüfung, Fahrerleistung, Teilebeschaffung, Transport und Import Base haben gesonderte Bedingungen.</p></main>'},
-  '/sr/uslovi':{lang:'sr',title:'Uslovi | Danini ImportOS',description:'Okvir za Import Passport, pregled vozila, delove, dovoz i Import Base.',snapshot:'<main><h1>Okvir korišćenja i usluga</h1><p>ImportOS je pomoć pri odluci. Stručni pregled, usluga vozača, nabavka delova, transport i Import Base imaju posebne uslove.</p></main>'}
+  '/de/':{lang:'de',title:'DANINI | Automotive Import Intelligence',description:'Import Passport, SafeBuy, Model DNA, Fahrzeugprüfung, Payment Protection, Originalteile, Überführung und Import Base Čalije für DE/CH → RS.',snapshot:'<main><h1>DANINI — Automotive Import Intelligence</h1><p>Vom Inserat bis zur sicheren Import-Entscheidung: Import Passport, SafeBuy, Model DNA, reale Prüfung, Originalteile, Payment Protection, Fahrzeugüberführung und Import Base in Niš.</p><h2>DECIDE · VERIFY · EXECUTE</h2><p>Ein sichtbarer Prozess von Suche und Ursprung über Fahrzeugprüfung und Zahlungsautorisierung bis Ausführung.</p></main>'},
+  '/sr/':{lang:'sr',title:'DANINI | Automotive Import Intelligence',description:'Import Passport, SafeBuy, Model DNA, pregled vozila, zaštita plaćanja, originalni delovi, dovoz i Import Base Čalije za DE/CH → RS.',snapshot:'<main><h1>DANINI — Automotive Import Intelligence</h1><p>Od oglasa do sigurne odluke: Import Passport, SafeBuy, Model DNA, stvarni pregled, originalni delovi, zaštićena autorizacija plaćanja, dovoz i Import Base u Nišu.</p><h2>DECIDE · VERIFY · EXECUTE</h2><p>Vidljiv tok od pretrage i porekla preko pregleda vozila i autorizacije plaćanja do izvršenja.</p></main>'},
+  '/de/impressum':{lang:'de',title:'Impressum | DANINI',description:'Anbieterkennzeichnung und Kontakt von DANINI.',snapshot:'<main><h1>Impressum</h1><p>Dragan Zdravković · DaniniHub / DANINI · Fischerstraße 54 · 47055 Duisburg · Deutschland · info@daninihub.com</p></main>'},
+  '/sr/impressum':{lang:'sr',title:'Impresum | DANINI',description:'Podaci o pružaocu DANINI.',snapshot:'<main><h1>Impresum</h1><p>Dragan Zdravković · DaniniHub / DANINI · Fischerstraße 54 · 47055 Duisburg · Nemačka · info@daninihub.com</p></main>'},
+  '/de/datenschutz':{lang:'de',title:'Datenschutz | DANINI',description:'Datenschutzhinweise für QuickCheck, Passport, Serviceanfragen und Zahlungsautorisierung.',snapshot:'<main><h1>Datenschutz</h1><p>Hinweise zu Fahrzeug-, Kontakt-, Zahlungs- und Servicedaten.</p></main>'},
+  '/sr/privatnost':{lang:'sr',title:'Privatnost | DANINI',description:'Privatnost za QuickCheck, Passport, servisne upite i autorizaciju plaćanja.',snapshot:'<main><h1>Privatnost</h1><p>Informacije o obradi podataka o vozilu, kontaktu, plaćanju i servisima.</p></main>'},
+  '/de/cookies':{lang:'de',title:'Cookies | DANINI',description:'Technisch notwendige Speicherung bei DANINI.',snapshot:'<main><h1>Cookies</h1><p>DANINI aktiviert derzeit keine Werbe- oder Marketing-Cookies.</p></main>'},
+  '/sr/kolacici':{lang:'sr',title:'Kolačići | DANINI',description:'Tehnički neophodna memorija na DANINI sajtu.',snapshot:'<main><h1>Kolačići</h1><p>DANINI trenutno ne aktivira reklamne ili marketinške kolačiće.</p></main>'},
+  '/de/bedingungen':{lang:'de',title:'Nutzungsrahmen | DANINI',description:'Rahmen für Import Passport, Prüfung, Payment Protection, Teile, Überführung und Import Base.',snapshot:'<main><h1>Nutzungs- und Leistungsrahmen</h1><p>ImportOS ist eine Entscheidungshilfe. Autorisierung und spätere Erfassung von Zahlungen erfolgen nur für bestätigte Serviceangebote.</p></main>'},
+  '/sr/uslovi':{lang:'sr',title:'Uslovi | DANINI',description:'Okvir za Import Passport, pregled, rezervaciju plaćanja, delove, dovoz i Import Base.',snapshot:'<main><h1>Okvir korišćenja i usluga</h1><p>ImportOS je pomoć pri odluci. Autorizacija i naknadna naplata odnose se samo na potvrđenu ponudu usluge.</p></main>'}
 };
+
+for(const [slug,deTitle,srTitle,deDesc,srDesc] of articles){
+  ROUTES['/de/wissen/'+slug]={lang:'de',title:deTitle+' | DANINI Wissen',description:deDesc,snapshot:'<main><h1>'+deTitle+'</h1><p>'+deDesc+'</p><p>DANINI Knowledge Garage · DE/CH → RS</p></main>'};
+  ROUTES['/sr/vodic/'+slug]={lang:'sr',title:srTitle+' | DANINI vodič',description:srDesc,snapshot:'<main><h1>'+srTitle+'</h1><p>'+srDesc+'</p><p>DANINI Knowledge Garage · DE/CH → RS</p></main>'};
+}
 
 function inject(route){
   const meta=ROUTES[route];
   let html=fs.readFileSync(INDEX,'utf8');
   const canonical='https://daninihub.com'+route;
-  html=html.replace(/<html[^>]*>/,`<html lang="${meta.lang}">`);
-  html=html.replace(/<title>[^<]*<\/title>/,`<title>${meta.title}</title>`);
-  html=html.replace(/<meta name="description" content="[^"]*"/,`<meta name="description" content="${meta.description}"`);
-  html=html.replace('</head>',`<link rel="canonical" href="${canonical}"><meta property="og:title" content="${meta.title}"><meta property="og:description" content="${meta.description}"></head>`);
-  html=html.replace('<div id="root"></div>',`<div id="root">${meta.snapshot}</div>`);
+  html=html.replace(/<html[^>]*>/,'<html lang="'+meta.lang+'">');
+  html=html.replace(/<title>[^<]*<\/title>/,'<title>'+meta.title+'</title>');
+  html=html.replace(/<meta name="description" content="[^"]*"/,'<meta name="description" content="'+meta.description+'"');
+  html=html.replace('</head>','<link rel="canonical" href="'+canonical+'"><meta property="og:title" content="'+meta.title+'"><meta property="og:description" content="'+meta.description+'"></head>');
+  html=html.replace('<div id="root"></div>','<div id="root">'+meta.snapshot+'</div>');
   return html;
 }
 
@@ -48,18 +52,17 @@ function mountPublicRuntime(app){
   app.get('/sr',(req,res)=>res.redirect(308,'/sr/'));
   app.get('/en',(req,res)=>res.redirect(308,'/de/'));
 
-  app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nSitemap: https://daninihub.com/sitemap.xml\n'));
+  app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
-    const urls=Object.keys(ROUTES).map(route=>`<url><loc>https://daninihub.com${route}</loc><lastmod>2026-09-21</lastmod></url>`).join('');
-    res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
+    const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-21</lastmod></url>').join('');
+    res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+urls+'</urlset>');
   });
 
   app.get(Object.keys(ROUTES),(req,res)=>{
-    const route=req.path.endsWith('/')?req.path:req.path;
-    const normalized=ROUTES[route]?route:(ROUTES[route+'/']?route+'/':route);
-    if(!ROUTES[normalized])return res.status(404).end();
+    const route=ROUTES[req.path]?req.path:(ROUTES[req.path+'/']?req.path+'/':req.path);
+    if(!ROUTES[route])return res.status(404).end();
     res.set('Cache-Control','no-store, no-cache, must-revalidate');
-    res.type('html').send(inject(normalized));
+    res.type('html').send(inject(route));
   });
 
   app.use(express.static(FRONT,{index:false,maxAge:'1h'}));

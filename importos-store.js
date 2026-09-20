@@ -3,7 +3,7 @@
 const fs=require('fs');
 const path=require('path');
 
-const DB_FIELDS=new Set(['status','reviewedAt','reviewNote','lastError']);
+const DB_FIELDS=new Set(['status','reviewedAt','reviewNote','lastError','payload']);
 
 function databaseConfigured(env){return Boolean(env.DB_HOST&&env.DB_USER&&env.DB_NAME)}
 function nowIso(){return new Date().toISOString()}
@@ -134,11 +134,11 @@ class ImportOSStore{
     const allowed=Object.fromEntries(Object.entries(changes).filter(([k])=>DB_FIELDS.has(k)));
     const updatedAt=nowIso();
     if(this.mode==='mysql'){
-      const map={status:'status',reviewedAt:'reviewed_at',reviewNote:'review_note',lastError:'last_error'};
+      const map={status:'status',reviewedAt:'reviewed_at',reviewNote:'review_note',lastError:'last_error',payload:'payload_json'};
       const keys=Object.keys(allowed);
       if(!keys.length)return this.get(reference);
       const sql=keys.map(k=>map[k]+'=?').join(', ');
-      const values=keys.map(k=>k==='reviewedAt'&&allowed[k]?new Date(allowed[k]):allowed[k]??null);
+      const values=keys.map(k=>k==='reviewedAt'&&allowed[k]?new Date(allowed[k]):k==='payload'?JSON.stringify(allowed[k]||{}):allowed[k]??null);
       values.push(new Date(updatedAt),reference);
       const [result]=await this.pool.execute(`UPDATE danini_importos_records SET ${sql}, updated_at=? WHERE reference=?`,values);
       if(!result.affectedRows)throw new Error('RECORD_NOT_FOUND');

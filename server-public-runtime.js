@@ -1,337 +1,68 @@
 'use strict';
 
-const crypto = require('crypto');
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const { BrevoClient } = require('@getbrevo/brevo');
-const { createContactLeadStore } = require('./contact-lead-store');
+const express=require('express');
+const fs=require('fs');
+const path=require('path');
 
-const contactAttempts = new Map();
-const clean = (value, max = 3000) => String(value || '').trim().slice(0, max);
-const html = value => clean(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
-const valueOrDash = value => html(value || '—');
+const FRONT=path.join(__dirname,'daninihub-front','dist');
+const INDEX=path.join(FRONT,'index.html');
 
-function contactAllowed(ip) {
-  const now = Date.now();
-  const recent = (contactAttempts.get(ip) || []).filter(time => now - time < 15 * 60 * 1000);
-  if (recent.length >= 5) return false;
-  recent.push(now);
-  contactAttempts.set(ip, recent);
-  return true;
+const ROUTES={
+  '/de/':{
+    lang:'de',
+    title:'Danini ImportOS | Fahrzeugimport DE/CH → Serbien',
+    description:'Import Passport, SafeBuy, Model DNA, Fahrzeugprüfung in Deutschland, Originalteile, Überführung und Import Base Čalije für Importe aus Deutschland und der Schweiz nach Serbien.',
+    snapshot:'<main><h1>Danini ImportOS – vom Inserat bis zur sicheren Import-Entscheidung</h1><p>ImportOS verbindet Importfähigkeit, Herkunft/EUR.1, Zoll und PDV, Fraud Shield, Model DNA, reale Fahrzeugprüfung, Originalteile, Überführung und eine optionale Import-Basis in Niš.</p><h2>DECIDE · VERIFY · EXECUTE</h2><p>Kostenkorridor statt Fake-Präzision, Vor-Ort-Prüfung ab Duisburg, unabhängige professionelle Kaufprüfung, Teilebeschaffung und Fahrzeugüberführung auf eigener Achse oder über Transportpartner.</p></main>'
+  },
+  '/sr/':{
+    lang:'sr',
+    title:'Danini ImportOS | Uvoz automobila DE/CH → Srbija',
+    description:'Import Passport, SafeBuy, Model DNA, pregled vozila u Nemačkoj, originalni delovi, dovoz i Import Base Čalije za uvoz iz Nemačke i Švajcarske u Srbiju.',
+    snapshot:'<main><h1>Danini ImportOS – od oglasa do sigurne odluke o uvozu</h1><p>ImportOS spaja mogućnost uvoza, poreklo/EUR.1, carinu i PDV, Fraud Shield, Model DNA, stvarni pregled vozila, originalne delove, dovoz i opcionu Import Base lokaciju u Nišu.</p><h2>DECIDE · VERIFY · EXECUTE</h2><p>Raspon troška umesto lažne preciznosti, obilazak vozila iz Duisburga, nezavisni profesionalni pregled, nabavka delova i dovoz na točkovima ili preko transportnog partnera.</p></main>'
+  },
+  '/de/impressum':{lang:'de',title:'Impressum | Danini ImportOS',description:'Anbieterkennzeichnung und Kontakt von Danini ImportOS.',snapshot:'<main><h1>Impressum</h1><p>Dragan Zdravković · DaniniHub / Danini ImportOS · Fischerstraße 54 · 47055 Duisburg · Deutschland · info@daninihub.com</p></main>'},
+  '/sr/impressum':{lang:'sr',title:'Impresum | Danini ImportOS',description:'Podaci o pružaocu Danini ImportOS.',snapshot:'<main><h1>Impresum</h1><p>Dragan Zdravković · DaniniHub / Danini ImportOS · Fischerstraße 54 · 47055 Duisburg · Nemačka · info@daninihub.com</p></main>'},
+  '/de/datenschutz':{lang:'de',title:'Datenschutz | Danini ImportOS',description:'Datenschutzhinweise für ImportOS QuickCheck, Passport und Serviceanfragen.',snapshot:'<main><h1>Datenschutz</h1><p>Hinweise zur Verarbeitung von Fahrzeug-, Kontakt-, Zahlungs- und Servicedaten bei Danini ImportOS.</p></main>'},
+  '/sr/privatnost':{lang:'sr',title:'Privatnost | Danini ImportOS',description:'Privatnost za ImportOS QuickCheck, Passport i servisne upite.',snapshot:'<main><h1>Privatnost</h1><p>Informacije o obradi podataka o vozilu, kontaktu, plaćanju i servisnim upitima.</p></main>'},
+  '/de/cookies':{lang:'de',title:'Cookies | Danini ImportOS',description:'Technisch notwendige Speicherung bei Danini ImportOS.',snapshot:'<main><h1>Cookies</h1><p>ImportOS aktiviert derzeit keine Werbe- oder Marketing-Cookies.</p></main>'},
+  '/sr/kolacici':{lang:'sr',title:'Kolačići | Danini ImportOS',description:'Tehnički neophodna memorija na Danini ImportOS.',snapshot:'<main><h1>Kolačići</h1><p>ImportOS trenutno ne aktivira reklamne ili marketinške kolačiće.</p></main>'},
+  '/de/bedingungen':{lang:'de',title:'Nutzungsrahmen | Danini ImportOS',description:'Rahmen für Import Passport, Fahrzeugprüfung, Teile, Überführung und Import Base.',snapshot:'<main><h1>Nutzungs- und Leistungsrahmen</h1><p>ImportOS ist eine Entscheidungshilfe. Fachprüfung, Fahrerleistung, Teilebeschaffung, Transport und Import Base haben gesonderte Bedingungen.</p></main>'},
+  '/sr/uslovi':{lang:'sr',title:'Uslovi | Danini ImportOS',description:'Okvir za Import Passport, pregled vozila, delove, dovoz i Import Base.',snapshot:'<main><h1>Okvir korišćenja i usluga</h1><p>ImportOS je pomoć pri odluci. Stručni pregled, usluga vozača, nabavka delova, transport i Import Base imaju posebne uslove.</p></main>'}
+};
+
+function inject(route){
+  const meta=ROUTES[route];
+  let html=fs.readFileSync(INDEX,'utf8');
+  const canonical='https://daninihub.com'+route;
+  html=html.replace(/<html[^>]*>/,`<html lang="${meta.lang}">`);
+  html=html.replace(/<title>[^<]*<\/title>/,`<title>${meta.title}</title>`);
+  html=html.replace(/<meta name="description" content="[^"]*"/,`<meta name="description" content="${meta.description}"`);
+  html=html.replace('</head>',`<link rel="canonical" href="${canonical}"><meta property="og:title" content="${meta.title}"><meta property="og:description" content="${meta.description}"></head>`);
+  html=html.replace('<div id="root"></div>',`<div id="root">${meta.snapshot}</div>`);
+  return html;
 }
 
-function brevo() {
-  if (!process.env.BREVO_API_KEY) throw new Error('BREVO_API_KEY_NOT_CONFIGURED');
-  return new BrevoClient({ apiKey: process.env.BREVO_API_KEY }).transactionalEmails;
-}
+function mountPublicRuntime(app){
+  app.get('/',(req,res)=>res.redirect(308,'/de/'));
+  app.get('/de',(req,res)=>res.redirect(308,'/de/'));
+  app.get('/sr',(req,res)=>res.redirect(308,'/sr/'));
+  app.get('/en',(req,res)=>res.redirect(308,'/de/'));
 
-function sender() {
-  const email = process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM;
-  if (!email) throw new Error('BREVO_SENDER_NOT_CONFIGURED');
-  return { email, name: process.env.BREVO_SENDER_NAME || process.env.DANINIHUB_SENDER_NAME || 'DaniniHub Revenue OS' };
-}
-
-function leadReference(source) {
-  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const isPilot = source === 'pilot-check';
-  const type = source === 'ai-opportunity-check' ? 'OPP' : (isPilot ? 'PILOT' : 'LEAD');
-  return `DH-${type}-${date}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
-}
-
-function publicUrl() {
-  return String(process.env.DANINI_PUBLIC_URL || 'https://daninihub.com').replace(/\/$/, '');
-}
-
-function reviewToken(reference) {
-  const secretMaterial = String(process.env.DANINI_ADMIN_SECRET || process.env.DANINI_SESSION_SECRET || process.env.BREVO_API_KEY || '');
-  if (!secretMaterial) return '';
-  const secret = crypto.createHash('sha256').update(`daninihub-lead-review-v1:${secretMaterial}`).digest();
-  return crypto.createHmac('sha256', secret).update(reference).digest('hex');
-}
-
-function reviewUrl(reference) {
-  const token = reviewToken(reference);
-  return token ? `${publicUrl()}/lead-review/${encodeURIComponent(reference)}?token=${token}` : '';
-}
-
-function validReviewToken(reference, candidate) {
-  const expected = reviewToken(reference);
-  const received = clean(candidate, 128);
-  if (!expected || expected.length !== received.length) return false;
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received));
-}
-
-function reviewAction(reference, reviewAvailable = true) {
-  if (!reviewAvailable) return '<p><strong>Hinweis:</strong> Die Anfrage wurde per E-Mail zugestellt, konnte aber nicht für die Online-Freigabe gespeichert werden. Bitte antworten Sie in diesem Fall manuell.</p>';
-  const url = reviewUrl(reference);
-  return url
-    ? `<p style="margin:24px 0"><a href="${html(url)}" style="display:inline-block;background:#087f8c;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Anfrage prüfen und Follow-up freigeben</a></p>`
-    : '<p><strong>Hinweis:</strong> Es ist noch kein sicherer serverseitiger Schlüssel konfiguriert. Follow-up kann noch nicht freigegeben werden.</p>';
-}
-
-function standardAdminEmail(data, reference, reviewAvailable = true) {
-  return `<h2>Neue DaniniHub Anfrage</h2><p><strong>Referenz:</strong> ${html(reference)}</p><p><strong>Firma/Name:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Fahrzeuge:</strong> ${valueOrDash(data.fleet)}<br><strong>Relationen:</strong> ${valueOrDash(data.routes)}<br><strong>Interesse:</strong> ${html(data.interest)}</p><p><strong>Nachricht:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p>${reviewAction(reference, reviewAvailable)}<p style="color:#607180;font-size:13px">Die Vorprüfung ist nur eine Entscheidungshilfe. Ein Follow-up wird erst nach Ihrer persönlichen Freigabe versendet.</p>`;
-}
-
-function opportunityAdminEmail(data, reference, reviewAvailable = true) {
-  return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b"><div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0"><div style="font-size:12px;letter-spacing:1.4px;color:#62d7e5;font-weight:700">DANINIHUB REVENUE OS</div><h1 style="margin:8px 0 4px;font-size:28px">Neue B2B-Fit-Check-Anfrage</h1><div style="color:#b8c7d3">Referenz ${html(reference)}</div></div><div style="border:1px solid #d8e1e8;border-top:0;padding:28px 30px;border-radius:0 0 14px 14px"><h2 style="font-size:18px">Kontakt und Engpass</h2><p><strong>Name / Unternehmen:</strong> ${html(data.company)}<br><strong>E-Mail:</strong> ${html(data.email)}<br><strong>Telefon:</strong> ${valueOrDash(data.phone)}<br><strong>Sprache:</strong> ${data.language === 'sr' ? 'Serbisch' : 'Deutsch'}</p><p><strong>Beschreibung:</strong><br>${html(data.message).replace(/\n/g, '<br>')}</p><div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8"><strong>Nächster Schritt</strong><br>Prüfen, ob ein kleiner, klar begrenzter und messbarer Markttest sinnvoll ist. Kein Preis, Vertrag oder externer Versand ohne die vorgesehenen Freigaben.</div>${reviewAction(reference, reviewAvailable)}<p style="margin-top:24px;color:#607180;font-size:13px">Kein Einkommensversprechen und keine automatische Auftragsannahme.</p></div></div>`;
-}
-function pilotAdminEmail(data, reference, reviewAvailable = true) {
-  return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#17212b"><div style="background:#07131f;color:#fff;padding:26px 30px;border-radius:14px 14px 0 0"><div style="font-size:12px;letter-spacing:1.4px;color:#62d7e5;font-weight:700">DANINIHUB PILOT DESK</div><h1 style="margin:8px 0 4px;font-size:28px">Neue strukturierte Pilot-Anfrage</h1><div style="color:#b8c7d3">Referenz ${html(reference)}</div></div><div style="border:1px solid #d8e1e8;border-top:0;padding:28px 30px;border-radius:0 0 14px 14px"><h2 style="font-size:18px;margin:0 0 14px">Kontakt</h2><table style="width:100%;border-collapse:collapse"><tr><td style="padding:8px 0;color:#607180;width:180px">Unternehmen / Name</td><td style="padding:8px 0;font-weight:700">${html(data.company)}</td></tr><tr><td style="padding:8px 0;color:#607180">E-Mail</td><td style="padding:8px 0"><a href="mailto:${html(data.email)}">${html(data.email)}</a></td></tr><tr><td style="padding:8px 0;color:#607180">Telefon</td><td style="padding:8px 0">${valueOrDash(data.phone)}</td></tr><tr><td style="padding:8px 0;color:#607180">Sprache</td><td style="padding:8px 0">${data.language === 'sr' ? 'Serbisch' : 'Deutsch'}</td></tr></table><h2 style="font-size:18px;margin:28px 0 14px">Operativer Bedarf</h2><table style="width:100%;border-collapse:collapse"><tr><td style="padding:8px 0;color:#607180;width:180px">Fahrzeuge</td><td style="padding:8px 0;font-weight:700">${valueOrDash(data.fleet)}</td></tr><tr><td style="padding:8px 0;color:#607180">Relationen</td><td style="padding:8px 0">${valueOrDash(data.routes)}</td></tr><tr><td style="padding:8px 0;color:#607180">Zeitfresser / Aufgaben</td><td style="padding:8px 0">${valueOrDash(data.tasks)}</td></tr><tr><td style="padding:8px 0;color:#607180">Benötigtes Zeitfenster</td><td style="padding:8px 0">${valueOrDash(data.availability)}</td></tr><tr><td style="padding:8px 0;color:#607180">Systeme / Kanäle</td><td style="padding:8px 0">${valueOrDash(data.systems)}</td></tr><tr><td style="padding:8px 0;color:#607180">Operative Freigabe</td><td style="padding:8px 0">${valueOrDash(data.decision)}</td></tr></table><div style="margin-top:26px;padding:16px 18px;background:#eef8fa;border-left:4px solid #19b7c8"><strong>Nächster Schritt</strong><br>Bedarf prüfen, Rückfragen vorbereiten und entscheiden, ob ein klar begrenztes Pilotprojekt sinnvoll ist.</div>${reviewAction(reference, reviewAvailable)}<p style="margin-top:24px;color:#607180;font-size:13px">Diese Anfrage ist noch kein Transportauftrag, kein Angebot und keine Annahme eines Leistungsumfangs.</p></div></div>`;
-}
-
-function confirmationEmail(data, reference) {
-  const isSr = data.language === 'sr';
-  const revenue = data.source === 'revenue-os-intake' || data.source === 'ai-opportunity-check';
-  if (revenue) {
-    return isSr
-      ? `<h2>Hvala na DaniniHub B2B upitu.</h2><p>Upit je primljen pod referencom <strong>${html(reference)}</strong>.</p><p>Sledeći korak je ručna provera da li problem ima smisla pretvoriti u mali i merljiv tržišni test. Ova potvrda nije ponuda, ugovor, garancija zarade niti automatsko prihvatanje posla.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
-      : `<h2>Vielen Dank für Ihre DaniniHub-B2B-Anfrage.</h2><p>Ihre Anfrage wurde unter der Referenz <strong>${html(reference)}</strong> empfangen.</p><p>Als Nächstes wird manuell geprüft, ob sich der Engpass für einen kleinen und messbaren Markttest eignet. Diese Bestätigung ist kein Angebot, kein Vertrag, keine Umsatzgarantie und keine automatische Auftragsannahme.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
-  }
-  return isSr
-    ? `<h2>Hvala na upitu.</h2><p>Vaša poruka je primljena pod referencom <strong>${html(reference)}</strong> i biće ručno pregledana.</p><p>Ova potvrda nije pravno obavezujuća ponuda niti prihvatanje naloga.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`
-    : `<h2>Vielen Dank für Ihre Anfrage.</h2><p>Ihre Nachricht wurde unter der Referenz <strong>${html(reference)}</strong> empfangen und wird manuell geprüft.</p><p>Diese Bestätigung ist kein rechtsverbindliches Angebot und keine Auftragsannahme.</p><p>Dragan Zdravković<br>DaniniHub<br>info@daninihub.com</p>`;
-}
-function qualifiedFollowupEmail(lead) {
-  const isSr = lead.language === 'sr';
-  const home = `${publicUrl()}/${isSr ? 'sr' : 'de'}/`;
-  return isSr
-    ? {
-        subject: `DaniniHub – ručna provera upita ${lead.reference}`,
-        htmlContent: `<h2>Vaš upit je ručno pregledan.</h2><p>Hvala, ${html(lead.company)}.</p><p>Sledeći korak se dogovara samo ako postoji jasan problem, merljiv test i odgovarajući B2B okvir. <a href="${html(home)}">DaniniHub Revenue OS</a></p><p>Ova poruka nije garancija rezultata niti automatsko prihvatanje posla.</p>`
-      }
-    : {
-        subject: `DaniniHub – manuelle Prüfung Ihrer Anfrage ${lead.reference}`,
-        htmlContent: `<h2>Ihre Anfrage wurde manuell geprüft.</h2><p>Vielen Dank, ${html(lead.company)}.</p><p>Ein nächster Schritt wird nur vereinbart, wenn ein klarer Engpass, ein messbarer Test und ein passender B2B-Rahmen vorliegen. <a href="${html(home)}">DaniniHub Revenue OS</a></p><p>Diese Nachricht ist keine Ergebnisgarantie und keine automatische Auftragsannahme.</p>`
-      };
-}
-function mountPublicRuntime(app, options = {}) {
-  const front = options.front || path.join(__dirname, 'daninihub-front', 'dist');
-  const leadStore = options.leadStore || createContactLeadStore();
-  app.use(express.static(front, { index: false, maxAge: '1h' }));
-
-  app.post('/api/contact', express.json({ limit: '100kb' }), async (req, res) => {
-    const data = req.body || {};
-    if (clean(data.website, 200)) return res.status(400).json({ ok:false, error:'SPAM_REJECTED' });
-    if (data.source === 'revenue-os-intake' && data.privacy_acknowledged !== true) return res.status(400).json({ ok:false, error:'PRIVACY_NOTICE_REQUIRED' });
-    if (!contactAllowed(req.ip)) return res.status(429).json({ ok:false, error:'RATE_LIMITED' });
-    if (!clean(data.company) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(data.email, 180))) return res.status(400).json({ ok:false, error:'INVALID_CONTACT' });
-    const reference = leadReference(data.source);
-    let stored = true;
-    try { await leadStore.create({ ...data, reference, status:'NEW' }); } catch { stored = false; }
-    try {
-      const api = brevo();
-      const from = sender();
-      await api.sendTransacEmail({ sender:from, to:[{ email:'info@daninihub.com', name:'DaniniHub' }], replyTo:{ email:clean(data.email,180), name:clean(data.company,180) }, subject:`DaniniHub ${data.source === 'revenue-os-intake' || data.source === 'ai-opportunity-check' ? 'Revenue-OS-Anfrage' : data.source === 'pilot-check' ? 'Pilot-Anfrage' : 'Anfrage'} ${reference}`, htmlContent:(data.source === 'revenue-os-intake' || data.source === 'ai-opportunity-check') ? opportunityAdminEmail(data, reference, stored) : data.source === 'pilot-check' ? pilotAdminEmail(data, reference, stored) : standardAdminEmail(data, reference, stored) });
-      await api.sendTransacEmail({ sender:from, to:[{ email:clean(data.email,180), name:clean(data.company,180) }], replyTo:{ email:'info@daninihub.com', name:'DaniniHub' }, subject:`DaniniHub – Bestätigung ${reference}`, htmlContent:confirmationEmail(data, reference) });
-      return res.json({ ok:true, reference });
-    } catch (error) {
-      console.error('Contact delivery failed:', error.message);
-      return res.status(503).json({ ok:false, error:'CONTACT_DELIVERY_FAILED', reference });
-    }
+  app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nSitemap: https://daninihub.com/sitemap.xml\n'));
+  app.get('/sitemap.xml',(req,res)=>{
+    const urls=Object.keys(ROUTES).map(route=>`<url><loc>https://daninihub.com${route}</loc><lastmod>2026-09-21</lastmod></url>`).join('');
+    res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
   });
 
-  app.get('/lead-review/:reference', async (req, res) => {
-    const reference = clean(req.params.reference, 120);
-    if (!validReviewToken(reference, req.query.token)) return res.status(403).type('text/plain').send('Invalid token');
-    const lead = await leadStore.get(reference);
-    if (!lead) return res.status(404).type('text/plain').send('Lead not found');
-    res.type('html').send(`<h1>${html(reference)}</h1><p>${html(lead.company)} · ${html(lead.email)}</p><form method="post" action="/lead-review/${encodeURIComponent(reference)}/approve?token=${encodeURIComponent(req.query.token)}"><button>Approve follow-up</button></form>`);
+  app.get(Object.keys(ROUTES),(req,res)=>{
+    const route=req.path.endsWith('/')?req.path:req.path;
+    const normalized=ROUTES[route]?route:(ROUTES[route+'/']?route+'/':route);
+    if(!ROUTES[normalized])return res.status(404).end();
+    res.set('Cache-Control','no-store, no-cache, must-revalidate');
+    res.type('html').send(inject(normalized));
   });
 
-  app.post('/lead-review/:reference/approve', express.urlencoded({ extended:false }), async (req, res) => {
-    const reference = clean(req.params.reference, 120);
-    if (!validReviewToken(reference, req.query.token)) return res.status(403).type('text/plain').send('Invalid token');
-    const lead = await leadStore.get(reference);
-    if (!lead) return res.status(404).type('text/plain').send('Lead not found');
-    const followup = qualifiedFollowupEmail(lead);
-    await brevo().sendTransacEmail({ sender:sender(), to:[{ email:lead.email, name:lead.company }], replyTo:{ email:'info@daninihub.com', name:'DaniniHub' }, subject:followup.subject, htmlContent:followup.htmlContent });
-    await leadStore.update(reference, { status:'FOLLOWUP_SENT' });
-    return res.type('html').send('<h1>Follow-up sent</h1>');
-  });
-
-  const legacyRedirects = new Map([
-    ['/de/opportunity-check','/de/#contact'],
-    ['/sr/opportunity-check','/sr/#contact'],
-    ['/de/opportunity-map','/de/'],
-    ['/sr/opportunity-map','/sr/'],
-    ['/de/location-launch','/de/'],
-    ['/sr/location-launch','/sr/'],
-    ['/de/haftungsausschluss','/de/ai-transparenz'],
-    ['/sr/odricanje-odgovornosti','/sr/ai-transparentnost'],
-    ['/de/agb','/de/bedingungen'],
-    ['/sr/opsti-uslovi','/sr/uslovi'],
-    ['/de/leistungsrahmen','/de/bedingungen'],
-    ['/sr/obim-usluge','/sr/uslovi'],
-    ['/de/pilot-check','/de/#contact'],
-    ['/sr/provera-pilota','/sr/#contact'],
-    ['/en','/de/'],
-    ['/en/','/de/']
-  ]);
-  legacyRedirects.forEach((target, route) => app.get(route, (req, res) => res.redirect(308, target)));
-
-  const discontinuedRoutes = [
-    '/de/ki-beratung','/sr/ki-savetovanje','/de/ki-produkte','/sr/ki-proizvodi',
-    '/de/vertrauenszentrum','/sr/centar-poverenja','/api/entry/12-eur/checkout',
-    '/de/externe-disposition','/sr/eksterna-dispozicija',
-    '/de/balkan-desk','/sr/balkan-desk','/de/dach-desk','/sr/dach-desk',
-    '/de/fuer-dach-speditionen','/sr/za-balkanske-transportne-firme',
-    '/de/vorher-nachher','/sr/pre-posle',
-    '/de/capacity-signal','/sr/signal-kapaciteta',
-    '/de/transport-network-demo','/sr/transportna-mreza-demo',
-    '/de/transport-room-demo','/sr/transportna-soba-demo',
-    '/de/dispolab','/sr/dispo-lab','/de/dispolab/check','/sr/dispo-lab/provera',
-    '/de/continuity-support','/sr/kontinuitet-podrska',
-    '/de/fahrerkommunikation','/sr/komunikacija-vozaci',
-    '/de/praxis-wissen','/sr/praksa-znanje',
-    '/de/pilot-beispiel','/sr/primer-pilota',
-    '/de/operations-desk-demo','/sr/operativni-pult-demo',
-    '/de/glossar','/sr/recnik'
-  ];
-  const gonePage = route => {
-    const sr = route.startsWith('/sr/');
-    return `<!doctype html><html lang="${sr?'sr':'de'}"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DaniniHub</title></head><body style="font-family:system-ui;max-width:760px;margin:60px auto;padding:20px"><h1>${sr?'Ova ranija ponuda je ugašena.':'Dieses frühere Angebot wurde eingestellt.'}</h1><p>${sr?'DaniniHub je fokusiran na Danini ImportOS. Raniji transportni sadržaj se više ne nudi kao aktivna usluga.':'DaniniHub ist auf Danini ImportOS fokussiert. Der frühere Transport-Inhalt wird nicht mehr als aktive Leistung angeboten.'}</p><p><a href="/${sr?'sr':'de'}/">${sr?'Aktuelna ponuda':'Aktuelles Angebot'} →</a></p></body></html>`;
-  };
-  discontinuedRoutes.forEach(route => app.get(route, (req, res) => {
-    res.set('X-Robots-Tag', 'noindex, follow');
-    return res.status(410).type('html').send(gonePage(route));
-  }));
-  app.get(/^\/(?:de|sr)\/(?:praxis-wissen|praksa-znanje)\/.+$/, (req, res) => {
-    res.set('X-Robots-Tag', 'noindex, follow');
-    return res.status(410).type('html').send(gonePage(req.path));
-  });
-  app.get(/^\/en\/.+$/, (req, res) => {
-    res.set('X-Robots-Tag', 'noindex, follow');
-    return res.status(410).type('html').send(gonePage('/de/old'));
-  });
-
-  const routePairs = [
-    ['/de/', '/sr/'],
-    ['/de/impressum', '/sr/impressum'],
-    ['/de/datenschutz', '/sr/privatnost'],
-    ['/de/cookies', '/sr/kolacici'],
-    ['/de/ai-transparenz', '/sr/ai-transparentnost'],
-    ['/de/bedingungen', '/sr/uslovi']
-  ];
-
-  const seo = {
-    '/de/': ['Danini ImportOS | Fahrzeugimport DE/CH → Serbien prüfen', 'Import Passport für Fahrzeuge aus Deutschland und der Schweiz nach Serbien: Importfähigkeit, Herkunft/EUR.1, Zoll und PDV, Fraud Shield, Model DNA und realistische Gesamtkosten.'],
-    '/sr/': ['Danini ImportOS | Provera uvoza automobila DE/CH → Srbija', 'Import Passport za automobile iz Nemačke i Švajcarske ka Srbiji: mogućnost uvoza, poreklo/EUR.1, carina i PDV, Fraud Shield, Model DNA i realna ukupna cena.'],
-    '/de/impressum': ['Impressum & Anbieterkennzeichnung | DaniniHub', 'Impressum und Anbieterkennzeichnung von DaniniHub in Duisburg mit Kontaktangaben und B2B-Hinweisen.'],
-    '/sr/impressum': ['Impresum i podaci o pružaocu | DaniniHub', 'Podaci o pružaocu usluge DaniniHub u Duisburgu, kontakt i B2B pravne napomene.'],
-    '/de/datenschutz': ['Datenschutz | DaniniHub ImportOS', 'Datenschutzhinweise für DaniniHub und ImportOS: Kontakt, Hosting, technische Verarbeitung, Speicherdauer und Betroffenenrechte.'],
-    '/sr/privatnost': ['Privatnost | DaniniHub ImportOS', 'Obaveštenje o privatnosti za DaniniHub i ImportOS: kontakt, hosting, tehnička obrada, čuvanje i prava korisnika.'],
-    '/de/cookies': ['Cookies & lokale Speicherung | DaniniHub', 'Informationen zu technisch notwendiger Speicherung und zum Umgang mit künftigem optionalem Tracking bei DaniniHub.'],
-    '/sr/kolacici': ['Kolačići i lokalna memorija | DaniniHub', 'Informacije o tehnički neophodnoj memoriji i pravilima za eventualni budući opcioni tracking na DaniniHub-u.'],
-    '/de/ai-transparenz': ['KI-Transparenz & Human Control | DaniniHub', 'Wie DaniniHub KI einsetzt: klare Kennzeichnung, Human-in-the-loop, keine Erfolgsversprechen und menschliche Freigabe bei Preis, Vertrag und Risiko.'],
-    '/sr/ai-transparentnost': ['AI transparentnost i ljudska kontrola | DaniniHub', 'Kako DaniniHub koristi AI: jasno označavanje, human-in-the-loop, bez garancije rezultata i ljudska potvrda kod cene, ugovora i rizika.'],
-    '/de/bedingungen': ['Nutzungsrahmen | DaniniHub ImportOS', 'Öffentlicher Nutzungsrahmen für DaniniHub ImportOS: Berechnungen sind Entscheidungshilfen und keine behördliche Zoll-, Steuer- oder Zulassungsentscheidung.'],
-    '/sr/uslovi': ['Okvir korišćenja | DaniniHub ImportOS', 'Javni okvir korišćenja za DaniniHub ImportOS: proračuni su pomoć pri odluci, a ne zvanična carinska, poreska ili registraciona odluka.']
-  };
-
-  const rootSnapshot = language => language === 'sr'
-    ? `<main><h1>Danini ImportOS — proveri auto pre nego što platiš</h1><p>ImportOS povezuje mogućnost uvoza, poreklo i EUR.1, carinu i PDV, dokumentacioni i prevarni rizik, dugoročnu istoriju modela i realnu cenu do Srbije u jedan Import Passport.</p><h2>Ne jedan kalkulator, nego sistem odluke</h2><p>Za neproveren dokaz porekla ImportOS prikazuje preferencijalni i standardni scenario, umesto jedne lažno precizne cifre. SafeBuy upozorava na avans, račun trećeg lica, nedostatak VIN-a i neslaganje prodavca sa dokumentima. Model DNA dodaje dugoročne prednosti i slabosti konkretne generacije na osnovu označenih izvora.</p><h2>Nemačka i Švajcarska → Srbija</h2><p>Sistem razlikuje nemački i švajcarski izvozni tok, osnovni Euro 3 prag, oldtimer/historic put, dokaz porekla i troškove do srpske granice. Proračun je pomoć pri odluci; konačnu carinsku, poresku, homologacionu i registracionu odluku donose nadležni organi.</p><h2>Za privatnog kupca i profesionalnog uvoznika</h2><p>DIY režim vodi kroz korake samostalnog uvoza. Posrednički režim traži stavkovne ponude. Dealer Radar koristi tržišnu vrednost u Srbiji i scenarije troška da prikaže rizikom korigovanu bruto razliku.</p><nav><a href="/sr/privatnost">Privatnost</a> <a href="/sr/uslovi">Uslovi</a> <a href="/sr/ai-transparentnost">AI transparentnost</a> <a href="/sr/impressum">Impresum</a></nav></main>`
-    : `<main><h1>Danini ImportOS — Fahrzeug prüfen, bevor Geld fließt</h1><p>ImportOS verbindet Importfähigkeit, Herkunft/EUR.1, Zoll und PDV, Dokument- und Betrugsrisiko, langfristige Modelldaten und realistische Gesamtkosten nach Serbien in einem Import Passport.</p><h2>Kein weiterer Zollrechner, sondern ein Entscheidungssystem</h2><p>Bei ungeklärter Herkunft zeigt ImportOS den präferenziellen und den Standardszenario-Korridor statt einer künstlich exakten Zahl. SafeBuy markiert Vorkasse, Dritt-Konten, fehlende VIN und Abweichungen zwischen Verkäufer und Dokumenten. Model DNA ergänzt langfristige Stärken und Schwächen einer Baureihe mit gekennzeichneten Quellen.</p><h2>Deutschland und Schweiz → Serbien</h2><p>Der Workflow unterscheidet deutsche und schweizerische Exportwege, den Euro-3-Baseline-Check, Historic/Oldtimer-Fälle, Herkunftsnachweise und Kosten bis zur serbischen Grenze. Die Analyse ist eine Entscheidungshilfe; verbindliche Zoll-, Steuer-, Homologations- und Zulassungsentscheidungen treffen die zuständigen Behörden.</p><h2>Für Privatkäufer und professionelle Importeure</h2><p>Der DIY-Modus strukturiert den Eigenimport. Der Vermittler-Modus verlangt aufgeschlüsselte Angebote. Dealer Radar vergleicht Serbia-Marktwert und Kostenszenarien zur risikoadjustierten Bruttospanne.</p><nav><a href="/de/datenschutz">Datenschutz</a> <a href="/de/bedingungen">Nutzungsrahmen</a> <a href="/de/ai-transparenz">KI-Transparenz</a> <a href="/de/impressum">Impressum</a></nav></main>`;
-
-  const legalSnapshot = (normalized, language) => {
-    const [title, description] = seo[normalized] || seo[language === 'sr' ? '/sr/' : '/de/'];
-    const home = language === 'sr' ? '/sr/' : '/de/';
-    return `<main><h1>${html(title.replace(/ \| DaniniHub(?: AI Office)?$/,''))}</h1><p>${html(description)}</p><p><a href="${home}">${language==='sr'?'Nazad na ImportOS':'Zurück zu ImportOS'}</a></p></main>`;
-  };
-
-  const rootFaq = {
-    de: [
-      ['Ist ImportOS eine verbindliche Zollberechnung?','Nein. ImportOS ist eine datenbasierte Entscheidungshilfe. Verbindliche Entscheidungen treffen Zoll, Steuer- und Zulassungsbehörden.'],
-      ['Warum gibt es mehrere Kostenszenarien?','Weil ungeklärte Herkunft/EUR.1 und andere offene Punkte den Endpreis erheblich verändern können. ImportOS zeigt diese Unsicherheit sichtbar statt sie zu verstecken.'],
-      ['Was ist Model DNA?','Eine quellenbasierte Langzeitansicht zu Stärken, Schwächen, Pannen- und Prüfhinweisen einer konkreten Baureihe.'],
-      ['Kann ImportOS vor Betrug schützen?','Es kann Risikosignale markieren und Zahlungen blockieren helfen, aber keine Verkäuferidentität oder Fahrzeughistorie ohne belastbare Nachweise garantieren.']
-    ],
-    sr: [
-      ['Da li je ImportOS zvaničan carinski obračun?','Ne. ImportOS je podatkovna pomoć pri odluci. Konačne odluke donose carina, poreski, homologacioni i registracioni organi.'],
-      ['Zašto sistem daje više scenarija troška?','Zato što neprovereno poreklo/EUR.1 i druge otvorene stavke mogu značajno promeniti konačnu cenu. ImportOS tu neizvesnost prikazuje, ne skriva.'],
-      ['Šta je Model DNA?','Izvorima potkrepljen pregled dugoročnih prednosti, slabosti, kvarova i inspekcijskih signala konkretne generacije vozila.'],
-      ['Da li ImportOS može da spreči prevaru?','Može da označi rizike i pomogne da se uplata zaustavi dok dokazi nisu potpuni, ali bez pouzdanih dokumenata ne garantuje identitet prodavca ni istoriju vozila.']
-    ]
-  };
-
-  const htmlTemplate = () => fs.readFileSync(path.join(front, 'index.html'), 'utf8');
-  const renderSeoPage = route => {
-    const normalized = route === '/de' ? '/de/' : route === '/sr' ? '/sr/' : route;
-    const language = normalized.startsWith('/sr') ? 'sr' : 'de';
-    const pair = routePairs.find(([de, sr]) => de === normalized || sr === normalized) || routePairs[0];
-    const [title, description] = seo[normalized] || seo[language === 'sr' ? '/sr/' : '/de/'];
-    const canonical = `https://daninihub.com${normalized}`;
-    const isRoot = normalized === '/de/' || normalized === '/sr/';
-    const bodySnapshot = isRoot ? rootSnapshot(language) : legalSnapshot(normalized, language);
-    const schemas = [
-      {
-        '@context':'https://schema.org',
-        '@type':'Organization',
-        name:'DaniniHub',
-        url:'https://daninihub.com',
-        email:'info@daninihub.com',
-        telephone:'+49 1573 0916621',
-        address:{ '@type':'PostalAddress', streetAddress:'Fischerstraße 54', postalCode:'47055', addressLocality:'Duisburg', addressCountry:'DE' },
-        founder:{ '@type':'Person', name:'Dragan Zdravković' }, logo:'https://daninihub.com/logo-mark.svg'
-      }
-    ];
-    if (isRoot) {
-      schemas.push({
-        '@context':'https://schema.org',
-        '@type':'Service',
-        name:'Danini ImportOS',
-        serviceType:'Vehicle import decision intelligence for Germany/Switzerland to Serbia',
-        provider:{ '@type':'Organization', name:'DaniniHub', url:'https://daninihub.com', logo:'https://daninihub.com/logo-mark.svg' },
-        areaServed:[{ '@type':'Country', name:'Germany' },{ '@type':'Country', name:'Switzerland' },{ '@type':'Country', name:'Serbia' }],
-        audience:{ '@type':'Audience', audienceType:'Private vehicle buyers and professional vehicle importers' },
-        description
-      });
-      schemas.push({
-        '@context':'https://schema.org',
-        '@type':'FAQPage',
-        mainEntity:rootFaq[language].map(([name,answer])=>({ '@type':'Question', name, acceptedAnswer:{ '@type':'Answer', text:answer } }))
-      });
-    }
-    const structured = schemas.map(schema=>`<script type="application/ld+json">${JSON.stringify(schema)}</script>`).join('');
-    return htmlTemplate()
-      .replace('<html lang="de">', `<html lang="${language}">`)
-      .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
-      .replace(/<meta name="description" content="[^"]*"\/>/, `<meta name="description" content="${description}"/>`)
-      .replace(/<link rel="canonical" href="[^"]*"\/>/, `<link rel="canonical" href="${canonical}"/>`)
-      .replace(/<link rel="alternate" hreflang="de" href="[^"]*"\/>/, `<link rel="alternate" hreflang="de" href="https://daninihub.com${pair[0]}"/>`)
-      .replace(/<link rel="alternate" hreflang="sr" href="[^"]*"\/>/, `<link rel="alternate" hreflang="sr" href="https://daninihub.com${pair[1]}"/>`)
-      .replace(/<link rel="alternate" hreflang="x-default" href="[^"]*"\/>/, `<link rel="alternate" hreflang="x-default" href="https://daninihub.com${pair[0]}"/>`)
-      .replace(/<meta property="og:title" content="[^"]*"\/>/, `<meta property="og:title" content="${title}"/>`)
-      .replace(/<meta property="og:description" content="[^"]*"\/>/, `<meta property="og:description" content="${description}"/>`)
-      .replace(/<meta property="og:url" content="[^"]*"\/>/, `<meta property="og:url" content="${canonical}"/>`)
-      .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, structured)
-      .replace('<div id="root"></div>', `<div id="root">${bodySnapshot}</div>`);
-  };
-
-  const siteRoutes = routePairs.flat();
-  app.get('/', (req, res) => {
-    const accepted = String(req.headers['accept-language'] || '').toLowerCase();
-    const preferences = accepted
-      .split(',')
-      .map((entry, index) => {
-        const [tag, qualityValue] = entry.trim().split(';q=');
-        const quality = qualityValue === undefined ? 1 : Number(qualityValue);
-        return { tag, quality: Number.isFinite(quality) ? quality : 0, index };
-      })
-      .filter(({ tag }) => tag)
-      .sort((left, right) => right.quality - left.quality || left.index - right.index);
-    const preferred = preferences.find(({ tag }) => /^(sr|bs|hr|sh|cnr|de)(-|$)/.test(tag));
-    const language = preferred && /^(sr|bs|hr|sh|cnr)(-|$)/.test(preferred.tag) ? 'sr' : 'de';
-    res.set('Vary', 'Accept-Language');
-    res.set('Cache-Control', 'private, no-store');
-    return res.redirect(302, `/${language}/`);
-  });
-  app.get(/^\/(?:de|sr)$/, (req, res) => res.redirect(308, `${req.path}/`));
-  siteRoutes.forEach(route => app.get(route, (req, res) => { res.type('html').send(renderSeoPage(route)); }));
-  app.get('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /internal/\nDisallow: /lead-review/\nDisallow: /api/\nSitemap: https://daninihub.com/sitemap.xml\n'));
-  app.get('/sitemap.xml', (req, res) => res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + siteRoutes.map(route => `<url><loc>https://daninihub.com${route}</loc><lastmod>2026-09-20</lastmod><changefreq>${route === "/de/" || route === "/sr/" ? "weekly" : "monthly"}</changefreq><priority>${route === "/de/" || route === "/sr/" ? "1.0" : "0.3"}</priority></url>`).join('') + '</urlset>'));
-  app.get('/api/public-layer', (req, res) => res.json({ ok:true, service:'Danini ImportOS', languages:['de','sr'], routes:['DE→RS','CH→RS'], contact:'info@daninihub.com' }));
+  app.use(express.static(FRONT,{index:false,maxAge:'1h'}));
 }
 
-module.exports = { mountPublicRuntime };
+module.exports={mountPublicRuntime,ROUTES};

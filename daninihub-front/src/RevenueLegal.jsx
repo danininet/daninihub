@@ -1,6 +1,6 @@
 import './RevenueOSLanding.css'
 
-const updated = '18.09.2026'
+const updated = '20.09.2026'
 
 function Wrap({lang,title,children}){
   return <div className="ros">

@@ -9,7 +9,7 @@ const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf
 
 const serverRuntime = read('server-public-runtime.js');
 const appSource = read('daninihub-front/src/App.jsx');
-const landingSource = read('daninihub-front/src/RevenueOSLanding.jsx');
+const landingSource = read('daninihub-front/src/ImportOSLanding.jsx');
 const legalSource = read('daninihub-front/src/RevenueLegal.jsx');
 
 assert.match(serverRuntime, /mountPublicRuntime/);
@@ -51,29 +51,28 @@ assert.match(serverRuntime, /Ova ranija ponuda je ugašena/);
 
 assert.match(serverRuntime, /renderSeoPage/);
 assert.match(serverRuntime, /rootSnapshot/);
-assert.match(serverRuntime, /AI Office 24\/7 für lokale Dienstleister/);
+assert.match(serverRuntime, /Danini ImportOS/);
 assert.match(serverRuntime, /FAQPage/);
 assert.match(serverRuntime, /Disallow: \/admin/);
 assert.match(serverRuntime, /hreflang="x-default"/);
 
-assert.match(appSource, /RevenueOSLanding/);
+assert.match(appSource, /ImportOSLanding/);
 assert.match(appSource, /RevenueLegal/);
 assert.match(appSource, /DispatchPilotWorkspace/);
 assert.doesNotMatch(appSource, /DispoLabPage/);
 assert.doesNotMatch(appSource, /TransportRoomDemo/);
 assert.doesNotMatch(appSource, /TransportNetworkDemo/);
 
-assert.match(landingSource, /B2B/);
-assert.match(landingSource, /Gebäudereinigung/);
-assert.match(landingSource, /Hausmeisterservice/);
-assert.match(landingSource, /Fit-Check/);
-assert.match(landingSource, /privacy_ack/);
-assert.match(landingSource, /name="website"/);
-assert.match(landingSource, /kein verbindliches Angebot|nije obavezujuća ponuda/i);
+assert.match(landingSource, /Import Passport/);
+assert.match(landingSource, /Model DNA/);
+assert.match(landingSource, /Fraud Shield/);
+assert.match(landingSource, /Dealer Radar/);
+assert.match(landingSource, /originProof/);
+assert.match(landingSource, /serbiaMarketValue/);
 assert.match(legalSource, /§ 5 DDG/);
 assert.match(legalSource, /Art\. 6 Abs\. 1 lit\. b DSGVO/);
 assert.match(legalSource, /§ 25 Abs\. 2 TDDDG/);
 assert.match(legalSource, /KI-System/);
 assert.match(legalSource, /Kein automatischer Vertragsschluss/i);
 
-console.log('DaniniHub Revenue OS public/legal contract: OK');
+console.log('DaniniHub ImportOS public/legal contract: OK');

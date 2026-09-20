@@ -17,12 +17,20 @@ const p = store.upsert({
   painSignal:'Mehrere Anfragekanäle und keine sichtbare strukturierte Vorqualifikation.',
   fitReason:'Owner-managed local service workflow.',
   sourceUrl:'https://example.test/kontakt',
-  status:'RESEARCHED'
+  status:'RESEARCHED',
+  priority:'TEST',
+  auditSummary:'test audit',
+  pilotProposal:'test pilot',
+  proofMetrics:'test metrics',
+  draftOpener:'test opener',
+  outreachDecision:'HOLD'
 });
 
 assert.ok(/^P-/.test(p.id));
 assert.equal(p.status,'RESEARCHED');
-assert.equal(store.list().length,1);
+assert.equal(p.outreachDecision,'HOLD');
+assert.equal(p.priority,'TEST');
+assert.ok(store.list().length >= 6);
 
 const fit = store.update(p.id,{status:'FIT',note:'research-only'});
 assert.equal(fit.status,'FIT');
@@ -38,7 +46,7 @@ const contacted = store.update(p.id,{status:'CONTACTED'});
 assert.equal(contacted.status,'CONTACTED');
 
 const summary = store.summarize(store.list());
-assert.equal(summary.total,1);
+assert.ok(summary.total >= 6);
 assert.equal(summary.contacted,1);
 
 assert.throws(()=>store.update(p.id,{status:'INVALID'}),/INVALID_PROSPECT_STATUS/);

@@ -16,6 +16,8 @@ module.exports = {
       pilotProposal:'Strukturierter Anfrageeingang mit Leistung, PLZ, Objektart, Dringlichkeit, Foto-Option und Wunschtermin; danach Rückruf-/Besichtigungsqueue und Follow-up offener Anfragen.',
       proofMetrics:'Zeit bis Erstreaktion; Anteil vollständig qualifizierter Anfragen; Zeit bis Rückruf/Besichtigung; offene Follow-ups; manuelle Admin-Minuten pro Anfrage.',
       draftOpener:'Sie werben mit schneller Rückmeldung und kurzfristigen Terminen. Genau diesen Ablauf würden wir gern in einem kleinen Test messbarer machen – ohne Ihr bestehendes Telefon oder Ihre Arbeitsweise zu ersetzen.',
+      offerDraft:'Pilot: strukturierter Anfrageeingang + Rückruf-/Besichtigungsqueue + Follow-up. Bestehende Kanäle bleiben erhalten. Keine autonomen Preiszusagen. Erfolg wird nur über Reaktionszeit, Vollständigkeit, offene Follow-ups und eingesparte Admin-Zeit bewertet. Preis erst nach Fit-Check.',
+      recommendedNextAction:'OWNER_REVIEW_FOR_CONTACT_CHANNEL',
       outreachDecision:'HOLD',
       contactBasis:'research-only',
       status:'RESEARCHED'
@@ -34,6 +36,8 @@ module.exports = {
       pilotProposal:'Anfragebriefing vor dem Rückruf: Leistung, Adresse, Objekt, Fotos, gewünschter Zeitraum und Rückrufzeit; automatische Zusammenfassung für den Menschen; kein autonomes Angebot.',
       proofMetrics:'Vollständigkeit des Anfragebriefings; Rückrufzeit; Zahl der Nachfragen bis zur Terminreife; offene Anfragen nach 24/48 Stunden; Admin-Zeit.',
       draftOpener:'Sie decken Gartenpflege, Hausmeisterservice, Reinigung und weitere Objektleistungen aus einer Hand ab. Wir testen, ob Anfragen vor dem Rückruf so strukturiert werden können, dass Sie weniger Zeit mit Rückfragen verlieren.',
+      offerDraft:'Pilot: Anfragebriefing vor dem Rückruf mit Leistung, Adresse, Objekt, Fotos und Terminwunsch; danach menschliche Entscheidung. Ziel ist weniger Rückfragen und sauberere Übergabe. Keine Umsatzgarantie, keine automatische Angebotserstellung. Preis erst nach Fit-Check.',
+      recommendedNextAction:'OWNER_REVIEW_FOR_CONTACT_CHANNEL',
       outreachDecision:'HOLD',
       contactBasis:'research-only',
       status:'RESEARCHED'
@@ -52,6 +56,8 @@ module.exports = {
       pilotProposal:'Bestehenden Formularfluss um Leistung, PLZ, Objektgröße/Art, Foto-Option, Dringlichkeit und Wunschtermin ergänzen; Follow-up-Queue für Kostenvoranschläge.',
       proofMetrics:'Formular-Abschluss; Vollständigkeit vor Rückruf; Zeit bis Angebot/Rückmeldung; offene Kostenvoranschläge; Admin-Zeit je Anfrage.',
       draftOpener:'Ihr Online-Formular ist bereits ein guter Einstieg. Unser Test würde nicht die Website ersetzen, sondern prüfen, ob zusätzliche Vorqualifikation und ein sauberer Follow-up-Status den Aufwand rund um Kostenvoranschläge reduzieren.',
+      offerDraft:'Pilot: vorhandenes Formular erweitern, Anfragen nach Leistung/PLZ/Objekt/Dringlichkeit strukturieren und offene Kostenvoranschläge in eine Follow-up-Queue bringen. Bestehende Website bleibt bestehen. Preis erst nach Fit-Check.',
+      recommendedNextAction:'OWNER_REVIEW_FOR_CONTACT_CHANNEL',
       outreachDecision:'HOLD',
       contactBasis:'research-only',
       status:'RESEARCHED'
@@ -70,6 +76,8 @@ module.exports = {
       pilotProposal:'Rückrufanfragen automatisch nach Stadt, Leistungsart und Dringlichkeit strukturieren; intern zuständigen Ansprechpartner vorbereiten; Follow-up-Status sichtbar halten.',
       proofMetrics:'Routing-Zeit; falsche/erneute Rückfragen; Rückrufzeit; offene Rückrufwünsche; Bearbeitungszeit pro Anfrage.',
       draftOpener:'Sie bieten bereits einen Rückrufwunsch an und arbeiten in vielen Städten. Wir würden nicht Ihr System ersetzen, sondern testen, ob Anfragen vor dem Rückruf automatisch nach Ort, Leistung und Dringlichkeit sortiert werden können.',
+      offerDraft:'Zweiter-Wellen-Pilot: Rückrufanfragen nach Stadt, Leistung und Dringlichkeit strukturieren, Übergabe an zuständige Person vorbereiten und Status offen/erledigt messen. Wegen größerer Organisation erst nach Proof mit kleineren Betrieben verfolgen.',
+      recommendedNextAction:'HOLD_SECOND_WAVE',
       outreachDecision:'HOLD',
       contactBasis:'research-only',
       status:'RESEARCHED'
@@ -88,6 +96,8 @@ module.exports = {
       pilotProposal:'Nur als fortgeschrittener Test: After-hours/Overflow-Triage, strukturierte Übergabe an bestehende Prozesse und Ausnahme-Eskalation.',
       proofMetrics:'Overflow-Anfragen außerhalb Bürozeit; Übergabezeit; Vollständigkeit der Übergabe; Eskalationsquote; manuelle Nacharbeit.',
       draftOpener:'Sie haben bereits einen deutlich digitalisierten Ablauf. Deshalb würden wir nur einen klar abgegrenzten Overflow-/After-hours-Test vorschlagen, der bestehende Prozesse ergänzt statt ersetzt.',
+      offerDraft:'Fortgeschrittener Integrationspilot: nur Overflow-/After-hours-Triage mit strukturierter Übergabe in bestehende Abläufe. Kein Ersatz vorhandener Systeme. Wegen sichtbarer digitaler Reife nicht als erster MVP-Kunde priorisieren.',
+      recommendedNextAction:'HOLD_SECOND_WAVE',
       outreachDecision:'HOLD',
       contactBasis:'research-only',
       status:'RESEARCHED'

@@ -73,6 +73,38 @@ function fraudShield(input){
   return {score,verdict,flags,source:SOURCES.mobileSecurity};
 }
 
+
+function estimateFieldServices(input={}){
+  const visitOneWayKm=Math.max(0,n(input.visitOneWayKm));
+  const visitRoundKm=visitOneWayKm*2;
+  const liveVisit=money(Math.max(79,59+visitRoundKm*0.45));
+  const driveKm=Math.max(0,n(input.driveKm));
+  const driverService=money(Math.max(149,99+driveKm*0.55));
+  return {
+    liveVisit:{
+      name:'Danini FieldCheck Live',
+      base:59,
+      ratePerRoundTripKm:0.45,
+      oneWayKm:visitOneWayKm,
+      billedKm:visitRoundKm,
+      minimum:79,
+      estimatedServiceFee:liveVisit,
+      includes:['live video walkaround','photo set','document capture','seller question checklist','visible-condition notes'],
+      excludes:['Kfz-Gutachten','mechanical warranty','paint-depth measurement unless separately arranged','OBD diagnosis unless separately arranged']
+    },
+    driverOnly:{
+      name:'Danini Drive2Destination',
+      base:99,
+      ratePerDrivenKm:0.55,
+      driveKm,
+      minimum:149,
+      estimatedDriverFee:driverService,
+      extras:['fuel/charging','tolls/vignettes','export or transit plates','insurance','driver travel to pickup','driver return travel','hotel if required','border/customs costs'],
+      conditions:['vehicle roadworthy','legal plates/registration for the route','valid insurance','written authorization','route and cross-border feasibility confirmed before acceptance']
+    }
+  };
+}
+
 function evaluateImport(input={}){
   const country=String(input.sourceCountry||'DE').toUpperCase();
   const currency=String(input.currency||(country==='CH'?'CHF':'EUR')).toUpperCase();
@@ -143,4 +175,4 @@ function evaluateImport(input={}){
   };
 }
 
-module.exports={SOURCES,evaluateImport,importability,fraudShield,originScenarios};
+module.exports={SOURCES,evaluateImport,importability,fraudShield,originScenarios,estimateFieldServices};

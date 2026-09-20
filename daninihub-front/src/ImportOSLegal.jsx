@@ -13,7 +13,7 @@ function Imprint({lang}){
   const sr=lang==='sr'
   return <Shell lang={lang} title={sr?'Impresum':'Impressum'}>
     <h2>{sr?'Pružalac':'Anbieter'}</h2>
-    <p>Dragan Zdravković<br/>DaniniHub / Danini ImportOS<br/>Fischerstraße 54<br/>47055 Duisburg · Deutschland<br/><a href="mailto:info@daninihub.com">info@daninihub.com</a><br/><a href="tel:+4915730916621">+49 1573 0916621</a></p>
+    <p>Dragan Zdravković<br/>DaniniHub / DANINI<br/>Fischerstraße 54<br/>47055 Duisburg · Deutschland<br/><a href="mailto:info@daninihub.com">info@daninihub.com</a><br/><a href="tel:+4915730916621">+49 1573 0916621</a></p>
     <p>{sr?'Ne objavljujemo registarske, poreske ili druge identifikacione brojeve dok nisu potvrđeni kao važeći i obavezni za objavu.':'Register-, Steuer- oder sonstige Identifikationsnummern werden erst veröffentlicht, wenn sie als gültig und veröffentlichungspflichtig bestätigt sind.'}</p>
   </Shell>
 }

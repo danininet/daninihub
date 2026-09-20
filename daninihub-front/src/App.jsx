@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import DispatchPilotWorkspace from './DispatchPilotWorkspaceV5'
-import RevenueOSLanding from './RevenueOSLanding'
+import ImportOSLanding from './ImportOSLanding'
 import RevenueLegal from './RevenueLegal'
 
 function languageFromPath(){
@@ -44,5 +44,5 @@ export default function App(){
 
   if(dispatchWorkspace) return <DispatchPilotWorkspace/>
   if(type) return <RevenueLegal lang={lang} type={type}/>
-  return <RevenueOSLanding lang={lang} onLanguage={changeLanguage}/>
+  return <ImportOSLanding lang={lang} onLanguage={changeLanguage}/>
 }

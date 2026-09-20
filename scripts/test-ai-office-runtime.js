@@ -3,42 +3,40 @@
 const assert=require('node:assert/strict');
 const fs=require('fs');
 const path=require('path');
-
-const runtimeFile=path.join(process.cwd(),'runtime','ai-office-cases.json');
-try{if(fs.existsSync(runtimeFile))fs.unlinkSync(runtimeFile)}catch{}
-
-const store=require('../ai-office-store');
+const { ContactLeadStore }=require('../contact-lead-store');
 const runtime=require('../server-ai-office-runtime');
 
-assert.ok(runtime.getTenant('demo'));
-assert.match(runtime.makeSummary({service:'Reinigung',address:'Duisburg',urgency:'Normal'}),/Reinigung/);
+const file=path.join(process.cwd(),'runtime','ai-office-runtime-test.json');
+try{if(fs.existsSync(file))fs.unlinkSync(file)}catch{}
 
-const item=store.create('demo',{
-  customerName:'Max Muster',
-  phone:'+49 123',
-  email:'max@example.test',
-  service:'Gebäudereinigung',
-  address:'Duisburg',
-  objectType:'Büro',
-  urgency:'Normal',
-  preferredTime:'Morgen',
-  message:'Test',
-  privacyAcknowledged:true,
-  summary:'Leistung: Gebäudereinigung'
-});
+(async()=>{
+  assert.ok(runtime.getTenant('demo'));
+  assert.equal(runtime.officeSource('demo'),'ai-office:demo');
+  assert.match(runtime.makeSummary({service:'Reinigung',address:'Duisburg',urgency:'Normal'}),/Reinigung/);
 
-assert.match(item.id,/^AO-DEMO-/);
-assert.equal(item.status,'NEW');
-assert.equal(store.list('demo').length,1);
+  const store=new ContactLeadStore({env:{},storageFile:file});
+  const lead=await store.create({
+    reference:'AO-DEMO-TEST-001',
+    source:'ai-office:demo',
+    language:'de',
+    email:'max@example.test',
+    company:'Max Muster',
+    status:'NEW',
+    recommendation:'manual-review',
+    payload:{tenant:'demo',phone:'+49 123',service:'Gebäudereinigung',address:'Duisburg',summary:'Leistung: Gebäudereinigung'}
+  });
 
-const updated=store.updateStatus('demo',item.id,'READY_FOR_CALLBACK','reviewed');
-assert.equal(updated.status,'READY_FOR_CALLBACK');
-assert.equal(updated.history.length,2);
+  let c=runtime.caseView(lead);
+  assert.equal(c.status,'NEW');
+  assert.equal(c.service,'Gebäudereinigung');
 
-const s=store.summarize(store.list('demo'));
-assert.equal(s.total,1);
-assert.equal(s.ready_for_callback,1);
-assert.throws(()=>store.updateStatus('demo',item.id,'INVALID'),/INVALID_OFFICE_STATUS/);
+  await store.update(lead.reference,{status:'READY_FOR_CALLBACK',reviewNote:'reviewed',reviewedAt:new Date().toISOString()});
+  const list=await store.list({sources:['ai-office:demo'],limit:10});
+  const cases=list.map(runtime.caseView);
+  const summary=runtime.summarizeCases(cases);
+  assert.equal(summary.total,1);
+  assert.equal(summary.ready_for_callback,1);
 
-try{if(fs.existsSync(runtimeFile))fs.unlinkSync(runtimeFile)}catch{}
-console.log('Danini AI Office runtime contract: OK');
+  try{if(fs.existsSync(file))fs.unlinkSync(file)}catch{}
+  console.log('Danini AI Office runtime contract: OK');
+})().catch(error=>{console.error(error);process.exit(1)});

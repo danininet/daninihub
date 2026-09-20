@@ -7,7 +7,7 @@ function Wrap({lang,title,children}){
     <header className="ros-header">
       <a className="ros-brand" href={`/${lang}/`}>
         <span className="ros-mark">D</span>
-        <span><strong>DaniniHub</strong><small>Human + AI Revenue OS</small></span>
+        <span><strong>DaniniHub</strong><small>Danini ImportOS</small></span>
       </a>
     </header>
     <main className="ros-section" style={{maxWidth:'940px'}}>
@@ -33,8 +33,8 @@ function Imprint({lang}){
       <a href="tel:+4915730916621">+49 1573 0916621</a>
     </p>
     <p>{sr
-      ? 'Ova stranica je poslovna ponuda usmerena na preduzetnike i kompanije. Kontakt forma sama po sebi ne zaključuje ugovor niti predstavlja prihvatanje narudžbine.'
-      : 'Dieses Angebot richtet sich an Unternehmer und Unternehmen. Durch das Absenden eines Kontaktformulars kommt noch kein Vertrag zustande und es wird kein Auftrag angenommen.'}</p>
+      ? 'Javni ImportOS QuickCheck je namenjen informisanju privatnih kupaca i profesionalnih uvoznika. Plaćeni proizvodi i usluge aktiviraju se samo kroz jasno označen checkout ili posebnu ponudu; običan kontakt ili QuickCheck ne zaključuju ugovor.'
+      : 'Der öffentliche ImportOS-QuickCheck dient der Information privater Käufer und professioneller Importeure. Bezahlte Produkte und Leistungen werden nur über einen klar gekennzeichneten Checkout oder ein gesondertes Angebot aktiviert; Kontakt und QuickCheck schließen keinen Vertrag.'}</p>
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'Napomena o obaveznim podacima':'Hinweis zu weiteren Pflichtangaben'}</h2>
     <p>{sr
       ? 'Ako postoji upis u registar, nadležna komora/nadzorni organ, Umsatzsteuer-ID ili Wirtschafts-ID koja po zakonu mora biti navedena, taj podatak se mora dodati pre relevantne komercijalne ponude. U javnom kodu trenutno ne navodimo broj koji nije potvrđen.'
@@ -51,8 +51,8 @@ function Privacy({lang}){
 
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'2. Koje podatke obrađujemo':'2. Welche Daten wir verarbeiten'}</h2>
     <p>{sr
-      ? 'Kod poslovnog upita obrađujemo firmu/ime, e-mail, opciono telefon/WhatsApp, sadržaj poruke, izabrani jezik, vreme prijema i tehničke serverske zapise kao što su IP adresa, user-agent i status zahteva, ako ih hosting infrastruktura evidentira.'
-      : 'Bei einer Geschäftsanfrage verarbeiten wir Unternehmen/Name, E-Mail, optional Telefon/WhatsApp, Nachrichteninhalt, Sprache, Eingangszeit sowie technische Serverprotokolle wie IP-Adresse, User-Agent und Request-Status, soweit diese durch die Hosting-Infrastruktur protokolliert werden.'}</p>
+      ? 'Kod ImportOS upita ili narudžbine obrađujemo ime ili firmu, e-mail, podatke koje korisnik unese o vozilu i troškovima, izabrani jezik, vreme prijema i tehničke serverske zapise. Kod plaćanja provajder plaćanja obrađuje podatke potrebne za transakciju; DaniniHub ne treba podatke platne kartice kroz javni formular.'
+      : 'Bei einer ImportOS-Anfrage oder Bestellung verarbeiten wir Name/Firma, E-Mail, die vom Nutzer eingegebenen Fahrzeug- und Kostendaten, Sprache, Eingangszeit sowie technische Serverprotokolle. Zahlungsdaten werden beim Zahlungsanbieter verarbeitet; DaniniHub benötigt keine Kartendaten im öffentlichen Formular.'}</p>
 
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'3. Svrhe i pravni osnov':'3. Zwecke und Rechtsgrundlagen'}</h2>
     <p>{sr
@@ -70,8 +70,8 @@ function Privacy({lang}){
 
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'5. AI obrada':'5. KI-Verarbeitung'}</h2>
     <p>{sr
-      ? 'Javna kontakt forma trenutno ne šalje sadržaj upita automatski spoljnim AI modelima radi donošenja odluke. Ako kasnije aktiviramo AI chat, voice-agent ili automatsku analizu sa dodatnim primaocem podataka, privatnost se ažurira pre aktivacije i korisnik se tamo gde je potrebno obaveštava da komunicira sa AI sistemom.'
-      : 'Das öffentliche Kontaktformular übermittelt Anfrageinhalte derzeit nicht automatisch an externe KI-Modelle, um Entscheidungen zu treffen. Wird später ein KI-Chat, Voice-Agent oder eine automatische Analyse mit zusätzlichen Datenempfängern aktiviert, wird diese Erklärung vor der Aktivierung angepasst; Nutzer werden, soweit erforderlich, darüber informiert, dass sie mit einem KI-System interagieren.'}</p>
+      ? 'ImportOS trenutno primarno koristi deterministička pravila, proverene izvore i strukturisane podatke za QuickCheck i Import Passport. Ako se kasnije uključi spoljni AI model za dodatnu analizu oglasa ili dokumenata, ova izjava se ažurira pre produkcione aktivacije i navode se dodatni primaoci podataka.'
+      : 'ImportOS nutzt derzeit primär deterministische Regeln, verifizierte Quellen und strukturierte Daten für QuickCheck und Import Passport. Wird später ein externes KI-Modell für zusätzliche Inserat- oder Dokumentanalyse produktiv aktiviert, wird diese Erklärung vorher angepasst und zusätzliche Empfänger werden benannt.'}</p>
 
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'6. Čuvanje':'6. Speicherdauer'}</h2>
     <p>{sr
@@ -100,8 +100,8 @@ function Cookies({lang}){
   const sr=lang==='sr'
   return <Wrap lang={lang} title={sr?'Kolačići i lokalna memorija':'Cookies und lokale Speicherung'}>
     <p>{sr
-      ? 'Na javnoj Revenue OS stranici trenutno ne aktiviramo analitičke, marketinške ili reklamne kolačiće. Zato ne prikazujemo lažni „cookie banner“ samo radi forme.'
-      : 'Auf der öffentlichen Revenue-OS-Seite aktivieren wir derzeit keine Analyse-, Marketing- oder Werbe-Cookies. Deshalb wird kein rein formaler Cookie-Banner eingeblendet.'}</p>
+      ? 'Na javnoj ImportOS stranici trenutno ne aktiviramo analitičke, marketinške ili reklamne kolačiće. Zato ne prikazujemo lažni cookie banner samo radi forme.'
+      : 'Auf der öffentlichen ImportOS-Seite aktivieren wir derzeit keine Analyse-, Marketing- oder Werbe-Cookies. Deshalb wird kein rein formaler Cookie-Banner eingeblendet.'}</p>
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'Tehnički neophodno':'Technisch erforderlich'}</h2>
     <p>{sr
       ? 'Ako je memorija ili pristup na uređaju strogo neophodan za uslugu koju je korisnik izričito zatražio, nema posebne saglasnosti prema § 25 st. 2 TDDDG. Interni, zaštićeni radni prostori mogu koristiti nužan sesijski cookie za kontrolu pristupa; to nije marketinški tracker.'
@@ -118,8 +118,8 @@ function AI({lang}){
   return <Wrap lang={lang} title={sr?'AI transparentnost i granice':'KI-Transparenz und Grenzen'}>
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'Kako koristimo AI':'Wie wir KI einsetzen'}</h2>
     <p>{sr
-      ? 'AI koristimo za istraživanje, strukturisanje podataka, pripremu nacrta, analizu, sortiranje prioriteta i automatizaciju niskorizičnih operativnih koraka. AI ne predstavlja garanciju prihoda, prodaje ili poslovnog uspeha.'
-      : 'KI wird für Recherche, Datenstrukturierung, Entwürfe, Analyse, Priorisierung und die Automatisierung risikoarmer operativer Schritte eingesetzt. KI ist keine Garantie für Umsatz, Verkauf oder Geschäftserfolg.'}</p>
+      ? 'U ImportOS-u se automatizacija koristi za strukturisanje podataka, poređenje scenarija, označavanje rizika i pripremu odluke. Sistem ne garantuje stanje vozila, poreklo, carinsku vrednost, homologaciju, tržišnu cenu ili profit bez odgovarajućih dokaza i stručne provere.'
+      : 'In ImportOS wird Automatisierung für Datenstrukturierung, Szenariovergleich, Risikosignale und Entscheidungsvorbereitung eingesetzt. Das System garantiert ohne geeignete Nachweise oder Fachprüfung weder Fahrzeugzustand, Ursprung, Zollwert, Homologation, Marktwert noch Gewinn.'}</p>
 
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'Ljudska kontrola':'Menschliche Kontrolle'}</h2>
     <p>{sr
@@ -140,12 +140,12 @@ function AI({lang}){
 
 function Terms({lang}){
   const sr=lang==='sr'
-  return <Wrap lang={lang} title={sr?'Poslovni okvir usluge':'B2B-Leistungsrahmen'}>
+  return <Wrap lang={lang} title={sr?'Okvir korišćenja i plaćenih usluga':'Nutzungsrahmen und bezahlte Leistungen'}>
     <p>{sr
-      ? 'Ovo nije kompletan individualni ugovor, već javni okvir za DaniniHub B2B usluge. Konkretan obim, cena, trajanje i odgovornosti potvrđuju se u posebnoj ponudi ili ugovoru pre početka plaćene usluge.'
-      : 'Dies ist kein vollständiger Individualvertrag, sondern der öffentliche Rahmen für DaniniHub-B2B-Leistungen. Konkreter Umfang, Preis, Laufzeit und Verantwortlichkeiten werden vor Beginn einer bezahlten Leistung in einem gesonderten Angebot oder Vertrag bestätigt.'}</p>
+      ? 'Ovo je javni okvir za ImportOS digitalne rezultate i dodatne usluge. QuickCheck je informativan. Import Passport po ceni prikazanoj u checkout-u i terenske/vozačke/B2B usluge imaju poseban obim i uslove. Za potrošački checkout dodatne obavezne informacije o ceni, izvršenju i pravu na odustanak moraju biti prikazane pre aktivacije plaćanja.'
+      : 'Dies ist der öffentliche Rahmen für digitale ImportOS-Ergebnisse und Zusatzleistungen. Der QuickCheck ist informativ. Import Passport zum im Checkout ausgewiesenen Preis sowie Field-/Fahrer-/B2B-Leistungen haben einen gesonderten Leistungsumfang. Für einen Verbraucher-Checkout müssen die gesetzlich erforderlichen Preis-, Leistungs- und Widerrufsinformationen vor Zahlungsaktivierung angezeigt werden.'}</p>
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'Ciljna grupa':'Zielgruppe'}</h2>
-    <p>{sr?'Ponuda je namenjena preduzetnicima i kompanijama, ne potrošačkim kupovinama.':'Das Angebot richtet sich an Unternehmer und Unternehmen, nicht an Verbraucherkäufe.'}</p>
+    <p>{sr?'Besplatni QuickCheck je namenjen privatnim kupcima i profesionalnim uvoznicima. B2B usluge kao što su Dealer Radar, zakup Import Base površine i poslovni paketi ugovaraju se posebno. Potrošački plaćeni checkout se ne aktivira dok obavezne B2C informacije nisu kompletno prikazane.':'Der kostenlose QuickCheck richtet sich an private Käufer und professionelle Importeure. B2B-Leistungen wie Dealer Radar, Import-Base-Miete und Geschäftspakete werden separat vereinbart. Ein bezahlter Verbraucher-Checkout wird erst aktiviert, wenn die erforderlichen B2C-Informationen vollständig bereitgestellt sind.'}</p>
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'Nema automatskog ugovora':'Kein automatischer Vertragsschluss'}</h2>
     <p>{sr?'Kontakt forma, procena ili automatska potvrda prijema nisu prihvatanje naloga. Ugovor nastaje tek nakon jasne ponude i prihvatanja.':'Kontaktformular, Einschätzung oder automatische Eingangsbestätigung sind keine Auftragsannahme. Ein Vertrag entsteht erst durch ein klares Angebot und dessen Annahme.'}</p>
     <h2 style={{fontSize:'28px',marginTop:'38px'}}>{sr?'Obim i rezultat':'Leistungsumfang und Ergebnis'}</h2>

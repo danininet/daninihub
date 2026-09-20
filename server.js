@@ -7,10 +7,11 @@ const express = require('express');
 const { mountPublicRuntime } = require('./server-public-runtime');
 const { mountAdminRuntime } = require('./server-admin-runtime');
 const { mountAiOfficeRuntime } = require('./server-ai-office-runtime');
+const { mountImportOSRuntime } = require('./server-importos-runtime');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4242);
-const DEPLOYMENT_MARKER = 'daninihub-ai-office-mvp-v1';
+const DEPLOYMENT_MARKER = 'daninihub-importos-mvp-v1';
 const FRONTEND_INDEX = path.join(__dirname, 'daninihub-front', 'dist', 'index.html');
 
 app.set('trust proxy', 1);
@@ -26,15 +27,16 @@ app.get('/health', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({
     ok: true,
-    service: 'DaniniHub Revenue OS',
+    service: 'DaniniHub ImportOS',
     deploymentMarker: DEPLOYMENT_MARKER,
     publicLanguages: ['de', 'sr'],
-    publicProduct: 'AI Office 24/7 working pilot MVP',
+    publicProduct: 'Danini ImportOS working MVP',
     revenueControlCenter: Boolean(process.env.DANINI_ADMIN_SECRET),
     contactDelivery: Boolean(process.env.BREVO_API_KEY && (process.env.BREVO_SENDER_EMAIL || process.env.DANINIHUB_SENDER_EMAIL || process.env.MAIL_FROM || process.env.EMAIL_FROM)),
     durableLeadDatabase: Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME),
     aiPublicDecisioning: false,
     aiOfficeWorkflowMounted: true,
+    importOSMounted: true,
     legacyTransportPublicRuntimeMounted: false
   });
 });
@@ -45,14 +47,17 @@ app.get('/api/runtime-version', (req, res) => {
     ok: true,
     service: 'DaniniHub Revenue OS',
     deploymentMarker: DEPLOYMENT_MARKER,
-    product: 'Revenue Unit #1 — AI Office 24/7',
+    product: 'Danini ImportOS — Import Passport + SafeBuy + Model DNA',
     workflow: ['SIGNAL','OFFER','SELL','EXECUTE','EVIDENCE','DECIDE'],
     ownerRole: 'controller',
     contact: 'info@daninihub.com'
   });
 });
 
-// Working AI Office pilot runtime: client intake + protected office dashboard.
+// ImportOS decision engine: importability, origin scenarios, fraud shield, Model DNA and cost corridor.
+mountImportOSRuntime(app);
+
+// Previous AI Office runtime remains available for internal/legacy experiments, not as the public product.
 mountAiOfficeRuntime(app);
 
 // Server-rendered SEO/legal/public routes and contact intake.

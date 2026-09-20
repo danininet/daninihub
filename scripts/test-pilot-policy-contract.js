@@ -7,7 +7,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const serverSource = fs.readFileSync(path.join(root, 'server-public-runtime.js'), 'utf8');
 const appSource = fs.readFileSync(path.join(root, 'daninihub-front', 'src', 'App.jsx'), 'utf8');
-const landingSource = fs.readFileSync(path.join(root, 'daninihub-front', 'src', 'RevenueOSLanding.jsx'), 'utf8');
+const landingSource = fs.readFileSync(path.join(root, 'daninihub-front', 'src', 'ImportOSLanding.jsx'), 'utf8');
 
 // The current DaniniHub offer must not promise an automatic fixed-duration trial
 // or preserve transport products as active public offers.
@@ -30,14 +30,15 @@ for (const phrase of obsoleteFixedPilotClaims) {
 }
 
 // Current public product direction.
-assert.match(appSource, /RevenueOSLanding/);
+assert.match(appSource, /ImportOSLanding/);
 assert.match(appSource, /RevenueLegal/);
 assert.doesNotMatch(appSource, /DispoLabPage/);
 assert.doesNotMatch(appSource, /TransportRoomDemo/);
 assert.doesNotMatch(appSource, /TransportNetworkDemo/);
-assert.match(landingSource, /AI Office 24\/7/);
-assert.match(landingSource, /messbarer Pilot|merljiv pilot/i);
-assert.match(landingSource, /keine Umsatzgarantie|bez garancije.*prihoda|ne garantujemo prihod/i);
+assert.match(landingSource, /Danini ImportOS|IMPORTOS/i);
+assert.match(landingSource, /Import Passport/);
+assert.match(landingSource, /Model DNA/);
+assert.match(landingSource, /Fraud Shield/);
 
 // Retired transport URLs must be explicitly discontinued instead of remaining
 // active sales pages. Internal workspace may remain protected for technical use.
@@ -45,4 +46,4 @@ assert.match(serverSource, /discontinuedRoutes/);
 assert.match(serverSource, /status\(410\)/);
 assert.match(appSource, /DispatchPilotWorkspace/);
 
-console.log('DaniniHub Revenue OS pilot policy contract: OK');
+console.log('DaniniHub ImportOS product-direction contract: OK');

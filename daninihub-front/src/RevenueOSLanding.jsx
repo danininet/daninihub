@@ -175,7 +175,7 @@ export default function RevenueOSLanding({ lang='de', onLanguage }) {
     document.title = lang === 'sr' ? 'AI Office 24/7 za uslužne firme | DaniniHub' : 'AI Office 24/7 für Dienstleister | DaniniHub'
     const d = lang === 'sr'
       ? 'AI Office 24/7 za lokalne uslužne firme: strukturisan prijem upita, priprema poziva i termina, follow-up i ljudska kontrola važnih odluka.'
-      : 'AI Office 24/7 für lokale Dienstleister: Anfragen strukturieren, Rückrufe und Termine vorbereiten, Follow-up sichtbar halten und wichtige Entscheidungen beim Menschen lassen.'
+      : 'AI Office 24/7 für lokale Dienstleister: Anfragen strukturieren, Rückrufe und Termine vorbereiten, Follow-up sichtbar halten – mit menschlicher Kontrolle.'
     document.querySelector('meta[name="description"]')?.setAttribute('content',d)
     document.querySelector('link[rel="canonical"]')?.setAttribute('href',`https://daninihub.com/${lang}/`)
     document.querySelector('meta[property="og:title"]')?.setAttribute('content',document.title)

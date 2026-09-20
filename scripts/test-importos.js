@@ -1,7 +1,7 @@
 'use strict';
 
 const assert=require('node:assert/strict');
-const {evaluateImport}=require('../core/importos-engine');
+const {evaluateImport,estimateFieldServices}=require('../core/importos-engine');
 const {getModelDna}=require('../core/importos-model-dna');
 
 const base={
@@ -38,4 +38,10 @@ const historic=evaluateImport({...base,year:1990,euroClass:0,historicClaim:true}
 assert.equal(historic.importability.status,'HISTORIC_REVIEW');
 
 assert.ok(getModelDna('audi-a4-b8-petrol'));
+
+const field=estimateFieldServices({visitOneWayKm:100,driveKm:500});
+assert.equal(field.liveVisit.estimatedServiceFee,149);
+assert.equal(field.driverOnly.estimatedDriverFee,374);
+assert.match(field.driverOnly.extras.join(' '),/insurance/);
+
 console.log('Danini ImportOS MVP contract: OK');

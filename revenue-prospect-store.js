@@ -55,6 +55,8 @@ function sanitize(input={}){
     pilotProposal: String(input.pilotProposal||'').trim().slice(0,3000),
     proofMetrics: String(input.proofMetrics||'').trim().slice(0,2000),
     draftOpener: String(input.draftOpener||'').trim().slice(0,2000),
+    offerDraft: String(input.offerDraft||'').trim().slice(0,4000),
+    recommendedNextAction: String(input.recommendedNextAction||'').trim().slice(0,80),
     outreachDecision: String(input.outreachDecision||'HOLD').trim().slice(0,40),
     contactBasis: String(input.contactBasis||'').trim().slice(0,120),
     status,

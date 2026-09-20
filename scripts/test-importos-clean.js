@@ -10,6 +10,8 @@ const root=path.join(__dirname,'..');
 const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
 const landing=fs.readFileSync(path.join(root,'daninihub-front','src','ImportOSLanding.jsx'),'utf8');
 const legal=fs.readFileSync(path.join(root,'daninihub-front','src','ImportOSLegal.jsx'),'utf8');
+const payments=fs.readFileSync(path.join(root,'core','importos-payments.js'),'utf8');
+const knowledge=fs.readFileSync(path.join(root,'daninihub-front','src','ImportOSKnowledge.jsx'),'utf8');
 
 const base={sourceCountry:'DE',currency:'EUR',purchasePrice:10000,transportToSerbia:700,exportCosts:250,inspectionCost:150,year:2014,euroClass:5,originProof:'unknown',registrationDoc:true,ownershipDoc:true,vinProvided:true,initialService:500,serbiaMarketValue:15000,modelDnaKey:'mercedes-w204-petrol'};
 const result=evaluateImport(base);
@@ -34,5 +36,13 @@ assert.match(landing,/TRAILER_TRANSPORT/);
 assert.match(landing,/TRUCK_TRANSPORT/);
 assert.match(landing,/IMPORT_BASE/);
 assert.match(legal,/keine BRABUS-Leistung/);
+assert.match(landing,/PAYMENT PROTECTION/);
+assert.match(landing,/PayPal/);
+assert.match(landing,/ios-navstrip/);
+assert.match(landing,/KNOWLEDGE GARAGE/);
+assert.match(payments,/capture_method:'manual'/);
+assert.match(payments,/intent:'AUTHORIZE'/);
+assert.match(knowledge,/oldtimer-30-plus/);
+assert.match(knowledge,/deutschland-selbstimport/);
 
 console.log('Danini ImportOS clean product contract: OK');

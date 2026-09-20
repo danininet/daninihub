@@ -11,7 +11,7 @@
     "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",
     "start": "node server.js",
     "dev": "node server.js",
-    "check:syntax": "node --check danini.js && node --check server.js && node --check server-public-runtime.js && node --check server-dispatch-runtime.js && node --check server-transport-network-runtime.js && node --check server-transport-room-runtime.js && node --check server-capacity-signal-runtime.js && node --check server-capacity-consent-runtime.js && node --check dispatch-access-bootstrap.js && node --check dispatch-case-store.js && node --check server-guided-analysis-runtime.js && node --check server-gumroad-runtime.js && node --check server-admin-runtime.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",
+    "check:syntax": "node --check danini.js && node --check server.js && node --check server-public-runtime.js && node --check server-dispatch-runtime.js && node --check server-transport-network-runtime.js && node --check server-transport-room-runtime.js && node --check server-capacity-signal-runtime.js && node --check server-capacity-consent-runtime.js && node --check dispatch-access-bootstrap.js && node --check dispatch-case-store.js && node --check server-guided-analysis-runtime.js && node --check server-gumroad-runtime.js && node --check server-admin-runtime.js && node --check server-ai-office-runtime.js && node --check ai-office-store.js && find agents core -name '*.js' -type f -print0 | xargs -0 -n1 node --check",
     "check:tree": "find . \\( -path './node_modules' -o -path './.git' -o -path './_archive' \\) -prune -o -type f -print | sort",
     "health": "node scripts/healthcheck.js",
     "agent": "node danini.js",
@@ -46,9 +46,10 @@
     "server": "node server.js",
     "dev:server": "node server.js",
     "agent:cli": "node danini.js",
-    "test:revenue-os": "node scripts/test-revenue-os-policy.js && node scripts/test-revenue-unit-01.js && node scripts/test-revenue-prospect-store.js",
+    "test:revenue-os": "node scripts/test-revenue-os-policy.js && node scripts/test-revenue-unit-01.js && node scripts/test-revenue-prospect-store.js && node scripts/test-ai-office-runtime.js",
     "test:revenue-unit": "node scripts/test-revenue-unit-01.js",
-    "test:revenue-prospects": "node scripts/test-revenue-prospect-store.js"
+    "test:revenue-prospects": "node scripts/test-revenue-prospect-store.js",
+    "test:ai-office": "node scripts/test-ai-office-runtime.js"
   },
   "keywords": [],
   "author": "",

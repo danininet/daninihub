@@ -1,88 +1,51 @@
-name: Danini OS Core
+name: Danini ImportOS Core
 
 on:
   push:
     branches: [main]
     paths:
-      - 'core/**'
+      - 'core/importos-*.js'
       - 'daninihub-front/**'
-      - 'scripts/test-agent-execution-contract.js'
-      - 'scripts/test-guided-analysis-contract.js'
-      - 'scripts/test-gumroad-activation-contract.js'
-      - 'scripts/test-admin-runtime-contract.js'
-      - 'scripts/test-public-content-contract.js'
-      - 'scripts/test-pilot-policy-contract.js'
-      - 'scripts/test-contact-lead-store.js'
-      - 'scripts/test-dispatch-workspace-contract.js'
-      - 'scripts/test-dispatch-secure-runtime.js'
-      - 'scripts/test-dispatch-ai-structure.js'
-      - 'scripts/test-dispatch-access-bootstrap.js'
+      - 'scripts/test-importos-clean.js'
       - 'server.js'
       - 'server-public-runtime.js'
-      - 'server-dispatch-runtime.js'
-      - 'dispatch-access-bootstrap.js'
-      - 'dispatch-case-store.js'
-      - 'server-guided-analysis-runtime.js'
-      - 'server-gumroad-runtime.js'
-      - 'server-admin-runtime.js'
-      - 'danini.js'
+      - 'server-importos-runtime.js'
+      - 'importos-store.js'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/danini-os-core.yml'
   pull_request:
     paths:
-      - 'core/**'
+      - 'core/importos-*.js'
       - 'daninihub-front/**'
-      - 'scripts/test-agent-execution-contract.js'
-      - 'scripts/test-guided-analysis-contract.js'
-      - 'scripts/test-gumroad-activation-contract.js'
-      - 'scripts/test-admin-runtime-contract.js'
-      - 'scripts/test-public-content-contract.js'
-      - 'scripts/test-pilot-policy-contract.js'
-      - 'scripts/test-contact-lead-store.js'
-      - 'scripts/test-dispatch-workspace-contract.js'
-      - 'scripts/test-dispatch-secure-runtime.js'
-      - 'scripts/test-dispatch-ai-structure.js'
-      - 'scripts/test-dispatch-access-bootstrap.js'
+      - 'scripts/test-importos-clean.js'
       - 'server.js'
       - 'server-public-runtime.js'
-      - 'server-dispatch-runtime.js'
-      - 'dispatch-access-bootstrap.js'
-      - 'dispatch-case-store.js'
-      - 'server-guided-analysis-runtime.js'
-      - 'server-gumroad-runtime.js'
-      - 'server-admin-runtime.js'
-      - 'danini.js'
+      - 'server-importos-runtime.js'
+      - 'importos-store.js'
       - 'package.json'
       - 'package-lock.json'
-      - '.github/workflows/danini-os-core.yml'
 
 permissions:
   contents: read
 
 jobs:
-  core-contract:
+  importos-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
-
       - name: Syntax check
         run: npm run check:syntax
-
-      - name: Danini OS contract tests
-        run: npm run test:os
-
+      - name: ImportOS contract
+        run: npm run test:importos
       - name: Production frontend build
         run: npm run build

@@ -1,12 +1,9 @@
 'use strict';
 
 const express=require('express');
-const fs=require('fs');
 const path=require('path');
 
-const FRONT=path.join(__dirname,'daninihub-front','dist');
-const PUBLIC_ASSETS=path.join(__dirname,'daninihub-front','public');
-const INDEX=path.join(FRONT,'index.html');
+const PUBLIC_ASSETS=path.join(__dirname,'public');
 
 const articles=[
   ['deutschland-selbstimport','Auto selbst aus Deutschland nach Serbien importieren','Kako samostalno uvesti auto iz Nemačke u Srbiju','Eigentum, VIN, Ausfuhr, Ursprung und Gesamtkosten in der richtigen Reihenfolge.','Vlasništvo, VIN, izvoz, poreklo i ukupni trošak pravilnim redosledom.'],
@@ -112,62 +109,39 @@ function knowledgePage(route){
   return shell({lang:meta.lang,title:meta.title,description:meta.description,body});
 }
 
-function mountPublicRuntime(app){
-  // Serve brand assets even if the Vite build is temporarily unavailable.
-  if(fs.existsSync(PUBLIC_ASSETS))app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
-  function sendFrontend(res,fallbackHtml,route='/de/'){
-    res.set('Cache-Control','no-store, no-cache, must-revalidate');
-    if(fs.existsSync(INDEX)){
-      const clean=ROUTES[route]?route:(route.startsWith('/sr')?'/sr/':'/de/');
-      const meta=ROUTES[clean]||ROUTES['/de/'];
-      const legalPairs={'/de/impressum':'/sr/impressum','/de/datenschutz':'/sr/privatnost','/de/cookies':'/sr/kolacici','/de/bedingungen':'/sr/uslovi'};
-      const reverseLegal=Object.fromEntries(Object.entries(legalPairs).map(([a,b])=>[b,a]));
-      const alternate=legalPairs[clean]||reverseLegal[clean]||(clean.startsWith('/sr/')?clean.replace(/^\/sr\/vodic\//,'/de/wissen/').replace(/^\/sr\//,'/de/'):clean.replace(/^\/de\/wissen\//,'/sr/vodic/').replace(/^\/de\//,'/sr/'));
-      const de=meta.lang==='de'?clean:alternate,sr=meta.lang==='sr'?clean:alternate;
-      let html=fs.readFileSync(INDEX,'utf8');
-      html=html.replace(/<html lang="[^"]+">/,'<html lang="'+meta.lang+'">')
-        .replace(/<title>[^<]*<\/title>/,'<title>'+esc(meta.title)+'</title>')
-        .replace(/<meta name="description" content="[^"]*"\/>/,'<meta name="description" content="'+esc(meta.description)+'"/>')
-        .replace(/<link rel="canonical" href="[^"]*"\/>/,'<link rel="canonical" href="https://daninihub.com'+clean+'"/>')
-        .replace(/<link rel="alternate" hreflang="de" href="[^"]*"\/>/,'<link rel="alternate" hreflang="de" href="https://daninihub.com'+de+'"/>')
-        .replace(/<link rel="alternate" hreflang="sr" href="[^"]*"\/>/,'<link rel="alternate" hreflang="sr" href="https://daninihub.com'+sr+'"/>')
-        .replace(/<meta property="og:title" content="[^"]*"\/>/,'<meta property="og:title" content="'+esc(meta.title)+'"/>')
-        .replace(/<meta property="og:description" content="[^"]*"\/>/,'<meta property="og:description" content="'+esc(meta.description)+'"/>')
-        .replace(/<meta property="og:url" content="[^"]*"\/>/,'<meta property="og:url" content="https://daninihub.com'+clean+'"/>');
-      return res.type('html').send(html);
-    }
-    return res.type('html').send(fallbackHtml);
-  }
 
-  app.get('/',(req,res)=>sendFrontend(res,home('de'),'/de/'));
-  app.get('/de',(req,res)=>sendFrontend(res,home('de'),'/de/'));
-  app.get('/sr',(req,res)=>sendFrontend(res,home('sr'),'/sr/'));
-  app.get('/en',(req,res)=>sendFrontend(res,home('de'),'/de/'));
+function ownerPage(){
+  const body='<header class="head"><div class="top"><a class="brand" href="/de/"><img src="/importos-mark.svg" alt="DANINI"><div><strong>DANINI</strong><small>OWNER QUOTE DESK</small></div></a></div></header><main class="wrap"><section class="section"><p class="eyebrow">INTERNAL · NOINDEX</p><h2>Service Quote & Payment Control</h2><p class="muted">Kreiraj ponudu, pošalji booking link, zatim posle usluge naplati autorizovani iznos ili oslobodi rezervaciju.</p><form class="form" id="owner-quote"><label>Admin secret<input name="secret" type="password" required></label><label>Email<input name="email" type="email" required></label><label>Ime / firma<input name="name"></label><label>Usluga<select name="serviceType"><option>FIELD_CHECK_LIVE</option><option>PRO_MECHANIC_CHECK</option><option>ORIGINAL_PARTS</option><option>DRIVER_ONLY</option><option>TRAILER_TRANSPORT</option><option>TRUCK_TRANSPORT</option><option>IMPORT_BASE</option></select></label><label>Iznos EUR<input name="amountEur" type="number" min="5" step="0.01" required></label><label>Termin<input name="serviceDate" type="datetime-local"></label><label>Rok ponude (h)<input name="expiresInHours" type="number" min="1" max="168" value="72"></label><label>Jezik<select name="language"><option value="de">DE</option><option value="sr">SR</option></select></label><label class="wide">Opis<textarea name="description" required></textarea></label><button class="btn wide" type="submit">CREATE SECURE QUOTE</button></form><div id="owner-result"></div><div class="section"><h2>Capture / Release</h2><form class="form" id="owner-action"><label>Admin secret<input name="secret" type="password" required></label><label>Quote reference<input name="reference" required></label><div class="wide"><button class="btn" name="action" value="capture">CAPTURE AFTER SERVICE</button> <button class="btn" style="background:#596772;color:#fff" name="action" value="void">VOID / RELEASE</button></div></form><div id="action-result"></div></div></section></main>';
+  const scripts='<script>document.getElementById("owner-quote").addEventListener("submit",async e=>{e.preventDefault();const f=new FormData(e.currentTarget);const secret=f.get("secret");const body=Object.fromEntries(f.entries());delete body.secret;body.amountEur=Number(body.amountEur);body.expiresInHours=Number(body.expiresInHours);const out=document.getElementById("owner-result");try{const r=await fetch("/api/importos/admin/quotes",{method:"POST",headers:{"Content-Type":"application/json","X-Danini-Admin":secret},body:JSON.stringify(body)});const p=await r.json();if(!r.ok)throw new Error(p.error||"ERROR");out.innerHTML="<div class=\"result ok\"><b>"+p.quote.reference+"</b><p><a target=\"_blank\" href=\""+p.bookingUrl+"\">"+p.bookingUrl+"</a></p></div>"}catch(err){out.innerHTML="<div class=\"result error\">"+err.message+"</div>"}});document.getElementById("owner-action").addEventListener("submit",async e=>{e.preventDefault();const f=new FormData(e.currentTarget);const secret=f.get("secret"),ref=f.get("reference"),action=e.submitter.value;const out=document.getElementById("action-result");try{const r=await fetch("/api/importos/admin/quotes/"+encodeURIComponent(ref)+"/"+action,{method:"POST",headers:{"Content-Type":"application/json","X-Danini-Admin":secret},body:"{}"});const p=await r.json();if(!r.ok)throw new Error(p.error||"ERROR");out.innerHTML="<div class=\"result ok\"><pre>"+JSON.stringify(p,null,2)+"</pre></div>"}catch(err){out.innerHTML="<div class=\"result error\">"+err.message+"</div>"}});</script>';
+  return shell({lang:'de',title:'DANINI Owner Quote Desk',description:'Internal DANINI quote and payment control',body,scripts}).replace('content="index,follow,max-image-preview:large"','content="noindex,nofollow"');
+}
+
+function mountPublicRuntime(app){
+  app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
+
+  app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(home('de'))});
+  app.get(['/de','/de/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(home('de'))});
+  app.get(['/sr','/sr/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(home('sr'))});
+  app.get('/en',(req,res)=>res.redirect(308,'/de/'));
 
   app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
-    const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-21</lastmod><changefreq>'+(route.includes('/wissen/')||route.includes('/vodic/')?'monthly':'weekly')+'</changefreq><priority>'+(route==='/de/'||route==='/sr/'?'1.0':route.includes('/wissen/')||route.includes('/vodic/')?'0.8':'0.3')+'</priority></url>').join('');
+    const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-21</lastmod></url>').join('');
     res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+urls+'</urlset>');
   });
-
-  app.get('/de/',(req,res)=>sendFrontend(res,home('de'),'/de/'));
-  app.get('/sr/',(req,res)=>sendFrontend(res,home('sr'),'/sr/'));
 
   app.get('/owner/importos',(req,res)=>{
     res.set('X-Robots-Tag','noindex,nofollow');
     res.set('Cache-Control','no-store');
-    if(fs.existsSync(INDEX))return res.sendFile(INDEX);
-    return res.status(503).type('text/plain').send('Owner desk frontend not built');
+    return res.type('html').send(ownerPage());
   });
 
   app.get(Object.keys(ROUTES).filter(r=>r!=='/de/'&&r!=='/sr/'),(req,res)=>{
-    const route=req.path;
-    const page=route.includes('/wissen/')||route.includes('/vodic/')?knowledgePage(route):legalPage(route);
+    const page=req.path.includes('/wissen/')||req.path.includes('/vodic/')?knowledgePage(req.path):legalPage(req.path);
     if(!page)return res.status(404).end();
-    return sendFrontend(res,page,route);
+    res.set('Cache-Control','no-store');
+    return res.type('html').send(page);
   });
-
-  if(fs.existsSync(FRONT))app.use(express.static(FRONT,{index:false,maxAge:'1h'}));
 }
 
-module.exports={mountPublicRuntime,ROUTES,home};
+module.exports={mountPublicRuntime,ROUTES,home,ownerPage};

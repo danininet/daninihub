@@ -19,7 +19,7 @@ function knowledgeSlug(path){
 
 export default function App(){
   const [lang,setLang]=useState(languageFromPath)
-  const path=location.pathname.replace(/\/$/,'')||'/'
+  const [path,setPath]=useState(()=>location.pathname.replace(/\/$/,'')||'/')
   const type=legalType(path)
   const slug=knowledgeSlug(path)
   const owner=path==='/owner/importos'
@@ -28,6 +28,7 @@ export default function App(){
     document.documentElement.lang=lang
     document.querySelector('meta[name="robots"]')?.setAttribute('content','index,follow,max-image-preview:large')
   },[lang,path])
+  useEffect(()=>{const sync=()=>{setPath(location.pathname.replace(/\/$/,'')||'/');setLang(languageFromPath())};addEventListener('popstate',sync);return()=>removeEventListener('popstate',sync)},[])
 
   function changeLanguage(next){
     setLang(next)
@@ -38,6 +39,7 @@ export default function App(){
       :slug?(next==='sr'?'/vodic/':'/wissen/')+slug
       :'/'
     history.pushState({},'',`/${next}${suffix}`)
+    setPath(`/${next}${suffix}`)
   }
 
   if(owner)return <ImportOSOwner/>

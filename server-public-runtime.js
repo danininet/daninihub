@@ -5,6 +5,7 @@ const fs=require('fs');
 const path=require('path');
 
 const FRONT=path.join(__dirname,'daninihub-front','dist');
+const PUBLIC_ASSETS=path.join(__dirname,'daninihub-front','public');
 const INDEX=path.join(FRONT,'index.html');
 
 const articles=[
@@ -110,6 +111,8 @@ function knowledgePage(route){
 }
 
 function mountPublicRuntime(app){
+  // Serve brand assets even if the Vite build is temporarily unavailable.
+  if(fs.existsSync(PUBLIC_ASSETS))app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
   app.get('/',(req,res)=>res.redirect(308,'/de/'));
   app.get('/de',(req,res)=>res.redirect(308,'/de/'));
   app.get('/sr',(req,res)=>res.redirect(308,'/sr/'));

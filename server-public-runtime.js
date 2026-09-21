@@ -113,7 +113,7 @@ function knowledgePage(route){
 function mountPublicRuntime(app){
   // Serve brand assets even if the Vite build is temporarily unavailable.
   if(fs.existsSync(PUBLIC_ASSETS))app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
-  app.get('/',(req,res)=>res.redirect(308,'/de/'));
+  app.get('/',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('de'))});
   app.get('/de',(req,res)=>res.redirect(308,'/de/'));
   app.get('/sr',(req,res)=>res.redirect(308,'/sr/'));
   app.get('/en',(req,res)=>res.redirect(308,'/de/'));

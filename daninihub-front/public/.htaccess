@@ -1,1 +1,15 @@
-# DaniniHub public app is served by the Node/Express runtime.\n# No external redirect is configured here.\n
+RewriteEngine On
+
+# Preserve real files and directories.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# SPA fallback for direct DE/SR/knowledge/legal routes when served statically.
+RewriteRule ^ index.html [L]
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

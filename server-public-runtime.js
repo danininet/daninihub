@@ -114,8 +114,8 @@ function mountPublicRuntime(app){
   // Serve brand assets even if the Vite build is temporarily unavailable.
   if(fs.existsSync(PUBLIC_ASSETS))app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
   app.get('/',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('de'))});
-  app.get('/de',(req,res)=>res.redirect(308,'/de/'));
-  app.get('/sr',(req,res)=>res.redirect(308,'/sr/'));
+  app.get('/de',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('de'))});
+  app.get('/sr',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('sr'))});
   app.get('/en',(req,res)=>res.redirect(308,'/de/'));
 
   app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));

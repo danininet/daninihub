@@ -14,7 +14,9 @@ const articles=[
   ['eur1-herkunft','EUR.1 und Ursprungsrisiko','EUR.1 i rizik porekla','Warum Verkaufsland und präferenzieller Ursprung nicht dasselbe sind.','Zašto zemlja prodaje i preferencijalno poreklo nisu ista stvar.'],
   ['safebuy-vor-kaution','SafeBuy vor Anzahlung','SafeBuy pre kapare','VIN, Verkäufer, Zahlungsweg und Preisabweichung vor Geldtransfer prüfen.','VIN, prodavac, način uplate i odstupanje cene pre slanja novca.'],
   ['oldtimer-30-plus','Oldtimer 30+: was wirklich geprüft wird','Oldtajmer 30+: šta se stvarno proverava','Alter, Originalität, Fahrbereitschaft und Dokumentation.','Starost, originalnost, vozno stanje i dokumentacija.'],
-  ['transport-entscheidung','Eigene Achse, Trailer oder Lkw?','Točkovi, prikolica ili kamion?','Transportweg nach Fahrbereitschaft, Zulassung, Distanz, Wert und Stückzahl wählen.','Način dovoza birati prema ispravnosti, tablicama, udaljenosti, vrednosti i broju vozila.']
+  ['transport-entscheidung','Eigene Achse, Trailer oder Lkw?','Točkovi, prikolica ili kamion?','Transportweg nach Fahrbereitschaft, Zulassung, Distanz, Wert und Stückzahl wählen.','Način dovoza birati prema ispravnosti, tablicama, udaljenosti, vrednosti i broju vozila.'],
+  ['landed-cost-kalkulation','Was kostet der Autoimport wirklich?','Koliko stvarno košta uvoz automobila?','Vollständige Landed-Cost-Rechnung vor dem Kauf: Export, Transport, Ursprung, Abgaben, Technik und Zulassung.','Potpuna računica pre kupovine: izvoz, dovoz, poreklo, dažbine, tehnički postupak i registracija.'],
+  ['vin-dokumente-checkliste','VIN- und Dokumentencheck vor Zahlung','Provera VIN-a i dokumenata pre uplate','Praktische Checkliste für VIN, Verkäufer, Eigentum, Dokumente und sicheren Zahlungsweg.','Praktična kontrolna lista za VIN, prodavca, vlasništvo, dokumente i bezbedan način plaćanja.']
 ];
 
 const ROUTES={
@@ -113,25 +115,43 @@ function knowledgePage(route){
 function mountPublicRuntime(app){
   // Serve brand assets even if the Vite build is temporarily unavailable.
   if(fs.existsSync(PUBLIC_ASSETS))app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
-  function sendFrontend(res,fallbackHtml){
+  function sendFrontend(res,fallbackHtml,route='/de/'){
     res.set('Cache-Control','no-store, no-cache, must-revalidate');
-    if(fs.existsSync(INDEX))return res.sendFile(INDEX);
+    if(fs.existsSync(INDEX)){
+      const clean=ROUTES[route]?route:(route.startsWith('/sr')?'/sr/':'/de/');
+      const meta=ROUTES[clean]||ROUTES['/de/'];
+      const legalPairs={'/de/impressum':'/sr/impressum','/de/datenschutz':'/sr/privatnost','/de/cookies':'/sr/kolacici','/de/bedingungen':'/sr/uslovi'};
+      const reverseLegal=Object.fromEntries(Object.entries(legalPairs).map(([a,b])=>[b,a]));
+      const alternate=legalPairs[clean]||reverseLegal[clean]||(clean.startsWith('/sr/')?clean.replace(/^\/sr\/vodic\//,'/de/wissen/').replace(/^\/sr\//,'/de/'):clean.replace(/^\/de\/wissen\//,'/sr/vodic/').replace(/^\/de\//,'/sr/'));
+      const de=meta.lang==='de'?clean:alternate,sr=meta.lang==='sr'?clean:alternate;
+      let html=fs.readFileSync(INDEX,'utf8');
+      html=html.replace(/<html lang="[^"]+">/,'<html lang="'+meta.lang+'">')
+        .replace(/<title>[^<]*<\/title>/,'<title>'+esc(meta.title)+'</title>')
+        .replace(/<meta name="description" content="[^"]*"\/>/,'<meta name="description" content="'+esc(meta.description)+'"/>')
+        .replace(/<link rel="canonical" href="[^"]*"\/>/,'<link rel="canonical" href="https://daninihub.com'+clean+'"/>')
+        .replace(/<link rel="alternate" hreflang="de" href="[^"]*"\/>/,'<link rel="alternate" hreflang="de" href="https://daninihub.com'+de+'"/>')
+        .replace(/<link rel="alternate" hreflang="sr" href="[^"]*"\/>/,'<link rel="alternate" hreflang="sr" href="https://daninihub.com'+sr+'"/>')
+        .replace(/<meta property="og:title" content="[^"]*"\/>/,'<meta property="og:title" content="'+esc(meta.title)+'"/>')
+        .replace(/<meta property="og:description" content="[^"]*"\/>/,'<meta property="og:description" content="'+esc(meta.description)+'"/>')
+        .replace(/<meta property="og:url" content="[^"]*"\/>/,'<meta property="og:url" content="https://daninihub.com'+clean+'"/>');
+      return res.type('html').send(html);
+    }
     return res.type('html').send(fallbackHtml);
   }
 
-  app.get('/',(req,res)=>sendFrontend(res,home('de')));
-  app.get('/de',(req,res)=>sendFrontend(res,home('de')));
-  app.get('/sr',(req,res)=>sendFrontend(res,home('sr')));
-  app.get('/en',(req,res)=>sendFrontend(res,home('de')));
+  app.get('/',(req,res)=>sendFrontend(res,home('de'),'/de/'));
+  app.get('/de',(req,res)=>sendFrontend(res,home('de'),'/de/'));
+  app.get('/sr',(req,res)=>sendFrontend(res,home('sr'),'/sr/'));
+  app.get('/en',(req,res)=>sendFrontend(res,home('de'),'/de/'));
 
   app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
-    const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-21</lastmod></url>').join('');
+    const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-21</lastmod><changefreq>'+(route.includes('/wissen/')||route.includes('/vodic/')?'monthly':'weekly')+'</changefreq><priority>'+(route==='/de/'||route==='/sr/'?'1.0':route.includes('/wissen/')||route.includes('/vodic/')?'0.8':'0.3')+'</priority></url>').join('');
     res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+urls+'</urlset>');
   });
 
-  app.get('/de/',(req,res)=>sendFrontend(res,home('de')));
-  app.get('/sr/',(req,res)=>sendFrontend(res,home('sr')));
+  app.get('/de/',(req,res)=>sendFrontend(res,home('de'),'/de/'));
+  app.get('/sr/',(req,res)=>sendFrontend(res,home('sr'),'/sr/'));
 
   app.get('/owner/importos',(req,res)=>{
     res.set('X-Robots-Tag','noindex,nofollow');
@@ -144,7 +164,7 @@ function mountPublicRuntime(app){
     const route=req.path;
     const page=route.includes('/wissen/')||route.includes('/vodic/')?knowledgePage(route):legalPage(route);
     if(!page)return res.status(404).end();
-    return sendFrontend(res,page);
+    return sendFrontend(res,page,route);
   });
 
   if(fs.existsSync(FRONT))app.use(express.static(FRONT,{index:false,maxAge:'1h'}));

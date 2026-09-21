@@ -10,7 +10,8 @@
     "dev": "node server.js",
     "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js",
     "test:importos": "node scripts/test-importos-clean.js",
-    "test:os": "npm run test:importos"
+    "test:os": "npm run test:importos",
+    "postinstall": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build"
   },
   "keywords": [
     "vehicle-import",

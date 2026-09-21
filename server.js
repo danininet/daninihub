@@ -7,7 +7,7 @@ const {mountPublicRuntime}=require('./server-public-runtime');
 
 const app=express();
 const PORT=Number(process.env.PORT||4242);
-const DEPLOYMENT_MARKER='danini-importos-clean-v1';
+const DEPLOYMENT_MARKER='danini-automotive-clean-v2';
 
 app.set('trust proxy',1);
 
@@ -15,7 +15,7 @@ app.get('/health',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
     ok:true,
-    service:'Danini ImportOS',
+    service:'DANINI Automotive Import Intelligence',
     deploymentMarker:DEPLOYMENT_MARKER,
     languages:['de','sr'],
     routes:['DE→RS','CH→RS'],

@@ -1,14 +1,21 @@
-# Danini ImportOS
+# DANINI Automotive Import Intelligence
 
-Clean production repository for the Danini ImportOS automotive platform.
+Clean production repository for the DANINI automotive import system.
 
-**Promise:** DECIDE · VERIFY · EXECUTE
+**DECIDE · VERIFY · EXECUTE**
 
-Runtime is intentionally limited to:
-- public DE/SR website + legal pages,
-- ImportOS decision engine and Model DNA,
-- service-request pipeline,
-- gated €9.90 Import Passport checkout,
-- durable ImportOS record store.
+Current production runtime contains only:
+- server-rendered DE/SR public website,
+- Import Passport / SafeBuy / Model DNA engine,
+- FieldCheck and Pro Mechanic flow,
+- Original Parts Desk,
+- driver / trailer / truck service requests,
+- Stripe + PayPal authorization/capture,
+- Import Base Čalije connection,
+- Knowledge Garage,
+- protected owner quote desk,
+- durable ImportOS store,
+- tests and deployment workflow.
 
-Historical dispatch, AI Office, Revenue OS, Gumroad, transport-room and course code has been removed from the working tree. Git history remains the technical archive.
+No React/Vite frontend is used in production.
+Historical code is not present in the working tree.

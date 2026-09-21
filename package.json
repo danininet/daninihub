@@ -1,17 +1,15 @@
 {
   "name": "daninihub",
   "version": "1.0.0",
-  "description": "Danini ImportOS — vehicle import decision, verification and execution platform.",
+  "description": "DANINI Automotive Import Intelligence — DE/CH to Serbia decision, verification and execution platform.",
   "main": "server.js",
   "scripts": {
-    "build": "npm run build:front",
-    "build:front": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build",
     "start": "node server.js",
     "dev": "node server.js",
+    "build": "npm run check:syntax && npm run test:importos",
     "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js",
     "test:importos": "node scripts/test-importos-clean.js",
-    "test:os": "npm run test:importos",
-    "postinstall": "npm --prefix daninihub-front install && npm --prefix daninihub-front run build"
+    "test:os": "npm run test:importos"
   },
   "keywords": [
     "vehicle-import",

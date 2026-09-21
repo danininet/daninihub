@@ -113,10 +113,16 @@ function knowledgePage(route){
 function mountPublicRuntime(app){
   // Serve brand assets even if the Vite build is temporarily unavailable.
   if(fs.existsSync(PUBLIC_ASSETS))app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
-  app.get('/',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('de'))});
-  app.get('/de',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('de'))});
-  app.get('/sr',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('sr'))});
-  app.get('/en',(req,res)=>res.redirect(308,'/de/'));
+  function sendFrontend(res,fallbackHtml){
+    res.set('Cache-Control','no-store, no-cache, must-revalidate');
+    if(fs.existsSync(INDEX))return res.sendFile(INDEX);
+    return res.type('html').send(fallbackHtml);
+  }
+
+  app.get('/',(req,res)=>sendFrontend(res,home('de')));
+  app.get('/de',(req,res)=>sendFrontend(res,home('de')));
+  app.get('/sr',(req,res)=>sendFrontend(res,home('sr')));
+  app.get('/en',(req,res)=>sendFrontend(res,home('de')));
 
   app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
@@ -124,8 +130,8 @@ function mountPublicRuntime(app){
     res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+urls+'</urlset>');
   });
 
-  app.get('/de/',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('de'))});
-  app.get('/sr/',(req,res)=>{res.set('Cache-Control','no-store, no-cache, must-revalidate');res.type('html').send(home('sr'))});
+  app.get('/de/',(req,res)=>sendFrontend(res,home('de')));
+  app.get('/sr/',(req,res)=>sendFrontend(res,home('sr')));
 
   app.get('/owner/importos',(req,res)=>{
     res.set('X-Robots-Tag','noindex,nofollow');
@@ -138,8 +144,7 @@ function mountPublicRuntime(app){
     const route=req.path;
     const page=route.includes('/wissen/')||route.includes('/vodic/')?knowledgePage(route):legalPage(route);
     if(!page)return res.status(404).end();
-    res.set('Cache-Control','no-store, no-cache, must-revalidate');
-    res.type('html').send(page);
+    return sendFrontend(res,page);
   });
 
   if(fs.existsSync(FRONT))app.use(express.static(FRONT,{index:false,maxAge:'1h'}));

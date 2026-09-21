@@ -1,6 +1,7 @@
 import {useEffect,useState} from 'react'
 import {ARTICLES} from './ImportOSKnowledge'
 import './ImportOSLanding.css'
+import {applySeo,organization} from './seo'
 
 const C={
   de:{
@@ -57,16 +58,7 @@ const SERVICES=[
   ['TRUCK_TRANSPORT','Truck / Autotransporter'],
   ['IMPORT_BASE','Import Base Čalije']
 ]
-const NAV=[
-  ['#passport','Passport'],
-  ['#inspection','Inspection'],
-  ['#parts','Parts'],
-  ['#transport','Transport'],
-  ['#payment-protection','Payment Safe'],
-  ['#base','Import Base'],
-  ['#wissen','Knowledge'],
-  ['#service-request','Service Desk']
-]
+const NAV={de:[['#passport','Import-Check'],['#inspection','Fahrzeugprüfung'],['#parts','Originalteile'],['#transport','Überführung'],['#payment-protection','Zahlungsschutz'],['#base','Import Base'],['#wissen','Ratgeber'],['#service-request','Anfrage']],sr:[['#passport','Provera uvoza'],['#inspection','Pregled vozila'],['#parts','Originalni delovi'],['#transport','Dovoz'],['#payment-protection','Zaštita plaćanja'],['#base','Import Base'],['#wissen','Vodiči'],['#service-request','Pošalji upit']]}
 
 function money(v){return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(v||0))}
 function verdict(v,lang){return ({DO_NOT_BUY_YET:lang==='sr'?'NE PLAĆAJ JOŠ':'NOCH NICHT KAUFEN',VERIFY_BEFORE_PAYMENT:lang==='sr'?'PROVERI PRE UPLATE':'VOR ZAHLUNG PRÜFEN',CALCULATED_CANDIDATE:lang==='sr'?'KANDIDAT ZA DALJU PROVERU':'KANDIDAT FÜR WEITERE PRÜFUNG'})[v]||v}
@@ -90,8 +82,8 @@ export default function ImportOSLanding({lang='de',onLanguage}){
   const setR=(k,v)=>setReq(x=>({...x,[k]:v}))
 
   useEffect(()=>{
-    document.documentElement.lang=lang
-    document.title=lang==='sr'?'DANINI | Automotive Import Intelligence':'DANINI | Automotive Import Intelligence'
+    const sr=lang==='sr'
+    applySeo({lang,title:sr?'Uvoz automobila iz Nemačke i Švajcarske | DANINI ImportOS':'Autoimport Deutschland/Schweiz nach Serbien | DANINI ImportOS',description:sr?'Izračunajte realan trošak uvoza, proverite VIN, poreklo, prodavca i vozilo pre uplate. Pregled, delovi i dovoz DE/CH → RS u jednom sistemu.':'Reale Importkosten berechnen und VIN, Herkunft, Verkäufer sowie Fahrzeug vor Zahlung prüfen. Prüfung, Teile und Transport DE/CH → RS in einem System.',path:`/${lang}/`,dePath:'/de/',srPath:'/sr/',schema:[organization,{'@type':'WebSite','@id':'https://daninihub.com/#website',name:'DANINI ImportOS',url:'https://daninihub.com/'},{'@type':'Service',name:'DANINI ImportOS',provider:{'@id':'https://daninihub.com/#organization'},serviceType:sr?'Provera i podrška pri uvozu automobila':'Fahrzeugimport-Prüfung und Begleitung',areaServed:['DE','CH','RS']} ]})
     const q=new URLSearchParams(location.search).get('quote')
     if(q){
       setQuoteState('loading')
@@ -159,7 +151,7 @@ export default function ImportOSLanding({lang='de',onLanguage}){
         <a className="ios-brand" href={`/${lang}/`}><img src="/importos-mark.svg" alt="DANINI"/><span><strong>DANINI</strong><small>AUTOMOTIVE IMPORT INTELLIGENCE</small></span></a>
         <div className="ios-lang"><button className={lang==='de'?'on':''} onClick={()=>onLanguage?.('de')}>DE</button><button className={lang==='sr'?'on':''} onClick={()=>onLanguage?.('sr')}>SR</button></div>
       </div>
-      <nav className="ios-navstrip" aria-label="Main navigation">{NAV.map(([href,label])=><a key={href} href={href}>{label}</a>)}</nav>
+      <nav className="ios-navstrip" aria-label={lang==='sr'?'Glavna navigacija':'Hauptnavigation'}>{NAV[lang].map(([href,label])=><a key={href} href={href}>{label}</a>)}</nav>
     </header>
 
     <main>

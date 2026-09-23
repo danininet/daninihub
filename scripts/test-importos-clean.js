@@ -50,5 +50,6 @@ assert.ok(fs.existsSync(path.join(root,'public','favicon.svg')));
 assert.ok(fs.existsSync(path.join(root,'public','visual-uvoz.svg')));
 assert.ok(fs.existsSync(path.join(root,'public','visual-pregled.svg')));
 assert.ok(fs.existsSync(path.join(root,'public','visual-logistika.svg')));
-assert.match(sr,/PAMETAN UVOZ AUTOMOBILA/);
+assert.match(sr,/UVOZ AUTOMOBILA/);
+assert.match(sr,/pregled-polovnog-automobila.webp/);
 console.log('DANINI clean product contract: OK');

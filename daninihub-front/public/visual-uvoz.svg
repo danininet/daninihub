@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="t d">
+<title id="t">DANINI uvoz automobila</title><desc id="d">Automobil na putu od Nemačke i Švajcarske ka Srbiji sa proverom troškova i dokumenata.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#111820"/><stop offset="1" stop-color="#070a0d"/></linearGradient>
+  <linearGradient id="car" x1="0" x2="1"><stop stop-color="#e8edf1"/><stop offset="1" stop-color="#8d9aa4"/></linearGradient>
+  <filter id="shadow"><feDropShadow dx="0" dy="16" stdDeviation="18" flood-opacity=".35"/></filter>
+</defs>
+<rect width="1200" height="680" rx="30" fill="url(#bg)"/>
+<path d="M80 550 C290 470 410 510 590 430 S920 300 1120 335" fill="none" stroke="#26323b" stroke-width="24" stroke-linecap="round"/>
+<path d="M80 550 C290 470 410 510 590 430 S920 300 1120 335" fill="none" stroke="#ff6d2d" stroke-width="4" stroke-dasharray="20 22" opacity=".9"/>
+<g fill="#95a3ad" font-family="Arial,sans-serif" font-size="28" font-weight="700"><text x="90" y="110">DE</text><text x="430" y="180">CH</text><text x="1010" y="150">RS</text></g>
+<g opacity=".45" stroke="#3d4b55" stroke-width="2"><path d="M120 140h180M120 175h125M430 210h180M960 185h140"/></g>
+<g transform="translate(345 315)" filter="url(#shadow)">
+  <path d="M45 95 95 28c16-22 40-34 69-34h210c27 0 48 10 64 31l56 70 76 20c21 6 35 25 35 47v53H0v-58c0-31 17-51 45-62Z" fill="url(#car)"/>
+  <path d="M121 41h92v54H80l41-54Zm112 0h130c18 0 31 7 41 21l25 33H233V41Z" fill="#18232c"/>
+  <circle cx="120" cy="214" r="42" fill="#0a0d10"/><circle cx="120" cy="214" r="21" fill="#788691"/>
+  <circle cx="472" cy="214" r="42" fill="#0a0d10"/><circle cx="472" cy="214" r="21" fill="#788691"/>
+  <rect x="522" y="121" width="62" height="18" rx="9" fill="#ff6d2d"/>
+</g>
+<g font-family="Arial,sans-serif">
+  <rect x="785" y="410" width="290" height="154" rx="16" fill="#10171d" stroke="#35434d"/>
+  <text x="815" y="450" fill="#ff6d2d" font-size="18" font-weight="700">PRE KUPOVINE</text>
+  <text x="815" y="490" fill="#eaf0f4" font-size="26" font-weight="700">Trošak • Rizik • Poreklo</text>
+  <text x="815" y="525" fill="#9cabb5" font-size="20">Pregled • Dovoz • Delovi</text>
+</g>
+</svg>

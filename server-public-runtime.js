@@ -3,7 +3,7 @@
 const express=require('express');
 const path=require('path');
 
-const PUBLIC_ASSETS=path.join(__dirname,'daninihub-front','public');
+const PUBLIC_ASSETS=path.join(__dirname,'public');
 
 const articles=[
   ['deutschland-selbstimport','Auto selbst aus Deutschland nach Serbien importieren','Kako samostalno uvesti auto iz Nemačke u Srbiju','Eigentum, VIN, Ausfuhr, Ursprung und Gesamtkosten in der richtigen Reihenfolge.','Vlasništvo, VIN, izvoz, poreklo i ukupni trošak pravilnim redosledom.'],

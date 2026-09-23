@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="t">
+<title id="t">Pregled automobila pre kupovine</title>
+<defs><linearGradient id="b" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#121a21"/><stop offset="1" stop-color="#080b0e"/></linearGradient></defs>
+<rect width="900" height="560" rx="28" fill="url(#b)"/>
+<g transform="translate(95 178)">
+  <path d="M25 100 71 42c15-19 34-29 59-29h245c24 0 42 8 57 26l50 61 64 16c20 5 33 22 33 43v50H0v-54c0-27 10-43 25-55Z" fill="#cad2d8"/>
+  <path d="M94 48h105v52H52l42-52Zm125 0h139c16 0 29 6 39 19l25 33H219V48Z" fill="#17222b"/>
+  <circle cx="113" cy="210" r="38" fill="#080b0e"/><circle cx="113" cy="210" r="18" fill="#73808a"/>
+  <circle cx="438" cy="210" r="38" fill="#080b0e"/><circle cx="438" cy="210" r="18" fill="#73808a"/>
+</g>
+<g transform="translate(620 105)">
+  <circle cx="80" cy="80" r="70" fill="none" stroke="#ff6d2d" stroke-width="14"/>
+  <path d="m130 130 78 78" stroke="#ff6d2d" stroke-width="20" stroke-linecap="round"/>
+  <path d="M45 82h70M80 47v70" stroke="#dce4e9" stroke-width="8" stroke-linecap="round" opacity=".9"/>
+</g>
+<g font-family="Arial,sans-serif"><text x="92" y="90" fill="#ff6d2d" font-size="18" font-weight="700">PREGLED PRE KUPOVINE</text><text x="92" y="125" fill="#edf2f5" font-size="30" font-weight="700">Video • dokumenti • mehanika</text><text x="92" y="500" fill="#93a1ab" font-size="20">Ne kupuj na osnovu oglasa. Proveri konkretan auto.</text></g>
+</svg>

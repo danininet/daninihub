@@ -140,6 +140,14 @@ function mountImportOSRuntime(app){
     return res.json({ok:true,reference:record.reference,delivered});
   });
 
+  app.get('/api/importos/admin/records',async(req,res)=>{
+    if(!adminAllowed(req))return res.status(403).json({ok:false,error:'FORBIDDEN'});
+    const records=await store.listRecent(50);
+    res.set('Cache-Control','no-store');
+    return res.json({ok:true,records:records.map(item=>({reference:item.reference,type:item.type,status:item.status,
+      createdAt:item.createdAt,name:item.name,email:item.email,language:item.language,payload:item.payload}))});
+  });
+
   app.post('/api/importos/admin/quotes',async(req,res)=>{
     if(!adminAllowed(req))return res.status(403).json({ok:false,error:'FORBIDDEN'});
     const data=req.body||{};

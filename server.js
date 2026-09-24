@@ -7,7 +7,7 @@ const {mountPublicRuntime}=require('./server-public-runtime');
 
 const app=express();
 const PORT=Number(process.env.PORT||4242);
-const DEPLOYMENT_MARKER='danini-automotive-sr-20260923';
+const DEPLOYMENT_MARKER='daninihub-sales-20260924';
 
 app.set('trust proxy',1);
 

@@ -161,7 +161,7 @@ function mountImportOSRuntime(app){
         payment:null
       }
     });
-    return res.json({ok:true,quote:quotePublic(record),bookingUrl:publicUrl(req)+'/'+record.language+'/?quote='+encodeURIComponent(ref)+'#payment-protection'});
+    return res.json({ok:true,quote:quotePublic(record),bookingUrl:publicUrl(req)+'/'+record.language+'/?quote='+encodeURIComponent(ref)+'#quote-checkout'});
   });
 
   app.get('/api/importos/quotes/:reference',async(req,res)=>{
@@ -169,14 +169,15 @@ function mountImportOSRuntime(app){
     const pub=quotePublic(record);
     if(!pub)return res.status(404).json({ok:false,error:'QUOTE_NOT_FOUND'});
     if(!quoteUsable(record)&&record.status!=='CAPTURED')return res.status(410).json({ok:false,error:'QUOTE_EXPIRED',quote:pub});
-    return res.json({ok:true,quote:pub,paymentOptions:{card:Boolean(process.env.STRIPE_SECRET_KEY),paypal:Boolean(process.env.PAYPAL_CLIENT_ID&&process.env.PAYPAL_CLIENT_SECRET)}});
+    const enabled=process.env.DANINI_IMPORTOS_SERVICE_PAYMENTS_ENABLED==='true';
+    return res.json({ok:true,quote:pub,paymentOptions:{card:enabled&&Boolean(process.env.STRIPE_SECRET_KEY),paypal:enabled&&Boolean(process.env.PAYPAL_CLIENT_ID&&process.env.PAYPAL_CLIENT_SECRET)}});
   });
 
   app.post('/api/importos/quotes/:reference/authorize/stripe',async(req,res)=>{
     if(process.env.DANINI_IMPORTOS_SERVICE_PAYMENTS_ENABLED!=='true')return res.status(503).json({ok:false,error:'SERVICE_PAYMENTS_NOT_ACTIVE'});
     const ref=clean(req.params.reference,80);
     const record=await store.get(ref);
-    if(!quoteUsable(record))return res.status(409).json({ok:false,error:'QUOTE_NOT_USABLE'});
+    if(!quoteUsable(record)||record.status!=='QUOTED')return res.status(409).json({ok:false,error:'QUOTE_NOT_USABLE'});
     try{
       const created=await createStripeHoldCheckout({
         origin:publicUrl(req),quoteRef:ref,email:record.email,amountCents:record.payload.amountCents,currency:'eur',
@@ -194,7 +195,7 @@ function mountImportOSRuntime(app){
     if(process.env.DANINI_IMPORTOS_SERVICE_PAYMENTS_ENABLED!=='true')return res.status(503).json({ok:false,error:'SERVICE_PAYMENTS_NOT_ACTIVE'});
     const ref=clean(req.params.reference,80);
     const record=await store.get(ref);
-    if(!quoteUsable(record))return res.status(409).json({ok:false,error:'QUOTE_NOT_USABLE'});
+    if(!quoteUsable(record)||record.status!=='QUOTED')return res.status(409).json({ok:false,error:'QUOTE_NOT_USABLE'});
     try{
       const created=await createPayPalAuthorizeOrder({
         origin:publicUrl(req),quoteRef:ref,amountCents:record.payload.amountCents,currency:'EUR',

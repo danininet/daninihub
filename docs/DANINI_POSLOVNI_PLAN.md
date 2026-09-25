@@ -12,9 +12,9 @@ Ažurirano: 25. septembar 2026. Fokus: kupac iz Srbije/Balkana koji je pronašao
 
 ## Put kupca i odgovornost
 
-Oglas ili pretraga → zasebna stranica usluge → kalkulator ili vodič → formular sa oglasom → sačuvan upit sa referencom → obaveštenje vlasniku ako je Brevo podešen → ručna provera izvodljivosti i cene → pisana ponuda sa rokom → korisnik prihvata → opcionalna autorizacija plaćanja kada je uključena → izvršenje → naplata po dogovorenim uslovima.
+Oglas ili pretraga → zasebna stranica usluge → kalkulator ili vodič → formular sa oglasom → sačuvan upit sa referencom → obaveštenje vlasniku ako je Brevo podešen → ručna provera izvodljivosti i cene → ponuda povezana sa brojem upita i poslata kupcu mejlom ako je Brevo podešen → korisnik prihvata → opcionalna autorizacija plaćanja kada je uključena → izvršenje → naplata po dogovorenim uslovima.
 
-Administratorski pregled `/owner/importos` čuva upite i omogućava kreiranje ponude. Nije zamena za ljudsku proveru oglasa i saradnika. Bez podešenih `DB_HOST`, `DB_USER`, `DB_NAME` podaci se čuvaju u lokalnom skladištu procesa, pa trajnost upita na produkciji mora biti proverena pre plaćenog marketinga. Bez `DANINI_ADMIN_SECRET` vlasnik ne može da pristupi konzoli. Bez `BREVO_API_KEY` i adrese pošiljaoca upit može biti sačuvan bez mejla; korisnik vidi referencu i rezervni email. Plaćanje je dostupno tek uz potrebne Stripe/PayPal ključeve i `DANINI_IMPORTOS_CHECKOUT_ENABLED=true`.
+Administratorski pregled `/owner/importos` prikazuje upite i omogućava da se iz konkretnog upita pripremi ponuda, sačuva veza među njima i prati status. Nije zamena za ljudsku proveru oglasa i saradnika. Bez podešenih `DB_HOST`, `DB_USER`, `DB_NAME` podaci se čuvaju u lokalnom fajlu `runtime/importos-records.json`, pa trajnost tog fajla posle ponovnog pokretanja i objave na produkciji mora biti proverena pre plaćenog marketinga. Bez `DANINI_ADMIN_SECRET` vlasnik ne može da pristupi konzoli. Bez `BREVO_API_KEY` i adrese pošiljaoca upit može biti sačuvan bez mejla; korisnik vidi referencu i rezervni email. Plaćanje je dostupno tek uz potrebne Stripe/PayPal ključeve i `DANINI_IMPORTOS_CHECKOUT_ENABLED=true`.
 
 ## Jedinična ekonomika: primer, ne prognoza
 

@@ -66,6 +66,18 @@ async function notifyServiceRequest(record){
   });
   return true;
 }
+async function notifyQuote(record,bookingUrl){
+  if(!process.env.BREVO_API_KEY)return false;
+  const from=sender();if(!from)return false;
+  const api=new BrevoClient({apiKey:process.env.BREVO_API_KEY}).transactionalEmails;
+  const sr=record.language==='sr';
+  await api.sendTransacEmail({
+    sender:from,to:[{email:record.email,name:record.name||'DANINI korisnik'}],
+    subject:(sr?'DANINI ponuda · ':'DANINI Angebot · ')+record.reference,
+    htmlContent:`<h2>${sr?'Vaša ponuda':'Ihr Angebot'}</h2><p>${html(record.payload.description)}</p><p><strong>${eur(record.payload.amountCents/100)}</strong></p><p><a href="${html(bookingUrl)}">${sr?'Pogledaj ponudu':'Angebot ansehen'}</a></p><p>${sr?'Ponuda važi do':'Angebot gültig bis'}: ${html(record.payload.expiresAt)}. ${sr?'Usluga se sprovodi tek po dogovoru o obimu i terminu.':'Leistung nach Vereinbarung von Umfang und Termin.'}</p>`
+  });
+  return true;
+}
 function previewResult(full){
   return {
     product:full.product,version:full.version,decision:full.decision,route:full.route,customsBasis:full.customsBasis,
@@ -158,6 +170,12 @@ function mountImportOSRuntime(app){
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({ok:false,error:'VALID_EMAIL_REQUIRED'});
     if(!Number.isFinite(amountEur)||amountEur<5||amountEur>20000)return res.status(400).json({ok:false,error:'INVALID_AMOUNT'});
     const hours=Math.min(168,Math.max(1,Number(data.expiresInHours)||72));
+    const requestReference=clean(data.requestReference,80);
+    let linkedRequest=null;
+    if(requestReference){
+      linkedRequest=await store.get(requestReference);
+      if(!linkedRequest||linkedRequest.type!=='service-request'||linkedRequest.email!==email)return res.status(400).json({ok:false,error:'REQUEST_MISMATCH'});
+    }
     const ref=reference('QTE');
     const record=await store.create({
       reference:ref,type:'service-quote',language:data.language==='sr'?'sr':'de',email,name:clean(data.name,180),status:'QUOTED',
@@ -168,10 +186,15 @@ function mountImportOSRuntime(app){
         currency:'EUR',
         serviceDate:clean(data.serviceDate,80)||null,
         expiresAt:new Date(Date.now()+hours*3600000).toISOString(),
+        requestReference:linkedRequest?.reference||null,
         payment:null
       }
     });
-    return res.json({ok:true,quote:quotePublic(record),bookingUrl:publicUrl(req)+'/'+record.language+'/?quote='+encodeURIComponent(ref)+'#quote-checkout'});
+    const bookingUrl=publicUrl(req)+'/'+record.language+'/?quote='+encodeURIComponent(ref)+'#quote-checkout';
+    if(linkedRequest)await store.update(linkedRequest.reference,{status:'QUOTED',reviewedAt:new Date().toISOString()});
+    let delivered=false;
+    try{delivered=await notifyQuote(record,bookingUrl)}catch(error){console.error('ImportOS quote email failed:',error.message)}
+    return res.json({ok:true,quote:quotePublic(record),bookingUrl,delivered});
   });
 
   app.get('/api/importos/quotes/:reference',async(req,res)=>{

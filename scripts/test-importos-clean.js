@@ -43,7 +43,7 @@ assert.doesNotMatch(server,/AI Office|Dispatch|Revenue OS/);
 assert.doesNotMatch(publicRuntime,/React|Vite/);
 assert.match(payments,/capture_method:'manual'/);
 assert.match(payments,/intent:'AUTHORIZE'/);
-assert.equal(pkg.scripts['build:front'],undefined);
+assert.equal(pkg.scripts['build:front'],'node scripts/build-hostinger.js');
 assert.equal(pkg.scripts.postinstall,undefined);
 assert.ok(fs.existsSync(path.join(root,'public','importos-mark.svg')));
 assert.ok(fs.existsSync(path.join(root,'public','favicon.svg')));

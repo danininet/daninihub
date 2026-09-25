@@ -7,6 +7,7 @@ on:
       - 'core/**'
       - 'public/**'
       - 'scripts/test-importos-clean.js'
+      - 'scripts/build-hostinger.js'
       - 'server.js'
       - 'server-public-runtime.js'
       - 'server-importos-runtime.js'
@@ -19,6 +20,7 @@ on:
       - 'core/**'
       - 'public/**'
       - 'scripts/test-importos-clean.js'
+      - 'scripts/build-hostinger.js'
       - 'server.js'
       - 'server-public-runtime.js'
       - 'server-importos-runtime.js'
@@ -42,3 +44,4 @@ jobs:
       - run: npm ci
       - run: npm run check:syntax
       - run: npm run test:importos
+      - run: npm run build

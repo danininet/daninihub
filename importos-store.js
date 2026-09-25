@@ -30,7 +30,7 @@ function parseRow(row){
 class ImportOSStore{
   constructor(options={}){
     this.env=options.env||process.env;
-    this.storageFile=options.storageFile||path.join(__dirname,'runtime','importos-records.json');
+    this.storageFile=options.storageFile||this.env.DANINI_IMPORTOS_STORAGE_FILE||path.join(__dirname,'runtime','importos-records.json');
     this.mysql=options.mysql||null;
     this.pool=null;
     this.mode=databaseConfigured(this.env)?'mysql':'file';

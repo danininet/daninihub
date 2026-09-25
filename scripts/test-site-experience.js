@@ -14,9 +14,10 @@ async function main(){
       assert.match(html,/<title>[^<]+<\/title>/,route);
       if(route==='/'){
         assert.match(html,/href="\/sr\/upit"/);
-        assert.match(html,/pregled-polovnog-automobila\.webp/);
+        assert.match(html,/danini-auto-uvoz\.webp/);
         assert.doesNotMatch(html,/id="quickcheck"/);
       }
+      if(route==='/sr/pregled-auta'){assert.match(html,/danini-pregled-auta\.webp/);assert.doesNotMatch(html,/danini-auto-uvoz\.webp/)}
       if(route==='/sr/upit')assert.match(html,/id="service-form"/);
       if(route==='/sr/kalkulator')assert.match(html,/id="quickcheck"/);
       if(route.includes('?quote='))assert.match(html,/id="quote-checkout"/);
@@ -25,7 +26,7 @@ async function main(){
     for(const route of Object.keys(routes))assert.ok(ROUTES[route],route);
     const map=await (await fetch(base+'/sitemap.xml')).text();
     assert.match(map,/\/sr\/upit/);
-    const image=await fetch(base+'/pregled-polovnog-automobila.webp');assert.equal(image.status,200);assert.match(image.headers.get('content-type'),/image\/webp/);
+    for(const path of ['/danini-auto-uvoz.webp','/danini-pregled-auta.webp']){const image=await fetch(base+path);assert.equal(image.status,200);assert.match(image.headers.get('content-type'),/image\/webp/)}
     console.log('DANINI public pages, quote links and image: OK');
   }finally{server.close()}
 }

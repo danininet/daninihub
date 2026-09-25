@@ -24,7 +24,7 @@ for(const directory of ['dist',path.join('daninihub-front','dist')]){
     fs.copyFileSync(path.join(root,'public',asset),path.join(output,asset));
   }
   const html=fs.readFileSync(path.join(output,'index.html'),'utf8');
-  if(!html.includes('href="/sr/upit"')||!fs.existsSync(path.join(output,'sr','upit','index.html'))||!fs.existsSync(path.join(output,'pregled-polovnog-automobila.webp'))){
+  if(!html.includes('href="/sr/upit"')||!fs.existsSync(path.join(output,'sr','upit','index.html'))||!fs.existsSync(path.join(output,'danini-auto-uvoz.webp'))||!fs.existsSync(path.join(output,'danini-pregled-auta.webp'))){
     throw new Error('Hostinger build output is incomplete: '+directory);
   }
   console.log('Hostinger build output ready: '+directory);

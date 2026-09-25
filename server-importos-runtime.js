@@ -162,6 +162,19 @@ function mountImportOSRuntime(app){
       createdAt:item.createdAt,name:item.name,email:item.email,language:item.language,payload:item.payload}))});
   });
 
+  app.get('/api/importos/admin/readiness',async(req,res)=>{
+    if(!adminAllowed(req))return res.status(403).json({ok:false,error:'FORBIDDEN'});
+    await store.init();
+    res.set('Cache-Control','no-store');
+    return res.json({ok:true,
+      storage:store.mode==='mysql'?'database':'local-file',
+      emailConfigured:Boolean(process.env.BREVO_API_KEY&&sender()),
+      cardConfigured:Boolean(process.env.STRIPE_SECRET_KEY),
+      paypalConfigured:Boolean(process.env.PAYPAL_CLIENT_ID&&process.env.PAYPAL_CLIENT_SECRET),
+      checkoutEnabled:process.env.DANINI_IMPORTOS_CHECKOUT_ENABLED==='true'
+    });
+  });
+
   app.post('/api/importos/admin/quotes',async(req,res)=>{
     if(!adminAllowed(req))return res.status(403).json({ok:false,error:'FORBIDDEN'});
     const data=req.body||{};

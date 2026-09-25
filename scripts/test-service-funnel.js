@@ -9,6 +9,7 @@ process.env.DANINI_IMPORTOS_STORAGE_FILE=path.join(tmp,'records.json');
 process.env.DANINI_ADMIN_SECRET='test-only-owner-secret';
 process.env.BREVO_API_KEY='';
 process.env.DB_HOST='';
+process.env.DANINI_IMPORTOS_CHECKOUT_ENABLED='';
 const {mountImportOSRuntime}=require('../server-importos-runtime');
 async function main(){
   const app=express();mountImportOSRuntime(app);
@@ -20,6 +21,9 @@ async function main(){
     assert.equal(request.status,200);
     const received=await request.json();assert.match(received.reference,/^SRV-/);assert.equal(received.delivered,false);
     const unauthorized=await fetch(base+'/api/importos/admin/records');assert.equal(unauthorized.status,403);
+    const hiddenStatus=await fetch(base+'/api/importos/admin/readiness');assert.equal(hiddenStatus.status,403);
+    const statusResponse=await fetch(base+'/api/importos/admin/readiness',{headers:{'X-Danini-Admin':process.env.DANINI_ADMIN_SECRET}});
+    const status=await statusResponse.json();assert.equal(status.storage,'local-file');assert.equal(status.emailConfigured,false);assert.equal(status.checkoutEnabled,false);
     const quote=await post('/api/importos/admin/quotes',{requestReference:received.reference,email:'test-kupac@example.invalid',name:'Test kupac',serviceType:'FIELD_CHECK_LIVE',description:'Obilazak vozila u Duisburgu',amountEur:79,language:'sr'},true);
     assert.equal(quote.status,200);
     const offered=await quote.json();assert.equal(offered.delivered,false);assert.match(offered.bookingUrl,/\/sr\/\?quote=QTE-/);

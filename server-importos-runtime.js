@@ -59,8 +59,10 @@ async function notifyServiceRequest(record){
   });
   if(record.email)await api.sendTransacEmail({
     sender:from,to:[{email:record.email,name:record.name||'ImportOS Kunde'}],
-    subject:'Ihre DANINI Anfrage · '+record.reference,
-    htmlContent:`<h2>Ihre Anfrage ist eingegangen.</h2><p>Referenz: <strong>${html(record.reference)}</strong></p><p>Wir prüfen Umfang, Entfernung, Verfügbarkeit und notwendige Dokumente. Erst danach erhalten Sie ein konkretes Angebot. Diese Bestätigung ist noch keine Auftragsannahme.</p><p>DANINI · Automotive Import Intelligence</p>`
+    subject:(record.language==='sr'?'Vaš DANINI upit · ':'Ihre DANINI Anfrage · ')+record.reference,
+    htmlContent:record.language==='sr'
+      ?`<h2>Primili smo vaš upit.</h2><p>Broj upita: <strong>${html(record.reference)}</strong></p><p>Proverićemo udaljenost, dostupnost, obim usluge i potrebna dokumenta. Zatim dobijate konkretnu ponudu. Ova potvrda još nije prihvatanje narudžbine.</p><p>DANINI · Pregled i uvoz automobila</p>`
+      :`<h2>Ihre Anfrage ist eingegangen.</h2><p>Referenz: <strong>${html(record.reference)}</strong></p><p>Wir prüfen Umfang, Entfernung, Verfügbarkeit und notwendige Dokumente. Erst danach erhalten Sie ein konkretes Angebot. Diese Bestätigung ist noch keine Auftragsannahme.</p><p>DANINI · Fahrzeugimport</p>`
   });
   return true;
 }

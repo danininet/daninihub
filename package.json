@@ -6,10 +6,11 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "npm run check:syntax && npm run test:importos && npm run build:front",
+    "build": "npm run check:syntax && npm run test:importos && npm run test:site && npm run build:front",
     "build:front": "node scripts/build-hostinger.js",
-    "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js",
+    "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check site-experience.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js",
     "test:importos": "node scripts/test-importos-clean.js",
+    "test:site": "node scripts/test-site-experience.js",
     "test:os": "npm run test:importos"
   },
   "keywords": [

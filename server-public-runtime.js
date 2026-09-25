@@ -2,6 +2,7 @@
 
 const express=require('express');
 const path=require('path');
+const experience=require('./site-experience');
 
 const PUBLIC_ASSETS=path.join(__dirname,'public');
 
@@ -28,6 +29,8 @@ const ROUTES={
   '/de/bedingungen':{lang:'de',title:'Nutzungsrahmen | DANINI',description:'Rahmen für digitale Analysen und Serviceleistungen.'},
   '/sr/uslovi':{lang:'sr',title:'Uslovi | DANINI',description:'Okvir korišćenja digitalnih i terenskih usluga.'}
 };
+
+for(const [route,meta] of Object.entries(experience.routes)) ROUTES[route]=meta;
 
 for(const [slug,deTitle,srTitle,deDesc,srDesc] of articles){
   ROUTES['/de/wissen/'+slug]={lang:'de',title:deTitle+' | DANINI',description:deDesc};
@@ -126,8 +129,18 @@ function knowledgePage(route){
     'landed-cost-kalkulation':['Kreni od kupovne cene i dodaj put ili prevoz, izvozne troškove i dažbine.','Dodaj tehnički postupak, osiguranje, registraciju i rezervu za popravke.','Računaj raspon, jer poreklo, vrednost i dokumenti mogu promeniti konačan iznos.'],
     'vin-dokumente-checkliste':['Traži VIN pre polaska i uporedi ga sa fotografijama dokumentacije.','Proveri vlasnika, prodavca, račun ili ugovor i originalna dokumenta.','Ako se podaci ne slažu, zastani i razjasni razliku pre uplate.']
   };
-  const points=practical[slug]||[];
-  const body='<header class="head"><div class="top"><a class="brand" href="/'+meta.lang+'/"><img src="/importos-mark.svg" alt="DANINI"><div><strong>DANINI</strong><small>'+(sr?'UVOZ AUTOMOBILA':'FAHRZEUGIMPORT')+'</small></div></a></div></header><main class="wrap"><section class="section"><p class="eyebrow">'+(sr?'PRAKTIČNI VODIČ':'PRAXIS-RATGEBER')+'</p><h2>'+esc(title)+'</h2><p class="lead">'+esc(desc)+'</p><div class="grid">'+(sr?points.map((p,i)=>'<article class="card"><p class="eyebrow">KORAK '+(i+1)+'</p><p>'+esc(p)+'</p></article>').join(''):'<article class="card"><h3>Warum wichtig</h3><p>Kaufen erst, wenn Kosten, Dokumente und Risiko ausreichend klar sind.</p></article><article class="card"><h3>Regel</h3><p>Das günstigste Szenario gilt erst nach belegbarer Prüfung.</p></article><article class="card"><h3>Nächster Schritt</h3><p>Zur Startseite, Fahrzeug prüfen oder konkrete Anfrage senden.</p></article>')+'</div><p class="muted">'+(sr?'Ovo je početna kontrolna lista. Konačni uslovi zavise od konkretnog vozila i važećih pravila.':'Diese Hinweise sind eine erste Checkliste für das konkrete Fahrzeug.')+'</p><a class="btn" href="/'+meta.lang+'/#passport">'+(sr?'Izračunaj okvirni trošak':'Kosten prüfen')+'</a> <a class="btn secondary" href="/'+meta.lang+'/#service-request">'+(sr?'Pošalji upit za auto':'Anfrage senden')+'</a></section></main>';
+  const dePractical={
+    'deutschland-selbstimport':['Vor der Anzahlung VIN, Zulassungsunterlagen und Verkäuferdaten anfordern.','Kaufpreis, Export, Transport, Abgaben und Zulassung zusammenrechnen.','Originaldokumente und Eigentumsnachweis vor der Übergabe klären.'],
+    'schweiz-import':['Wechselkurs und Gebühren beim Preis in Schweizer Franken berücksichtigen.','Export- und Ursprungsdokumente vor dem Kauf klären.','Transportangebote vergleichen und eine Kostenreserve vorsehen.'],
+    'eur1-herkunft':['Das Land des Kaufs belegt keinen präferenziellen Ursprung.','Ursprungsnachweis vor einer günstigeren Zollannahme prüfen.','Ohne Nachweis auch das teurere Szenario rechnen.'],
+    'safebuy-vor-kaution':['VIN am Fahrzeug mit Inserat und Dokumenten vergleichen.','Verkäuferidentität und Empfänger der Zahlung prüfen.','Inserat, Vertrag und Zahlungsbelege sichern; keine Anzahlung unter Zeitdruck.'],
+    'oldtimer-30-plus':['Das Alter allein reicht für ein besonderes Verfahren nicht aus.','Originalität, technischen Zustand und Historie dokumentieren.','Voraussetzungen und Kosten für das konkrete Fahrzeug prüfen.'],
+    'transport-entscheidung':['Fahrt auf eigener Achse erfordert gültige Kennzeichen, Versicherung und Unterlagen.','Für defekte oder nicht zugelassene Autos Trailer oder Transporter anfragen.','Gesamtkosten, Zeit und Übergabeort vergleichen.'],
+    'landed-cost-kalkulation':['Kaufpreis, Ausfuhr, Transport und Abgaben zusammenrechnen.','Technisches Verfahren, Zulassung und Reparaturreserve ergänzen.','Eine Kostenspanne rechnen, bis Ursprung und Dokumente geklärt sind.'],
+    'vin-dokumente-checkliste':['VIN vor Anreise anfordern und mit Unterlagen vergleichen.','Eigentümer, Verkäufer, Kaufvertrag und Originalpapiere prüfen.','Abweichungen vor jeder Zahlung klären.']
+  };
+  const points=(sr?practical:dePractical)[slug]||[];
+  const body='<header class="head"><div class="top"><a class="brand" href="/'+meta.lang+'/"><img src="/importos-mark.svg" alt="DANINI"><div><strong>DANINI</strong><small>'+(sr?'UVOZ AUTOMOBILA':'FAHRZEUGIMPORT')+'</small></div></a></div></header><main class="wrap"><section class="section"><p class="eyebrow">'+(sr?'PRAKTIČNI VODIČ':'PRAXIS-RATGEBER')+'</p><h2>'+esc(title)+'</h2><p class="lead">'+esc(desc)+'</p><div class="grid">'+points.map((p,i)=>'<article class="card"><p class="eyebrow">'+(sr?'KORAK ':'SCHRITT ')+(i+1)+'</p><p>'+esc(p)+'</p></article>').join('')+'</div><p class="muted">'+(sr?'Ovo je početna kontrolna lista. Konačni uslovi zavise od konkretnog vozila i važećih pravila.':'Diese Hinweise sind eine erste Checkliste für das konkrete Fahrzeug.')+'</p><a class="btn" href="/'+meta.lang+'/'+(sr?'kalkulator':'rechner')+'">'+(sr?'Izračunaj okvirni trošak':'Kosten prüfen')+'</a> <a class="btn secondary" href="/'+meta.lang+'/'+(sr?'upit':'anfrage')+'">'+(sr?'Pošalji upit za auto':'Anfrage senden')+'</a></section></main>';
   return shell({lang:meta.lang,title:meta.title,description:meta.description,body});
 }
 
@@ -136,7 +149,7 @@ function ownerPage(){
   const scripts=`<script>
   const secretInput=document.getElementById('owner-secret');
   const show=(target,message)=>{target.replaceChildren();const p=document.createElement('p');p.className='result';p.textContent=message;target.appendChild(p)};
-  async function loadRecords(){const out=document.getElementById('records-result');if(!secretInput.value){show(out,'Unesi administratorsku lozinku.');return}try{const response=await fetch('/api/importos/admin/records',{headers:{'X-Danini-Admin':secretInput.value},cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'Pristup nije dozvoljen');out.replaceChildren();if(!data.records.length){show(out,'Još nema upita.');return}for(const record of data.records){const card=document.createElement('article');card.className='card';card.style.marginTop='12px';const add=(tag,value)=>{const e=document.createElement(tag);e.textContent=value;card.appendChild(e);return e};add('h3',record.reference+' · '+record.status);add('p',(record.type==='service-request'?'Upit':'Ponuda')+' · '+record.name+' · '+record.email);const p=record.payload||{};add('p',[p.vehicle,p.pickupLocation,p.message||p.description].filter(Boolean).join(' · '));if(record.type==='service-quote'&&['AUTHORIZED','AUTHORIZATION_PENDING'].includes(record.status)){for(const [action,label] of [['capture','NAPLATI IZVRŠENU USLUGU'],['void','OSLOBODI REZERVACIJU']]){if(action==='capture'&&record.status!=='AUTHORIZED')continue;const button=document.createElement('button');button.className='btn secondary';button.type='button';button.style.marginRight='8px';button.textContent=label;button.onclick=async()=>{if(!confirm(label+' za '+record.reference+'?'))return;button.disabled=true;try{const r=await fetch('/api/importos/admin/quotes/'+encodeURIComponent(record.reference)+'/'+action,{method:'POST',headers:{'Content-Type':'application/json','X-Danini-Admin':secretInput.value},body:'{}'});const result=await r.json();if(!r.ok)throw Error(result.error||'Akcija nije uspela');await loadRecords()}catch(error){show(out,error.message)}};card.appendChild(button)}}out.appendChild(card)}}catch(error){show(out,error.message)}}
+  async function loadRecords(){const out=document.getElementById('records-result');if(!secretInput.value){show(out,'Unesi administratorsku lozinku.');return}try{const response=await fetch('/api/importos/admin/records',{headers:{'X-Danini-Admin':secretInput.value},cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'Pristup nije dozvoljen');out.replaceChildren();const requests=data.records.filter(r=>r.type==='service-request').length,quotes=data.records.filter(r=>r.type==='service-quote').length;const summary=document.createElement('p');summary.className='result';summary.textContent='Poslednjih 50 zapisa: '+requests+' upita · '+quotes+' ponuda. Ovo nisu naplaćeni poslovi.';out.appendChild(summary);if(!data.records.length){show(out,'Još nema upita.');return}for(const record of data.records){const card=document.createElement('article');card.className='card';card.style.marginTop='12px';const add=(tag,value)=>{const e=document.createElement(tag);e.textContent=value;card.appendChild(e);return e};add('h3',record.reference+' · '+record.status);add('p',(record.type==='service-request'?'Upit':'Ponuda')+' · '+record.name+' · '+record.email);const p=record.payload||{};add('p',[p.vehicle,p.pickupLocation,p.message||p.description].filter(Boolean).join(' · '));if(record.type==='service-request'){const button=document.createElement('button');button.className='btn secondary';button.type='button';button.textContent='PRIPREMI PONUDU';button.onclick=()=>{const form=document.getElementById('owner-quote');form.elements.email.value=record.email;form.elements.name.value=record.name||'';form.elements.serviceType.value=p.serviceType||'FIELD_CHECK_LIVE';form.elements.language.value=record.language||'sr';form.elements.description.value='Upit '+record.reference+' · '+[p.vehicle,p.pickupLocation,p.message].filter(Boolean).join(' · ').slice(0,350);form.scrollIntoView({behavior:'smooth'});form.elements.amountEur.focus()};card.appendChild(button)}if(record.type==='service-quote'&&['AUTHORIZED','AUTHORIZATION_PENDING'].includes(record.status)){for(const [action,label] of [['capture','NAPLATI IZVRŠENU USLUGU'],['void','OSLOBODI REZERVACIJU']]){if(action==='capture'&&record.status!=='AUTHORIZED')continue;const button=document.createElement('button');button.className='btn secondary';button.type='button';button.style.marginRight='8px';button.textContent=label;button.onclick=async()=>{if(!confirm(label+' za '+record.reference+'?'))return;button.disabled=true;try{const r=await fetch('/api/importos/admin/quotes/'+encodeURIComponent(record.reference)+'/'+action,{method:'POST',headers:{'Content-Type':'application/json','X-Danini-Admin':secretInput.value},body:'{}'});const result=await r.json();if(!r.ok)throw Error(result.error||'Akcija nije uspela');await loadRecords()}catch(error){show(out,error.message)}};card.appendChild(button)}}out.appendChild(card)}}catch(error){show(out,error.message)}}
   document.getElementById('load-records').addEventListener('click',loadRecords);
   document.getElementById('owner-quote').addEventListener('submit',async event=>{event.preventDefault();const out=document.getElementById('owner-result');const fields=new FormData(event.currentTarget);const body=Object.fromEntries(fields.entries());body.amountEur=Number(body.amountEur);body.expiresInHours=Number(body.expiresInHours);try{const response=await fetch('/api/importos/admin/quotes',{method:'POST',headers:{'Content-Type':'application/json','X-Danini-Admin':secretInput.value},body:JSON.stringify(body)});const data=await response.json();if(!response.ok)throw Error(data.error||'Ponuda nije sačuvana');out.replaceChildren();const link=document.createElement('a');link.href=data.bookingUrl;link.textContent='Link ponude '+data.quote.reference;link.target='_blank';link.rel='noopener noreferrer';out.appendChild(link);await loadRecords()}catch(error){show(out,error.message)}});
   </script>`;
@@ -146,14 +159,14 @@ function ownerPage(){
 function mountPublicRuntime(app){
   app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
 
-  app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(home('sr'))});
-  app.get(['/sr','/sr/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(home('sr'))});
-  app.get(['/de','/de/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(home('de'))});
+  app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(req.query.quote?home('sr'):experience.render('sr','start',shell))});
+  app.get(['/sr','/sr/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(req.query.quote?home('sr'):experience.render('sr','start',shell))});
+  app.get(['/de','/de/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(req.query.quote?home('de'):experience.render('de','start',shell))});
   app.get('/en',(req,res)=>res.redirect(308,'/sr/'));
 
   app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
-    const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-23</lastmod></url>').join('');
+    const urls=Object.keys(ROUTES).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-25</lastmod></url>').join('');
     res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+urls+'</urlset>');
   });
 
@@ -164,11 +177,11 @@ function mountPublicRuntime(app){
   });
 
   app.get(Object.keys(ROUTES).filter(r=>r!=='/de/'&&r!=='/sr/'),(req,res)=>{
-    const page=req.path.includes('/wissen/')||req.path.includes('/vodic/')?knowledgePage(req.path):legalPage(req.path);
+    const page=experience.routes[req.path]?experience.render(experience.routes[req.path].lang,experience.routes[req.path].key,shell):req.path.includes('/wissen/')||req.path.includes('/vodic/')?knowledgePage(req.path):legalPage(req.path);
     if(!page)return res.status(404).end();
     res.set('Cache-Control','no-store');
     return res.type('html').send(page);
   });
 }
 
-module.exports={mountPublicRuntime,ROUTES,home,ownerPage};
+module.exports={mountPublicRuntime,ROUTES,home,ownerPage,shell};

@@ -77,11 +77,10 @@ class ImportOSStore{
           ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
         `);
       }catch(error){
-        console.error('ImportOS database unavailable; using local fallback:',error.message);
+        console.error('ImportOS database unavailable:',error.message);
         if(this.pool&&typeof this.pool.end==='function'){try{await this.pool.end()}catch{}}
         this.pool=null;
-        this.mode='file';
-        this.initializeFile();
+        throw error;
       }
     }else this.initializeFile();
     this.initialized=true;

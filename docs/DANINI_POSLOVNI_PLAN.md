@@ -41,7 +41,7 @@ Posete po stranici; otvoreni i uspešno sačuvani upiti; dostavljeni mejlovi; vr
 
 ## Redosled puštanja u rad
 
-1. Potvrditi da javni domen prikazuje novu verziju, fotografiju, stranice usluga i da API radi na produkciji.
+1. Pokrenuti `npm run check:live` posle objave. Provera čita `/health`, `/sr/upit`, `/sr/kalkulator` i API bez kreiranja upita. Ako prijavi staru verziju ili nedostupan API, Hostinger mora da pokreće Node aplikaciju iz korena repozitorijuma (`npm start`), a ne samo da poslužuje `dist` ili `daninihub-front/dist`. Statički izlaz sadrži stranice, ali nema upis upita, kalkulator ni administratorski API.
 2. Potvrditi trajno skladište i slanje mejla testnim upitom, pa pogledati isti upit u administratorskoj konzoli.
 3. Proveriti slanje ponude, prikaz korisniku i plaćanje samo ako su ključevi i pravni/operativni uslovi spremni.
 4. Tek zatim objaviti i meriti kanale promocije. Širiti usluge posle prvih stvarnih konverzija i potvrde saradnika.

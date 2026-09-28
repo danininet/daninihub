@@ -120,6 +120,7 @@ function quoteUsable(record){
 
 function mountImportOSRuntime(app){
   const store=createImportOSStore();
+  app.locals.importOSStore=store;
   app.use('/api/importos',express.json({limit:'120kb'}));
 
   app.get('/api/importos/models',(req,res)=>res.json({ok:true,models:listModelDna().map(x=>({key:x.key,label:x.label,sourceQuality:x.sourceQuality}))}));
@@ -171,7 +172,8 @@ function mountImportOSRuntime(app){
       emailConfigured:Boolean(process.env.BREVO_API_KEY&&sender()),
       cardConfigured:Boolean(process.env.STRIPE_SECRET_KEY),
       paypalConfigured:Boolean(process.env.PAYPAL_CLIENT_ID&&process.env.PAYPAL_CLIENT_SECRET),
-      checkoutEnabled:process.env.DANINI_IMPORTOS_CHECKOUT_ENABLED==='true'
+      checkoutEnabled:process.env.DANINI_IMPORTOS_CHECKOUT_ENABLED==='true',
+      servicePaymentsEnabled:process.env.DANINI_IMPORTOS_SERVICE_PAYMENTS_ENABLED==='true'
     });
   });
 

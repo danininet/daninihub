@@ -11,8 +11,11 @@ const DEPLOYMENT_MARKER='daninihub-sales-20260924';
 
 app.set('trust proxy',1);
 
-app.get('/health',(req,res)=>{
+app.get('/health',async(req,res)=>{
   res.set('Cache-Control','no-store');
+  const store=req.app.locals.importOSStore;
+  try { await store.init(); }
+  catch(error) { console.error('ImportOS health storage check failed:',error.message); return res.status(503).json({ok:false,service:'DANINI Automotive Import Intelligence',deploymentMarker:DEPLOYMENT_MARKER,storage:'unavailable'}); }
   res.json({
     ok:true,
     service:'DANINI Automotive Import Intelligence',
@@ -21,7 +24,8 @@ app.get('/health',(req,res)=>{
     routes:['DE→RS','CH→RS'],
     products:['QuickCheck','Import Passport','SafeBuy','Model DNA','FieldCheck Live','Pro Mechanic Check','Original Parts Desk','Vehicle Delivery','Import Base Čalije','Dealer Radar Pro'],
     checkoutEnabled:process.env.DANINI_IMPORTOS_CHECKOUT_ENABLED==='true',
-    durableStore:Boolean(process.env.DB_HOST&&process.env.DB_USER&&process.env.DB_NAME)
+    durableStore:store.mode==='mysql',
+    storage:store.mode==='mysql'?'database':'local-file'
   });
 });
 

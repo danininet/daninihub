@@ -20,7 +20,11 @@ async function main(){
       if(route==='/sr/pregled-auta'){assert.match(html,/danini-pregled-auta\.webp/);assert.doesNotMatch(html,/danini-auto-uvoz\.webp/)}
       if(route==='/sr/upit')assert.match(html,/id="service-form"/);
       if(route==='/sr/kalkulator')assert.match(html,/id="quickcheck"/);
-      if(route.includes('?quote='))assert.match(html,/id="quote-checkout"/);
+      if(route.includes('?quote=')){
+        assert.match(html,/id="quote-checkout"/);
+        assert.match(html,/Kupovina auta iz Nemačke uz jasnu računicu/);
+        assert.doesNotMatch(html,/Proveri auto pre nego što pošalješ novac/);
+      }
       if(route==='/de/wissen/vin-dokumente-checkliste')assert.match(html,/VIN vor Anreise/);
     }
     for(const route of Object.keys(routes))assert.ok(ROUTES[route],route);

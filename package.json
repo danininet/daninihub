@@ -12,7 +12,8 @@
     "test:importos": "node scripts/test-importos-clean.js",
     "test:site": "node scripts/test-site-experience.js",
     "test:funnel": "node scripts/test-service-funnel.js",
-    "test:os": "npm run test:importos"
+    "test:os": "npm run test:importos",
+    "check:live": "node scripts/check-live.js"
   },
   "keywords": [
     "vehicle-import",

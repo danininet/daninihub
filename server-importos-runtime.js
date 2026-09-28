@@ -27,7 +27,7 @@ const eur=v=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).fo
 const cents=v=>Math.round(Number(v)*100);
 
 function reference(prefix){
-  return prefix+'-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+crypto.randomBytes(3).toString('hex').toUpperCase();
+  return prefix+'-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+crypto.randomBytes(12).toString('hex').toUpperCase();
 }
 function publicUrl(req){
   const configured=clean(process.env.DANINI_PUBLIC_URL,500).replace(/\/$/,'');

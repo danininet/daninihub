@@ -4,6 +4,24 @@ Ažurirano: 25. septembar 2026. Fokus: kupac iz Srbije/Balkana koji je pronašao
 
 ## Šta prodajemo
 
+### Novi ulaz: plan kupovine pre puta — 30.09.2026.
+
+Kupac ne kupuje samo izveštaj: želi da zna koji od do tri oglasa ima smisla dalje proveravati u njegovom ukupnom budžetu. Besplatni alat `/sr/uporedi-oglase` poredi unete troškove sa rezervom, označava nepoznate stavke i sastavlja pitanja prodavcu. Nema rangiranja mehaničkog stanja iz teksta oglasa. Neprocenjen trošak nije automatski nula u stvarnom životu.
+
+Ručna usluga `AD_REVIEW` je pregled izbora pre putovanja. Pre narudžbine se potvrđuju obim, cena i termin. Isporuka: tabela do tri kandidata, spisak dostupnih dokaza i nedostajućih podataka, pitanja prodavcu i preporučeni sledeći korak. Kontaktiranje prodavca, VIN izveštaj, carinski obračun i stručni pregled mogu biti posebno ugovoreni; nisu automatski deo usluge. Podaci bez izvora ne predstavljaju se kao potvrđene činjenice.
+
+Operativni obrazac za svaku isporuku: budžet i namena kupca; izvor i datum podataka po oglasu; troškovi sa jasno označenim pretpostavkama; dokumenta koja nedostaju; šta je zaustavljajući problem; šta se može proveriti daljinski; kome i sa kojim pitanjem uputiti narednu proveru. Cilj je sprečiti nepotreban put i nejasnu kupovinu, ne garantovati ispravnost vozila.
+
+Komercijalna validacija: prvo meriti vreme po analizi, broj zahteva za ponudu i broj prihvaćenih ponuda. Minimalna cena mora pokriti stvarno vreme, spoljne izveštaje ako su ugovoreni, naknade i administraciju. Još nema potvrđene tržišne cene ni dobiti za ovaj proizvod; ne uvoditi fiksnu cenu koja se zasniva na pretpostavljenih 15 minuta rada. Skupi terenski pregled ponuditi tek kada daljinska provera opravda sledeći korak.
+
+Konkurencija je stvarna: carVertical navodi da istorijski izveštaj nije konačan dokaz kvaliteta vozila, a DEKRA već nudi stručne preglede. Diferencijacija DANINI-ja koju testiramo je objedinjena odluka na srpskom: izbor oglasa + ukupan budžet + otvorene dokumentarne tačke + naredna provera. Nije dokazano da takvu kombinaciju niko drugi ne nudi.
+
+Izvori pregledani 30.09.2026:
+- https://www.carvertical.com/help/about-the-service/does-the-carvertical-report-provide-definitive-proof
+- https://www.dekra.de/de/fahrzeugbewertung/
+
+Tehnički blokatori ostaju: produkciona baza trenutno prelazi na lokalni fajl; email, administratorski pristup i naplata nisu potvrđeni. Novi alat može da pomogne kupcu bez kreiranja zapisa, ali ručnu uslugu ne promovisati kao automatski završenu kupovinu dok se ti blokatori ne otklone.
+
 1. Besplatna početna procena: okvirna računica uvoza za Nemačku i praktični vodiči. Služi da kupac razume troškove i pošalje konkretan oglas. Nije carinski obračun.
 2. Obilazak vozila: fotografije, video, zapažanja o vidljivom stanju i dostupnim dokumentima. Početna javna cena od 79 €; konačna cena zavisi od razdaljine i obima. Usluga se potvrđuje pisanom ponudom.
 3. Pregled mehaničara: posebna ponuda kad stručni saradnik potvrdi dostupnost, obim i termin. Ne prodavati kao već garantovanu uslugu.

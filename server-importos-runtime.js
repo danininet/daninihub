@@ -144,7 +144,7 @@ function mountImportOSRuntime(app){
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({ok:false,error:'VALID_EMAIL_REQUIRED'});
     if(data.privacyAcknowledged!==true)return res.status(400).json({ok:false,error:'PRIVACY_NOTICE_REQUIRED'});
     const serviceType=clean(data.serviceType,120);
-    const allowed=new Set(['FIELD_CHECK_LIVE','PRO_MECHANIC_CHECK','DRIVER_ONLY','TRAILER_TRANSPORT','TRUCK_TRANSPORT','ORIGINAL_PARTS','IMPORT_BASE']);
+    const allowed=new Set(['AD_REVIEW','FIELD_CHECK_LIVE','PRO_MECHANIC_CHECK','DRIVER_ONLY','TRAILER_TRANSPORT','TRUCK_TRANSPORT','ORIGINAL_PARTS','IMPORT_BASE']);
     if(!allowed.has(serviceType))return res.status(400).json({ok:false,error:'INVALID_SERVICE_TYPE'});
     const record=await store.create({
       reference:reference('SRV'),type:'service-request',language:data.language==='sr'?'sr':'de',email,name:clean(data.name,180),status:'NEW',

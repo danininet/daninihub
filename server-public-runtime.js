@@ -53,6 +53,7 @@ function shell({lang,title,description,body,scripts=''}) {
 
 function serviceOptions(sr){
   return [
+    ['AD_REVIEW',sr?'Provera izbora i oglasa pre puta':'Inseratvergleich vor der Anreise'],
     ['FIELD_CHECK_LIVE',sr?'Obilazak auta uživo':'Live-Fahrzeugcheck'],
     ['PRO_MECHANIC_CHECK',sr?'Profesionalni pregled mehaničara':'Professioneller Mechaniker-Check'],
     ['ORIGINAL_PARTS',sr?'Nabavka originalnih delova':'Originalteile beschaffen'],

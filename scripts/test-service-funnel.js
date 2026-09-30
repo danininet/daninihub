@@ -20,6 +20,7 @@ async function main(){
     const request=await post('/api/importos/service-request',{serviceType:'FIELD_CHECK_LIVE',name:'Test kupac',email:'test-kupac@example.invalid',pickupLocation:'Duisburg',vehicle:'Karavan',message:'Test oglas',language:'sr',privacyAcknowledged:true});
     assert.equal(request.status,200);
     const received=await request.json();assert.match(received.reference,/^SRV-/);assert.equal(received.delivered,false);
+    const review=await post('/api/importos/service-request',{serviceType:'AD_REVIEW',name:'Test izbor',email:'test-izbor@example.invalid',message:'Tri probna oglasa',language:'sr',privacyAcknowledged:true});assert.equal(review.status,200);
     const unauthorized=await fetch(base+'/api/importos/admin/records');assert.equal(unauthorized.status,403);
     const hiddenStatus=await fetch(base+'/api/importos/admin/readiness');assert.equal(hiddenStatus.status,403);
     const statusResponse=await fetch(base+'/api/importos/admin/readiness',{headers:{'X-Danini-Admin':process.env.DANINI_ADMIN_SECRET}});

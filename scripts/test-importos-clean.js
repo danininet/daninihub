@@ -39,6 +39,7 @@ assert.match(sr,/id="quote-checkout"/);
 assert.doesNotMatch(sr,/Import Base|Payment Protection|Model DNA/);
 for(const page of [de,sr,ownerPage()])for(const [,script] of page.matchAll(/<script>([\s\S]*?)<\/script>/g))new Function(script);
 assert.match(ownerPage(),/KREIRAJ SIGURNU PONUDU/);
+assert.match(ownerPage(),/plaćenih Passport-a/);
 assert.match(server,/mountImportOSRuntime/);
 assert.doesNotMatch(server,/AI Office|Dispatch|Revenue OS/);
 assert.doesNotMatch(publicRuntime,/React|Vite/);

@@ -8,7 +8,7 @@ async function main(){
   const server=app.listen(0);
   try{
     const base='http://127.0.0.1:'+server.address().port;
-    for(const route of ['/sr/uporedi-oglase','/de/inserate-vergleichen','/', '/sr/pregled-auta','/sr/uvoz-auta','/sr/dovoz-auta','/sr/kalkulator','/sr/upit','/sr/vodici','/sr/kako-radimo','/de/fahrzeugpruefung','/de/rechner','/de/anfrage','/sr/vodic/vin-dokumente-checkliste','/sr/vodic/landed-cost-kalkulation','/de/wissen/vin-dokumente-checkliste','/sr/?quote=unknown']){
+    for(const route of ['/sr/uporedi-oglase','/de/inserate-vergleichen','/', '/sr/pregled-auta','/sr/uvoz-auta','/sr/dovoz-auta','/sr/kalkulator','/sr/upit','/sr/vodici','/sr/kako-radimo','/de/fahrzeugpruefung','/de/rechner','/de/anfrage','/sr/vodic/vin-dokumente-checkliste','/sr/vodic/landed-cost-kalkulation','/sr/sistem','/de/system','/de/wissen/vin-dokumente-checkliste','/sr/?quote=unknown']){
       const response=await fetch(base+route),html=await response.text();
       assert.equal(response.status,200,route);
       assert.match(html,/<title>[^<]+<\/title>/,route);
@@ -30,6 +30,7 @@ async function main(){
         assert.doesNotMatch(html,/Proveri auto pre nego što pošalješ novac/);
       }
       if(route==='/sr/vodic/landed-cost-kalkulation'){assert.match(html,/Uvoz auta iz Nemačke u Srbiju 2026/);assert.match(html,/Uprava carina/);assert.match(html,/ABS · kontrolisanje vozila/);assert.match(html,/href="\/sr\/kalkulator"/);}
+      if(route==='/sr/sistem'){assert.match(html,/DANINI Agent Control Center/);assert.match(html,/ORCHESTRATOR/);assert.match(html,/REVENUE AGENT/);assert.match(html,/FUNNEL AGENT/);}
       if(route==='/de/wissen/vin-dokumente-checkliste')assert.match(html,/VIN vor Anreise/);
     }
     for(const route of Object.keys(routes))assert.ok(ROUTES[route],route);

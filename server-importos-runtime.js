@@ -142,11 +142,54 @@ function quoteUsable(record){
   const expires=Date.parse(record.payload?.expiresAt||'');
   return !Number.isFinite(expires)||expires>Date.now();
 }
+function summarizeRevenueAgent(records,events){
+  const now=Date.now(),since=now-30*24*3600000;
+  const recentRecords=(records||[]).filter(r=>Date.parse(r.createdAt||0)>=since);
+  const recentEvents=(events||[]).filter(e=>Date.parse(e.createdAt||0)>=since);
+  const countEvent=name=>recentEvents.filter(e=>e.payload?.event===name).length;
+  const pageViews=countEvent('page_view');
+  const calculatorCompleted=countEvent('calculator_completed');
+  const checkoutStarted=countEvent('passport_checkout_started');
+  const serviceRequests=recentRecords.filter(r=>r.type==='service-request').length;
+  const paidPassports=recentRecords.filter(r=>r.type==='passport-order'&&r.status==='PAID').length;
+  const capturedServices=recentRecords.filter(r=>r.type==='service-quote'&&r.status==='CAPTURED');
+  const serviceRevenue=capturedServices.reduce((sum,r)=>sum+Number(r.payload?.amountCents||0),0)/100;
+  const passportRevenue=recentRecords.filter(r=>r.type==='passport-order'&&r.status==='PAID').reduce((sum,r)=>sum+Number(r.payload?.priceEur||0),0);
+  const ratio=(a,b)=>b?Number((a/b).toFixed(3)):0;
+  const metrics={
+    periodDays:30,pageViews,calculatorCompleted,checkoutStarted,paidPassports,serviceRequests,
+    revenueEur:Number((serviceRevenue+passportRevenue).toFixed(2)),
+    viewToCalculator:ratio(calculatorCompleted,pageViews),
+    calculatorToCheckout:ratio(checkoutStarted,calculatorCompleted),
+    checkoutToPaid:ratio(paidPassports,checkoutStarted)
+  };
+  let priority='ACQUISITION',action='Dovedi više relevantnih posetilaca na /sr/kalkulator i vodič za troškove uvoza.';
+  if(pageViews>=50&&metrics.viewToCalculator<0.12){priority='LANDING_PAGE';action='Povećaj broj posetilaca koji pokreću kalkulator: jasniji CTA iznad prevoja i manje distrakcija.'}
+  else if(calculatorCompleted>=10&&metrics.calculatorToCheckout<0.06){priority='OFFER';action='Poboljšaj Import Passport ponudu posle rezultata: jasnije šta kupac dobija za 9,90 € i zašto pre kapare.'}
+  else if(checkoutStarted>=5&&metrics.checkoutToPaid<0.2){priority='PAYMENT';action='Proveri aktivaciju Stripe/PayPal checkout-a i ukloni trenje na plaćanju.'}
+  else if(paidPassports>=3&&serviceRequests===0){priority='UPSELL';action='Posle plaćenog Passport-a jače ponudi proveru oglasa ili pregled vozila na licu mesta.'}
+  else if(metrics.revenueEur>0){priority='SCALE';action='Povećaj distribuciju sadržaja i saobraćaj na funnel koji već konvertuje.'}
+  return {metrics,priority,action};
+}
 
 function mountImportOSRuntime(app){
   const store=createImportOSStore();
   app.locals.importOSStore=store;
   app.use('/api/importos',express.json({limit:'120kb'}));
+
+  app.post('/api/importos/event',async(req,res)=>{
+    const data=req.body||{};
+    const event=clean(data.event,80);
+    const allowed=new Set(['page_view','calculator_completed','passport_checkout_started','service_request_started']);
+    if(!allowed.has(event))return res.status(400).json({ok:false,error:'INVALID_EVENT'});
+    try{
+      await store.create({
+        reference:reference('EVT'),type:'event',language:data.language==='de'?'de':'sr',email:'',name:'',status:'LOGGED',
+        payload:{event,path:clean(data.path,240),source:clean(data.source,120),value:clean(data.value,240)}
+      });
+      return res.json({ok:true});
+    }catch(error){console.error('ImportOS event log failed:',error.message);return res.status(500).json({ok:false,error:'EVENT_LOG_FAILED'})}
+  });
 
   app.get('/api/importos/models',(req,res)=>res.json({ok:true,models:listModelDna().map(x=>({key:x.key,label:x.label,sourceQuality:x.sourceQuality}))}));
   app.get('/api/importos/model/:key',(req,res)=>{
@@ -186,6 +229,13 @@ function mountImportOSRuntime(app){
     res.set('Cache-Control','no-store');
     return res.json({ok:true,records:records.map(item=>({reference:item.reference,type:item.type,status:item.status,
       createdAt:item.createdAt,name:item.name,email:item.email,language:item.language,payload:item.payload}))});
+  });
+
+  app.get('/api/importos/admin/metrics',async(req,res)=>{
+    if(!adminAllowed(req))return res.status(403).json({ok:false,error:'FORBIDDEN'});
+    const [records,events]=await Promise.all([store.listRecent(500),store.listEvents(5000)]);
+    res.set('Cache-Control','no-store');
+    return res.json({ok:true,...summarizeRevenueAgent(records,events)});
   });
 
   app.get('/api/importos/admin/readiness',async(req,res)=>{
@@ -423,4 +473,4 @@ function mountImportOSRuntime(app){
   });
 }
 
-module.exports={mountImportOSRuntime,previewResult,renderPaidReport,passportReportToken,validPassportReportToken};
+module.exports={mountImportOSRuntime,previewResult,renderPaidReport,passportReportToken,validPassportReportToken,summarizeRevenueAgent};

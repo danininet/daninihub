@@ -20,7 +20,7 @@ async function main(){
       if(route==='/sr/pregled-auta'){assert.match(html,/danini-pregled-auta\.webp/);assert.doesNotMatch(html,/danini-auto-uvoz\.webp/)}
       if(route==='/sr/uporedi-oglase'){assert.match(html,/id="buyer-plan"/);assert.match(html,/buyer-plan-client/)}
       if(route==='/sr/upit')assert.match(html,/id="service-form"/);
-      if(route==='/sr/kalkulator')assert.match(html,/id="quickcheck"/);
+      if(route==='/sr/kalkulator'){assert.match(html,/id="quickcheck"/);assert.match(html,/Otključaj puni Import Passport/);assert.match(html,/\/api\/importos\/checkout/);assert.match(html,/\/api\/importos\/checkout\/paypal/);}
       if(route.includes('?quote=')){
         assert.match(html,/id="quote-checkout"/);
         assert.match(html,/Kupovina auta iz Nemačke uz jasnu računicu/);

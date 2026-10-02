@@ -78,6 +78,31 @@ async function notifyQuote(record,bookingUrl){
   });
   return true;
 }
+function reportSecret(){
+  return process.env.DANINI_REPORT_SECRET||process.env.DANINI_ADMIN_SECRET||process.env.STRIPE_SECRET_KEY||process.env.PAYPAL_CLIENT_SECRET||'';
+}
+function passportReportToken(record){
+  const secret=reportSecret();
+  if(!secret||!record?.reference)return '';
+  return crypto.createHmac('sha256',secret).update(record.reference+':'+(record.email||'')).digest('base64url');
+}
+function validPassportReportToken(record,token){
+  const expected=passportReportToken(record),supplied=clean(token,200);
+  if(!expected||!supplied||expected.length!==supplied.length)return false;
+  return crypto.timingSafeEqual(Buffer.from(expected),Buffer.from(supplied));
+}
+async function notifyPassportPaid(record,reportUrl){
+  if(!process.env.BREVO_API_KEY||!record?.email)return false;
+  const from=sender();if(!from)return false;
+  const api=new BrevoClient({apiKey:process.env.BREVO_API_KEY}).transactionalEmails;
+  const sr=record.language==='sr';
+  await api.sendTransacEmail({
+    sender:from,to:[{email:record.email,name:record.name||'DANINI korisnik'}],
+    subject:(sr?'Tvoj DANINI Import Passport · ':'Dein DANINI Import Passport · ')+record.reference,
+    htmlContent:`<h2>${sr?'Import Passport je spreman':'Dein Import Passport ist fertig'}</h2><p>${sr?'Plaćanje je potvrđeno. Izveštaj možeš ponovo otvoriti preko sigurnog linka ispod.':'Die Zahlung ist bestätigt. Deinen Bericht kannst du über den sicheren Link unten erneut öffnen.'}</p><p><a href="${html(reportUrl)}">${sr?'Otvori Import Passport':'Import Passport öffnen'}</a></p><p><strong>${html(record.reference)}</strong></p><p>${sr?'Sačuvaj ovaj email. Link važi za ovaj plaćeni izveštaj.':'Bitte diese E-Mail aufbewahren. Der Link gehört zu diesem bezahlten Bericht.'}</p>`
+  });
+  return true;
+}
 function previewResult(full){
   return {
     product:full.product,version:full.version,decision:full.decision,route:full.route,customsBasis:full.customsBasis,
@@ -357,15 +382,25 @@ function mountImportOSRuntime(app){
     }catch(error){console.error('PayPal passport checkout failed:',error.message,error.details||'');return res.status(503).json({ok:false,error:error.message||'PAYPAL_CHECKOUT_FAILED'})}
   });
 
+  app.get('/importos/report/:reference',async(req,res)=>{
+    const record=await store.get(clean(req.params.reference,80));
+    if(!record||record.type!=='passport-order'||record.status!=='PAID'||!validPassportReportToken(record,req.query.token))return res.status(404).type('html').send('<h1>Import Passport not found.</h1>');
+    res.set('Cache-Control','private, no-store');
+    return res.type('html').send(renderPaidReport(record));
+  });
+
   app.get('/importos/success',async(req,res)=>{
     const sessionId=clean(req.query.session_id,250);
     if(!sessionId||!process.env.STRIPE_SECRET_KEY)return res.status(400).type('html').send('<h1>Missing payment session.</h1>');
     try{
       const stripe=new Stripe(process.env.STRIPE_SECRET_KEY); const session=await stripe.checkout.sessions.retrieve(sessionId);
       if(session.payment_status!=='paid')return res.status(402).type('html').send('<h1>Payment not completed.</h1>');
-      const ref=clean(session.metadata?.order_ref,64); const record=await store.get(ref);
+      const ref=clean(session.metadata?.order_ref,64); let record=await store.get(ref);
       if(!record||record.payload?.stripeSessionId!==session.id)return res.status(404).type('html').send('<h1>Import Passport not found.</h1>');
-      if(record.status!=='PAID')await store.update(ref,{status:'PAID',reviewedAt:new Date().toISOString()});
+      const firstPaid=record.status!=='PAID';
+      if(firstPaid){await store.update(ref,{status:'PAID',reviewedAt:new Date().toISOString()});record=await store.get(ref)}
+      const token=passportReportToken(record),reportUrl=publicUrl(req)+'/importos/report/'+encodeURIComponent(ref)+'?token='+encodeURIComponent(token);
+      if(firstPaid){try{await notifyPassportPaid(record,reportUrl)}catch(error){console.error('Import Passport delivery email failed:',error.message)}}
       res.set('Cache-Control','private, no-store'); return res.type('html').send(renderPaidReport(record));
     }catch(error){console.error('ImportOS paid report failed:',error.message);return res.status(500).type('html').send('<h1>Import Passport could not be opened.</h1>')}
   });
@@ -374,12 +409,18 @@ function mountImportOSRuntime(app){
     const ref=clean(req.query.ref,80); const orderId=clean(req.query.token,250); const record=await store.get(ref);
     if(!record||record.type!=='passport-order'||record.payload?.paypalOrderId!==orderId)return res.status(404).type('html').send('<h1>Import Passport not found.</h1>');
     try{
-      const capture=await capturePayPalOrder(orderId);
-      if(capture.status!=='COMPLETED')return res.status(402).type('html').send('<h1>PayPal payment not completed.</h1>');
-      await store.update(ref,{status:'PAID',reviewedAt:new Date().toISOString(),payload:{...record.payload,paypalCapture:capture}});
-      const updated=await store.get(ref); res.set('Cache-Control','private, no-store'); return res.type('html').send(renderPaidReport(updated));
+      let updated=record,firstPaid=record.status!=='PAID';
+      if(firstPaid){
+        const capture=await capturePayPalOrder(orderId);
+        if(capture.status!=='COMPLETED')return res.status(402).type('html').send('<h1>PayPal payment not completed.</h1>');
+        await store.update(ref,{status:'PAID',reviewedAt:new Date().toISOString(),payload:{...record.payload,paypalCapture:capture}});
+        updated=await store.get(ref);
+      }
+      const token=passportReportToken(updated),reportUrl=publicUrl(req)+'/importos/report/'+encodeURIComponent(ref)+'?token='+encodeURIComponent(token);
+      if(firstPaid){try{await notifyPassportPaid(updated,reportUrl)}catch(error){console.error('Import Passport delivery email failed:',error.message)}}
+      res.set('Cache-Control','private, no-store'); return res.type('html').send(renderPaidReport(updated));
     }catch(error){console.error('PayPal passport capture failed:',error.message,error.details||'');return res.status(500).type('html').send('<h1>PayPal payment could not be completed.</h1>')}
   });
 }
 
-module.exports={mountImportOSRuntime,previewResult,renderPaidReport};
+module.exports={mountImportOSRuntime,previewResult,renderPaidReport,passportReportToken,validPassportReportToken};

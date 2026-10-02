@@ -133,11 +133,11 @@ class ImportOSStore{
     await this.init();
     const count=Math.min(100,Math.max(1,Number(limit)||50));
     if(this.mode==='mysql'){
-      const [rows]=await this.pool.query('SELECT * FROM danini_importos_records WHERE type IN (?,?) ORDER BY created_at DESC LIMIT ?',['service-request','service-quote',count]);
+      const [rows]=await this.pool.query('SELECT * FROM danini_importos_records WHERE type IN (?,?,?) ORDER BY created_at DESC LIMIT ?',['service-request','service-quote','passport-order',count]);
       return rows.map(parseRow);
     }
     return Object.values(JSON.parse(fs.readFileSync(this.storageFile,'utf8')))
-      .filter(item=>item.type==='service-request'||item.type==='service-quote')
+      .filter(item=>item.type==='service-request'||item.type==='service-quote'||item.type==='passport-order')
       .sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,count);
   }
 

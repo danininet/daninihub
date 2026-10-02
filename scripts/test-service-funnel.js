@@ -17,6 +17,8 @@ async function main(){
   try{
     const base='http://127.0.0.1:'+server.address().port;
     const post=(url,payload,admin=false)=>fetch(base+url,{method:'POST',headers:{'Content-Type':'application/json',...(admin?{'X-Danini-Admin':process.env.DANINI_ADMIN_SECRET}:{})},body:JSON.stringify(payload)});
+    const view=await post('/api/importos/event',{event:'page_view',path:'/sr/kalkulator',language:'sr'});assert.equal(view.status,200);
+    const calcEvent=await post('/api/importos/event',{event:'calculator_completed',path:'/sr/kalkulator',language:'sr',value:'10000-12000'});assert.equal(calcEvent.status,200);
     const request=await post('/api/importos/service-request',{serviceType:'FIELD_CHECK_LIVE',name:'Test kupac',email:'test-kupac@example.invalid',pickupLocation:'Duisburg',vehicle:'Karavan',message:'Test oglas',language:'sr',privacyAcknowledged:true});
     assert.equal(request.status,200);
     const received=await request.json();assert.match(received.reference,/^SRV-/);assert.equal(received.delivered,false);
@@ -25,6 +27,7 @@ async function main(){
     const hiddenStatus=await fetch(base+'/api/importos/admin/readiness');assert.equal(hiddenStatus.status,403);
     const statusResponse=await fetch(base+'/api/importos/admin/readiness',{headers:{'X-Danini-Admin':process.env.DANINI_ADMIN_SECRET}});
     const status=await statusResponse.json();assert.equal(status.storage,'local-file');assert.equal(status.emailConfigured,false);assert.equal(status.checkoutEnabled,false);
+    const metricsResponse=await fetch(base+'/api/importos/admin/metrics',{headers:{'X-Danini-Admin':process.env.DANINI_ADMIN_SECRET}});assert.equal(metricsResponse.status,200);const metrics=await metricsResponse.json();assert.equal(metrics.metrics.pageViews,1);assert.equal(metrics.metrics.calculatorCompleted,1);assert.ok(metrics.priority);
     const quote=await post('/api/importos/admin/quotes',{requestReference:received.reference,email:'test-kupac@example.invalid',name:'Test kupac',serviceType:'FIELD_CHECK_LIVE',description:'Obilazak vozila u Duisburgu',amountEur:79,language:'sr'},true);
     assert.equal(quote.status,200);
     const offered=await quote.json();assert.equal(offered.delivered,false);assert.match(offered.bookingUrl,/\/sr\/\?quote=QTE-/);

@@ -131,13 +131,25 @@ class ImportOSStore{
 
   async listRecent(limit=50){
     await this.init();
-    const count=Math.min(100,Math.max(1,Number(limit)||50));
+    const count=Math.min(500,Math.max(1,Number(limit)||50));
     if(this.mode==='mysql'){
       const [rows]=await this.pool.query('SELECT * FROM danini_importos_records WHERE type IN (?,?,?) ORDER BY created_at DESC LIMIT ?',['service-request','service-quote','passport-order',count]);
       return rows.map(parseRow);
     }
     return Object.values(JSON.parse(fs.readFileSync(this.storageFile,'utf8')))
       .filter(item=>item.type==='service-request'||item.type==='service-quote'||item.type==='passport-order')
+      .sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,count);
+  }
+
+  async listEvents(limit=2000){
+    await this.init();
+    const count=Math.min(5000,Math.max(1,Number(limit)||2000));
+    if(this.mode==='mysql'){
+      const [rows]=await this.pool.query('SELECT * FROM danini_importos_records WHERE type=? ORDER BY created_at DESC LIMIT ?',['event',count]);
+      return rows.map(parseRow);
+    }
+    return Object.values(JSON.parse(fs.readFileSync(this.storageFile,'utf8')))
+      .filter(item=>item.type==='event')
       .sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,count);
   }
 

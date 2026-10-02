@@ -106,7 +106,7 @@ function legalPage(route){
   const text=route.includes('impressum')
     ?'Dragan Zdravković · DaniniHub / DANINI · Fischerstraße 54 · 47055 Duisburg · Deutschland · info@daninihub.com · +49 1573 0916621'
     :route.includes('datenschutz')||route.includes('privatnost')
-      ?(sr?'Obrađujemo samo podatke potrebne za procenu, servisni upit, ponudu i plaćanje. Za pitanja: info@daninihub.com.':'Wir verarbeiten nur Daten, die für Prüfung, Serviceanfrage, Angebot und Zahlung erforderlich sind. Kontakt: info@daninihub.com.')
+      ?(sr?'Obrađujemo podatke potrebne za procenu, servisni upit, ponudu i plaćanje, kao i anonimne tehničke događaje toka korišćenja radi funkcionalnosti i unapređenja usluge. Ne koristimo reklamne kolačiće. Za pitanja: info@daninihub.com.':'Wir verarbeiten Daten für Prüfung, Serviceanfrage, Angebot und Zahlung sowie anonyme technische Nutzungsereignisse zur Funktions- und Serviceverbesserung. Wir verwenden keine Werbe-Cookies. Kontakt: info@daninihub.com.')
       :route.includes('cookies')||route.includes('kolacici')
         ?(sr?'DANINI trenutno ne koristi reklamne ili marketinške kolačiće.':'DANINI verwendet derzeit keine Werbe- oder Marketing-Cookies.')
         :(sr?'Digitalna procena je pomoć pri odluci. Pregled, delovi, dovoz i druge usluge imaju posebno potvrđen obim i cenu pre narudžbine.':'Die digitale Prüfung ist eine Entscheidungshilfe. Prüfung, Teile, Überführung und weitere Leistungen werden vor Auftrag separat bestätigt.');

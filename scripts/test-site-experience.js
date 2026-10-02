@@ -21,7 +21,7 @@ async function main(){
         assert.doesNotMatch(html,/id="quickcheck"/);
       }
       if(route==='/sr/pregled-auta'){assert.match(html,/danini-pregled-auta\.webp/);assert.doesNotMatch(html,/danini-auto-uvoz\.webp/)}
-      if(route==='/sr/uporedi-oglase'){assert.match(html,/id="buyer-plan"/);assert.match(html,/buyer-plan-client/)}
+      if(route==='/sr/uporedi-oglase'){assert.match(html,/id="buyer-plan"/);assert.match(html,/buyer-plan-client/);assert.match(html,/DANINI Buyer Shield/);assert.match(html,/Kapara koju traži/);assert.match(html,/Identitet prodavca potvrđen/);}
       if(route==='/sr/upit')assert.match(html,/id="service-form"/);
       if(route==='/sr/kalkulator'){assert.match(html,/\/api\/importos\/event/);assert.match(html,/calculator_completed/);assert.match(html,/passport_checkout_started/);assert.match(html,/id="quickcheck"/);assert.match(html,/Otključaj puni Import Passport/);assert.match(html,/Prihvatam/);assert.match(html,/termsAccepted:true/);assert.match(html,/\/api\/importos\/checkout/);assert.match(html,/\/api\/importos\/checkout\/paypal/);}
       if(route.includes('?quote=')){

@@ -8,6 +8,7 @@
     intake.elements.serviceType.value='AD_REVIEW';
     try{const draft=sessionStorage.getItem(draftKey);if(draft){intake.elements.message.value=draft;sessionStorage.removeItem(draftKey)}}catch{}
   }
+  if(intake){try{const raw=sessionStorage.getItem('danini-case-brief');if(raw){const brief=JSON.parse(raw);for(const key of ['budget','criteria','purpose'])if(intake.elements[key])intake.elements[key].value=brief[key]||'';sessionStorage.removeItem('danini-case-brief')}}catch{}}
   if(!form)return;
   const out=document.getElementById('buyer-result');
   const eur=n=>new Intl.NumberFormat(sr?'sr-RS':'de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);

@@ -175,6 +175,20 @@ class ImportOSStore{
     });
   }
 
+  async updateIfUnchanged(reference,expectedPayload,payload){
+    await this.init();
+    if(this.mode==='mysql'){
+      const [result]=await this.pool.execute('UPDATE danini_importos_records SET payload_json=?, updated_at=? WHERE reference=? AND BINARY payload_json=BINARY ?', [JSON.stringify(payload),new Date(),reference,JSON.stringify(expectedPayload)]);
+      if(!result.affectedRows)throw new Error('CASE_VERSION_CONFLICT');
+      return this.get(reference);
+    }
+    return this.withFile(records=>{
+      const record=records[reference];
+      if(!record||JSON.stringify(record.payload)!==JSON.stringify(expectedPayload))throw new Error('CASE_VERSION_CONFLICT');
+      records[reference]={...record,payload,updatedAt:nowIso()};return records[reference];
+    });
+  }
+
   withFile(operation){
     const task=this.fileQueue.then(()=>{
       const records=JSON.parse(fs.readFileSync(this.storageFile,'utf8'));

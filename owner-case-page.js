@@ -1,0 +1,3 @@
+'use strict';
+function body(){return `<main class="wrap"><section class="section"><h1>Radni dosijei kupovine</h1><p><a href="/owner/importos">Upiti i ponude</a> · <a href="/sr/">Sajt</a></p><p>Unesi broj upita i otvori njegov dosije. Sačuvani nacrt je interni; kupac vidi sadržaj tek kada označiš objavljivanje. Ne unosi interne tajne ili lične dokumente u polja za kupca.</p><div class="form"><label>Administratorski ključ<input id="case-secret" type="password" autocomplete="off"></label><label>Broj upita<input id="case-reference" maxlength="80"></label><button id="case-load" class="btn" type="button">OTVORI DOSIJE</button></div><div id="case-owner-result" role="status"></div><form id="case-editor" class="form" hidden></form></section></main>`}
+module.exports={body};

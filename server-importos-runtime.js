@@ -1,6 +1,8 @@
 'use strict';
 
 const crypto=require('crypto');
+const {initialCase,tokenHash}=require('./core/purchase-case');
+const {mountPurchaseCases}=require('./purchase-case-runtime');
 const express=require('express');
 const path=require('path');
 const Stripe=require('stripe');
@@ -45,7 +47,7 @@ function sender(){
   const email=process.env.BREVO_SENDER_EMAIL||process.env.DANINIHUB_SENDER_EMAIL||process.env.MAIL_FROM||process.env.EMAIL_FROM;
   return email?{email,name:process.env.BREVO_SENDER_NAME||'DANINI'}:null;
 }
-async function notifyServiceRequest(record){
+async function notifyServiceRequest(record,trackingUrl){
   if(!process.env.BREVO_API_KEY)return false;
   const from=sender(); if(!from)return false;
   const api=new BrevoClient({apiKey:process.env.BREVO_API_KEY}).transactionalEmails;
@@ -61,8 +63,8 @@ async function notifyServiceRequest(record){
     sender:from,to:[{email:record.email,name:record.name||'ImportOS Kunde'}],
     subject:(record.language==='sr'?'Vaš DANINI upit · ':'Ihre DANINI Anfrage · ')+record.reference,
     htmlContent:record.language==='sr'
-      ?`<h2>Primili smo vaš upit.</h2><p>Broj upita: <strong>${html(record.reference)}</strong></p><p>Proverićemo udaljenost, dostupnost, obim usluge i potrebna dokumenta. Zatim dobijate konkretnu ponudu. Ova potvrda još nije prihvatanje narudžbine.</p><p>DANINI · Pregled i uvoz automobila</p>`
-      :`<h2>Ihre Anfrage ist eingegangen.</h2><p>Referenz: <strong>${html(record.reference)}</strong></p><p>Wir prüfen Umfang, Entfernung, Verfügbarkeit und notwendige Dokumente. Erst danach erhalten Sie ein konkretes Angebot. Diese Bestätigung ist noch keine Auftragsannahme.</p><p>DANINI · Fahrzeugimport</p>`
+      ?`<h2>Primili smo vaš upit.</h2><p>Broj upita: <strong>${html(record.reference)}</strong></p><p>Proverićemo udaljenost, dostupnost, obim usluge i potrebna dokumenta. Zatim dobijate konkretnu ponudu. Ova potvrda još nije prihvatanje narudžbine.</p>${trackingUrl?`<p><a href="${html(trackingUrl)}">Prati svoj dosije</a>. Ovaj privatni link sačuvaj i ne deli javno.</p>`:''}<p>DANINI · Pregled i uvoz automobila</p>`
+      :`<h2>Ihre Anfrage ist eingegangen.</h2><p>Referenz: <strong>${html(record.reference)}</strong></p><p>Wir prüfen Umfang, Entfernung, Verfügbarkeit und notwendige Dokumente. Erst danach erhalten Sie ein konkretes Angebot. Diese Bestätigung ist noch keine Auftragsannahme.</p>${trackingUrl?`<p><a href="${html(trackingUrl)}">Dein Dossier öffnen</a>. Diesen privaten Link nicht öffentlich teilen.</p>`:''}<p>DANINI · Fahrzeugimport</p>`
   });
   return true;
 }
@@ -176,6 +178,7 @@ function mountImportOSRuntime(app){
   const store=createImportOSStore();
   app.locals.importOSStore=store;
   app.use('/api/importos',express.json({limit:'120kb'}));
+  mountPurchaseCases(app,{store,adminAllowed});
 
   app.post('/api/importos/event',async(req,res)=>{
     const data=req.body||{};
@@ -214,13 +217,15 @@ function mountImportOSRuntime(app){
     const serviceType=clean(data.serviceType,120);
     const allowed=new Set(['AD_REVIEW','FIELD_CHECK_LIVE','PRO_MECHANIC_CHECK','DRIVER_ONLY','TRAILER_TRANSPORT','TRUCK_TRANSPORT','ORIGINAL_PARTS','IMPORT_BASE']);
     if(!allowed.has(serviceType))return res.status(400).json({ok:false,error:'INVALID_SERVICE_TYPE'});
+    const caseToken=crypto.randomBytes(32).toString('base64url');
     const record=await store.create({
       reference:reference('SRV'),type:'service-request',language:data.language==='sr'?'sr':'de',email,name:clean(data.name,180),status:'NEW',
-      payload:{serviceType,phone:clean(data.phone,120),vehicle:clean(data.vehicle,280),vin:clean(data.vin,80),partNumber:clean(data.partNumber,120),pickupLocation:clean(data.pickupLocation,280),destination:clean(data.destination,280),message:clean(data.message,4000)}
+      payload:{purchaseCase:initialCase(data),caseTokenHash:tokenHash(caseToken),serviceType,phone:clean(data.phone,120),vehicle:clean(data.vehicle,280),vin:clean(data.vin,80),partNumber:clean(data.partNumber,120),pickupLocation:clean(data.pickupLocation,280),destination:clean(data.destination,280),message:clean(data.message,4000)}
     });
+    const trackingUrl=publicUrl(req)+'/'+record.language+'/'+(record.language==='sr'?'moj-dosije':'mein-dossier')+'#'+new URLSearchParams({reference:record.reference,token:caseToken}).toString();
     let delivered=false;
-    try{delivered=await notifyServiceRequest(record)}catch(error){console.error('ImportOS request email failed:',error.message)}
-    return res.json({ok:true,reference:record.reference,delivered});
+    try{delivered=await notifyServiceRequest(record,trackingUrl)}catch(error){console.error('ImportOS request email failed:',error.message)}
+    return res.json({ok:true,reference:record.reference,delivered,trackingUrl});
   });
 
   app.get('/api/importos/admin/records',async(req,res)=>{

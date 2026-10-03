@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'purchase-journey.js'
+      - 'scripts/test-purchase-journey.js'
       - 'buyer-plan.js'
       - 'scripts/test-buyer-plan.js'
       - 'core/**'
@@ -22,6 +24,8 @@ on:
       - '.github/workflows/danini-os-core.yml'
   pull_request:
     paths:
+      - 'purchase-journey.js'
+      - 'scripts/test-purchase-journey.js'
       - 'buyer-plan.js'
       - 'scripts/test-buyer-plan.js'
       - 'core/**'

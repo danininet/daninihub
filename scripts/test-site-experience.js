@@ -8,7 +8,7 @@ async function main(){
   const server=app.listen(0);
   try{
     const base='http://127.0.0.1:'+server.address().port;
-    for(const route of ['/sr/uporedi-oglase','/de/inserate-vergleichen','/', '/sr/pregled-auta','/sr/uvoz-auta','/sr/dovoz-auta','/sr/kalkulator','/sr/upit','/sr/vodici','/sr/kako-radimo','/de/fahrzeugpruefung','/de/rechner','/de/anfrage','/sr/vodic/vin-dokumente-checkliste','/sr/vodic/landed-cost-kalkulation','/sr/sistem','/de/system','/de/wissen/vin-dokumente-checkliste','/sr/?quote=unknown']){
+    for(const route of ['/sr/kupovina-i-uvoz','/de/kauf-und-import','/sr/uporedi-oglase','/de/inserate-vergleichen','/', '/sr/pregled-auta','/sr/uvoz-auta','/sr/dovoz-auta','/sr/kalkulator','/sr/upit','/sr/vodici','/sr/kako-radimo','/de/fahrzeugpruefung','/de/rechner','/de/anfrage','/sr/vodic/vin-dokumente-checkliste','/sr/vodic/landed-cost-kalkulation','/sr/sistem','/de/system','/de/wissen/vin-dokumente-checkliste','/sr/?quote=unknown']){
       const response=await fetch(base+route),html=await response.text();
       assert.equal(response.status,200,route);
       assert.match(html,/<title>[^<]+<\/title>/,route);

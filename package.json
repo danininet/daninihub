@@ -1,12 +1,12 @@
 {
   "name": "daninihub",
   "version": "1.0.0",
-  "description": "DANINI Automotive Import Intelligence — DE/CH to Serbia decision, verification and execution platform.",
+  "description": "DANINI Automotive Import Intelligence \u2014 DE/CH to Serbia decision, verification and execution platform.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "npm run check:syntax && npm run test:importos && npm run test:site && npm run test:funnel && npm run test:buyer-plan && npm run build:front",
+    "build": "npm run check:syntax && npm run test:importos && npm run test:site && npm run test:funnel && npm run test:buyer-plan && npm run test:purchase && npm run build:front",
     "build:front": "node scripts/build-hostinger.js",
     "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check site-experience.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js",
     "test:importos": "node scripts/test-importos-clean.js",
@@ -14,7 +14,8 @@
     "test:funnel": "node scripts/test-service-funnel.js",
     "test:buyer-plan": "node scripts/test-buyer-plan.js",
     "test:os": "npm run test:importos",
-    "check:live": "node scripts/check-live.js"
+    "check:live": "node scripts/check-live.js",
+    "test:purchase": "node scripts/test-purchase-journey.js"
   },
   "keywords": [
     "vehicle-import",

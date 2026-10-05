@@ -37,6 +37,18 @@ async function main(){
     const map=await (await fetch(base+'/sitemap.xml')).text();
     assert.match(map,/\/sr\/upit/);
     for(const path of ['/danini-auto-uvoz.webp','/danini-pregled-auta.webp']){const image=await fetch(base+path);assert.equal(image.status,200);assert.match(image.headers.get('content-type'),/image\/webp/)}
+    for(const [route,meta] of Object.entries(ROUTES)){
+      if(route.endsWith('/moj-dosije')||route.endsWith('/mein-dossier'))continue;
+      const response=await fetch(base+route),page=await response.text();
+      assert.equal(response.status,200,route);
+      assert.ok(page.includes('rel="canonical" href="https://daninihub.com'+route+'"'),route);
+      assert.match(page,/hreflang="sr"/);assert.match(page,/hreflang="de"/);
+      assert.match(response.headers.get('cache-control'),/s-maxage=300/);
+    }
+    const quoteResponse=await fetch(base+'/sr/?quote=unknown');assert.equal(quoteResponse.headers.get('cache-control'),'no-store');
+    const dossier=await fetch(base+'/sr/moj-dosije');assert.equal(dossier.headers.get('cache-control'),'no-store');assert.equal(dossier.headers.get('x-robots-tag'),'noindex,nofollow');
+    const retired=await fetch(base+'/sr/opportunity-map');assert.equal(retired.status,410);assert.equal(retired.headers.get('x-robots-tag'),'noindex,follow');
+    assert.match(map,/xmlns:xhtml=/);assert.match(map,/xhtml:link/);assert.doesNotMatch(map,/moj-dosije|mein-dossier|opportunity-map/);
     console.log('DANINI public pages, quote links and image: OK');
   }finally{server.close()}
 }

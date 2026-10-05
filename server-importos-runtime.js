@@ -194,6 +194,12 @@ function mountImportOSRuntime(app){
     }catch(error){console.error('ImportOS event log failed:',error.message);return res.status(500).json({ok:false,error:'EVENT_LOG_FAILED'})}
   });
 
+  app.get('/api/importos/availability',(req,res)=>{
+    const enabled=process.env.DANINI_IMPORTOS_CHECKOUT_ENABLED==='true';
+    res.set('Cache-Control','no-store');
+    return res.json({ok:true,card:enabled&&Boolean(process.env.STRIPE_SECRET_KEY),paypal:enabled&&Boolean(process.env.PAYPAL_CLIENT_ID&&process.env.PAYPAL_CLIENT_SECRET)});
+  });
+
   app.get('/api/importos/models',(req,res)=>res.json({ok:true,models:listModelDna().map(x=>({key:x.key,label:x.label,sourceQuality:x.sourceQuality}))}));
   app.get('/api/importos/model/:key',(req,res)=>{
     const item=getModelDna(req.params.key);

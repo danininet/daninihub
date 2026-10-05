@@ -163,7 +163,46 @@ function ownerPage(){
   return shell({lang:'sr',title:'DANINI | Upiti i ponude',description:'Interni pregled upita i ponuda',body,scripts}).replace('content="index,follow,max-image-preview:large"','content="noindex,nofollow"');
 }
 
+const ORIGIN='https://daninihub.com';
+const PUBLIC_ROUTES=Object.keys(ROUTES).filter(route=>!route.endsWith('/moj-dosije')&&!route.endsWith('/mein-dossier'));
+const PAGE_PAIRS=[['/sr/','/de/'],['/sr/impressum','/de/impressum'],['/sr/privatnost','/de/datenschutz'],['/sr/kolacici','/de/cookies'],['/sr/uslovi','/de/bedingungen']];
+for(const [route,meta] of Object.entries(experience.routes)){
+  if(meta.lang==='sr'&&PUBLIC_ROUTES.includes(route)){
+    const alternate=Object.entries(experience.routes).find(([,other])=>other.lang==='de'&&other.key===meta.key);
+    if(alternate)PAGE_PAIRS.push([route,alternate[0]]);
+  }
+}
+for(const [slug] of articles)PAGE_PAIRS.push(['/sr/vodic/'+slug,'/de/wissen/'+slug]);
+function languageLinks(route,xml=false){
+  const pair=PAGE_PAIRS.find(items=>items.includes(route));
+  if(!pair)return '';
+  const tag=xml?'xhtml:link':'link';
+  return [['sr',pair[0]],['de',pair[1]],['x-default',pair[0]]].map(([lang,url])=>'<'+tag+' rel="alternate" hreflang="'+lang+'" href="'+ORIGIN+url+'"'+(xml?' />':'>')).join('');
+}
+function seoPage(page,route){
+  if(!PUBLIC_ROUTES.includes(route))return page;
+  return page.replace('</head>','<link rel="canonical" href="'+ORIGIN+route+'">'+languageLinks(route)+'</head>');
+}
+const RETIRED_ROUTES=['opportunity-map','opportunity-check','location-launch','balkan-desk','dach-desk','operations-desk-demo'].flatMap(slug=>['/sr/'+slug,'/de/'+slug]);
+
 function mountPublicRuntime(app){
+  app.use((req,res,next)=>{
+    const route=req.path==='/'?'/sr/':['/sr','/de'].includes(req.path)?req.path+'/':req.path.replace(/\/$/,'');
+    const canonicalRoute=['/sr/','/de/'].includes(req.path)?req.path:route;
+    if(PUBLIC_ROUTES.includes(canonicalRoute)){
+      const send=res.send.bind(res);
+      res.send=body=>{
+        res.set('Cache-Control',Object.keys(req.query).length?'no-store':'public, max-age=0, s-maxage=300, stale-while-revalidate=60');
+        return send(typeof body==='string'?seoPage(body,canonicalRoute):body);
+      };
+    }
+    next();
+  });
+  app.get(RETIRED_ROUTES,(req,res)=>{
+    const sr=req.path.startsWith('/sr/');
+    res.set({'X-Robots-Tag':'noindex,follow','Cache-Control':'public, max-age=300'});
+    return res.status(410).type('html').send(shell({lang:sr?'sr':'de',title:sr?'Stranica je uklonjena | DANINI':'Seite entfernt | DANINI',description:'',body:'<main class="wrap"><section class="section"><h1>'+(sr?'Ova ranija ponuda više nije dostupna.':'Dieses frühere Angebot ist nicht mehr verfügbar.')+'</h1><p>'+(sr?'DANINI sada pomaže pri kupovini, proveri i uvozu automobila.':'DANINI unterstützt jetzt Fahrzeugkauf, Prüfung und Import.')+'</p><a class="btn" href="/'+(sr?'sr':'de')+'/">'+(sr?'Otvori aktuelnu ponudu':'Aktuelles Angebot öffnen')+'</a></section></main>'}).replace('content="index,follow,max-image-preview:large"','content="noindex,follow"'));
+  });
   app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
 
   app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(experience.render('sr','start',shell))});
@@ -173,8 +212,8 @@ function mountPublicRuntime(app){
 
   app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
-    const urls=Object.keys(ROUTES).filter(route=>!route.endsWith('/moj-dosije')&&!route.endsWith('/mein-dossier')).map(route=>'<url><loc>https://daninihub.com'+route+'</loc><lastmod>2026-09-25</lastmod></url>').join('');
-    res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+urls+'</urlset>');
+    const urls=PUBLIC_ROUTES.map(route=>'<url><loc>'+ORIGIN+route+'</loc>'+languageLinks(route,true)+'</url>').join('');
+    res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'+urls+'</urlset>');
   });
 
   app.get('/owner/cases',(req,res)=>{res.set({'X-Robots-Tag':'noindex,nofollow','Cache-Control':'no-store','Referrer-Policy':'no-referrer'});return res.type('html').send(shell({lang:'sr',title:'DANINI | Radni dosijei',description:'Interni radni dosijei',body:ownerCase.body(),scripts:'<script src="/owner-case-client.js" defer></script>'}).replace('content="index,follow,max-image-preview:large"','content="noindex,nofollow"'))});
@@ -194,4 +233,4 @@ function mountPublicRuntime(app){
   });
 }
 
-module.exports={mountPublicRuntime,ROUTES,home,ownerPage,shell};
+module.exports={mountPublicRuntime,ROUTES,home,ownerPage,shell,seoPage};

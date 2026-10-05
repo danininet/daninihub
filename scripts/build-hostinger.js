@@ -2,23 +2,23 @@
 
 const fs=require('node:fs');
 const path=require('node:path');
-const {shell}=require('../server-public-runtime');
+const {shell,seoPage}=require('../server-public-runtime');
 const experience=require('../site-experience');
 
 const root=path.join(__dirname,'..');
 for(const directory of ['dist',path.join('daninihub-front','dist')]){
   const output=path.join(root,directory);
   fs.mkdirSync(output,{recursive:true});
-  fs.writeFileSync(path.join(output,'index.html'),experience.render('sr','start',shell));
+  fs.writeFileSync(path.join(output,'index.html'),seoPage(experience.render('sr','start',shell),'/sr/'));
   for(const lang of ['sr','de']){
     const localized=path.join(output,lang);
     fs.mkdirSync(localized,{recursive:true});
-    fs.writeFileSync(path.join(localized,'index.html'),experience.render(lang,'start',shell));
+    fs.writeFileSync(path.join(localized,'index.html'),seoPage(experience.render(lang,'start',shell),'/'+lang+'/'));
   }
   for(const [route,meta] of Object.entries(experience.routes)){
     const pageDir=path.join(output,route.slice(1));
     fs.mkdirSync(pageDir,{recursive:true});
-    fs.writeFileSync(path.join(pageDir,'index.html'),experience.render(meta.lang,meta.key,shell));
+    fs.writeFileSync(path.join(pageDir,'index.html'),seoPage(experience.render(meta.lang,meta.key,shell),route));
   }
   for(const asset of fs.readdirSync(path.join(root,'public'))){
     fs.copyFileSync(path.join(root,'public',asset),path.join(output,asset));

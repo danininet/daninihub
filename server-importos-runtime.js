@@ -255,6 +255,9 @@ function mountImportOSRuntime(app){
     res.set('Cache-Control','no-store');
     return res.json({ok:true,
       storage:store.mode==='mysql'?'database':'local-file',
+      databaseConfigured:store.databaseConfigured,
+      databaseErrorCode:store.databaseErrorCode,
+      missingDatabaseSettings:['DB_HOST','DB_USER','DB_NAME'].filter(key=>!process.env[key]),
       emailConfigured:Boolean(process.env.BREVO_API_KEY&&sender()),
       cardConfigured:Boolean(process.env.STRIPE_SECRET_KEY),
       paypalConfigured:Boolean(process.env.PAYPAL_CLIENT_ID&&process.env.PAYPAL_CLIENT_SECRET),

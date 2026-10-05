@@ -1,6 +1,6 @@
 'use strict';
 
-require('dotenv').config();
+require('dotenv').config({path:require('path').join(__dirname,'.env')});
 const express=require('express');
 const {mountImportOSRuntime}=require('./server-importos-runtime');
 const {mountPublicRuntime}=require('./server-public-runtime');

@@ -33,7 +33,9 @@ class ImportOSStore{
     this.storageFile=options.storageFile||this.env.DANINI_IMPORTOS_STORAGE_FILE||path.join(__dirname,'runtime','importos-records.json');
     this.mysql=options.mysql||null;
     this.pool=null;
-    this.mode=databaseConfigured(this.env)?'mysql':'file';
+    this.databaseConfigured=databaseConfigured(this.env);
+    this.databaseErrorCode=null;
+    this.mode=this.databaseConfigured?'mysql':'file';
     this.initialized=false;
     this.fileQueue=Promise.resolve();
   }
@@ -77,7 +79,8 @@ class ImportOSStore{
           ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
         `);
       }catch(error){
-        console.error('ImportOS database unavailable; using local fallback:',error.message);
+        this.databaseErrorCode=/^[A-Z0-9_]+$/.test(String(error.code||''))?error.code:'DATABASE_CONNECTION_FAILED';
+        console.error('ImportOS database unavailable; using local fallback:',this.databaseErrorCode);
         if(this.pool&&typeof this.pool.end==='function'){try{await this.pool.end()}catch{}}
         this.pool=null;
         this.mode='file';

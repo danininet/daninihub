@@ -14,7 +14,7 @@ for(const locale of ['sr','de']){
 for(const lang of ['sr','de']){
  assert.ok(founder.home(lang).includes('dragan-original-2026.jpg'),'missing original portrait '+lang);
  assert.ok(founder.home(lang).includes('founder-gallery'),'missing grid '+lang);
- for(const key of ['profile','business','dealer','cv','rental','contact']){
+ for(const key of ['profile','business','dealer','gtm','projects','cv','rental','contact']){
   const matches=Object.entries(routes).filter(([,v])=>v.lang===lang && v.key==='founder-'+key);
   assert.equal(matches.length,1,'expected unique '+lang+' '+key);
   const html=founder.page(lang,'founder-'+key);

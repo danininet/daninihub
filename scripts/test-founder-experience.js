@@ -4,6 +4,13 @@ const fs=require('node:fs');
 const path=require('node:path');
 const founder=require('../founder-experience');
 const routes=founder.routes;
+const experience=require('../site-experience');
+const {shell}=require('../server-public-runtime');
+for(const locale of ['sr','de']){
+ const html=experience.render(locale,'start',shell);
+ assert.equal((html.match(/<h1(?:\\s[^>]*)?>/g)||[]).length,1,'homepage must have exactly one H1: '+locale);
+}
+
 for(const lang of ['sr','de']){
  assert.ok(founder.home(lang).includes('dragan-original-2026.jpg'),'missing original portrait '+lang);
  assert.ok(founder.home(lang).includes('founder-gallery'),'missing grid '+lang);

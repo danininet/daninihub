@@ -23,7 +23,7 @@ for(const directory of ['dist',path.join('daninihub-front','dist')]){
   }
   for(const route of founder.paths.filter(route=>!['/sr/','/de/'].includes(route))){
     const lang=route.startsWith('/sr/')?'sr':'de';
-    const key=Object.keys(require('../founder-site').pathFor&&({about:1,services:1,gtm:1,automotive:1,projects:1,career:1,contact:1})).find(k=>founder.pathFor(lang,k)===route);
+    const key=['about','services','gtm','automotive','projects','career','contact'].find(k=>founder.pathFor(lang,k)===route);
     if(!key)throw new Error('Unknown founder route: '+route);
     const pageDir=path.join(output,route.slice(1));
     fs.mkdirSync(pageDir,{recursive:true});

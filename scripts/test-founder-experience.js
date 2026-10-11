@@ -8,7 +8,7 @@ const experience=require('../site-experience');
 const {shell}=require('../server-public-runtime');
 for(const locale of ['sr','de']){
  const html=experience.render(locale,'start',shell);
- assert.equal((html.match(/<h1(?:\\s[^>]*)?>/g)||[]).length,1,'homepage must have exactly one H1: '+locale);
+ assert.equal((html.match(/<h1[^>]*>/g)||[]).length,1,'homepage must have exactly one H1: '+locale);
 }
 
 for(const lang of ['sr','de']){

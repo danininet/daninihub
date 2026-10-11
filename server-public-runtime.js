@@ -3,6 +3,7 @@
 const express=require('express');
 const path=require('path');
 const experience=require('./site-experience');
+const founder=require('./founder-site');
 
 const PUBLIC_ASSETS=path.join(__dirname,'public');
 
@@ -173,6 +174,7 @@ for(const [route,meta] of Object.entries(experience.routes)){
   }
 }
 for(const [slug] of articles)PAGE_PAIRS.push(['/sr/vodic/'+slug,'/de/wissen/'+slug]);
+for(let i=0;i<founder.paths.length;i+=2){const pair=[founder.paths[i],founder.paths[i+1]];if(!PAGE_PAIRS.some(existing=>existing[0]===pair[0]))PAGE_PAIRS.push(pair);}
 function languageLinks(route,xml=false){
   const pair=PAGE_PAIRS.find(items=>items.includes(route));
   if(!pair)return '';
@@ -212,7 +214,7 @@ function mountPublicRuntime(app){
 
   app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /importos/success\nDisallow: /payment/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n'));
   app.get('/sitemap.xml',(req,res)=>{
-    const urls=PUBLIC_ROUTES.map(route=>'<url><loc>'+ORIGIN+route+'</loc>'+languageLinks(route,true)+'</url>').join('');
+    const urls=[...new Set([...PUBLIC_ROUTES,...founder.paths])].map(route=>'<url><loc>'+ORIGIN+route+'</loc>'+languageLinks(route,true)+'</url>').join('');
     res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'+urls+'</urlset>');
   });
 

@@ -23,9 +23,9 @@ jobs:
       - run: npm run build
       - name: Prepare safe static preview
         run: |
-          mkdir -p preview-export/sr preview-export/de
-          cp dist/sr/index.html preview-export/sr/index.html
-          cp dist/de/index.html preview-export/de/index.html
+          mkdir -p preview-export
+          cp -R dist/sr dist/de preview-export/
+          cp dist/index.html preview-export/index.html
           cp dist/dragan-original-2026.jpg preview-export/
           cp dist/dragan-business-grid-3x3.png preview-export/
           find dist -maxdepth 1 -type f \( -name '*.svg' -o -name '*.webp' -o -name '*.css' -o -name '*.js' \) -exec cp {} preview-export/ \;

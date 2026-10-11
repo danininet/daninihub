@@ -2,7 +2,7 @@
 
 const fs=require('node:fs');
 const path=require('node:path');
-const {shell,seoPage}=require('../server-public-runtime');
+const {shell,seoPage,ROUTES,legalPage,knowledgePage}=require('../server-public-runtime');
 const experience=require('../site-experience');
 
 const root=path.join(__dirname,'..');
@@ -19,6 +19,14 @@ for(const directory of ['dist',path.join('daninihub-front','dist')]){
     const pageDir=path.join(output,route.slice(1));
     fs.mkdirSync(pageDir,{recursive:true});
     fs.writeFileSync(path.join(pageDir,'index.html'),seoPage(experience.render(meta.lang,meta.key,shell),route));
+  }
+  for(const route of Object.keys(ROUTES)){
+    if(route==='/sr/'||route==='/de/'||experience.routes[route])continue;
+    const extra=route.includes('/wissen/')||route.includes('/vodic/')?knowledgePage(route):legalPage(route);
+    if(!extra)continue;
+    const pageDir=path.join(output,route.slice(1));
+    fs.mkdirSync(pageDir,{recursive:true});
+    fs.writeFileSync(path.join(pageDir,'index.html'),seoPage(extra,route));
   }
   for(const asset of fs.readdirSync(path.join(root,'public'))){
     fs.copyFileSync(path.join(root,'public',asset),path.join(output,asset));

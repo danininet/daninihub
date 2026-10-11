@@ -3,8 +3,9 @@ const assert=require('node:assert/strict');
 const express=require('express');
 const {mountPublicRuntime,ROUTES}=require('../server-public-runtime');
 const {routes}=require('../site-experience');
+const {mountFounderSite}=require('../founder-site');
 async function main(){
-  const app=express();mountPublicRuntime(app);
+  const app=express();mountFounderSite(app);mountPublicRuntime(app);
   const server=app.listen(0);
   try{
     const base='http://127.0.0.1:'+server.address().port;
@@ -39,6 +40,7 @@ async function main(){
     assert.match(map,/\/de\/automotive/);
     for(const path of ['/danini-auto-uvoz.webp','/danini-pregled-auta.webp']){const image=await fetch(base+path);assert.equal(image.status,200);assert.match(image.headers.get('content-type'),/image\/webp/)}
     for(const [route,meta] of Object.entries(ROUTES)){
+      if(route==='/sr/'||route==='/de/')continue; // Founder home provides its own canonical and hreflang.
       if(route.endsWith('/moj-dosije')||route.endsWith('/mein-dossier'))continue;
       const response=await fetch(base+route),page=await response.text();
       assert.equal(response.status,200,route);
@@ -50,7 +52,14 @@ async function main(){
     const dossier=await fetch(base+'/sr/moj-dosije');assert.equal(dossier.headers.get('cache-control'),'no-store');assert.equal(dossier.headers.get('x-robots-tag'),'noindex,nofollow');
     const retired=await fetch(base+'/sr/opportunity-map');assert.equal(retired.status,410);assert.equal(retired.headers.get('x-robots-tag'),'noindex,follow');
     assert.match(map,/xmlns:xhtml=/);assert.match(map,/xhtml:link/);assert.doesNotMatch(map,/moj-dosije|mein-dossier|opportunity-map/);
-    console.log('DANINI public pages, quote links and image: OK');
+    for(const route of ['/sr/','/de/','/sr/o-meni','/de/ueber-mich','/sr/kontakt','/de/kontakt']){
+      const page=await (await fetch(base+route)).text();
+      assert.match(page,/Dragan Zdravković/);
+      assert.match(page,/rel="canonical"/);
+      assert.match(page,/hreflang="sr"/);
+      assert.match(page,/hreflang="de"/);
+    }
+    console.log('DANINIHUB founder site and preserved Automotive pages: OK');
   }finally{server.close()}
 }
 main().catch(error=>{console.error(error);process.exitCode=1});

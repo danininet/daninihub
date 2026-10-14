@@ -90,7 +90,8 @@ document.querySelectorAll('form[data-dh-lead]').forEach(function(form){
  var parts=[form.getAttribute('data-dh-lead')==='BUYER_REQUEST'?'AUTO BUYER / KUPAC':form.getAttribute('data-dh-lead')==='SELLER_OFFER'?'AUTO SELLER / PRODAVAC':'LAND LEASE / ZAKUP PLACEVA'];
  new FormData(form).forEach(function(value,key){if(String(value).trim())parts.push(key+': '+String(value).trim().slice(0,1200))});
  parts.push('Origin: daninihub.com/'+form.getAttribute('data-lang'));
- var link='https://wa.me/4915730916621?text='+encodeURIComponent(parts.join('\\n')).slice(0,7000);
+ if(window.dataLayer && Array.isArray(window.dataLayer))window.dataLayer.push({event:'danini_whatsapp_open',lead_type:form.getAttribute('data-dh-lead'),lead_lang:form.getAttribute('data-lang')});
+ var link='https://wa.me/4915730916621?text='+encodeURIComponent(parts.join('\\n'));
  window.location.href=link;
  });
 });

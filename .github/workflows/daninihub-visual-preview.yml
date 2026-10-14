@@ -1,0 +1,37 @@
+name: DaniniHub Visual Preview
+on:
+  pull_request:
+    paths:
+      - 'site-experience.js'
+      - 'founder-experience.js'
+      - 'public/dragan-*'
+      - 'scripts/test-founder-experience.js'
+      - '.github/workflows/daninihub-visual-preview.yml'
+  workflow_dispatch:
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Prepare safe static preview
+        run: |
+          mkdir -p preview-export
+          cp -R dist/sr dist/de preview-export/
+          cp dist/index.html preview-export/index.html
+          cp dist/dragan-original-2026.jpg preview-export/
+          cp dist/dragan-business-grid-3x3.png preview-export/
+          find dist -maxdepth 1 -type f \( -name '*.svg' -o -name '*.webp' -o -name '*.css' -o -name '*.js' \) -exec cp {} preview-export/ \;
+      - name: Upload preview (not production)
+        uses: actions/upload-artifact@v4
+        with:
+          name: daninihub-founder-preview
+          path: preview-export/
+          retention-days: 7

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="sr">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="robots" content="noindex,nofollow,noarchive">
+ <meta name="theme-color" content="#111b24">
+ <title>AutoDanini | Administracija / Admin Desk</title>
+ <meta name="description" content="Zaštićeni AutoDanini operativni panel za obradu korisničkih zahteva.">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <style>
+  :root{color-scheme:light}body{margin:0;background:#f4f5f1;color:#1d2c33;font-family:'DM Sans',sans-serif}
+  *{box-sizing:border-box}h1,h2,h3{font-family:Manrope,sans-serif;letter-spacing:-.045em}
+  a{text-decoration:none;color:inherit}.wrap{width:min(1190px,calc(100% - 46px));margin:auto}
+  .admin-nav{background:#15212a;color:white;border-bottom:1px solid #ffffff29}
+  .admin-nav>.wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:79px}
+  .ad-logo{font:800 24px Manrope;letter-spacing:-.07em}.ad-logo span{color:#c9a66b}
+  .ad-logo small{display:block;font:600 9px 'DM Sans';letter-spacing:.17em;color:#b6c2c6}
+  .nav-right{display:flex;gap:21px;align-items:center;font-size:12px;color:#d8dfe0}
+  .nav-right a:hover{color:#c9a66b}.admin-hero{background:linear-gradient(125deg,#16242e,#2b3a43);color:white;padding:70px 0 65px}
+  .eyebrow{font-size:11px;letter-spacing:.19em;color:#c8a873;font-weight:800}
+  .admin-hero h1{font-size:clamp(42px,4.5vw,64px);max-width:800px;margin:22px 0 15px}
+  .admin-hero p{max-width:700px;font-size:16px;line-height:1.8;color:#ccd6d8}
+  .admin-main{padding:46px 0 90px}
+  .notice{background:#e7ebeb;border-left:4px solid #c8a66b;padding:16px 19px;margin-bottom:27px;font-size:14px}
+  .gate{display:grid;grid-template-columns:1.5fr .8fr;gap:24px}
+  .gate>div{background:white;border:1px solid #dfe4e3;padding:44px}
+  .gate h2{font-size:35px}.gate p{color:#627178;line-height:1.75}
+  .gate aside{background:#192a33;padding:35px;color:white}
+  .gate aside h3{font-size:27px}.gate aside p{color:#b9c7cb;line-height:1.7}
+  .btn{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border:0;padding:15px 21px;font-weight:800;font-size:13px;min-height:48px}
+  .btn.gold{background:#c8a66b;color:#15212a}.btn.primary{background:#1a2932;color:white}
+  .admin-toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}
+  .admin-toolbar h2{font-size:31px;margin:10px 0}
+  .admin-toolbar p{color:#64747b;margin:8px 0}.toolbar-actions{display:flex;flex-wrap:wrap;gap:10px}
+  .admin-request{background:white;border:1px solid #dfe4e1;padding:30px;margin-bottom:21px;box-shadow:0 16px 40px #13212c0a}
+  .admin-request-top{display:flex;align-items:start;justify-content:space-between;gap:18px}
+  .admin-request-top h3{font-size:27px;margin:0}
+  .admin-badge{font-size:11px;background:#eee6d8;padding:9px 12px;color:#715328;font-weight:700;white-space:nowrap}
+  .admin-meta{font-size:13px;color:#52646b;margin:15px 0}
+  .admin-contact{font-size:13px;font-weight:700;color:#1d3038;overflow-wrap:anywhere}
+  .admin-description{font-size:14px;color:#586b73;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}
+  .admin-edit{border-top:1px solid #e1e5e1;padding-top:22px;margin-top:26px}
+  .admin-edit-fields{display:grid;grid-template-columns:1fr 1fr;gap:19px}
+  .admin-field{display:block;font-size:13px;font-weight:700;color:#394b52;margin-bottom:19px}
+  .admin-field>span{display:block;margin-bottom:8px}
+  .admin-field input,.admin-field select,.admin-field textarea{display:block;width:100%;background:#fbfcfa;border:1px solid #c9d0cb;color:#21313a;padding:13px;min-height:46px;font-family:inherit}
+  .admin-buttons{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .admin-external{background:#ecece6;color:#172830}
+  .admin-footnote{font-size:12px;color:#728084}
+  .admin-empty{padding:28px;background:white;color:#607078}
+  .admin-small{font-size:12px;color:#64747b}
+  .admin-tableinfo{display:flex;justify-content:space-between;gap:20px;align-items:center;margin:20px 0}
+  .admin-count{font:800 29px Manrope;color:#b08b55}
+  .footer{background:#111a20;color:#b2c2c6;font-size:12px;padding:35px 0}
+  @media(max-width:850px){.gate,.admin-edit-fields{grid-template-columns:1fr}.gate>div,.gate aside{padding:25px}}
+  @media(max-width:580px){.admin-toolbar{display:block}.admin-request{padding:20px}.admin-request-top{display:block}.admin-badge{display:inline-block;margin-top:12px}.admin-nav>.wrap{flex-wrap:wrap;padding:19px 0}.admin-hero{padding:49px 0}.admin-hero h1{font-size:39px}}
+ </style>
+</head>
+<body>
+ <header class="admin-nav"><div class="wrap">
+  <a class="ad-logo" href="index.html">AUTO<span>DANINI</span><small>INTERNATIONAL AUTOMOTIVE DESK</small></a>
+  <nav class="nav-right"><a href="index.html">SAJT ↗</a><a href="nalog.html">KORISNIČKI NALOG ↗</a></nav>
+ </div></header>
+ <main>
+ <section class="admin-hero"><div class="wrap"><span class="eyebrow">OWNER ACCESS / OPERATIONS DESK</span>
+ <h1>AutoDanini Admin Desk</h1>
+ <p>Privatna obrada zahteva za vozila, evidencija komunikacije, statusi i nacrti ponuda. Nema aukcijskog nadmetanja, online plaćanja ni automatskog izdavanja računa.</p></div></section>
+ <section class="admin-main"><div class="wrap">
+ <p class="notice" id="admin-status" role="status" aria-live="polite">Proveravam administratorski pristup…</p>
+ <section id="admin-signed-out" class="gate" hidden>
+  <div><span class="eyebrow">SECURE / OWNER ONLY</span><h2>Prijava vlasnika</h2>
+   <p>Administratorski podaci nisu javni. Posle prijave server zasebno proverava da li je vaš potvrđeni nalog na administratorskoj listi.</p>
+   <button id="admin-login" type="button" class="btn gold">Prijavi se ↗</button>
+  </div>
+  <aside><span class="eyebrow">ZERO PUBLIC ACCESS</span><h3>Sigurna evidencija.</h3>
+   <p>Podaci kupaca, radne napomene i nacrti ponuda dostupni su samo ovlašćenom korisniku.</p>
+  </aside>
+ </section>
+ <section id="admin-signed-in" hidden>
+  <div class="admin-toolbar"><div><span class="eyebrow">OWNER / VERIFIED SESSION</span>
+   <h2>Pristigli zahtevi</h2><p id="admin-owner">Administrator</p></div>
+   <div class="toolbar-actions"><button id="admin-refresh" class="btn primary" type="button">Osveži ↻</button>
+    <button id="admin-logout" type="button" class="btn primary">Odjavi se</button></div></div>
+  <div class="admin-tableinfo"><p class="admin-small">Prikaz aktuelne stranice sandučeta; nacrti cena ne šalju se automatski.</p>
+   <b class="admin-count" id="admin-count">—</b></div>
+  <div id="admin-requests"></div>
+  <button id="admin-next" type="button" class="btn primary" hidden>Sledeća strana →</button>
+ </section>
+ </div></section>
+ </main>
+ <footer class="footer"><div class="wrap">© 2026 AUTO DANINI · PRIVATE ADMINISTRATION · Ne deliti pristup ni prijavne podatke.</div></footer>
+ <script type="module" src="./src/admin.ts"></script>
+</body></html>

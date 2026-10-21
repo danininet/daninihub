@@ -76,3 +76,11 @@ Kada AppDeploy dozvoli novo objavljivanje:
 - Aukcijski mehanizam kao deterministički transakcioni servis (AI pomaže da prepozna rizike, ne bira pobednika).
 
 Ovaj PR je razvojni paket za postojeću AutoDanini aplikaciju. **Ne mergovati ga automatski u produkcioni DaniniHub**; postojeća GitHub `main` grana nije ista stvar kao sadašnja AppDeploy instalacija.
+
+## Održavanje i hitni postupci za vlasnika
+
+- [Operativni priručnik na srpskom](./OPERATIVNI_PRIRUCNIK_SR.md): kako prijaviti kvar bez programiranja, prioriteti, AI trošak, backup, rollback i bezbednost.
+- [Skripta za javni uptime test](./scripts/check-public-sites.mjs): samo GET javnih stranica; ne troši AI tokene i ne obrađuje lične podatke.
+- [Predlog GitHub Actions monitoringa](../../.github/workflows/autodanini-public-health.yml): pokreće se na 2 sata **tek posle merge-a u default granu**. Upozorenja GitHub-a moraju biti uključena; nije garantovan automatski e-mail/SMS.
+- [Otvorene bezbednosne obaveze](https://github.com/danininet/daninihub/issues/60): kontrolna lista pre produkcionog lansiranja.
+- Verzije aplikacije postoje u AppDeploy; 21.10.2026 aktivna je v12. Sama verzija aplikacije nije rezervna kopija korisničke baze.

@@ -115,7 +115,8 @@ export const adminRoutes: RouterRoutes = {
   'PUT /api/admin/requests/:id': [
     requireAuth(),
     requireAdminEmailAllowlist(ADMIN_EMAILS),
-    async ({params,body}) => {
+    async (ctx) => {
+      const {params, body} = ctx;
       if (!/^sub_[A-Za-z0-9_-]{15,124}$/.test(params.id)) return error('Invalid request ID', 400);
       const input = (body ?? {}) as Record<string, unknown>;
       if (typeof input.status !== 'string' || !statuses.includes(input.status as Status)) return error('Invalid status', 400);

@@ -1,0 +1,42 @@
+{
+  "project": "AutoDanini",
+  "recordedAt": "2026-10-21",
+  "appdeployAppId": "auto-danini-import-b2b-p8swk5",
+  "appdeployUrl": "https://auto-danini-import-b2b-p8swk5.v2.appdeploy.ai/",
+  "activeAppDeployVersion": "1792610683309",
+  "activeName": "v12",
+  "rollbackCandidate": {
+    "name": "v11",
+    "version": "1792609435578",
+    "note": "Only after confirming database compatibility and user approval."
+  },
+  "githubAdminPR": "https://github.com/danininet/daninihub/pull/59",
+  "backup": {
+    "appdeployPriorVersionsAvailable": true,
+    "sourceSnapshotStoredInGitHub": false,
+    "databaseBackupVerified": false,
+    "restoreDrillVerified": false,
+    "note": "GitHub source snapshot import failed on connector/API error. Do not claim backup has completed."
+  },
+  "ownerAuthorization": {
+    "newAddressPlanned": "dragan@autodanini.com",
+    "mailboxActive": false,
+    "adminAllowlistCurrentlyEmpty": true
+  },
+  "goLiveGates": [
+    "verified operator and legal notices",
+    "domain registration and verified mailbox",
+    "explicit confirmation of admin identity and access denial tests",
+    "encrypted independent DB backup plus restore rehearsal",
+    "AI spend limits and bot protection",
+    "end-to-end account and data separation checks",
+    "monitored production URL and rollback drill"
+  ],
+  "doNotAutomate": [
+    "DNS changes",
+    "payments",
+    "auctions",
+    "admin privilege assignment",
+    "database restoration without approval"
+  ]
+}

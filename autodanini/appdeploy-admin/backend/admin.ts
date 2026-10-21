@@ -89,7 +89,7 @@ export const adminRoutes: RouterRoutes = {
       if (!entry || entry.userId !== ctx.user!.userId) return json({submitted: false});
       return json({
         submitted: true, submissionId: entry.id, status: entry.status,
-        createdAt: entry.createdAt, updatedAt: entry.updatedAt, quoteEUR: entry.quoteEUR
+        createdAt: entry.createdAt, updatedAt: entry.updatedAt
       });
     }
   ],

@@ -129,7 +129,7 @@ export const adminRoutes: RouterRoutes = {
           status: input.status, quoteEUR: input.quoteEUR, adminNote: input.adminNote,
           updatedAt: new Date().toISOString()
         },
-        if: {status: input.expectedStatus}
+        if: {status: input.expectedStatus, updatedAt: old.updatedAt}
       }], {patch: true});
       if (!updated) return error('Concurrent update, reload request', 409);
       return json({updated: true, status: input.status, quoteIsDraft: true, paymentCaptured: false});

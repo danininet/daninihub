@@ -110,7 +110,7 @@ export const adminRoutes: RouterRoutes = {
       return json({request: entry});
     }
   ],
-  'PATCH /api/admin/requests/:id': [
+  'PUT /api/admin/requests/:id': [
     requireAuth(),
     requireAdminEmailAllowlist(ADMIN_EMAILS),
     async ({params,body}) => {

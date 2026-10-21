@@ -6,10 +6,12 @@
 import {
   db, json, error, requireAuth, requireAdminEmailAllowlist
 } from '@appdeploy/sdk';
+import { randomUUID } from 'node:crypto';
 import type { RouterRoutes } from '@appdeploy/sdk';
 
 const ADMIN_EMAILS: string[] = []; // SECURITY LOCK: set only to email explicitly confirmed as owner's login.
 const inboxTable = 'autodanini_submitted_requests_v1';
+const auditTable = 'autodanini_admin_change_audit_v1';
 const statuses = ['new', 'reviewing', 'waiting_on_buyer', 'quote_draft', 'closed'] as const;
 type Status = typeof statuses[number];
 type PrivateCase = {
@@ -123,15 +125,30 @@ export const adminRoutes: RouterRoutes = {
       const [old] = await db.get<SubmittedCase>(inboxTable, [params.id], {consistent: true});
       if (!old) return error('Request not found', 404);
       if (old.status !== input.expectedStatus) return error('Changed by another session — reload', 409);
-      const [updated] = await db.tx.update(inboxTable, [{
+      const auditId = 'evt_' + randomUUID().replace(/-/g, '');
+      const at = new Date().toISOString();
+      // Both the modified request and its minimal audit receipt must commit together.
+      // Never store the buyer's personal details or internal free-text notes in the audit table.
+      const change = db.tx.update(inboxTable, [{
         id: params.id,
         record: {
           status: input.status, quoteEUR: input.quoteEUR, adminNote: input.adminNote,
-          updatedAt: new Date().toISOString()
+          updatedAt: at
         },
         if: {status: input.expectedStatus, updatedAt: old.updatedAt}
       }], {patch: true});
-      if (!updated) return error('Concurrent update, reload request', 409);
+      const audit = db.tx.add(auditTable, [{
+        id: auditId, requestId: params.id, operatorId: ctx.user!.userId,
+        changedAt: at, statusFrom: old.status, statusTo: input.status,
+        quoteModified: old.quoteEUR !== input.quoteEUR
+      }]);
+      try {
+        const [updated, logged] = await db.transact([change, audit]);
+        if (!updated[0] || !logged[0]) return error('Change not confirmed, reload request', 409);
+      } catch (_err) {
+        // Transactions may have an unknown outcome; do not blindly retry the write.
+        return error('Change not confirmed. Refresh this case before trying again.', 503);
+      }
       return json({updated: true, status: input.status, quoteIsDraft: true, paymentCaptured: false});
     }
   ]

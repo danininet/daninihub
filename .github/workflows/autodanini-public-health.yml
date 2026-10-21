@@ -1,0 +1,26 @@
+name: AutoDanini & Calije public health
+on:
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: autodanini-public-health
+  cancel-in-progress: true
+
+jobs:
+  check-public-sites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read monitor scripts
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check deployed AutoDanini and Calije URLs without personal data
+        run: node autodanini/appdeploy-admin/scripts/check-public-sites.mjs

@@ -1,0 +1,45 @@
+name: AutoDanini v12 staging audit (no deploy)
+on:
+  pull_request:
+    paths:
+      - 'autodanini/staging-v12/**'
+      - '.github/workflows/autodanini-v12-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify required Vite pages and integrated admin files
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const root='autodanini/staging-v12';
+          const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender','auctions','guides','about','contact','impressum','privacy','terms','cookies','ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin'];
+          const expected=[...pages.map(s=>s+'.html'),'backend/index.ts','backend/admin.ts','src/account.ts','src/account-submission.ts','src/admin.ts','src/main.ts','src/styles.css','vite.config.ts','package.json','tests/tests.json'];
+          let failed=0;
+          for(const p of expected){if(!fs.existsSync(path.join(root,p))){console.error('MISSING '+p);failed++;}}
+          const backend=fs.readFileSync(path.join(root,'backend/index.ts'),'utf8');
+          const admin=fs.readFileSync(path.join(root,'backend/admin.ts'),'utf8');
+          const account=fs.readFileSync(path.join(root,'src/account.ts'),'utf8');
+          if(!backend.includes('...adminRoutes,')){console.error('Admin routes not connected');failed++;}
+          if(!account.includes('attachCaseSubmission(item.id')){console.error('Submission action not connected');failed++;}
+          if(!admin.includes('const ADMIN_EMAILS: string[] = [];')){console.error('Security lock modified');failed++;}
+          if(admin.includes('updatedAt: entry.updatedAt, quoteEUR: entry.quoteEUR')){console.error('Internal quote draft exposed');failed++;}
+          console.log('Staging file/integration checks: '+(failed?'FAIL':'PASS'));
+          if(failed)process.exit(1);
+          NODE
+      - name: Install frontend dependencies without deployment
+        working-directory: autodanini/staging-v12
+        run: npm install --no-audit --no-fund
+      - name: Frontend Vite build (SDK imports may need AppDeploy build environment)
+        working-directory: autodanini/staging-v12
+        run: npm run build

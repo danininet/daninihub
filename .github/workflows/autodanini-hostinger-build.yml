@@ -40,6 +40,12 @@ jobs:
           const home=fs.readFileSync('dist/index.html','utf8');
           if(!home.includes('AUTO<span>DANINI</span>'))throw new Error('AutoDanini branding altered');
           if(!home.includes('noindex'))throw new Error('Staging indexing guard missing');
+          const admin=fs.readFileSync('dist/admin.html','utf8');
+          for(const required of ['data-page="admin"','admin-login','admin-search','admin-status-filter']){
+            if(!admin.includes(required))throw new Error('Missing owner admin UI element: '+required);
+          }
+          if(!admin.includes('noindex'))throw new Error('Owner preview must not be indexed');
+          if(!fs.existsSync('src/hostinger-client.ts'))throw new Error('Hostinger client missing');
           for (const image of ['danini-auto-uvoz.webp','danini-pregled-auta.webp']){
             if(!fs.existsSync('dist/'+image))throw new Error('Missing original image: '+image);
           }

@@ -15,12 +15,18 @@ async function get(path){
  }finally{clearTimeout(timer);}
 }
 (async()=>{
- const [home,about,support,admin,health,phone,portrait,original,grid,adminApi]=await Promise.all([
-  get('/?smoke='+Date.now()),get('/about.html'),get('/support.html'),
-  get('/admin.html'),get('/health'),get('/dragan-business-phone.jpg'),
-  get('/dragan-business-portrait.jpg'),get('/dragan-original-portrait.jpg'),
-  get('/dragan-business-grid-ai.png'),get('/api/admin/requests')
- ]);
+ // Hostinger's shared reverse proxy may reject bursts of 10 concurrent
+ // requests. Probe individually to distinguish real 404/502 from overload.
+ const home=await get('/?smoke='+Date.now());
+ const about=await get('/about.html');
+ const support=await get('/support.html');
+ const admin=await get('/admin.html');
+ const health=await get('/health');
+ const phone=await get('/dragan-business-phone.jpg');
+ const portrait=await get('/dragan-business-portrait.jpg');
+ const original=await get('/dragan-original-portrait.jpg');
+ const grid=await get('/dragan-business-grid-ai.png');
+ const adminApi=await get('/api/admin/requests');
  // Failures here must be diagnosed from the actual Hostinger response,
  // not conflated with an image-build error.
  for(const [name,item] of [['phone',phone],['portrait',portrait],['original',original],['grid',grid]]){

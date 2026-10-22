@@ -7,6 +7,7 @@
 const express=require('express');
 const crypto=require('node:crypto');
 const {BrevoClient}=require('@getbrevo/brevo');
+const {resolveAutoDaniniEmail}=require('./autodanini-mail-policy');
 const {
   safeEmail,verifyOrigin,hexId,secretHash,makeCookie,clearCookie,
   readCookie,makeChallengeCode,validChallengeCode
@@ -62,11 +63,13 @@ function makeCustomerAuth({store,env=process.env,sendEmail}){
   }
   async function sendCode(email,code){
     if(sendEmail)return sendEmail(email,code);
-    if(!env.BREVO_API_KEY||!safeEmail(env.BREVO_SENDER_EMAIL))
-      throw new Error('AUTH_EMAIL_CONFIGURATION_REQUIRED');
+    // Prevent accidentally sending AutoDanini login codes using the Calije
+    // mailbox or an unverified/unrelated From address.
+    const mail=resolveAutoDaniniEmail(env);
     const api=new BrevoClient({apiKey:env.BREVO_API_KEY}).transactionalEmails;
     await api.sendTransacEmail({
-      sender:{name:'AutoDanini',email:env.BREVO_SENDER_EMAIL},
+      sender:{name:'AutoDanini',email:mail.sender},
+      replyTo:{email:mail.replyTo,name:'AutoDanini'},
       to:[{email}],
       subject:'AutoDanini — jednokratni kod / Einmalcode',
       textContent:'Vaš jednokratni kod / Ihr Einmalcode: '+code+

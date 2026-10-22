@@ -16,6 +16,23 @@ function packageOriginalPhotos(){
     if(!existsSync(input))throw new Error('Missing original business photo: '+input);
     copyFileSync(input,join(outDir,name));
   }
+  // Real owner's source photo and distinctly labelled AI-stylized business grid
+  // live inside this repository as base64 because the GitHub text connector
+  // cannot upload binary bytes. Decode only at build time; no Drive hotlinks.
+  const privateAssets=resolve(process.cwd(),'owned-assets');
+  const own=[
+    ['dragan-original-portrait.jpg.base64','dragan-original-portrait.jpg'],
+    ['dragan-business-grid-ai.png.base64','dragan-business-grid-ai.png']
+  ];
+  for(const [encoded,name] of own){
+    const source=join(privateAssets,encoded);
+    if(!existsSync(source))throw new Error('Missing owned business photo: '+source);
+    const bytes=Buffer.from(readFileSync(source,'utf8').trim(),'base64');
+    if(bytes.length<50000)throw new Error('Corrupt owner photo: '+name);
+    writeFileSync(join(outDir,name),bytes);
+  }
+  console.log('Owned Dragan photos packaged locally:',own.map(v=>v[1]).join(', '));
+
   const old='https://raw.githubusercontent.com/danininet/daninihub/main/public/';
   let changed=0;
   for(const page of pages){

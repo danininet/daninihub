@@ -8,10 +8,11 @@ type ApiResponse<T=Record<string,unknown>>={data:T};
 type JsonObject=Record<string,unknown>;
 type AppUser={userId:string;name?:string;email?:string};
 const ENABLE_ACCOUNTS=import.meta.env.VITE_AUTODANINI_AUTH_ENABLED==='true';
+const ENABLE_AI=import.meta.env.VITE_AUTODANINI_AI_ENABLED==='true';
 const UNAVAILABLE='HOSTINGER_FEATURE_NOT_READY';
 
 function allowedPath(path:string):boolean {
- return path==='/api/advice' ||
+ return (ENABLE_AI && path==='/api/advice') ||
   (ENABLE_ACCOUNTS && (
    path==='/api/my-cases' ||
    /^\/api\/my-cases\/[a-f0-9]{32}$/.test(path) ||
@@ -135,6 +136,17 @@ function protectPhotographs():void {
 
 document.addEventListener('DOMContentLoaded',()=>{
  protectPhotographs();
+ if(!ENABLE_AI){
+   // The styling and layout are unchanged. Don't offer a paid model button
+   // until the quota-protected Hostinger service is explicitly activated.
+   const run=document.getElementById('ai-go');
+   if(run instanceof HTMLButtonElement){
+     run.disabled=true;
+     run.setAttribute('aria-disabled','true');
+     const german=localStorage.getItem('autodanini-language')==='de';
+     run.textContent=german?'KI-Beratung in Vorbereitung':'AI savetnik u pripremi';
+   }
+ }
  const german=localStorage.getItem('autodanini-language')==='de';
  const label=german?'Anmeldung in Vorbereitung':'Prijava u pripremi';
  // Owner dashboard is never exposed through the customer-only adapter.

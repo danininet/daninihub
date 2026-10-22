@@ -9,7 +9,9 @@ const app=express();
 const PORT=Number(process.env.PORT||4242);
 const DEPLOYMENT_MARKER='daninihub-sales-20260924';
 
-app.set('trust proxy',1);
+// Do not accept arbitrary spoofed X-Forwarded-For addresses. Configure only
+// actual Hostinger reverse-proxy CIDRs after staging verification.
+app.set('trust proxy',String(process.env.DANINI_TRUST_PROXY_CIDRS||'').trim()||false);
 app.disable('x-powered-by');
 app.use((req,res,next)=>{
   res.set({
@@ -35,6 +37,16 @@ app.use('/api/importos/admin',(req,res,next)=>{
   }
   next();
 });
+
+const {createPublicThrottle}=require('./core/autodanini-public-throttle');
+const hour=60*60*1000;
+// Conservative anti-abuse protection, even while checkout/AI are disabled.
+app.post('/api/importos/event',createPublicThrottle({scope:'importos_events',max:900,windowMs:hour}));
+app.post('/api/importos/service-request',createPublicThrottle({scope:'service_requests',max:60,windowMs:hour}));
+app.post('/api/importos/checkout',createPublicThrottle({scope:'checkout_attempts',max:40,windowMs:hour}));
+app.post('/api/importos/checkout/paypal',createPublicThrottle({scope:'paypal_attempts',max:40,windowMs:hour}));
+app.post('/api/auth/start',createPublicThrottle({scope:'customer_login',max:100,windowMs:hour}));
+app.post('/api/advice',createPublicThrottle({scope:'public_advice',max:24,windowMs:24*hour}));
 
 app.get('/health',async(req,res)=>{
   res.set('Cache-Control','no-store');

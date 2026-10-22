@@ -49,3 +49,12 @@ https://www.hostinger.com/support/4625828-parameters-and-limits-of-hostinger-ema
 - Bezbednost Brevo dvosmernog slanja, per-IP/per-email rate limits u javnim login rutama.
 - Test sa Hostinger staging poštom i bazom, integrisati AI uz troškovni plafon, dovršiti Support Center sa vlasničkim MFA.
 - Objavljivanje samo posle GO, bez promene trenutnog AutoDanini v12 dizajna.
+
+## Potvrda automatskih testova (GitHub, 22.10.2026)
+Na commit-u `d4a6f1c11a2580b55e88258b4409d585ebfa84af` svih 5 CI postupaka: SUCCESS:
+- AutoDanini preflight (no deployment)
+- AutoDanini v12 staging audit (no deploy)
+- AutoDanini Hostinger visual-parity build (staging only)
+- DANINI ImportOS Core
+- AutoDanini Hostinger startup regression tests (uključujući mail policy test)
+Ovo je dokaz prolaska testova koda, NE dokaz da postoji `kontakt@daninihub.com` mailbox, da su DKIM/DMARC Brevo verifikovani ili da je Hostinger produkciono objavljen. Bez korisnikove potvrde kreiranja/dostupnosti sandučića i stvarnog SMTP testa ne uključivati `AUTODANINI_AUTH_ENABLED`.

@@ -40,9 +40,9 @@ async function get(path){
   assert.equal(item.response.status,200,name+' returned '+item.response.status);
   assert.match(item.text,/AutoDanini|AUTO<span>DANINI|AUTO\s*<span>\s*DANINI/i,name);
  }
- assert.match(home.text,/dragan-business-phone\.jpg/);
- assert.match(about.text,/dragan-business-portrait\.jpg/);
- assert.match(about.text,/dragan-business-phone\.jpg/);
+ assert.match(home.text,/data:image\/jpeg;base64,/);
+ assert.match(about.text,/data:image\/jpeg;base64,/);
+ assert.ok((about.text.match(/data:image\/jpeg;base64,/g)||[]).length>=2,'About must include separate approved single photos');
  assert.match(support.text,/autodanini-support-form/);
  assert.match(support.text,/WhatsApp/);
  assert.match(admin.text,/Admin Desk/);

@@ -1,9 +1,27 @@
 import { defineConfig } from 'vite';
 import { resolve, join } from 'node:path';
-import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync, mkdirSync } from 'node:fs';
 
 const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin"];
 const hostinger=process.env.AUTODANINI_BUILD_TARGET === 'hostinger';
+
+function prepareOwnedImages(){
+  // Run before Vite transforms HTML: images must already exist in publicDir.
+  const publicDir=resolve(process.cwd(),'public');
+  const ownedDir=resolve(process.cwd(),'owned-assets');
+  mkdirSync(publicDir,{recursive:true});
+  const entries=[
+    ['dragan-original-portrait.jpg.base64','dragan-original-portrait.jpg'],
+    ['dragan-business-grid-ai.png.base64','dragan-business-grid-ai.png']
+  ];
+  for(const [input,name] of entries){
+    const source=join(ownedDir,input);
+    if(!existsSync(source))throw Error('Business image source missing: '+source);
+    const bytes=Buffer.from(readFileSync(source,'utf8').trim(),'base64');
+    if(bytes.length<50000)throw Error('Business image corrupt: '+name);
+    writeFileSync(join(publicDir,name),bytes);
+  }
+}
 
 function packageOriginalPhotos(){
   // Only for Hostinger staging: use real photos already in this repository
@@ -16,6 +34,23 @@ function packageOriginalPhotos(){
     if(!existsSync(input))throw new Error('Missing original business photo: '+input);
     copyFileSync(input,join(outDir,name));
   }
+  // Real owner's source photo and distinctly labelled AI-stylized business grid
+  // live inside this repository as base64 because the GitHub text connector
+  // cannot upload binary bytes. Decode only at build time; no Drive hotlinks.
+  const privateAssets=resolve(process.cwd(),'owned-assets');
+  const own=[
+    ['dragan-original-portrait.jpg.base64','dragan-original-portrait.jpg'],
+    ['dragan-business-grid-ai.png.base64','dragan-business-grid-ai.png']
+  ];
+  for(const [encoded,name] of own){
+    const source=join(privateAssets,encoded);
+    if(!existsSync(source))throw new Error('Missing owned business photo: '+source);
+    const bytes=Buffer.from(readFileSync(source,'utf8').trim(),'base64');
+    if(bytes.length<50000)throw new Error('Corrupt owner photo: '+name);
+    writeFileSync(join(outDir,name),bytes);
+  }
+  console.log('Owned Dragan photos packaged locally:',own.map(v=>v[1]).join(', '));
+
   const old='https://raw.githubusercontent.com/danininet/daninihub/main/public/';
   let changed=0;
   for(const page of pages){
@@ -23,9 +58,15 @@ function packageOriginalPhotos(){
     let html=readFileSync(dest,'utf8');
     if(html.includes(old)){
       html=html.split(old).join('./');
-      writeFileSync(dest,html);
       changed++;
     }
+    // Remote stock-photo URLs are fragile and undermine the owner's branding.
+    // All 23 pages use locally packaged first-party automotive photographs;
+    // the real owner portrait stays on the personal About/Contact sections.
+    html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
+    html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
+      '$1https://auto.daninihub.com/danini-auto-uvoz.webp');
+    writeFileSync(dest,html);
   }
   // The CSS decorative photo-grid branch is not part of the deployable
   // source tree; use an existing first-party image for the same background.
@@ -45,6 +86,7 @@ export default defineConfig({
   plugins: hostinger ? [{
     name: 'autodanini-package-owned-photos',
     apply: 'build',
+    buildStart: prepareOwnedImages,
     closeBundle: packageOriginalPhotos
   }] : [],
   base: './',

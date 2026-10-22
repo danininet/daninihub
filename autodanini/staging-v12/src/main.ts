@@ -59,11 +59,35 @@ function setLang(l: Lang): void {
 }
 e('language')?.addEventListener('click',()=>setLang(lang==='sr'?'de':'sr'));
 e('toggle')?.addEventListener('click',()=>{const m=e('mobile');if(m)m.hidden=!m.hidden;});
+// Preselect the actual service when visitors follow a service-specific link.
+// Whitelist existing <option> values; never insert query-string HTML.
+const selectedService=new URLSearchParams(window.location.search).get('service');
+document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer]').forEach(form=>{
+ const select=form.querySelector<HTMLSelectElement>('select[name="service"]');
+ if(!select)return;
+ const page=document.body.dataset.page;
+ const fallback=page==='exclusive'?'Premium / Oldtimer / Sonderfahrzeug':page==='tender'?'B2B Tender / RFQ':'';
+ const wanted=selectedService||fallback;
+ if(wanted && Array.from(select.options).some(option=>option.value===wanted))select.value=wanted;
+});
 document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer]').forEach(form=>{
  form.addEventListener('submit',event=>{
   event.preventDefault(); if(!form.reportValidity())return;
   const d=new FormData(form);const v=(k:string)=>String(d.get(k)||'').trim().slice(0,700);
-  const lines=['AutoDanini '+(form.dataset.dealer==='true'?'B2B':'Privat'),'Name: '+v('person'),'Fahrzeug: '+v('vehicle'),'Budget: '+v('budget')+' EUR','Zielland: '+v('country'),...(form.dataset.dealer==='true'?['Firma: '+v('company'),'Anzahl: '+v('quantity')]:[]),'Link: '+(v('listing')||'-'),'Notizen: '+(v('notes')||'-'),'Bitte Umfang und Preis schriftlich bestätigen.'];
+  const lines=[
+    'AutoDanini '+(form.dataset.dealer==='true'?'B2B RFQ':'Privat Anfrage'),
+    'Kontakt: '+v('person'),
+    ...(form.dataset.dealer==='true'?['Firma: '+v('company'),'Anzahl: '+v('quantity')]:[]),
+    'Leistung: '+v('service'),
+    'Fahrzeug: '+v('vehicle'),'Kategorie: '+v('category'),
+    'Antrieb: '+v('fuel'),'Getriebe: '+v('gearbox'),
+    'Budget: '+v('budget')+' EUR','Budget umfasst: '+v('budgetScope'),
+    'Zielland: '+v('country'),'Zeitrahmen: '+v('deadline'),
+    'Transport: '+v('transport'),'Dokumente/Ursprung: '+v('documents'),
+    'Inserate 1–3: '+([v('listing'),v('listing2'),v('listing3')].filter(Boolean).join(' | ')||'-'),
+    'Hinweise: '+(v('notes')||'-'),
+    'Bitte Umfang, Kosten und Termin schriftlich bestätigen. Keine Reservierung oder Bestellung.'
+  ];
   window.open('https://wa.me/4915730916621?text='+encodeURIComponent(lines.join('\n')),'_blank','noopener,noreferrer');
   const output=form.querySelector<HTMLElement>('[role=status]');if(output)output.textContent=lang==='sr'?'Otvoren je WhatsApp. Potvrdite slanje poruke tamo.':'WhatsApp wurde geöffnet. Bitte Nachricht dort senden.';
  });

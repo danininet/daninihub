@@ -45,10 +45,11 @@ class FakeSql{
       this.elevations.set(a[0],{customer_id:a[1],login_hash:a[2]});
       return [{affectedRows:1}];
     }
+    if(sql.startsWith('DELETE FROM ad_admin_elevations'))
+      return [{affectedRows:this.elevations.delete(a[0])?1:0}];
     if(sql.includes('FROM ad_admin_elevations')){
       const v=this.elevations.get(a[0]);return [v?.customer_id===a[1]&&v.login_hash===a[2]?[{token_hash:a[0]}]:[]];
     }
-    if(sql.startsWith('DELETE FROM ad_admin_elevations'))return [{affectedRows:this.elevations.delete(a[0])?1:0}];
     if(sql.includes('SELECT id FROM ad_private_cases')){
       const x=this.saved.get(a[0]);return [x?.customer_id===a[1]?[{id:x.id}]:[]];
     }

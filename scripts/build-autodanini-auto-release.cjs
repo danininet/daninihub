@@ -22,7 +22,11 @@ function run(command,args,cwd,env=process.env){
  if(result.status!==0)throw new Error('AutoDanini release build failed: '+command+' '+args.join(' '));
 }
 try {
- run('git',['clone','--depth=1','--single-branch','--branch',sourceBranch,source,checkout],stage);
+ // Sparse clone avoids downloading old unrelated DaniniHub repositories,
+ // large media folders and backend data during an AutoDanini frontend build.
+ run('git',['clone','--filter=blob:none','--depth=1','--sparse',
+   '--single-branch','--branch',sourceBranch,source,checkout],stage);
+ run('git',['-C',checkout,'sparse-checkout','set','autodanini/staging-v12','public'],stage);
  const frontend=path.join(checkout,'autodanini','staging-v12');
  if(!fs.existsSync(path.join(frontend,'package.json')))throw Error('AUTODANINI_FRONTEND_SOURCE_MISSING');
  // These values are fixed for this first public visual preview. The customer

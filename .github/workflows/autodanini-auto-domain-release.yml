@@ -6,6 +6,7 @@ on:
       - 'server.js'
       - 'package.json'
       - 'scripts/build-autodanini-auto-release.cjs'
+      - 'autodanini/staging-v12/**'
       - 'tests/test-autodanini-domain-release.cjs'
       - '.github/workflows/autodanini-auto-domain-release.yml'
   workflow_dispatch:
@@ -38,5 +39,17 @@ jobs:
           for(const f of ['danini-auto-uvoz.webp','danini-pregled-auta.webp']){
             if(!fs.existsSync('autodanini-auto-dist/'+f))throw new Error('AutoDanini original photo missing: '+f);
           }
+          for (const name of ['dragan-original-portrait.jpg','dragan-business-grid-ai.png']){
+            const photo='autodanini-auto-dist/'+name;
+            if(!fs.existsSync(photo) || fs.statSync(photo).size < 100000) throw new Error('Missing real business photo: '+name);
+          }
+          const index=fs.readFileSync('autodanini-auto-dist/index.html','utf8');
+          const about=fs.readFileSync('autodanini-auto-dist/about.html','utf8');
+          const buyers=fs.readFileSync('autodanini-auto-dist/buyers.html','utf8');
+          const dealers=fs.readFileSync('autodanini-auto-dist/dealers.html','utf8');
+          if(index.includes('images.unsplash.com')||about.includes('images.unsplash.com'))throw new Error('Remote stock imagery still used');
+          if(!about.includes('dragan-business-grid-ai.png'))throw new Error('Business grid not displayed');
+          if(!index.includes('owner-note')||!buyers.includes('name="listing3"')||!dealers.includes('name="listing3"'))throw new Error('Owner proof or RFQ criteria missing');
+          console.log('Owner photo, AI-labeled business grid, local imagery and detailed buyer/dealer RFQ: OK');
           console.log('Both site builds and original imagery verified');
           NODE

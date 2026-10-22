@@ -32,11 +32,22 @@ function reference(prefix){
   return prefix+'-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+crypto.randomBytes(12).toString('hex').toUpperCase();
 }
 function publicUrl(req){
+  // Never derive a payment, customer tracking or report link from an untrusted
+  // Host or X-Forwarded-Proto header. Production requires an explicit origin.
   const configured=clean(process.env.DANINI_PUBLIC_URL,500).replace(/\/$/,'');
-  if(configured)return configured;
-  const proto=clean(req.headers['x-forwarded-proto']||req.protocol||'https',20).split(',')[0].trim();
-  return proto+'://'+req.get('host');
+  if(configured){
+    let url;
+    try{url=new URL(configured)}catch{return invalidPublicOrigin()}
+    const local=['localhost','127.0.0.1'].includes(url.hostname);
+    if(url.username||url.password||url.pathname!=='/'||url.search||url.hash||
+      (url.protocol!=='https:'&&!(process.env.NODE_ENV!=='production'&&local&&url.protocol==='http:')))
+      return invalidPublicOrigin();
+    return url.origin;
+  }
+  if(process.env.NODE_ENV!=='production')return 'http://localhost:'+Number(process.env.PORT||4242);
+  return invalidPublicOrigin();
 }
+function invalidPublicOrigin(){throw new Error('DANINI_PUBLIC_URL_MUST_BE_TRUSTED_HTTPS_ORIGIN')}
 function adminAllowed(req){
   const secret=clean(process.env.DANINI_ADMIN_SECRET,300);
   const supplied=clean(req.headers['x-danini-admin']||String(req.headers.authorization||'').replace(/^Bearer\s+/i,''),300);

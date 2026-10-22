@@ -13,7 +13,11 @@ function sameDomainAddress(raw){
   return email;
 }
 function resolveAutoDaniniEmail(env=process.env){
-  const sender=sameDomainAddress(env.BREVO_SENDER_EMAIL);
+  // Reuse whichever validated sender variable the existing Brevo integration
+  // already uses; never force the owner to buy or configure another mailbox.
+  const configuredSender=env.BREVO_SENDER_EMAIL||env.DANINIHUB_SENDER_EMAIL||
+    env.MAIL_FROM||env.EMAIL_FROM;
+  const sender=sameDomainAddress(configuredSender);
   const contact=sameDomainAddress(env.AUTODANINI_CONTACT_EMAIL||DEFAULT_CONTACT);
   const recipient=sameDomainAddress(env.AUTODANINI_OPERATIONS_EMAIL||contact);
   const hasApiKey=typeof env.BREVO_API_KEY==='string'&&env.BREVO_API_KEY.length>10;

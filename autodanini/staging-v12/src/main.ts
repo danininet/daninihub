@@ -17,6 +17,9 @@ function addCommerceNavigation(): void {
   const footerInfo = document.querySelectorAll('footer .foot > div');
   if (footerInfo.length > 2) footerInfo[2].append(makeAnchor('nalog','Moj nalog','Mein Konto'));
   if (desktopContact) {desktopContact.before(makeAnchor('cenovnik', 'Cenovnik', 'Preise')); desktopContact.before(makeAnchor('nalog','Moj nalog','Mein Konto'));}
+  // Visible, human-operated Support — WhatsApp handoff only.
+  if (desktopContact) desktopContact.before(makeAnchor('support','Podrška','Support'));
+  if (mobileMenu) mobileMenu.append(makeAnchor('support','Podrška','Support'));
   const mobile = document.querySelector('.mobile');
   if (mobile) {
     mobile.append(makeAnchor('cenovnik', 'Cenovnik', 'Preise'));
@@ -28,6 +31,7 @@ function addCommerceNavigation(): void {
     footerColumns[1].append(makeAnchor('cenovnik', 'Cenovnik', 'Preise'));
     footerColumns[1].append(makeAnchor('ai-primer', 'AI primer', 'KI-Beispiel'));
     footerColumns[1].append(makeAnchor('faq', 'Česta pitanja', 'FAQ'));
+    footerColumns[1].append(makeAnchor('support', 'Podrška', 'Support'));
   }
   const demo = new URLSearchParams(window.location.search).get('demo');
   const cases: Record<string, { mode: string; sr: string; de: string }> = {

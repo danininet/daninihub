@@ -139,7 +139,7 @@
 .owner-row{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:75px}
 .owner-copy h2{font-size:clamp(32px,3.3vw,51px);max-width:700px}
 .owner-copy p{font-size:16px;color:#59656b;max-width:650px;margin-bottom:25px}
-.portrait-single{background-image:url('/dragan-original-portrait.jpg');background-repeat:no-repeat;background-size:cover;background-position:center 57%;background-color:#303a40;box-shadow:0 15px 40px #18232a26;aspect-ratio:1 / 1;max-width:520px;width:100%;border:7px solid #f4f1e9}
+.portrait-single{background-image:url('/dragan-business-portrait.jpg');background-repeat:no-repeat;background-size:cover;background-position:center 57%;background-color:#303a40;box-shadow:0 15px 40px #18232a26;aspect-ratio:1 / 1;max-width:520px;width:100%;border:7px solid #f4f1e9}
 .portrait-home{background-position:center 57%}
 .portrait-about{background-position:center 57%;min-height:350px}
 .portrait-contact{background-position:center 57%;height:230px;width:230px;max-width:none;flex:none}
@@ -188,3 +188,11 @@
 .service-cards article>a:focus-visible{outline:3px solid #98713e;outline-offset:4px}
 @media(max-width:980px){.service-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.service-cards{grid-template-columns:1fr}.service-cards article{min-height:unset}}
+
+/* Approved single-frame business portraits, not 3x3 collage. */
+.business-visual img{aspect-ratio:1/1;object-fit:cover;max-width:480px;display:block}
+.support-note{font-size:13px;color:#53646d;margin-top:12px}
+.support-status{font-size:13px;margin-top:12px;min-height:1.3em}
+.support-panel{max-width:850px}
+.support-panel .btn{min-height:50px}
+.support-section{background:#f4f5f1}

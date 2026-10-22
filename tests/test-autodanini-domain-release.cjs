@@ -28,8 +28,8 @@ function request(port,host,route){
   req.on('error',reject);req.end();
  });
 }
-test('only auto.daninihub.com serves the new 23-page AutoDanini UI; old DANINI unaffected',async t=>{
- for(const page of ['index','admin','buyers','dealers','auctions','live']){
+test('only auto.daninihub.com serves the new support-enabled AutoDanini UI; old DANINI unaffected',async t=>{
+ for(const page of ['index','admin','buyers','dealers','auctions','live','support']){
   assert.equal(fs.existsSync(path.join(root,'autodanini-auto-dist',page+'.html')),true,page);
  }
  const port=await freePort();
@@ -61,6 +61,26 @@ test('only auto.daninihub.com serves the new 23-page AutoDanini UI; old DANINI u
  const adm=await request(port,'auto.daninihub.com','/admin.html');
  assert.equal(adm.status,200);
  assert.match(adm.body,/id="admin-login"/);
+ assert.match(auto.headers['content-security-policy'],/frame-ancestors 'none'/);
+ assert.match(auto.headers['content-security-policy'],/connect-src 'self'/);
+ const support=await request(port,'auto.daninihub.com','/support.html');
+ assert.equal(support.status,200);
+ assert.match(support.body,/autodanini-support-form/);
+ assert.match(support.body,/WhatsApp/);
+ for(const forbidden of ['/dragan-original-portrait.jpg','/dragan-business-grid-ai.png']){
+  const response=await request(port,'auto.daninihub.com',forbidden);
+  assert.equal(response.status,404,'Owner source/collage must not be public: '+forbidden);
+ }
+ for(const approved of ['/dragan-business-phone.jpg','/dragan-business-portrait.jpg']){
+  // request() is text-only, so check status/Content-Type while a separate
+  // build check confirms the binary JPEG signature.
+  const response=await request(port,'auto.daninihub.com',approved);
+  assert.equal(response.status,200,'Approved single business photo not served: '+approved);
+  assert.match(response.headers['content-type'],/image\/jpeg/);
+ }
+ const robots=await request(port,'auto.daninihub.com','/robots.txt');
+ assert.match(robots.body,/Disallow:/);
+
  const api=await request(port,'auto.daninihub.com','/api/importos/checkout');
  assert.equal(api.status,503);
  const guest=await request(port,'auto.daninihub.com','/api/admin/requests');

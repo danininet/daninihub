@@ -26,8 +26,16 @@ app.use((req,res,next)=>{
     'Cache-Control':'no-store',
     'X-Content-Type-Options':'nosniff',
     'X-Frame-Options':'DENY',
-    'Referrer-Policy':'strict-origin-when-cross-origin'
+    'Referrer-Policy':'strict-origin-when-cross-origin',
+    'Permissions-Policy':'camera=(), microphone=(), geolocation=(), payment=()',
+    'Content-Security-Policy':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; form-action 'self'; upgrade-insecure-requests"
   });
+  // Do not publish the owner's source portrait or the 3x3 grid. The owner
+  // approved ONLY individually cropped, clearly identified business scenes.
+  if(['/dragan-original-portrait.jpg','/dragan-business-grid-ai.png'].includes(req.path)){
+    return res.status(404).type('text/plain').send('Not found');
+  }
+  if(req.path==='/robots.txt')return res.type('text/plain').send('User-agent: *\\nDisallow: /\\n');
   if(req.path==='/health' && req.method==='GET')return res.json({
     ok:true,service:'AutoDanini preview',releaseMode:'public-visual-only',
     adminEnabled:false,accountsEnabled:false,checkoutEnabled:false,

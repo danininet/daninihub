@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 import { resolve, join } from 'node:path';
-import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync, mkdirSync, rmSync } from 'node:fs';
 
-const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin"];
+const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin","support"];
 const hostinger=process.env.AUTODANINI_BUILD_TARGET === 'hostinger';
 
 function prepareOwnedImages(){
@@ -10,9 +10,14 @@ function prepareOwnedImages(){
   const publicDir=resolve(process.cwd(),'public');
   const ownedDir=resolve(process.cwd(),'owned-assets');
   mkdirSync(publicDir,{recursive:true});
+  // The owner explicitly requested that neither the source portrait nor the
+  // full 3x3 contact sheet be published. Never ship obsolete generated assets.
+  for(const old of ['dragan-original-portrait.jpg','dragan-business-grid-ai.png']){
+    rmSync(join(publicDir,old),{force:true});
+  }
   const entries=[
-    ['dragan-original-portrait.jpg.base64','dragan-original-portrait.jpg'],
-    ['dragan-business-grid-ai.png.base64','dragan-business-grid-ai.png']
+    ['dragan-business-phone.jpg.base64','dragan-business-phone.jpg'],
+    ['dragan-business-portrait.jpg.base64','dragan-business-portrait.jpg']
   ];
   for(const [input,name] of entries){
     const source=join(ownedDir,input);
@@ -34,13 +39,13 @@ function packageOriginalPhotos(){
     if(!existsSync(input))throw new Error('Missing original business photo: '+input);
     copyFileSync(input,join(outDir,name));
   }
-  // Real owner's source photo and distinctly labelled AI-stylized business grid
-  // live inside this repository as base64 because the GitHub text connector
-  // cannot upload binary bytes. Decode only at build time; no Drive hotlinks.
+  // Two user-approved individual AI-stylized business photos are vendored as
+  // base64 because the GitHub text connector cannot upload binary bytes.
+  // Never publish the owner's original photo or the full 3x3 collage.
   const privateAssets=resolve(process.cwd(),'owned-assets');
   const own=[
-    ['dragan-original-portrait.jpg.base64','dragan-original-portrait.jpg'],
-    ['dragan-business-grid-ai.png.base64','dragan-business-grid-ai.png']
+    ['dragan-business-phone.jpg.base64','dragan-business-phone.jpg'],
+    ['dragan-business-portrait.jpg.base64','dragan-business-portrait.jpg']
   ];
   for(const [encoded,name] of own){
     const source=join(privateAssets,encoded);
@@ -49,7 +54,10 @@ function packageOriginalPhotos(){
     if(bytes.length<50000)throw new Error('Corrupt owner photo: '+name);
     writeFileSync(join(outDir,name),bytes);
   }
-  console.log('Owned Dragan photos packaged locally:',own.map(v=>v[1]).join(', '));
+  for(const old of ['dragan-original-portrait.jpg','dragan-business-grid-ai.png']){
+    rmSync(join(outDir,old),{force:true});
+  }
+  console.log('Approved single business photos packaged:',own.map(v=>v[1]).join(', '));
 
   const old='https://raw.githubusercontent.com/danininet/daninihub/main/public/';
   let changed=0;
@@ -65,7 +73,7 @@ function packageOriginalPhotos(){
     // photographs; never quietly replace the user's portrait or business grid
     // with car imagery or unrelated stock photography.
     const ownerPage=['index','about','contact'].includes(page);
-    const ownerImage=page==='contact'?'dragan-original-portrait.jpg':'dragan-business-grid-ai.png';
+    const ownerImage=page==='about'?'dragan-business-portrait.jpg':'dragan-business-phone.jpg';
     if(ownerPage){
       // Match the first hero image by fixed HTML delimiter, with no regex
       // ambiguity in TypeScript/Vite and no effect on vehicle imagery.
@@ -79,19 +87,19 @@ function packageOriginalPhotos(){
       html=html.slice(0,imageBegin)+"'./"+ownerImage+html.slice(imageEnd);
     }
     html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
-    const socialImage=ownerPage?'dragan-original-portrait.jpg':'danini-auto-uvoz.webp';
+    const socialImage=ownerPage?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
     html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
       '$1https://auto.daninihub.com/'+socialImage);
     writeFileSync(dest,html);
   }
-  // Historical owner business-grid URL must resolve to the owned business
-  // image, never a vehicle photo.
+  // Historical business grid URLs must resolve to ONE approved individual
+  // business image, never the entire collage or an unrelated car photo.
   const oldGrid='https://raw.githubusercontent.com/danininet/daninihub/assets/autodanini-business-20261020/public/branding/autodanini-business-grid.png';
   const assetsDir=join(outDir,'assets');
   for(const name of readdirSync(assetsDir).filter(s=>s.endsWith('.css'))){
     const dest=join(assetsDir,name);
     const css=readFileSync(dest,'utf8');
-    if(css.includes(oldGrid))writeFileSync(dest,css.split(oldGrid).join('/dragan-business-grid-ai.png'));
+    if(css.includes(oldGrid))writeFileSync(dest,css.split(oldGrid).join('/dragan-business-portrait.jpg'));
   }
   console.log('Hostinger original photos packaged:',files.join(', '),'HTML files updated:',changed);
 }

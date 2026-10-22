@@ -9,6 +9,10 @@ on:
       - 'core/autodanini-mail-policy.js'
       - 'core/autodanini-public-throttle.js'
       - 'core/autodanini-ai-advice.js'
+      - 'core/autodanini-admin-security.js'
+      - 'core/autodanini-owner-desk.js'
+      - 'tests/test-autodanini-admin-security.cjs'
+      - 'tests/test-autodanini-owner-desk.cjs'
       - 'tests/test-autodanini-ai-advice.cjs'
       - 'tests/test-autodanini-public-throttle.cjs'
       - 'tests/test-autodanini-mail-policy.cjs'
@@ -43,6 +47,10 @@ jobs:
         run: node --test tests/test-autodanini-public-throttle.cjs
       - name: Verify bounded AutoDanini AI and atomic quotas
         run: node --test tests/test-autodanini-ai-advice.cjs
+      - name: Verify owner TOTP second factor and session controls
+        run: node --test tests/test-autodanini-admin-security.cjs
+      - name: Verify owner inbox, private submissions and audit controls
+        run: node --test tests/test-autodanini-owner-desk.cjs
       - name: Check syntax of updated server code
         run: |
           node --check server.js
@@ -52,6 +60,8 @@ jobs:
           node --check core/autodanini-mail-policy.js
           node --check core/autodanini-public-throttle.js
           node --check core/autodanini-ai-advice.js
+          node --check core/autodanini-admin-security.js
+          node --check core/autodanini-owner-desk.js
       - name: Regression checks against the existing Hostinger code
         run: |
           npm run build

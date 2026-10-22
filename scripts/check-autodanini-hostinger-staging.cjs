@@ -50,6 +50,11 @@ async function main(){
     [401,403,404,503].includes(res.status));
   await check('Buyer records never exposed anonymously','/api/my-cases',({res})=>
     [401,403,404,503].includes(res.status));
+  await check('Old ImportOS public API blocked in isolated AutoDanini preview','/api/importos/readiness',({res,body})=>{
+    if(res.status!==503)return false;
+    const data=JSON.parse(body);
+    return data.error==='LEGACY_API_NOT_ACTIVE_IN_PREVIEW';
+  });
   const failures=checks.filter(x=>!x.passed);
   console.log(JSON.stringify({target:base.origin,passed:checks.length-failures.length,
     total:checks.length,checks},null,2));

@@ -76,6 +76,10 @@ app.get('/api/runtime-version',(req,res)=>res.json({
 
 mountImportOSRuntime(app);
 if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
+  // Optional AI advice is quota-controlled globally by MySQL and remains OFF
+  // unless a separately configured API budget and explicit flag are provided.
+  const {makeAIAdvice}=require('./core/autodanini-ai-advice');
+  app.use('/api',makeAIAdvice({store:app.locals.importOSStore}).router);
   // Auth is off by default; both backend and Vite feature flag must be enabled
   // after Brevo verification, database checks, and private-case E2E review.
   if(process.env.AUTODANINI_AUTH_ENABLED==='true'){

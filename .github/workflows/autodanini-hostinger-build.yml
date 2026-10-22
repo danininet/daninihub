@@ -40,6 +40,19 @@ jobs:
           const home=fs.readFileSync('dist/index.html','utf8');
           if(!home.includes('AUTO<span>DANINI</span>'))throw new Error('AutoDanini branding altered');
           if(!home.includes('noindex'))throw new Error('Staging indexing guard missing');
+          for (const image of ['danini-auto-uvoz.webp','danini-pregled-auta.webp']){
+            if(!fs.existsSync('dist/'+image))throw new Error('Missing original image: '+image);
+          }
+          for(const page of pages){
+            const html=fs.readFileSync('dist/'+page+'.html','utf8');
+            if(html.includes('raw.githubusercontent.com/danininet/daninihub/main/public/'))
+              throw new Error('Broken external GitHub image dependency in '+page);
+          }
+          const cssFiles=fs.readdirSync('dist/assets').filter(name=>name.endsWith('.css'));
+          for(const name of cssFiles){
+            if(fs.readFileSync('dist/assets/'+name,'utf8').includes('autodanini-business-grid.png'))
+              throw new Error('Undeployed background reference remains: '+name);
+          }
           const js=fs.readdirSync('dist/assets').filter(name=>name.endsWith('.js')).map(name=>fs.readFileSync('dist/assets/'+name,'utf8')).join('\n');
           if(js.includes('@appdeploy/client'))throw new Error('Proprietary client unresolved');
           console.log('Hostinger staging build preserved all '+pages.length+' original v12 pages.');

@@ -15,8 +15,23 @@ const signedIn = byId<HTMLElement>('admin-signed-in');
 const requests = byId<HTMLElement>('admin-requests');
 const inboxCount = byId<HTMLElement>('admin-count');
 const nextPage = byId<HTMLButtonElement>('admin-next');
+const search = byId<HTMLInputElement>('admin-search');
+const statusFilter = byId<HTMLSelectElement>('admin-status-filter');
 const german = () => localStorage.getItem('autodanini-language') === 'de';
 let nextToken: string|null = null;
+let loadedPage: AdminRequest[] = [];
+function renderPage():void {
+  const text=(search?.value||'').trim().toLocaleLowerCase();
+  const selected=statusFilter?.value||'';
+  const visible=loadedPage.filter(item=>{
+    if(selected && item.status!==selected)return false;
+    if(!text)return true;
+    return [item.vehicle,item.ownerName,item.ownerEmail,item.destination,item.type]
+      .some(value=>String(value||'').toLocaleLowerCase().includes(text));
+  });
+  if(inboxCount)inboxCount.textContent=String(visible.length)+' / '+String(loadedPage.length)+(nextToken?'+':'');
+  show(visible);
+}
 
 function notify(sr:string,de:string):void {
  if(status) status.textContent = german() ? de : sr;
@@ -124,9 +139,9 @@ async function reload(token?:string):Promise<void>{
  const list=result.data?.requests;
  if(!Array.isArray(list))throw new Error('Invalid admin list response');
  nextToken=typeof result.data?.nextToken==='string'?result.data.nextToken:null;
- if(inboxCount)inboxCount.textContent=String(list.length)+(nextToken?'+':'');
  if(nextPage)nextPage.hidden=!nextToken;
- show(list);
+ loadedPage=list as AdminRequest[];
+ renderPage();
 }
 async function session():Promise<void>{
  notify('Proveravam administratorski pristup…','Admin-Berechtigung wird geprüft…');
@@ -154,6 +169,8 @@ async function session():Promise<void>{
   if(signedOut)signedOut.hidden=false;
   if(signedIn)signedIn.hidden=true;
   if(requests)requests.replaceChildren();
+  loadedPage=[];
+  if(inboxCount)inboxCount.textContent='—';
   notify('Administratorska prijava nije potvrđena. Prijavite se privatnim vlasničkim nalogom i Authenticator kodom.',
    'Administratorzugang nicht bestätigt. Bitte mit dem privaten Inhaberkonto und Authenticator-Code anmelden.');
  }
@@ -166,6 +183,8 @@ byId<HTMLButtonElement>('admin-logout')?.addEventListener('click',async ()=>{
  try{await auth.signOut();if(requests)requests.replaceChildren();await session();}
  catch(_error){notify('Odjava nije uspela.','Abmeldung fehlgeschlagen.');}
 });
+search?.addEventListener('input',renderPage);
+statusFilter?.addEventListener('change',renderPage);
 byId<HTMLButtonElement>('admin-refresh')?.addEventListener('click',async ()=>{
  try{nextToken=null;await reload();notify('Lista je osvežena.','Liste aktualisiert.');}
  catch(_error){notify('Lista trenutno nije dostupna.','Liste momentan nicht verfügbar.');}

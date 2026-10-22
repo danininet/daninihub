@@ -108,7 +108,33 @@ export const auth={
  }
 };
 
+/**
+ * Keep the existing photographic design when an image service works;
+ * silently fall back to first-party original business photos if it fails.
+ */
+function protectPhotographs():void {
+  const replacement='/danini-auto-uvoz.webp';
+  for(const photo of document.querySelectorAll<HTMLImageElement>('img')){
+    if(!photo.src.startsWith('https://images.unsplash.com/'))continue;
+    const fail=()=>{photo.removeEventListener('error',fail);photo.src=replacement;};
+    photo.addEventListener('error',fail,{once:true});
+    if(photo.complete && photo.naturalWidth===0)fail();
+  }
+  for(const element of document.querySelectorAll<HTMLElement>('[style*="images.unsplash.com"]')){
+    const background=element.style.backgroundImage;
+    const match=background.match(/https:\/\/images\.unsplash\.com\/[^)'"]+/);
+    if(!match)continue;
+    const probe=new Image();
+    probe.onerror=()=>{
+      // Preserve existing backgrounds, gradients, positioning and element sizes.
+      element.style.backgroundImage=background.replace(match[0],replacement);
+    };
+    probe.src=match[0];
+  }
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
+ protectPhotographs();
  const german=localStorage.getItem('autodanini-language')==='de';
  const label=german?'Anmeldung in Vorbereitung':'Prijava u pripremi';
  // Owner dashboard is never exposed through the customer-only adapter.

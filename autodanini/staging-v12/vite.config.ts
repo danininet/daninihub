@@ -40,9 +40,15 @@ function packageOriginalPhotos(){
     let html=readFileSync(dest,'utf8');
     if(html.includes(old)){
       html=html.split(old).join('./');
-      writeFileSync(dest,html);
       changed++;
     }
+    // Remote stock-photo URLs are fragile and undermine the owner's branding.
+    // All 23 pages use locally packaged first-party automotive photographs;
+    // the real owner portrait stays on the personal About/Contact sections.
+    html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
+    html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
+      '$1https://auto.daninihub.com/danini-auto-uvoz.webp');
+    writeFileSync(dest,html);
   }
   // The CSS decorative photo-grid branch is not part of the deployable
   // source tree; use an existing first-party image for the same background.

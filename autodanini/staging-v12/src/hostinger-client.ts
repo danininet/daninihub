@@ -9,6 +9,8 @@ type JsonObject=Record<string,unknown>;
 type AppUser={userId:string;name?:string;email?:string};
 const ENABLE_ACCOUNTS=import.meta.env.VITE_AUTODANINI_AUTH_ENABLED==='true';
 const ENABLE_AI=import.meta.env.VITE_AUTODANINI_AI_ENABLED==='true';
+const ENABLE_ADMIN=ENABLE_ACCOUNTS&&import.meta.env.VITE_AUTODANINI_ADMIN_ENABLED==='true';
+const ENABLE_SUBMISSIONS=ENABLE_ADMIN&&import.meta.env.VITE_AUTODANINI_SUBMISSIONS_ENABLED==='true';
 const UNAVAILABLE='HOSTINGER_FEATURE_NOT_READY';
 
 function allowedPath(path:string):boolean {
@@ -16,8 +18,12 @@ function allowedPath(path:string):boolean {
   (ENABLE_ACCOUNTS && (
    path==='/api/my-cases' ||
    /^\/api\/my-cases\/[a-f0-9]{32}$/.test(path) ||
-   /^\/api\/my-submission\/[a-f0-9]{32}$/.test(path) ||
-   path==='/api/case-submissions'));
+   (ENABLE_SUBMISSIONS && /^\/api\/my-submission\/[a-f0-9]{32}$/.test(path)) ||
+   (ENABLE_SUBMISSIONS && path==='/api/case-submissions'))) ||
+  (ENABLE_ADMIN && (
+    path==='/api/admin/requests' ||
+    /^\/api\/admin\/requests\?nextToken=(0|[1-9]\d{0,3})$/.test(path) ||
+    /^\/api\/admin\/requests\/[a-f0-9]{40}$/.test(path)));
 }
 async function send<T=JsonObject>(method:'GET'|'POST'|'PUT'|'DELETE',path:string,body?:JsonObject):Promise<ApiResponse<T>> {
  if(!allowedPath(path))throw new Error(UNAVAILABLE);
@@ -96,15 +102,29 @@ export const auth={
  async signIn():Promise<void>{
   if(!ENABLE_ACCOUNTS)throw new Error(UNAVAILABLE);
   const german=localStorage.getItem('autodanini-language')==='de';
-  const email=await ask(german?'Sicher anmelden':'Bezbedna prijava',german?'Ihre E-Mail-Adresse':'Vaša e-mail adresa','email');
+  const adminPage=document.body.dataset.page==='admin';
+  if(adminPage&&!ENABLE_ADMIN)throw new Error(UNAVAILABLE);
+  const existing=adminPage?await auth.getUser():null;
+  if(!existing){
+   const email=await ask(german?'Sicher anmelden':'Bezbedna prijava',german?'Ihre E-Mail-Adresse':'Vaša e-mail adresa','email');
   if(!email)return;
   const started=await authRequest<{challengeId:string}>('POST','/api/auth/start',{email});
   const code=await ask(german?'Code aus der E-Mail':'Kod iz e-mail poruke',german?'Sechsstelliger Code (10 Minuten gültig)':'Šestocifreni kod (važi 10 minuta)','text','[0-9]{6}');
   if(!code)return;
-  await authRequest('POST','/api/auth/verify',{challengeId:started.challengeId,code});
+   await authRequest('POST','/api/auth/verify',{challengeId:started.challengeId,code});
+  }
+  if(adminPage){
+    const code=await ask(german?'Administrator Zweitfaktor':'Administratorski drugi faktor',
+      german?'6-stelliger Authenticator-Code':'Šestocifreni kod iz Authenticator aplikacije',
+      'text','[0-9]{6}');
+    if(!code)throw new Error('ADMIN_MFA_CANCELLED');
+    await authRequest('POST','/api/admin/elevate',{code});
+  }
  },
  async signOut():Promise<void>{
   if(!ENABLE_ACCOUNTS)return;
+  if(ENABLE_ADMIN&&document.body.dataset.page==='admin')
+   await authRequest('POST','/api/admin/logout',{}).catch(()=>{});
   await authRequest('POST','/api/auth/logout',{});
  }
 };
@@ -152,7 +172,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  // Owner dashboard is never exposed through the customer-only adapter.
  const adminButton=document.getElementById('admin-login');
  if(adminButton instanceof HTMLButtonElement){
-  adminButton.disabled=true;adminButton.textContent=label;adminButton.setAttribute('aria-disabled','true');
+  if(!ENABLE_ADMIN){
+   adminButton.disabled=true;adminButton.textContent=label;adminButton.setAttribute('aria-disabled','true');
+  }
  }
  if(!ENABLE_ACCOUNTS){
   const buyerButton=document.getElementById('account-login');

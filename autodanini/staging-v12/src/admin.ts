@@ -143,7 +143,20 @@ async function reload(token?:string):Promise<void>{
  loadedPage=list as AdminRequest[];
  renderPage();
 }
+const ADMIN_BACKEND_VERIFIED =
+ import.meta.env.VITE_AUTODANINI_AUTH_ENABLED==='true' &&
+ import.meta.env.VITE_AUTODANINI_ADMIN_ENABLED==='true';
 async function session():Promise<void>{
+ if(!ADMIN_BACKEND_VERIFIED){
+  if(signedOut)signedOut.hidden=false;
+  if(signedIn)signedIn.hidden=true;
+  if(requests)requests.replaceChildren();
+  const login=byId<HTMLButtonElement>('admin-login');
+  if(login){login.disabled=true;login.textContent=german()?'Inhaberzugang noch nicht freigeschaltet':'Prijava vlasnika još nije aktivirana';}
+  notify('Admin Desk je zaključan: prijava, MySQL i MFA prvo moraju proći produkcione provere. Nema javnog pristupa zahtevima.',
+   'Admin Desk gesperrt: Anmeldung, MySQL und MFA müssen vor Freigabe geprüft werden. Kein öffentlicher Zugriff auf Anfragen.');
+  return;
+ }
  notify('Proveravam administratorski pristup…','Admin-Berechtigung wird geprüft…');
  try{
   const owner=await auth.getUser();

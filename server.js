@@ -75,6 +75,16 @@ app.get('/api/runtime-version',(req,res)=>res.json({
   contact:'info@daninihub.com'
 }));
 
+// Staging must not accidentally accept legacy public service requests,
+// Stripe/PayPal callbacks or customer records while the new UI is reviewed.
+// Keep the legacy API unchanged for the existing public DaniniHub runtime.
+app.use('/api/importos',(req,res,next)=>{
+  if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
+    res.set('Cache-Control','no-store');
+    return res.status(503).json({ok:false,error:'LEGACY_API_NOT_ACTIVE_IN_PREVIEW'});
+  }
+  next();
+});
 mountImportOSRuntime(app);
 if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
   // Optional AI advice is quota-controlled globally by MySQL and remains OFF

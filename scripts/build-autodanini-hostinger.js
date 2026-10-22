@@ -16,5 +16,5 @@ function run(args,extraEnv={}){
   if(result.status!==0)throw new Error('Hostinger AutoDanini build failed: '+args.join(' '));
 }
 run(['install','--no-audit','--no-fund']);
-run(['run','build'],{AUTODANINI_BUILD_TARGET:'hostinger'});
+run(['run','build'],{AUTODANINI_BUILD_TARGET:'hostinger',VITE_AUTODANINI_HOSTINGER_BUILD:'true'});
 console.log('AutoDanini staging files: autodanini/staging-v12/dist');

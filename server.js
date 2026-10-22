@@ -11,6 +11,40 @@ const DEPLOYMENT_MARKER='daninihub-sales-20260924';
 
 app.set('trust proxy',1);
 
+// Separate domains share this repository but must NOT share public content.
+// auto.daninihub.com gets the AutoDanini visual-only release; the existing
+// DaniniHub root domain continues using the original public runtime.
+const fs=require('node:fs');
+const path=require('node:path');
+const autoDist=path.join(__dirname,'autodanini-auto-dist');
+app.use((req,res,next)=>{
+  // Use only the actual HTTP Host, NOT spoofable X-Forwarded-Host.
+  const host=String(req.headers.host||'').split(':')[0].toLowerCase();
+  if(host!=='auto.daninihub.com')return next();
+  res.set({
+    'X-Robots-Tag':'noindex,nofollow',
+    'Cache-Control':'no-store',
+    'X-Content-Type-Options':'nosniff',
+    'X-Frame-Options':'DENY',
+    'Referrer-Policy':'strict-origin-when-cross-origin'
+  });
+  if(req.path==='/health' && req.method==='GET')return res.json({
+    ok:true,service:'AutoDanini preview',releaseMode:'public-visual-only',
+    adminEnabled:false,accountsEnabled:false,checkoutEnabled:false,
+    durableStore:false
+  });
+  if(req.path.startsWith('/api/')||req.path==='/owner'||req.path.startsWith('/owner/')){
+    return res.status(503).json({ok:false,error:'AUTODANINI_INTERACTIVE_SERVICES_NOT_RELEASED'});
+  }
+  if(req.method!=='GET'&&req.method!=='HEAD'){
+    return res.status(405).type('text/plain').send('Not available in this preview');
+  }
+  if(!fs.existsSync(path.join(autoDist,'index.html'))){
+    return res.status(503).type('text/plain').send('AutoDanini release build unavailable');
+  }
+  return express.static(autoDist,{index:'index.html',fallthrough:false,maxAge:0})(req,res,next);
+});
+
 app.get('/health',async(req,res)=>{
   res.set('Cache-Control','no-store');
   const store=req.app.locals.importOSStore;

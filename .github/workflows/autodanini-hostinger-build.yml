@@ -40,5 +40,11 @@ jobs:
           if(js.includes('@appdeploy/client'))throw new Error('Proprietary client unresolved');
           console.log('Hostinger staging build preserved all '+pages.length+' original v12 pages.');
           NODE
+      - name: Store non-production Hostinger staging bundle for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: autodanini-v12-hostinger-staging
+          path: autodanini/staging-v12/dist/
+          retention-days: 7
       - name: Deployment intentionally not performed
         run: echo 'Staging build validation only. Do not publish or edit DNS.'

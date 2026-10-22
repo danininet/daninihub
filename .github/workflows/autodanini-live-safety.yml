@@ -20,7 +20,17 @@ jobs:
           cache: npm
       - name: Verify public AutoDanini pages, individual photos, Support and private API
         run: node scripts/check-autodanini-live-safety.cjs
-      - name: Check production npm dependencies for critical vulnerabilities
-        run: |
-          npm ci --no-audit --no-fund
-          npm audit --omit=dev --audit-level=critical
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked production dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Audit critical npm production vulnerabilities
+        run: npm audit --omit=dev --audit-level=critical

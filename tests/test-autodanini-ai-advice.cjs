@@ -122,3 +122,34 @@ test('AI HTTP endpoint stays disabled when no activation is approved',async(t)=>
   assert.equal(response.status,503);
   assert.equal((await response.json()).error,'AI_NOT_ENABLED');
 });
+
+test('HTTP AI endpoint rejects foreign origins and enforces DB quota before billing',async(t)=>{
+  const db=new QuotaPool();let billed=0;
+  const env={...prod,DANINI_PUBLIC_URL:'https://daninihub.com'};
+  const engine=makeAIAdvice({
+    store:store(db),env,
+    clock:()=>new Date('2026-10-22T10:00:00Z'),
+    clientFactory:()=>({responses:{async create(){billed++;return {output_text:'Verify documentation and arrange independent inspection.'}}}})
+  });
+  const app=express();app.use('/api',engine.router);
+  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+  t.after(()=>new Promise(r=>server.close(r)));
+  const url='http://127.0.0.1:'+server.address().port+'/api/advice';
+  async function post(origin,input=valid){
+    const r=await fetch(url,{method:'POST',
+      headers:{'Origin':origin,'Content-Type':'application/json'},
+      body:JSON.stringify(input)});
+    return {status:r.status,data:await r.json()};
+  }
+  assert.equal((await post('https://attacker.example')).status,403);
+  assert.equal(billed,0);
+  assert.equal((await post('https://daninihub.com',{...valid,consent:false})).status,400);
+  assert.equal(billed,0);
+  const first=await post('https://daninihub.com');
+  assert.equal(first.status,200);
+  assert.match(first.data.answer,/independent inspection/);
+  const rest=await Promise.all(Array.from({length:DAILY_CAP+9},()=>post('https://daninihub.com')));
+  assert.equal(rest.filter(r=>r.status===200).length,DAILY_CAP-1);
+  assert.equal(rest.filter(r=>r.status===429).length,10);
+  assert.equal(billed,DAILY_CAP);
+});

@@ -57,3 +57,16 @@ Dokument daje realna hPanel polja i granu; **ne dokazuje da Hostinger aplikacija
 - Od commit-a `95a3e49eb2539008ae1412b865ee282164be3eab` svaki nasleđeni javni `/api/importos/*` poziv u izolovanoj AutoDanini preview aplikaciji vraća `503 LEGACY_API_NOT_ACTIVE_IN_PREVIEW`. Time probna aplikacija ne prima stare service request zapise, ne pokušava stare checkout i webhook tokove i ne šalje nasleđene notifikacije. U postojećoj DaniniHub javnoj produkciji ponašanje API-ja ostaje nepromenjeno.
 - Test `scripts/check-autodanini-hostinger-staging.cjs` sada proverava i taj 503 odgovor.
 - Staging je spreman za test samo kad GitHub CI postane zelen na trenutnom commitu; sama dokumentacija i Vite build ne potvrđuju Hostinger release.
+
+## Provera konkretnog poddomena auto.daninihub.com (22.10.2026)
+Vlasnik je dostavio `https://auto.daninihub.com/` za probu. Nezavisni crawler je pri pokušaju čitanja javne stranice vratio Hostinger default sadržaj **“You Are All Set to Go!”**, a ne AutoDanini HTML. `/health` i `/admin.html` nisu bili dohvatljivi kroz taj crawler. Direktni alat za pregled i sandbox DNS provera nisu dali pouzdan rezultat; stoga dokazujemo samo da je **default Hostinger stranica viđena**, ne da je MySQL/Node ispravan.
+
+Hostinger zvanično navodi da je to podrazumevana `default.php` stranica za novododati domen/poddomen. https://www.hostinger.com/support/5811527-the-website-shows-a-you-are-all-set-to-go-message/
+
+**Važno:** Prema Hostinger Node.js dokumentaciji, postojeći PHP/HTML sajt se NE može prebaciti u Node.js režim in-place. Ako je `auto.daninihub.com` u Websites listi običan PHP/HTML sajt sa isključivo `public_html/default.php`, a nema korisničkog sadržaja/baze/e-maila, korisnik mora najpre BEZBEDNO osloboditi samo taj izdvojeni `auto` website slot, a zatim ga dodati kao zasebnu **Web App (Node.js)** sa istim poddomenom. Ne raditi takvo brisanje bez vlasničke provere backup-a i objekta koji se briše. Nikad ne brisati `daninihub.com` ili `calije.daninihub.com`, ni njihove e-mail servise. Ako je već kreirana Web App, NE BRISATI — otvoriti njen `Deployments` i proveriti build, povezanu granu, hostiranje/povezivanje poddomena i `Environment Variables`.
+
+Oficijelno Hostinger Node.js FAQ: https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/
+
+Za ovaj poddomen postaviti `DANINI_PUBLIC_URL=https://auto.daninihub.com` (bez završnog slash-a ili putanje). To jeste dozvoljeni STAGING host u release guard-u; `daninihub.com` i `calije.daninihub.com` nisu.
+
+**Nijedno brisanje sajta, promena DNS, hPanel izmena ni stvarno postavljanje nije izvršeno iz chata.** Prvo dobiti hPanel potvrdu da je `auto.daninihub.com` izdvojen od glavnog sajta i na koju vrstu aplikacije je vezan.

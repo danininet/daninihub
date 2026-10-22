@@ -53,7 +53,8 @@ test('public AutoDanini preview refuses development mode',()=>{
     AUTODANINI_PREVIEW_ENABLED:'true'
   }),/AUTODANINI_PREVIEW_REQUIRES_PRODUCTION_MODE/);
   assert.doesNotThrow(()=>checkProductionConfiguration({
-    ...safe,AUTODANINI_PREVIEW_ENABLED:'true'
+    ...safe,AUTODANINI_PREVIEW_ENABLED:'true',
+    DANINI_PUBLIC_URL:'https://autodanini-preview.hostingersite.com'
   }));
 });
 

@@ -41,8 +41,9 @@ export const api = {
   put: <T=JsonObject>(path: string, body?: JsonObject): Promise<ApiResponse<T>> => jsonRequest<T>('PUT',path,body),
   delete: <T=JsonObject>(path: string): Promise<ApiResponse<T>> => jsonRequest<T>('DELETE',path),
 };
+type AppUser = {userId: string; name?: string; email?: string};
 export const auth = {
-  async getUser(): Promise<null> { return null; },
+  async getUser(): Promise<AppUser | null> { return null; },
   async signIn(): Promise<never> { throw new Error(UNAVAILABLE); },
   async signOut(): Promise<void> { /* no Hostinger login session exists */ }
 };

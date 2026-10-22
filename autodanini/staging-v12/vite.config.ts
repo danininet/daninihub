@@ -67,12 +67,16 @@ function packageOriginalPhotos(){
     const ownerPage=['index','about','contact'].includes(page);
     const ownerImage=page==='contact'?'dragan-original-portrait.jpg':'dragan-business-grid-ai.png';
     if(ownerPage){
-      // Business hero: personal imagery, not car-stock substitutions. Keep
-      // service tiles automotive (do NOT replace all images indiscriminately).
-      html=html.replace(
-        /(<section class="(?:hero|pagehero)" style="--image:url\\(')[^']+(')/,
-        (_match,start,end)=>start+'./'+ownerImage+end
-      );
+      // Match the first hero image by fixed HTML delimiter, with no regex
+      // ambiguity in TypeScript/Vite and no effect on vehicle imagery.
+      const heroClass=page==='index'?'hero':'pagehero';
+      const marker='<section class="'+heroClass+'" style="--image:url(';
+      const begin=html.indexOf(marker);
+      if(begin<0)throw Error('Missing owner business hero in '+page);
+      const imageBegin=begin+marker.length;
+      const imageEnd=html.indexOf("')",imageBegin);
+      if(imageEnd<0)throw Error('Malformed business hero image in '+page);
+      html=html.slice(0,imageBegin)+"'./"+ownerImage+html.slice(imageEnd);
     }
     html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
     const socialImage=ownerPage?'dragan-original-portrait.jpg':'danini-auto-uvoz.webp';

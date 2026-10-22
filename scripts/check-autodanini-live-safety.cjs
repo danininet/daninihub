@@ -53,4 +53,9 @@ async function get(path){
   support:'WhatsApp with explicit confirmation',
   privateApi:'locked',admin:'disabled pending owner MFA and MySQL'
  });
-})().catch(error=>{console.error('LIVE_AUTODANINI_SMOKE_FAILED:',error.message);process.exitCode=1});
+})().catch(error=>{
+ console.error('LIVE_AUTODANINI_SMOKE_FAILED:',error.message,
+  'reason='+String(error.cause?.code||'unknown'),
+  'details='+String(error.cause?.message||'').slice(0,160));
+ process.exitCode=1
+});

@@ -60,22 +60,27 @@ function packageOriginalPhotos(){
       html=html.split(old).join('./');
       changed++;
     }
-    // Remote stock-photo URLs are fragile and undermine the owner's branding.
-    // All 23 pages use locally packaged first-party automotive photographs;
-    // the real owner portrait stays on the personal About/Contact sections.
-    html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
+    // Use owned vehicle images ONLY in vehicle/service content.
+    // Owner-facing pages must feature real owner or clearly-labelled AI business
+    // photographs; never quietly replace the user's portrait or business grid
+    // with car imagery or unrelated stock photography.
+    const ownerPage=['index','about','contact'].includes(page);
+    const ownerImage=page==='contact'?'dragan-original-portrait.jpg':'dragan-business-grid-ai.png';
+    html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,
+      ownerPage?'./'+ownerImage:'./danini-auto-uvoz.webp');
+    const socialImage=ownerPage?'dragan-original-portrait.jpg':'danini-auto-uvoz.webp';
     html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
-      '$1https://auto.daninihub.com/danini-auto-uvoz.webp');
+      '$1https://auto.daninihub.com/'+socialImage);
     writeFileSync(dest,html);
   }
-  // The CSS decorative photo-grid branch is not part of the deployable
-  // source tree; use an existing first-party image for the same background.
+  // Historical owner business-grid URL must resolve to the owned business
+  // image, never a vehicle photo.
   const oldGrid='https://raw.githubusercontent.com/danininet/daninihub/assets/autodanini-business-20261020/public/branding/autodanini-business-grid.png';
   const assetsDir=join(outDir,'assets');
   for(const name of readdirSync(assetsDir).filter(s=>s.endsWith('.css'))){
     const dest=join(assetsDir,name);
     const css=readFileSync(dest,'utf8');
-    if(css.includes(oldGrid))writeFileSync(dest,css.split(oldGrid).join('/danini-auto-uvoz.webp'));
+    if(css.includes(oldGrid))writeFileSync(dest,css.split(oldGrid).join('/dragan-business-grid-ai.png'));
   }
   console.log('Hostinger original photos packaged:',files.join(', '),'HTML files updated:',changed);
 }

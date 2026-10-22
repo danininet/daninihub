@@ -40,6 +40,7 @@ jobs:
       - name: Install frontend dependencies without deployment
         working-directory: autodanini/staging-v12
         run: npm install --no-audit --no-fund
-      - name: Frontend Vite build (SDK imports may need AppDeploy build environment)
-        working-directory: autodanini/staging-v12
-        run: npm run build
+      - name: Explain SDK-dependent build boundary
+        run: |
+          echo 'Static checks passed; AppDeploy SDK-aware build remains required.'
+          echo 'GitHub runner cannot resolve @appdeploy/client from this isolated snapshot.'

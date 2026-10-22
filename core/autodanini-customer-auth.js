@@ -5,6 +5,7 @@
  * are explicitly set. Legacy admin/payments remain unavailable.
  */
 const express=require('express');
+const crypto=require('node:crypto');
 const {BrevoClient}=require('@getbrevo/brevo');
 const {
   safeEmail,verifyOrigin,hexId,secretHash,makeCookie,clearCookie,
@@ -80,7 +81,7 @@ function makeCustomerAuth({store,env=process.env,sendEmail}){
     const hash=secretHash(secret,'session',token);
     const [rows]=await pool.execute(
       `SELECT c.id,c.email FROM ad_sessions s JOIN ad_customers c
-       ON c.id=s.customer_id WHERE s.token_hash=? AND s.expires_at>UTC_TIMESTAMP() LIMIT 1`,
+       ON c.id=s.customer_id WHERE s.token_hash=? AND s.expires_at>NOW() LIMIT 1`,
       [hash]
     );
     return rows[0]||null;
@@ -103,7 +104,7 @@ function makeCustomerAuth({store,env=process.env,sendEmail}){
       const ipHash=secretHash(secret,'ip',String(req.ip||'unknown'));
       const [[counts]]=await pool.query(
         `SELECT
-          (SELECT COUNT(*) FROM ad_login_codes WHERE email=? AND created_at>DATE_SUB(UTC_TIMESTAMP(),INTERVAL 1 HOUR)) AS email_count,
+          (SELECT COUNT(*) FROM ad_login_codes WHERE email=? AND created_at>DATE_SUB(NOW(),INTERVAL 1 HOUR)) AS email_count,
           (SELECT COUNT(*) FROM ad_login_codes WHERE ip_hash=? AND created_at>DATE_SUB(UTC_TIMESTAMP(),INTERVAL 1 HOUR)) AS ip_count`,
         [email,ipHash]
       );
@@ -112,7 +113,7 @@ function makeCustomerAuth({store,env=process.env,sendEmail}){
       const id=hexId(),code=makeChallengeCode();
       await pool.execute(
         `INSERT INTO ad_login_codes (id,email,code_hash,ip_hash,expires_at)
-         VALUES (?,?,?,?,DATE_ADD(UTC_TIMESTAMP(),INTERVAL 10 MINUTE))`,
+         VALUES (?,?,?,?,DATE_ADD(NOW(),INTERVAL 10 MINUTE))`,
         [id,email,secretHash(secret,'otp',id+':'+code),ipHash]
       );
       await sendCode(email,code);
@@ -132,20 +133,20 @@ function makeCustomerAuth({store,env=process.env,sendEmail}){
       conn=await pool.getConnection();
       await conn.beginTransaction();
       const [rows]=await conn.execute(
-        'SELECT * FROM ad_login_codes WHERE id=? FOR UPDATE',[id]
+        'SELECT * FROM ad_login_codes WHERE id=? AND expires_at>NOW() FOR UPDATE',[id]
       );
       const item=rows[0];
-      if(!item||item.used_at||item.attempts>=5||new Date(item.expires_at).getTime()<=Date.now()){
+      if(!item||item.used_at||item.attempts>=5){
         await conn.rollback();return res.status(401).json({error:'INVALID_OR_EXPIRED_CODE'});
       }
       const expected=secretHash(secret,'otp',id+':'+code);
-      if(item.code_hash!==expected){
+      if(typeof item.code_hash!=='string'||!crypto.timingSafeEqual(Buffer.from(item.code_hash,'utf8'),Buffer.from(expected,'utf8'))){
         await conn.execute(
           'UPDATE ad_login_codes SET attempts=attempts+1 WHERE id=?',[id]
         );
         await conn.commit();return res.status(401).json({error:'INVALID_OR_EXPIRED_CODE'});
       }
-      await conn.execute('UPDATE ad_login_codes SET used_at=UTC_TIMESTAMP() WHERE id=?',[id]);
+      await conn.execute('UPDATE ad_login_codes SET used_at=NOW() WHERE id=?',[id]);
       const newId=hexId();
       await conn.execute(
         'INSERT INTO ad_customers (id,email) VALUES (?,?) ON DUPLICATE KEY UPDATE email=VALUES(email)',
@@ -156,7 +157,7 @@ function makeCustomerAuth({store,env=process.env,sendEmail}){
       const token=hexId(32);
       await conn.execute(
         `INSERT INTO ad_sessions (token_hash,customer_id,expires_at)
-         VALUES (?,?,DATE_ADD(UTC_TIMESTAMP(),INTERVAL 7 DAY))`,
+         VALUES (?,?,DATE_ADD(NOW(),INTERVAL 7 DAY))`,
         [secretHash(secret,'session',token),user.id]
       );
       await conn.commit();

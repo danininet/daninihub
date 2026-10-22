@@ -36,6 +36,30 @@ app.use((req,res,next)=>{
     return res.status(404).type('text/plain').send('Not found');
   }
   if(req.path==='/robots.txt')return res.type('text/plain').send('User-agent: *\\nDisallow: /\\n');
+  // Hostinger's proxy returned 502 for ordinary streamed JPEG responses
+  // even while HTML and error routes worked. Send approved fixed-size images
+  // as bounded buffers; never accept arbitrary file paths or user uploads.
+  const approvedImages=Object.freeze({
+    '/dragan-business-phone.jpg':'image/jpeg',
+    '/dragan-business-portrait.jpg':'image/jpeg',
+    '/danini-auto-uvoz.webp':'image/webp',
+    '/danini-pregled-auta.webp':'image/webp'
+  });
+  if(Object.prototype.hasOwnProperty.call(approvedImages,req.path)){
+    if(req.method!=='GET'&&req.method!=='HEAD')return res.sendStatus(405);
+    const absolute=path.join(autoDist,req.path.slice(1));
+    try{
+      const stat=fs.statSync(absolute);
+      if(!stat.isFile()||stat.size<100||stat.size>2000000)throw Error('image unavailable');
+      const image=fs.readFileSync(absolute);
+      res.set('Content-Type',approvedImages[req.path]);
+      res.set('Content-Length',String(image.length));
+      return req.method==='HEAD'?res.status(200).end():res.status(200).end(image);
+    }catch{
+      return res.status(404).type('text/plain').send('Image not found');
+    }
+  }
+
   if(req.path==='/health' && req.method==='GET')return res.json({
     ok:true,service:'AutoDanini preview',releaseMode:'public-visual-only',
     adminEnabled:false,accountsEnabled:false,checkoutEnabled:false,

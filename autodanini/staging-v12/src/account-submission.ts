@@ -13,6 +13,10 @@ export function attachCaseSubmission(
  german:()=>boolean,
  notify:(sr:string,de:string)=>void
 ):void {
+ // Existing buyer draft cases work independently; submissions stay off until
+ // authenticated owner inbox, anti-abuse and audit trail pass release checks.
+ if(import.meta.env.VITE_AUTODANINI_HOSTINGER_BUILD==='true' &&
+    import.meta.env.VITE_AUTODANINI_SUBMISSIONS_ENABLED!=='true')return;
  const wrapper=document.createElement('div');
  wrapper.className='account-submit-review';
  const button=document.createElement('button');

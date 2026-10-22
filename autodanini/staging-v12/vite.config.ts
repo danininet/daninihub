@@ -58,6 +58,15 @@ function packageOriginalPhotos(){
     rmSync(join(outDir,old),{force:true});
   }
   console.log('Approved single business photos packaged:',own.map(v=>v[1]).join(', '));
+  // Embed only the two approved public JPGs into owner-facing pages. Hostinger
+  // intermittently returns nginx 502 for simultaneous binary requests. HTML
+  // was consistently served, so inline images avoid those separate fetches.
+  // This is intentionally limited to small, public business photos, never
+  // private IDs, owner source photo, the full 3x3 grid, or customer records.
+  const inlinePhotos=Object.fromEntries(own.map(([encoded,name])=>
+    [name,'data:image/jpeg;base64,'+readFileSync(join(privateAssets,encoded),'utf8').trim()]
+  ));
+
 
   const old='https://raw.githubusercontent.com/danininet/daninihub/main/public/';
   let changed=0;
@@ -90,6 +99,21 @@ function packageOriginalPhotos(){
     const socialImage=ownerPage?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
     html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
       '$1https://auto.daninihub.com/'+socialImage);
+    if(['index','about','contact','support'].includes(page)){
+      for(const [name,dataUrl] of Object.entries(inlinePhotos)){
+        html=html.split("url('./"+name+"')").join("url('"+dataUrl+"')");
+        html=html.split('src="./'+name+'"').join('src="'+dataUrl+'"');
+        html=html.split('src="/'+name+'"').join('src="'+dataUrl+'"');
+      }
+      // Portraits styled in CSS must not issue another JPEG fetch. Inline
+      // override wins over the class background-image, which we retain as
+      // a graceful non-inline fallback in development.
+      if(html.includes('class="portrait-single')){
+        const dataUrl=inlinePhotos['dragan-business-portrait.jpg'];
+        html=html.replace(/(<div class="portrait-single[^"]*")(?=\s)/g,
+          '$1 style="background-image:url(\''+dataUrl+'\')"');
+      }
+    }
     writeFileSync(dest,html);
   }
   // Historical business grid URLs must resolve to ONE approved individual

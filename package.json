@@ -17,7 +17,8 @@
     "check:live": "node scripts/check-live.js",
     "test:purchase": "node scripts/test-purchase-journey.js",
     "test:cases": "node scripts/test-purchase-case.js",
-    "build:autodanini-hostinger": "node scripts/build-autodanini-hostinger.js"
+    "build:autodanini-hostinger": "node scripts/build-autodanini-hostinger.js",
+    "check:autodanini-hostinger-staging": "node scripts/check-autodanini-hostinger-staging.cjs"
   },
   "keywords": [
     "vehicle-import",

@@ -77,6 +77,7 @@ test('only auto.daninihub.com serves the new support-enabled AutoDanini UI; old 
   const response=await request(port,'auto.daninihub.com',approved);
   assert.equal(response.status,200,'Approved single business photo not served: '+approved);
   assert.match(response.headers['content-type'],/image\/jpeg/);
+  assert.match(response.headers['cache-control'],/public, max-age=300/);
  }
  const robots=await request(port,'auto.daninihub.com','/robots.txt');
  assert.match(robots.body,/Disallow:/);

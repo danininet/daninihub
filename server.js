@@ -53,6 +53,9 @@ app.use((req,res,next)=>{
       if(!stat.isFile()||stat.size<100||stat.size>2000000)throw Error('image unavailable');
       const image=fs.readFileSync(absolute);
       res.set('Content-Type',approvedImages[req.path]);
+      // Public, immutable-in-content images may be cached briefly by the
+      // Hostinger edge, reducing concurrent backend reads and 502 bursts.
+      res.set('Cache-Control','public, max-age=300, must-revalidate');
       res.set('Content-Length',String(image.length));
       return req.method==='HEAD'?res.status(200).end():res.status(200).end(image);
     }catch{

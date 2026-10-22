@@ -3,7 +3,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@appdeploy/client": ["src/hostinger-client.ts"]
-    }
+      "@appdeploy/client": [
+        "src/hostinger-client.ts"
+      ]
+    },
+    "types": [
+      "vite/client"
+    ]
   }
 }

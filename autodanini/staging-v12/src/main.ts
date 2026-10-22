@@ -59,6 +59,17 @@ function setLang(l: Lang): void {
 }
 e('language')?.addEventListener('click',()=>setLang(lang==='sr'?'de':'sr'));
 e('toggle')?.addEventListener('click',()=>{const m=e('mobile');if(m)m.hidden=!m.hidden;});
+// Preselect the actual service when visitors follow a service-specific link.
+// Whitelist existing <option> values; never insert query-string HTML.
+const selectedService=new URLSearchParams(window.location.search).get('service');
+document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer]').forEach(form=>{
+ const select=form.querySelector<HTMLSelectElement>('select[name="service"]');
+ if(!select)return;
+ const page=document.body.dataset.page;
+ const fallback=page==='exclusive'?'Premium / Oldtimer / Sonderfahrzeug':page==='tender'?'B2B Tender / RFQ':'';
+ const wanted=selectedService||fallback;
+ if(wanted && Array.from(select.options).some(option=>option.value===wanted))select.value=wanted;
+});
 document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer]').forEach(form=>{
  form.addEventListener('submit',event=>{
   event.preventDefault(); if(!form.reportValidity())return;

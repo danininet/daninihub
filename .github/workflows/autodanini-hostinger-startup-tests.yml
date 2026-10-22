@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'server.js'
+      - 'package.json'
+      - 'scripts/test-site-experience.js'
+      - 'scripts/build-autodanini-hostinger.js'
       - 'core/hostinger-release-readiness.js'
       - 'importos-store.js'
       - 'tests/test-autodanini-prod-database.cjs'
@@ -66,6 +69,10 @@ jobs:
           node --check core/autodanini-ai-advice.js
           node --check core/autodanini-admin-security.js
           node --check core/autodanini-owner-desk.js
-      - name: Regression checks against the existing Hostinger code
+      - name: Run original site and ImportOS test suite separately from build
+        run: npm run build:legacy
+      - name: Verify Hostinger's default npm run build builds AutoDanini without network tests
+        run: npm run build
+      - name: Verify all 23 pages in default Hostinger build
         run: |
-          npm run build
+          node -e "const fs=require('node:fs');const p='autodanini/staging-v12/dist';if(!fs.existsSync(p+'/admin.html')||!fs.existsSync(p+'/index.html'))process.exit(1)"

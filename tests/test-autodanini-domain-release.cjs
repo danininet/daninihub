@@ -21,7 +21,7 @@ function request(port,host,route){
    headers:{Host:host,Accept:'text/html,application/json'},timeout:5000},res=>{
     let body='';
     res.setEncoding('utf8');
-    res.on('data',chunk=>{body+=chunk;if(body.length>600000)req.destroy(new Error('response too large'))});
+    res.on('data',chunk=>{body+=chunk;if(body.length>2000000)req.destroy(new Error('response too large'))});
     res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body}));
   });
   req.on('timeout',()=>req.destroy(new Error('timeout')));

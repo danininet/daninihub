@@ -63,7 +63,13 @@ app.get('/api/runtime-version',(req,res)=>res.json({
 }));
 
 mountImportOSRuntime(app);
-mountPublicRuntime(app);
+if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
+  // Staging-only visual preview: preserves the AppDeploy v12 frontend while
+  // authenticated account, admin and payment flows remain locked.
+  require('./core/hostinger-autodanini-preview').mountHostingerAutoDaniniPreview(app);
+}else{
+  mountPublicRuntime(app);
+}
 
 app.use((req,res)=>res.status(404).type('text/plain').send('Not found'));
 

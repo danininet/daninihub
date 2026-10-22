@@ -1,0 +1,15 @@
+{
+  "headline": "AutoDanini — Privatni nalog",
+  "subtitle": "Sačuvajte svoje zahteve za automobile / Fahrzeuganfragen speichern",
+  "style": {
+    "mode": "light",
+    "accentColor": "#c5a26e",
+    "backgroundColor": "#f5f5f1",
+    "panelColor": "#ffffff",
+    "textColor": "#19262e",
+    "fontFamily": "Manrope, Arial, sans-serif",
+    "borderRadius": 8
+  },
+  "termsUrl": "https://auto-danini-import-b2b-p8swk5.v2.appdeploy.ai/terms.html",
+  "privacyUrl": "https://auto-danini-import-b2b-p8swk5.v2.appdeploy.ai/privacy.html"
+}

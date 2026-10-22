@@ -1,12 +1,12 @@
 {
   "name": "daninihub",
   "version": "1.0.0",
-  "description": "DANINI Automotive Import Intelligence \u2014 DE/CH to Serbia decision, verification and execution platform.",
+  "description": "DANINI Automotive Import Intelligence — DE/CH to Serbia decision, verification and execution platform.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "npm run check:syntax && npm run test:importos && npm run test:site && npm run test:funnel && npm run test:buyer-plan && npm run test:purchase && npm run test:cases && npm run build:front",
+    "build": "npm run check:syntax && npm run build:autodanini-hostinger",
     "build:front": "node scripts/build-hostinger.js",
     "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check site-experience.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js && node --check purchase-case-runtime.js && node --check core/purchase-case.js && node --check public/owner-case-client.js && node --check public/customer-case-client.js",
     "test:importos": "node scripts/test-importos-clean.js",
@@ -16,7 +16,11 @@
     "test:os": "npm run test:importos",
     "check:live": "node scripts/check-live.js",
     "test:purchase": "node scripts/test-purchase-journey.js",
-    "test:cases": "node scripts/test-purchase-case.js"
+    "test:cases": "node scripts/test-purchase-case.js",
+    "build:autodanini-hostinger": "node scripts/build-autodanini-hostinger.js",
+    "check:autodanini-hostinger-staging": "node scripts/check-autodanini-hostinger-staging.cjs",
+    "test:regression": "npm run test:importos && npm run test:site && npm run test:funnel && npm run test:buyer-plan && npm run test:purchase && npm run test:cases",
+    "build:legacy": "npm run check:syntax && npm run test:regression && npm run build:front"
   },
   "keywords": [
     "vehicle-import",

@@ -7,6 +7,7 @@ const express=require('express');
 const path=require('path');
 const Stripe=require('stripe');
 const {BrevoClient}=require('@getbrevo/brevo');
+const {resolveAutoDaniniEmail}=require('./core/autodanini-mail-policy');
 const {evaluateImport,estimateFieldServices}=require('./core/importos-engine');
 const {listModelDna,getModelDna}=require('./core/importos-model-dna');
 const {createImportOSStore}=require('./importos-store');
@@ -32,11 +33,22 @@ function reference(prefix){
   return prefix+'-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+crypto.randomBytes(12).toString('hex').toUpperCase();
 }
 function publicUrl(req){
+  // Never derive a payment, customer tracking or report link from an untrusted
+  // Host or X-Forwarded-Proto header. Production requires an explicit origin.
   const configured=clean(process.env.DANINI_PUBLIC_URL,500).replace(/\/$/,'');
-  if(configured)return configured;
-  const proto=clean(req.headers['x-forwarded-proto']||req.protocol||'https',20).split(',')[0].trim();
-  return proto+'://'+req.get('host');
+  if(configured){
+    let url;
+    try{url=new URL(configured)}catch{return invalidPublicOrigin()}
+    const local=['localhost','127.0.0.1'].includes(url.hostname);
+    if(url.username||url.password||url.pathname!=='/'||url.search||url.hash||
+      (url.protocol!=='https:'&&!(process.env.NODE_ENV!=='production'&&local&&url.protocol==='http:')))
+      return invalidPublicOrigin();
+    return url.origin;
+  }
+  if(process.env.NODE_ENV!=='production')return 'http://localhost:'+Number(process.env.PORT||4242);
+  return invalidPublicOrigin();
 }
+function invalidPublicOrigin(){throw new Error('DANINI_PUBLIC_URL_MUST_BE_TRUSTED_HTTPS_ORIGIN')}
 function adminAllowed(req){
   const secret=clean(process.env.DANINI_ADMIN_SECRET,300);
   const supplied=clean(req.headers['x-danini-admin']||String(req.headers.authorization||'').replace(/^Bearer\s+/i,''),300);
@@ -44,6 +56,10 @@ function adminAllowed(req){
   return crypto.timingSafeEqual(Buffer.from(secret),Buffer.from(supplied));
 }
 function sender(){
+  if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
+    const {sender:email}=resolveAutoDaniniEmail(process.env);
+    return {email,name:'AutoDanini'};
+  }
   const email=process.env.BREVO_SENDER_EMAIL||process.env.DANINIHUB_SENDER_EMAIL||process.env.MAIL_FROM||process.env.EMAIL_FROM;
   return email?{email,name:process.env.BREVO_SENDER_NAME||'DANINI'}:null;
 }
@@ -51,7 +67,11 @@ async function notifyServiceRequest(record,trackingUrl){
   if(!process.env.BREVO_API_KEY)return false;
   const from=sender(); if(!from)return false;
   const api=new BrevoClient({apiKey:process.env.BREVO_API_KEY}).transactionalEmails;
-  const admin=process.env.DANINI_ADMIN_EMAIL||'info@daninihub.com';
+  // In AutoDanini staging, send operator alerts to the validated AUTO mailbox.
+  // The legacy DaniniHub route retains its historical recipient unchanged.
+  const admin=process.env.AUTODANINI_PREVIEW_ENABLED==='true'
+    ? resolveAutoDaniniEmail(process.env).operations
+    : process.env.DANINI_ADMIN_EMAIL||'info@daninihub.com';
   const p=record.payload||{};
   await api.sendTransacEmail({
     sender:from,to:[{email:admin,name:'DANINI'}],

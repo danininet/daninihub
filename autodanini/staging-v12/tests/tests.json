@@ -1,0 +1,106 @@
+[
+  {
+    "name": "Public buyer contact still works with optional account login",
+    "sanity": true,
+    "viewport": "desktop",
+    "covers": [
+      "public buyer WhatsApp",
+      "optional registration",
+      "navigation",
+      "staging noindex"
+    ],
+    "description": "Visitors may contact AutoDanini without creating an account and can find optional customer portal.",
+    "steps": [
+      "Open homepage and find Moj nalog next to Cenovnik",
+      "Open private buyer inquiry and send a valid WhatsApp request without login",
+      "Open Moj nalog and verify a sign-in control appears for anonymous visitors"
+    ],
+    "expected": "Public inquiries remain usable anonymously. Private saved vehicle requests are not displayed unless the user authenticates."
+  },
+  {
+    "name": "Authenticated private request lifecycle",
+    "viewport": "desktop",
+    "covers": [
+      "auth sign-in",
+      "protected POST /api/my-cases",
+      "protected GET /api/my-cases",
+      "database persistence",
+      "user owned delete"
+    ],
+    "description": "Signing in enables saving, listing, and deleting a private vehicle sourcing request.",
+    "steps": [
+      "Open Moj nalog and sign in through the provided secure authentication popup",
+      "Enter a concrete vehicle request with type, model, destination and consent",
+      "Save and verify it appears as saved, not submitted",
+      "Reload the page and verify the same case remains",
+      "Delete the saved case and confirm it disappears after refresh"
+    ],
+    "expected": "A real authenticated user has persistent private cases; saved is never shown as a sale, auction bid, or automatically submitted request."
+  },
+  {
+    "name": "Account authentication and incomplete input guardrails",
+    "viewport": "mobile",
+    "covers": [
+      "protected access",
+      "required form validation",
+      "sign-out",
+      "privacy notice",
+      "no payment flow"
+    ],
+    "description": "An anonymous user cannot read private requests and blank cases cannot be saved.",
+    "steps": [
+      "Open the account page in a signed-out mobile browser",
+      "Verify case form and saved cases are hidden",
+      "Sign in and try to save a request without a vehicle model or consent",
+      "Sign out"
+    ],
+    "expected": "Server-only endpoints require auth, incomplete form is blocked, and sign out hides private cases."
+  },
+  {
+    "name": "German localization and import calculator",
+    "viewport": "mobile",
+    "covers": [
+      "German navigation",
+      "import calculator",
+      "vehicle case portal bilingual",
+      "cost disclaimer"
+    ],
+    "description": "Existing cost calculator and bilingual account pages continue to work.",
+    "steps": [
+      "Switch site to DE",
+      "Open Importrechner and calculate a scenario with 8000 purchase price and 700 shipping costs",
+      "Open Mein Konto",
+      "Navigate to Datenschutz"
+    ],
+    "expected": "Calculator works, account sign-in is localized, privacy describes saved case data and identity provider."
+  },
+  {
+    "name": "AI and auction safety guardrails",
+    "viewport": "desktop",
+    "covers": [
+      "AI shared quota 20 daily and 400 monthly",
+      "auth separated from AI",
+      "auctions not active",
+      "no financial collection"
+    ],
+    "description": "Existing AI analysis remains bounded and auctions/payments are disabled pending verification.",
+    "steps": [
+      "Open AI savetnik and use demo prompt with consent",
+      "Open Auktionen page and verify no real bidding or payments are active",
+      "Open Moj nalog and inspect upcoming auction interest request type"
+    ],
+    "expected": "AI reports analysis or visible failure, never silently bypasses quotas; no real auction bid, checkout, or paid credits can be created."
+  },
+  {
+    "name": "Staged admin protected access",
+    "viewport": "desktop",
+    "description": "Only verified owner may access admin inbox; no charge or live auction",
+    "steps": [
+      "Open admin signed out",
+      "Sign in using ordinary buyer account",
+      "Attempt admin API",
+      "Submit private case only with explicit consent"
+    ],
+    "expected": "Denied until owner allowlist set, normal buyer sees 403; submitted case creates single inbox record; no payment"
+  }
+]

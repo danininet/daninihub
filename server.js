@@ -9,7 +9,45 @@ const app=express();
 const PORT=Number(process.env.PORT||4242);
 const DEPLOYMENT_MARKER='daninihub-sales-20260924';
 
-app.set('trust proxy',1);
+// Do not accept arbitrary spoofed X-Forwarded-For addresses. Configure only
+// actual Hostinger reverse-proxy CIDRs after staging verification.
+app.set('trust proxy',String(process.env.DANINI_TRUST_PROXY_CIDRS||'').trim()||false);
+app.disable('x-powered-by');
+app.use((req,res,next)=>{
+  res.set({
+    'X-Content-Type-Options':'nosniff',
+    'X-Frame-Options':'DENY',
+    'Referrer-Policy':'strict-origin-when-cross-origin'
+  });
+  next();
+});
+// Existing header-secret administration must not be exposed in production.
+// A verified owner-login/session/role workflow will replace this temporary lock.
+app.use('/owner',(req,res,next)=>{
+  if(process.env.NODE_ENV==='production'){
+    res.set({'Cache-Control':'no-store','X-Robots-Tag':'noindex,nofollow'});
+    return res.status(503).type('text/plain').send('Administracija se priprema.');
+  }
+  next();
+});
+app.use('/api/importos/admin',(req,res,next)=>{
+  if(process.env.NODE_ENV==='production'){
+    res.set('Cache-Control','no-store');
+    return res.status(503).json({ok:false,error:'ADMIN_UNAVAILABLE_PENDING_SECURE_LOGIN'});
+  }
+  next();
+});
+
+const {createPublicThrottle}=require('./core/autodanini-public-throttle');
+const hour=60*60*1000;
+// Conservative anti-abuse protection, even while checkout/AI are disabled.
+app.post('/api/importos/event',createPublicThrottle({scope:'importos_events',max:900,windowMs:hour}));
+app.post('/api/importos/service-request',createPublicThrottle({scope:'service_requests',max:60,windowMs:hour}));
+app.post('/api/importos/checkout',createPublicThrottle({scope:'checkout_attempts',max:40,windowMs:hour}));
+app.post('/api/importos/checkout/paypal',createPublicThrottle({scope:'paypal_attempts',max:40,windowMs:hour}));
+app.post('/api/auth/start',createPublicThrottle({scope:'customer_login',max:100,windowMs:hour}));
+app.post('/api/admin/elevate',createPublicThrottle({scope:'owner_mfa',max:12,windowMs:hour}));
+app.post('/api/advice',createPublicThrottle({scope:'public_advice',max:24,windowMs:24*hour}));
 
 app.get('/health',async(req,res)=>{
   res.set('Cache-Control','no-store');
@@ -37,9 +75,46 @@ app.get('/api/runtime-version',(req,res)=>res.json({
   contact:'info@daninihub.com'
 }));
 
+// Staging must not accidentally accept legacy public service requests,
+// Stripe/PayPal callbacks or customer records while the new UI is reviewed.
+// Keep the legacy API unchanged for the existing public DaniniHub runtime.
+app.use('/api/importos',(req,res,next)=>{
+  if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
+    res.set('Cache-Control','no-store');
+    return res.status(503).json({ok:false,error:'LEGACY_API_NOT_ACTIVE_IN_PREVIEW'});
+  }
+  next();
+});
 mountImportOSRuntime(app);
-mountPublicRuntime(app);
+if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
+  // Optional AI advice is quota-controlled globally by MySQL and remains OFF
+  // unless a separately configured API budget and explicit flag are provided.
+  const {makeAIAdvice}=require('./core/autodanini-ai-advice');
+  app.use('/api',makeAIAdvice({store:app.locals.importOSStore}).router);
+  // Auth is off by default; both backend and Vite feature flag must be enabled
+  // after Brevo verification, database checks, and private-case E2E review.
+  if(process.env.AUTODANINI_AUTH_ENABLED==='true'){
+    const {makeCustomerAuth}=require('./core/autodanini-customer-auth');
+    const auth=makeCustomerAuth({store:app.locals.importOSStore});
+    if(process.env.AUTODANINI_ADMIN_ENABLED==='true'){
+      const {makeOwnerDesk}=require('./core/autodanini-owner-desk');
+      // Owner desk routes precede the intentionally disabled legacy
+      // /case-submissions handler in the customer-auth router.
+      app.use('/api',makeOwnerDesk({store:app.locals.importOSStore,customerAuth:auth}).router);
+    }
+    app.use('/api',auth.router);
+  }
+  require('./core/hostinger-autodanini-preview').mountHostingerAutoDaniniPreview(app);
+}else{
+  mountPublicRuntime(app);
+}
 
 app.use((req,res)=>res.status(404).type('text/plain').send('Not found'));
 
-app.listen(PORT,()=>console.log(`Danini ImportOS listening on port ${PORT}`));
+const {checkProductionStorage}=require('./core/hostinger-release-readiness');
+checkProductionStorage(app.locals.importOSStore).then(()=>{
+  app.listen(PORT,()=>console.log(`Danini ImportOS listening on port ${PORT}`));
+}).catch(error=>{
+  console.error('Hostinger release refused at startup:',error.message);
+  process.exitCode=1;
+});

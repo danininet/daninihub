@@ -1,0 +1,78 @@
+name: AutoDanini Hostinger startup regression tests
+on:
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'package.json'
+      - 'scripts/test-site-experience.js'
+      - 'scripts/build-autodanini-hostinger.js'
+      - 'core/hostinger-release-readiness.js'
+      - 'importos-store.js'
+      - 'tests/test-autodanini-prod-database.cjs'
+      - 'core/autodanini-auth-security.js'
+      - 'core/autodanini-customer-auth.js'
+      - 'core/autodanini-mail-policy.js'
+      - 'core/autodanini-public-throttle.js'
+      - 'core/autodanini-ai-advice.js'
+      - 'core/autodanini-admin-security.js'
+      - 'core/autodanini-owner-desk.js'
+      - 'tests/test-autodanini-admin-security.cjs'
+      - 'tests/test-autodanini-owner-desk.cjs'
+      - 'tests/test-autodanini-ai-advice.cjs'
+      - 'tests/test-autodanini-public-throttle.cjs'
+      - 'tests/test-autodanini-mail-policy.cjs'
+      - 'tests/test-autodanini-auth-security.cjs'
+      - 'tests/test-autodanini-customer-auth.cjs'
+      - 'tests/test-hostinger-release-readiness.cjs'
+      - '.github/workflows/autodanini-hostinger-startup-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readiness-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install production dependencies for HTTP tests
+        run: npm ci --no-audit --no-fund
+      - name: Test fail-closed startup rules
+        run: node --test tests/test-hostinger-release-readiness.cjs
+      - name: Verify production cannot fall back to local customer JSON storage
+        run: node --test tests/test-autodanini-prod-database.cjs
+      - name: Validate mail sender policy and customer support reply-to
+        run: node --test tests/test-autodanini-mail-policy.cjs
+      - name: Test OTP, CSRF origin and session token rules
+        run: node --test tests/test-autodanini-auth-security.cjs
+      - name: Verify customer login, session and record isolation
+        run: node --test tests/test-autodanini-customer-auth.cjs
+      - name: Verify anti-spam API rate limiting and proxy-header isolation
+        run: node --test tests/test-autodanini-public-throttle.cjs
+      - name: Verify bounded AutoDanini AI and atomic quotas
+        run: node --test tests/test-autodanini-ai-advice.cjs
+      - name: Verify owner TOTP second factor and session controls
+        run: node --test tests/test-autodanini-admin-security.cjs
+      - name: Verify owner inbox, private submissions and audit controls
+        run: node --test tests/test-autodanini-owner-desk.cjs
+      - name: Check syntax of updated server code
+        run: |
+          node --check server.js
+          node --check core/hostinger-release-readiness.js
+          node --check core/autodanini-auth-security.js
+          node --check core/autodanini-customer-auth.js
+          node --check core/autodanini-mail-policy.js
+          node --check core/autodanini-public-throttle.js
+          node --check core/autodanini-ai-advice.js
+          node --check core/autodanini-admin-security.js
+          node --check core/autodanini-owner-desk.js
+      - name: Run original site and ImportOS test suite separately from build
+        run: npm run build:legacy
+      - name: Verify Hostinger's default npm run build builds AutoDanini without network tests
+        run: npm run build
+      - name: Verify all 23 pages in default Hostinger build
+        run: |
+          node -e "const fs=require('node:fs');const p='autodanini/staging-v12/dist';if(!fs.existsSync(p+'/admin.html')||!fs.existsSync(p+'/index.html'))process.exit(1)"

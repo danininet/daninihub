@@ -21,6 +21,15 @@ async function get(path){
   get('/dragan-business-portrait.jpg'),get('/dragan-original-portrait.jpg'),
   get('/dragan-business-grid-ai.png'),get('/api/admin/requests')
  ]);
+ // Failures here must be diagnosed from the actual Hostinger response,
+ // not conflated with an image-build error.
+ for(const [name,item] of [['phone',phone],['portrait',portrait],['original',original],['grid',grid]]){
+  console.log('PHOTO_HTTP_DIAGNOSTIC',{name,status:item.response.status,
+   type:item.response.headers.get('content-type'),
+   via:item.response.headers.get('via'),
+   length:item.buffer.length,
+   detail:item.response.status>=400?item.text.slice(0,160):'binary response'});
+ }
  for(const [name,item] of [['home',home],['about',about],['support',support],['admin',admin]]){
   assert.equal(item.response.status,200,name+' returned '+item.response.status);
   assert.match(item.text,/AutoDanini|AUTO<span>DANINI|AUTO\s*<span>\s*DANINI/i,name);

@@ -1,7 +1,7 @@
 {
   "name": "daninihub",
   "version": "1.0.0",
-  "description": "DANINI Automotive Import Intelligence \u2014 DE/CH to Serbia decision, verification and execution platform.",
+  "description": "DANINI Automotive Import Intelligence — DE/CH to Serbia decision, verification and execution platform.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,7 +16,8 @@
     "test:os": "npm run test:importos",
     "check:live": "node scripts/check-live.js",
     "test:purchase": "node scripts/test-purchase-journey.js",
-    "test:cases": "node scripts/test-purchase-case.js"
+    "test:cases": "node scripts/test-purchase-case.js",
+    "build:autodanini-hostinger": "node scripts/build-autodanini-hostinger.js"
   },
   "keywords": [
     "vehicle-import",

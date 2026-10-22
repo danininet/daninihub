@@ -49,6 +49,23 @@ jobs:
           const dealers=fs.readFileSync('autodanini-auto-dist/dealers.html','utf8');
           if(index.includes('images.unsplash.com')||about.includes('images.unsplash.com'))throw new Error('Remote stock imagery still used');
           if(!about.includes('dragan-business-grid-ai.png'))throw new Error('Business grid not displayed');
+          const contact=fs.readFileSync('autodanini-auto-dist/contact.html','utf8');
+          for(const [name,page,photo] of [
+            ['index',index,'dragan-business-grid-ai.png'],
+            ['about',about,'dragan-business-grid-ai.png'],
+            ['contact',contact,'dragan-original-portrait.jpg']
+          ]){
+            if(!page.includes('style="--image:url(\\\'./'+photo+'\\\')"'))throw new Error('Wrong business hero image on '+name);
+            if(!page.includes('content="https://auto.daninihub.com/dragan-original-portrait.jpg"'))
+              throw new Error('Social business photo replaced with car on '+name);
+          }
+          const businessPhotos=['dragan-original-portrait.jpg','dragan-business-grid-ai.png'];
+          const signatures=['ffd8ff','89504e470d0a1a0a'];
+          for(let i=0;i<businessPhotos.length;i++){
+            const content=fs.readFileSync('autodanini-auto-dist/'+businessPhotos[i]);
+            if(!content.subarray(0,signatures[i].length/2).toString('hex').startsWith(signatures[i]))
+              throw new Error('Business image wrong format: '+businessPhotos[i]);
+          }
           if(!index.includes('owner-note')||!buyers.includes('name="listing3"')||!dealers.includes('name="listing3"'))throw new Error('Owner proof or RFQ criteria missing');
           console.log('Owner photo, AI-labeled business grid, local imagery and detailed buyer/dealer RFQ: OK');
           console.log('Both site builds and original imagery verified');

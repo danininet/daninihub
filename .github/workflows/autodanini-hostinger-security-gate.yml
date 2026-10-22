@@ -1,0 +1,23 @@
+name: AutoDanini Hostinger production gate
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'server.js'
+      - 'server-importos-runtime.js'
+      - 'server-public-runtime.js'
+      - 'core/importos-payments.js'
+      - 'autodanini/security/hostinger-release-gate.cjs'
+      - 'autodanini/staging-v12/backend/admin.ts'
+jobs:
+  secure-release-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fail if unsafe Hostinger release is attempted
+        run: node autodanini/security/hostinger-release-gate.cjs

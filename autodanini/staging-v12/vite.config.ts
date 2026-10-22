@@ -1,9 +1,27 @@
 import { defineConfig } from 'vite';
 import { resolve, join } from 'node:path';
-import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync, mkdirSync } from 'node:fs';
 
 const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin"];
 const hostinger=process.env.AUTODANINI_BUILD_TARGET === 'hostinger';
+
+function prepareOwnedImages(){
+  // Run before Vite transforms HTML: images must already exist in publicDir.
+  const publicDir=resolve(process.cwd(),'public');
+  const ownedDir=resolve(process.cwd(),'owned-assets');
+  mkdirSync(publicDir,{recursive:true});
+  const entries=[
+    ['dragan-original-portrait.jpg.base64','dragan-original-portrait.jpg'],
+    ['dragan-business-grid-ai.png.base64','dragan-business-grid-ai.png']
+  ];
+  for(const [input,name] of entries){
+    const source=join(ownedDir,input);
+    if(!existsSync(source))throw Error('Business image source missing: '+source);
+    const bytes=Buffer.from(readFileSync(source,'utf8').trim(),'base64');
+    if(bytes.length<50000)throw Error('Business image corrupt: '+name);
+    writeFileSync(join(publicDir,name),bytes);
+  }
+}
 
 function packageOriginalPhotos(){
   // Only for Hostinger staging: use real photos already in this repository
@@ -68,6 +86,7 @@ export default defineConfig({
   plugins: hostinger ? [{
     name: 'autodanini-package-owned-photos',
     apply: 'build',
+    buildStart: prepareOwnedImages,
     closeBundle: packageOriginalPhotos
   }] : [],
   base: './',

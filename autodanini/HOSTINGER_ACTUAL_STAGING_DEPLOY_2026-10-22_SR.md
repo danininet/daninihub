@@ -52,3 +52,8 @@ Prema zvaničnoj dokumentaciji Hostinger Business Web Hosting podržava Node.js/
 
 ## Status
 Dokument daje realna hPanel polja i granu; **ne dokazuje da Hostinger aplikacija postoji**. Povezani Hostinger Mail konektor ne može da kreira Node.js aplikaciju. Ako Hostinger nema `Create Website → Web App`, tražiti samo potvrdu plan/slot stanja, ne kupovati alternativni VPS niti menjati domen.
+
+## Dopuna poslednje zaštite
+- Od commit-a `95a3e49eb2539008ae1412b865ee282164be3eab` svaki nasleđeni javni `/api/importos/*` poziv u izolovanoj AutoDanini preview aplikaciji vraća `503 LEGACY_API_NOT_ACTIVE_IN_PREVIEW`. Time probna aplikacija ne prima stare service request zapise, ne pokušava stare checkout i webhook tokove i ne šalje nasleđene notifikacije. U postojećoj DaniniHub javnoj produkciji ponašanje API-ja ostaje nepromenjeno.
+- Test `scripts/check-autodanini-hostinger-staging.cjs` sada proverava i taj 503 odgovor.
+- Staging je spreman za test samo kad GitHub CI postane zelen na trenutnom commitu; sama dokumentacija i Vite build ne potvrđuju Hostinger release.

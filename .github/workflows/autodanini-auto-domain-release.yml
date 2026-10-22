@@ -1,0 +1,42 @@
+name: Isolated AutoDanini auto-domain release
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server.js'
+      - 'package.json'
+      - 'scripts/build-autodanini-auto-release.cjs'
+      - 'tests/test-autodanini-domain-release.cjs'
+      - '.github/workflows/autodanini-auto-domain-release.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  release-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install existing server dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build existing DANINI and new AutoDanini from public feature branch
+        run: npm run build
+      - name: Check host isolation, disabled payments and private API
+        run: node --test tests/test-autodanini-domain-release.cjs
+      - name: Validate legacy public site, original image and auto images
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          if(!fs.existsSync('dist/index.html'))throw new Error('Legacy DANINI website build missing');
+          for(const f of ['index','admin','auctions','buyers','dealers','live']){
+            if(!fs.existsSync('autodanini-auto-dist/'+f+'.html'))throw new Error('AutoDanini page missing: '+f);
+          }
+          for(const f of ['danini-auto-uvoz.webp','danini-pregled-auta.webp']){
+            if(!fs.existsSync('autodanini-auto-dist/'+f))throw new Error('AutoDanini original photo missing: '+f);
+          }
+          console.log('Both site builds and original imagery verified');
+          NODE

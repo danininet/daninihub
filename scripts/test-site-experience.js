@@ -5,7 +5,14 @@ const {mountPublicRuntime,ROUTES}=require('../server-public-runtime');
 const {routes}=require('../site-experience');
 async function main(){
   const app=express();mountPublicRuntime(app);
-  const server=app.listen(0);
+  const server=app.listen(0,'127.0.0.1');
+  // Node may return from listen() before the ephemeral port is accepting
+  // connections; wait for readiness instead of allowing ECONNREFUSED races.
+  await new Promise((resolve,reject)=>{
+    if(server.listening)return resolve();
+    server.once('listening',resolve);
+    server.once('error',reject);
+  });
   try{
     const base='http://127.0.0.1:'+server.address().port;
     for(const route of ['/sr/kupovina-i-uvoz','/de/kauf-und-import','/sr/uporedi-oglase','/de/inserate-vergleichen','/', '/sr/pregled-auta','/sr/uvoz-auta','/sr/dovoz-auta','/sr/kalkulator','/sr/upit','/sr/vodici','/sr/kako-radimo','/de/fahrzeugpruefung','/de/rechner','/de/anfrage','/sr/vodic/vin-dokumente-checkliste','/sr/vodic/landed-cost-kalkulation','/sr/sistem','/de/system','/de/wissen/vin-dokumente-checkliste','/sr/?quote=unknown']){

@@ -46,3 +46,30 @@ export const auth = {
   async signIn(): Promise<never> { throw new Error(UNAVAILABLE); },
   async signOut(): Promise<void> { /* no Hostinger login session exists */ }
 };
+
+/* Hostinger preview does not pretend that private accounts already work. */
+document.addEventListener('DOMContentLoaded', () => {
+  const isGerman = localStorage.getItem('autodanini-language') === 'de';
+  const label = isGerman ? 'Anmeldung in Vorbereitung' : 'Prijava u pripremi';
+  for (const id of ['account-login', 'admin-login']) {
+    const button = document.getElementById(id);
+    if (button instanceof HTMLButtonElement) {
+      button.disabled = true;
+      button.textContent = label;
+      button.setAttribute('aria-disabled','true');
+    }
+  }
+  const caseForm = document.getElementById('account-case-form');
+  if (caseForm instanceof HTMLFormElement) {
+    for(const input of caseForm.querySelectorAll('button,input,select,textarea')) {
+      if(input instanceof HTMLButtonElement || input instanceof HTMLInputElement ||
+        input instanceof HTMLSelectElement || input instanceof HTMLTextAreaElement) input.disabled = true;
+    }
+  }
+  for(const id of ['account-status','admin-status']) {
+    const status = document.getElementById(id);
+    if(status) status.textContent = isGerman ?
+      'Privates Konto ist im Hostinger-Test noch nicht freigeschaltet.' :
+      'Privatni nalozi nisu aktivni u Hostinger probnoj verziji.';
+  }
+});

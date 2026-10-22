@@ -104,15 +104,19 @@ export const auth={
   const german=localStorage.getItem('autodanini-language')==='de';
   const adminPage=document.body.dataset.page==='admin';
   if(adminPage&&!ENABLE_ADMIN)throw new Error(UNAVAILABLE);
-  const existing=adminPage?await auth.getUser():null;
-  if(!existing){
-   const email=await ask(german?'Sicher anmelden':'Bezbedna prijava',german?'Ihre E-Mail-Adresse':'Vaša e-mail adresa','email');
+  // Always ask for the owner's private e-mail on the admin screen,
+  // even if the browser currently holds a different customer's session.
+  // This allows safe account switching without creating owner credentials
+  // from any public contact address.
+  const email=await ask(german?'Sicher anmelden':'Bezbedna prijava',
+    german?'Ihre private E-Mail-Adresse':'Vaša privatna e-mail adresa','email');
   if(!email)return;
   const started=await authRequest<{challengeId:string}>('POST','/api/auth/start',{email});
-  const code=await ask(german?'Code aus der E-Mail':'Kod iz e-mail poruke',german?'Sechsstelliger Code (10 Minuten gültig)':'Šestocifreni kod (važi 10 minuta)','text','[0-9]{6}');
+  const code=await ask(german?'Code aus der E-Mail':'Kod iz e-mail poruke',
+    german?'Sechsstelliger Code (10 Minuten gültig)':'Šestocifreni kod (važi 10 minuta)',
+    'text','[0-9]{6}');
   if(!code)return;
-   await authRequest('POST','/api/auth/verify',{challengeId:started.challengeId,code});
-  }
+  await authRequest('POST','/api/auth/verify',{challengeId:started.challengeId,code});
   if(adminPage){
     const code=await ask(german?'Administrator Zweitfaktor':'Administratorski drugi faktor',
       german?'6-stelliger Authenticator-Code':'Šestocifreni kod iz Authenticator aplikacije',

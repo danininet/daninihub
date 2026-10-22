@@ -1,0 +1,23 @@
+name: AutoDanini temporary Hostinger smoke test
+on:
+  workflow_dispatch:
+    inputs:
+      staging_url:
+        description: 'Isolated Hostinger preview HTTPS URL (never daninihub.com)'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check staging pages, database readiness and locked admin
+        env:
+          PREVIEW_URL: ${{ inputs.staging_url }}
+        run: node scripts/check-autodanini-hostinger-staging.cjs "$PREVIEW_URL"

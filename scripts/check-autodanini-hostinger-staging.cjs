@@ -26,6 +26,9 @@ async function main(){
   async function check(label,path,validate){
     try{
       const response=await get(path);
+      if(path==='/' && /You Are All Set to Go!/i.test(response.body||'')){
+        throw Error('HOSTINGER_PLACEHOLDER_NOT_DEPLOYED: default Hostinger page is present; verify Web App GitHub deployment and domain assignment');
+      }
       if(!validate(response))throw Error('Unexpected response: HTTP '+response.res.status);
       checks.push({check:label,passed:true});
     }catch(e){checks.push({check:label,passed:false,error:e.message})}

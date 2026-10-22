@@ -3,6 +3,10 @@
 // Startup release guard: never accept production requests against the file fallback.
 // This does not replace access-control, payment, backup or penetration testing.
 function checkProductionConfiguration(env=process.env){
+  // A public Hostinger AutoDanini preview must never run with development-only
+  // legacy admin protections accidentally enabled.
+  if(env.AUTODANINI_PREVIEW_ENABLED==='true'&&env.NODE_ENV!=='production')
+    throw new Error('AUTODANINI_PREVIEW_REQUIRES_PRODUCTION_MODE');
   if(env.NODE_ENV!=='production')return;
   for(const name of ['DB_HOST','DB_USER','DB_NAME','DB_PASSWORD']){
     if(!String(env[name]||'').trim())throw new Error('PRODUCTION_DATABASE_CONFIGURATION_REQUIRED');

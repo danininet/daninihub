@@ -53,9 +53,8 @@ class MemorySql{
     }
     if(sql.includes('FROM ad_sessions s JOIN ad_customers')){
       const session=this.sessions.get(args[0]);
-      return [[...this.users.values()].find(u=>u.id===session?.customer_id)].filter(Boolean).length
-        ? [[...this.users.values()].find(u=>u.id===session?.customer_id)]
-        : [[]];
+      const user=[...this.users.values()].find(u=>u.id===session?.customer_id);
+      return [user?[user]:[]];
     }
     if(sql.startsWith('DELETE FROM ad_sessions')){
       const hit=this.sessions.delete(args[0]);

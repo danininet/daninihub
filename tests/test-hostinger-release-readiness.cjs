@@ -56,3 +56,29 @@ test('public AutoDanini preview refuses development mode',()=>{
     ...safe,AUTODANINI_PREVIEW_ENABLED:'true'
   }));
 });
+
+test('staging can never replace AutoDanini or Calije production domains by accident',()=>{
+  for(const live of ['https://daninihub.com','https://www.daninihub.com','https://calije.daninihub.com']){
+    assert.throws(()=>checkProductionConfiguration({
+      ...safe,AUTODANINI_PREVIEW_ENABLED:'true',DANINI_PUBLIC_URL:live
+    }),/AUTODANINI_PREVIEW_MUST_NOT_USE_LIVE_DOMAIN/);
+  }
+  assert.doesNotThrow(()=>checkProductionConfiguration({
+    ...safe,AUTODANINI_PREVIEW_ENABLED:'true',
+    DANINI_PUBLIC_URL:'https://preview-auto.hostingersite.com'
+  }));
+});
+test('admin and request submission cannot be switched on without their prerequisites',()=>{
+  assert.throws(()=>checkProductionConfiguration({
+    ...safe,AUTODANINI_ADMIN_ENABLED:'true'
+  }),/AUTODANINI_ADMIN_REQUIRES_AUTH/);
+  assert.throws(()=>checkProductionConfiguration({
+    ...safe,AUTODANINI_SUBMISSIONS_ENABLED:'true',
+    AUTODANINI_AUTH_ENABLED:'true'
+  }),/AUTODANINI_SUBMISSIONS_REQUIRE_SECURE_ADMIN/);
+  assert.doesNotThrow(()=>checkProductionConfiguration({
+    ...safe,AUTODANINI_AUTH_ENABLED:'true',
+    AUTODANINI_ADMIN_ENABLED:'true',
+    AUTODANINI_SUBMISSIONS_ENABLED:'true'
+  }));
+});

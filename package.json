@@ -39,12 +39,14 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mysql2": "^3.22.3",
+    "mysql2": "^3.23.1",
     "openai": "^6.35.0",
     "pdfkit": "^0.18.0",
     "stripe": "^22.1.0"
   },
   "overrides": {
-    "body-parser": "2.3.0"
+    "body-parser": "2.3.0",
+    "proxy-addr": "2.0.8",
+    "qs": "6.16.0"
   }
 }

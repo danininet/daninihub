@@ -10,6 +10,24 @@ const PORT=Number(process.env.PORT||4242);
 const DEPLOYMENT_MARKER='daninihub-sales-20260924';
 
 app.set('trust proxy',1);
+app.disable('x-powered-by');
+app.use((req,res,next)=>{
+  res.set({
+    'X-Content-Type-Options':'nosniff',
+    'X-Frame-Options':'DENY',
+    'Referrer-Policy':'strict-origin-when-cross-origin'
+  });
+  next();
+});
+// Existing header-secret administration must not be exposed in production.
+// A verified owner-login/session/role workflow will replace this temporary lock.
+app.use('/api/importos/admin',(req,res,next)=>{
+  if(process.env.NODE_ENV==='production'){
+    res.set('Cache-Control','no-store');
+    return res.status(503).json({ok:false,error:'ADMIN_UNAVAILABLE_PENDING_SECURE_LOGIN'});
+  }
+  next();
+});
 
 app.get('/health',async(req,res)=>{
   res.set('Cache-Control','no-store');
@@ -42,4 +60,10 @@ mountPublicRuntime(app);
 
 app.use((req,res)=>res.status(404).type('text/plain').send('Not found'));
 
-app.listen(PORT,()=>console.log(`Danini ImportOS listening on port ${PORT}`));
+const {checkProductionStorage}=require('./core/hostinger-release-readiness');
+checkProductionStorage(app.locals.importOSStore).then(()=>{
+  app.listen(PORT,()=>console.log(`Danini ImportOS listening on port ${PORT}`));
+}).catch(error=>{
+  console.error('Hostinger release refused at startup:',error.message);
+  process.exitCode=1;
+});

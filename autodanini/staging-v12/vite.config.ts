@@ -66,8 +66,15 @@ function packageOriginalPhotos(){
     // with car imagery or unrelated stock photography.
     const ownerPage=['index','about','contact'].includes(page);
     const ownerImage=page==='contact'?'dragan-original-portrait.jpg':'dragan-business-grid-ai.png';
-    html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,
-      ownerPage?'./'+ownerImage:'./danini-auto-uvoz.webp');
+    if(ownerPage){
+      // Business hero: personal imagery, not car-stock substitutions. Keep
+      // service tiles automotive (do NOT replace all images indiscriminately).
+      html=html.replace(
+        /(<section class="(?:hero|pagehero)" style="--image:url\\(')[^']+(')/,
+        (_match,start,end)=>start+'./'+ownerImage+end
+      );
+    }
+    html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
     const socialImage=ownerPage?'dragan-original-portrait.jpg':'danini-auto-uvoz.webp';
     html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
       '$1https://auto.daninihub.com/'+socialImage);

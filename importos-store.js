@@ -41,6 +41,8 @@ class ImportOSStore{
   }
 
   initializeFile(){
+    if(this.env.NODE_ENV==='production')
+      throw new Error('PRODUCTION_LOCAL_STORAGE_FORBIDDEN');
     fs.mkdirSync(path.dirname(this.storageFile),{recursive:true});
     if(!fs.existsSync(this.storageFile))fs.writeFileSync(this.storageFile,'{}\n',{mode:0o600});
   }
@@ -80,9 +82,13 @@ class ImportOSStore{
         `);
       }catch(error){
         this.databaseErrorCode=/^[A-Z0-9_]+$/.test(String(error.code||''))?error.code:'DATABASE_CONNECTION_FAILED';
-        console.error('ImportOS database unavailable; using local fallback:',this.databaseErrorCode);
         if(this.pool&&typeof this.pool.end==='function'){try{await this.pool.end()}catch{}}
         this.pool=null;
+        if(this.env.NODE_ENV==='production'){
+          console.error('ImportOS production database unavailable:',this.databaseErrorCode);
+          throw new Error('PRODUCTION_DATABASE_UNAVAILABLE');
+        }
+        console.error('ImportOS development database unavailable; using local fallback:',this.databaseErrorCode);
         this.mode='file';
         this.initializeFile();
       }

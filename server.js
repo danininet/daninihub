@@ -64,8 +64,13 @@ app.get('/api/runtime-version',(req,res)=>res.json({
 
 mountImportOSRuntime(app);
 if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
-  // Staging-only visual preview: preserves the AppDeploy v12 frontend while
-  // authenticated account, admin and payment flows remain locked.
+  // Auth is off by default; both backend and Vite feature flag must be enabled
+  // after Brevo verification, database checks, and private-case E2E review.
+  if(process.env.AUTODANINI_AUTH_ENABLED==='true'){
+    const {makeCustomerAuth}=require('./core/autodanini-customer-auth');
+    const auth=makeCustomerAuth({store:app.locals.importOSStore});
+    app.use('/api',auth.router);
+  }
   require('./core/hostinger-autodanini-preview').mountHostingerAutoDaniniPreview(app);
 }else{
   mountPublicRuntime(app);

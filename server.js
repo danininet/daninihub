@@ -21,6 +21,13 @@ app.use((req,res,next)=>{
 });
 // Existing header-secret administration must not be exposed in production.
 // A verified owner-login/session/role workflow will replace this temporary lock.
+app.use('/owner',(req,res,next)=>{
+  if(process.env.NODE_ENV==='production'){
+    res.set({'Cache-Control':'no-store','X-Robots-Tag':'noindex,nofollow'});
+    return res.status(503).type('text/plain').send('Administracija se priprema.');
+  }
+  next();
+});
 app.use('/api/importos/admin',(req,res,next)=>{
   if(process.env.NODE_ENV==='production'){
     res.set('Cache-Control','no-store');

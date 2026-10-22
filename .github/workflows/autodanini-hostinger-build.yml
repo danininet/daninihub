@@ -26,6 +26,7 @@ jobs:
         working-directory: autodanini/staging-v12
         env:
           AUTODANINI_BUILD_TARGET: hostinger
+          VITE_AUTODANINI_HOSTINGER_BUILD: 'true'
         run: npm run build
       - name: Check all 23 original pages remain in build and staged pages are not indexed
         working-directory: autodanini/staging-v12

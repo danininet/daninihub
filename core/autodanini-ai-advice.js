@@ -5,7 +5,7 @@
  * in this application, and OpenAI response storage is disabled.
  */
 const express=require('express');
-const crypto=require('node:crypto');
+const {verifyOrigin}=require('./autodanini-auth-security');
 
 const DAILY_CAP=20;
 const MONTHLY_CAP=400;
@@ -118,6 +118,8 @@ function makeAIAdvice({store,env=process.env,clientFactory,clock=()=>new Date()}
   router.post('/advice',express.json({limit:'6kb'}),async(req,res)=>{
     // No public model invocation without explicit locked-down production config.
     if(!aiEnabled(env))return res.status(503).json({error:'AI_NOT_ENABLED'});
+    if(!verifyOrigin(req.headers.origin,env.DANINI_PUBLIC_URL))
+      return res.status(403).json({error:'AI_ORIGIN_DENIED'});
     const input=sanitizeQuestion(req.body);
     if(!input)return res.status(400).json({error:'INVALID_OR_PRIVATE_AI_QUESTION'});
     let allowed=false;

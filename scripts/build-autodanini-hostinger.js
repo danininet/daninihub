@@ -15,6 +15,8 @@ function run(args,extraEnv={}){
   if(result.error)throw result.error;
   if(result.status!==0)throw new Error('Hostinger AutoDanini build failed: '+args.join(' '));
 }
-run(['install','--no-audit','--no-fund']);
+// Hostinger can have NODE_ENV=production already during BUILD.
+// Vite and TypeScript are build-only devDependencies, so do not omit them.
+run(['install','--include=dev','--no-audit','--no-fund']);
 run(['run','build'],{AUTODANINI_BUILD_TARGET:'hostinger',VITE_AUTODANINI_HOSTINGER_BUILD:'true'});
 console.log('AutoDanini staging files: autodanini/staging-v12/dist');

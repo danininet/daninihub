@@ -150,9 +150,14 @@ function makeOwnerDesk({store,customerAuth,env=process.env,clock=()=>Date.now()}
     }catch{return res.status(503).json({error:'ADMIN_UNAVAILABLE'})}
   });
 
+  function submissionsEnabled(_req,res,next){
+    if(env.AUTODANINI_SUBMISSIONS_ENABLED!=='true')
+      return res.status(503).json({error:'SUBMISSION_NOT_ACTIVE'});
+    return next();
+  }
   // A private draft is NOT visible in the admin inbox. Only buyer's explicit
   // submitConsent creates the immutable request snapshot below.
-  router.post('/case-submissions',express.json({limit:'3kb'}),csrf,buyer,async(req,res)=>{
+  router.post('/case-submissions',express.json({limit:'3kb'}),submissionsEnabled,csrf,buyer,async(req,res)=>{
     const id=req.body?.caseId;
     if(!ID.test(id||'')||req.body?.submitConsent!==true)
       return res.status(400).json({error:'EXPLICIT_CONSENT_REQUIRED'});
@@ -176,7 +181,7 @@ function makeOwnerDesk({store,customerAuth,env=process.env,clock=()=>Date.now()}
       return res.json({submissionId:saved[0].id,submitted:true,status:saved[0].status});
     }catch{return res.status(503).json({error:'SUBMISSION_UNAVAILABLE'})}
   });
-  router.get('/my-submission/:caseId',buyer,async(req,res)=>{
+  router.get('/my-submission/:caseId',submissionsEnabled,buyer,async(req,res)=>{
     const id=req.params.caseId;
     if(!ID.test(id))return res.status(404).json({error:'CASE_NOT_FOUND'});
     try{

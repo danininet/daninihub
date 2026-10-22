@@ -7,6 +7,8 @@ on:
       - 'core/autodanini-auth-security.js'
       - 'core/autodanini-customer-auth.js'
       - 'core/autodanini-mail-policy.js'
+      - 'core/autodanini-public-throttle.js'
+      - 'tests/test-autodanini-public-throttle.cjs'
       - 'tests/test-autodanini-mail-policy.cjs'
       - 'tests/test-autodanini-auth-security.cjs'
       - 'tests/test-autodanini-customer-auth.cjs'
@@ -35,6 +37,8 @@ jobs:
         run: node --test tests/test-autodanini-auth-security.cjs
       - name: Verify customer login, session and record isolation
         run: node --test tests/test-autodanini-customer-auth.cjs
+      - name: Verify anti-spam API rate limiting and proxy-header isolation
+        run: node --test tests/test-autodanini-public-throttle.cjs
       - name: Check syntax of updated server code
         run: |
           node --check server.js
@@ -42,6 +46,7 @@ jobs:
           node --check core/autodanini-auth-security.js
           node --check core/autodanini-customer-auth.js
           node --check core/autodanini-mail-policy.js
+          node --check core/autodanini-public-throttle.js
       - name: Regression checks against the existing Hostinger code
         run: |
           npm run build

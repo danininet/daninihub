@@ -8,7 +8,10 @@ const path=require('node:path');
 const {spawnSync}=require('node:child_process');
 
 const source='https://github.com/danininet/daninihub.git';
-const sourceBranch='feat/autodanini-admin-desk-20261021';
+// This snapshot branch deliberately never advances. The immutable SHA
+// prevents a newer feature-branch commit silently shipping to production.
+const sourceBranch='release/autodanini-v12-snapshot-20261022';
+const expectedSourceCommit='7a05f37be2298edfee8878fa9889c1752d2c4b0f';
 const expectedPages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
  'auctions','guides','about','contact','impressum','privacy','terms','cookies','ai-advisor',
  'disclaimer','cenovnik','ai-primer','faq','nalog','admin'];
@@ -27,6 +30,12 @@ try {
  run('git',['clone','--filter=blob:none','--depth=1','--sparse',
    '--single-branch','--branch',sourceBranch,source,checkout],stage);
  run('git',['-C',checkout,'sparse-checkout','set','autodanini/staging-v12','public'],stage);
+ const version=spawnSync('git',['-C',checkout,'rev-parse','HEAD'],{
+  cwd:stage,encoding:'utf8',stdio:['ignore','pipe','pipe']
+ });
+ if(version.status!==0||version.stdout.trim()!==expectedSourceCommit){
+   throw new Error('AUTODANINI_SOURCE_REVISION_NOT_APPROVED: expected '+expectedSourceCommit);
+ }
  const frontend=path.join(checkout,'autodanini','staging-v12');
  if(!fs.existsSync(path.join(frontend,'package.json')))throw Error('AUTODANINI_FRONTEND_SOURCE_MISSING');
  // These values are fixed for this first public visual preview. The customer
@@ -52,7 +61,7 @@ try {
  fs.rmSync(out,{recursive:true,force:true});
  fs.cpSync(result,out,{recursive:true});
  fs.writeFileSync(path.join(out,'AUTODANINI_RELEASE_INFO.json'),JSON.stringify({
-   site:'AutoDanini',sourceBranch,releaseMode:'public-visual-only',
+   site:'AutoDanini',sourceBranch,expectedSourceCommit,releaseMode:'public-visual-only',
    accounts:false,admin:false,payments:false,ai:false,documents:'noindex'
  },null,2)+'\n');
  console.log('AutoDanini PUBLIC VISUAL release built:',expectedPages.length,'pages at',out);

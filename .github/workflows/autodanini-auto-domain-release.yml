@@ -55,7 +55,7 @@ jobs:
             ['about',about,'dragan-business-portrait.jpg'],
             ['contact',contact,'dragan-business-phone.jpg']
           ]){
-            if(!page.includes(`--image:url('./${photo}')`))throw new Error('Wrong business hero image on '+name);
+            if(!page.includes("--image:url('data:image/jpeg;base64,"))throw new Error('Business hero not embedded on '+name);
             if(!page.includes('content="https://auto.daninihub.com/dragan-business-portrait.jpg"'))
               throw new Error('Social business photo replaced with car on '+name);
           }
@@ -66,6 +66,12 @@ jobs:
             if(!content.subarray(0,signatures[i].length/2).toString('hex').startsWith(signatures[i]))
               throw new Error('Business image wrong format: '+businessPhotos[i]);
           }
+          const supportInline=fs.readFileSync('autodanini-auto-dist/support.html','utf8');
+          for(const [label,html] of [['home',index],['about',about],['contact',contact],['support',supportInline]]){
+            if(!html.includes('data:image/jpeg;base64,'))throw new Error('Photo not inlined in '+label);
+          }
+          if(/<img[^>]+src=["'](?:\.\/|\/)dragan-business-(?:phone|portrait)\.jpg/.test(about))
+            throw new Error('About still needs external business JPEG request');
           if(!index.includes('owner-note')||!buyers.includes('name="listing3"')||!dealers.includes('name="listing3"'))throw new Error('Owner proof or RFQ criteria missing');
           for(const old of ['dragan-original-portrait.jpg','dragan-business-grid-ai.png']){
             if(fs.existsSync('autodanini-auto-dist/'+old))throw new Error('Forbidden owner source/collage published: '+old);

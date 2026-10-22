@@ -1,0 +1,44 @@
+name: AutoDanini Hostinger visual-parity build (staging only)
+on:
+  pull_request:
+    paths:
+      - 'autodanini/staging-v12/**'
+      - '.github/workflows/autodanini-hostinger-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hostinger-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install frontend build tools
+        working-directory: autodanini/staging-v12
+        run: npm install --no-audit --no-fund
+      - name: Build unchanged v12 visual frontend with Hostinger-only adapter
+        working-directory: autodanini/staging-v12
+        env:
+          AUTODANINI_BUILD_TARGET: hostinger
+        run: npm run build
+      - name: Check all 23 original pages remain in build and staged pages are not indexed
+        working-directory: autodanini/staging-v12
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender','auctions','guides','about','contact','impressum','privacy','terms','cookies','ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin'];
+          const absent=pages.filter(page=>!fs.existsSync('dist/'+page+'.html'));
+          if(absent.length)throw new Error('Missing pages: '+absent.join(', '));
+          const home=fs.readFileSync('dist/index.html','utf8');
+          if(!home.includes('AUTO<span>DANINI</span>'))throw new Error('AutoDanini branding altered');
+          if(!home.includes('noindex'))throw new Error('Staging indexing guard missing');
+          const js=fs.readdirSync('dist/assets').filter(name=>name.endsWith('.js')).map(name=>fs.readFileSync('dist/assets/'+name,'utf8')).join('\n');
+          if(js.includes('@appdeploy/client'))throw new Error('Proprietary client unresolved');
+          console.log('Hostinger staging build preserved all '+pages.length+' original v12 pages.');
+          NODE
+      - name: Deployment intentionally not performed
+        run: echo 'Staging build validation only. Do not publish or edit DNS.'

@@ -19,6 +19,9 @@ jobs:
       - name: Install frontend build tools
         working-directory: autodanini/staging-v12
         run: npm install --no-audit --no-fund
+      - name: Strict TypeScript check of Hostinger browser adapter
+        working-directory: autodanini/staging-v12
+        run: npx tsc --noEmit -p tsconfig.hostinger.json
       - name: Build unchanged v12 visual frontend with Hostinger-only adapter
         working-directory: autodanini/staging-v12
         env:

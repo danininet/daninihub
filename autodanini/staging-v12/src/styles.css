@@ -139,10 +139,19 @@
 .owner-row{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:75px}
 .owner-copy h2{font-size:clamp(32px,3.3vw,51px);max-width:700px}
 .owner-copy p{font-size:16px;color:#59656b;max-width:650px;margin-bottom:25px}
-.portrait-single{background-image:url('https://raw.githubusercontent.com/danininet/daninihub/assets/autodanini-business-20261020/public/branding/autodanini-business-grid.png');background-repeat:no-repeat;background-size:300% 300%;background-color:#303a40;box-shadow:0 15px 40px #18232a26;aspect-ratio:1 / 1;max-width:520px;width:100%}
-.portrait-home{background-position:0% 0%}
-.portrait-about{background-position:50% 50%;min-height:350px}
-.portrait-contact{background-position:100% 0%;height:230px;width:230px;max-width:none;flex:none}
+.portrait-single{background-image:url('/dragan-original-portrait.jpg');background-repeat:no-repeat;background-size:cover;background-position:center 57%;background-color:#303a40;box-shadow:0 15px 40px #18232a26;aspect-ratio:1 / 1;max-width:520px;width:100%;border:7px solid #f4f1e9}
+.portrait-home{background-position:center 57%}
+.portrait-about{background-position:center 57%;min-height:350px}
+.portrait-contact{background-position:center 57%;height:230px;width:230px;max-width:none;flex:none}
+.business-visual{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:40px;margin-top:50px}
+.business-visual img{display:block;max-width:100%;width:100%;height:auto;border:1px solid #d7d9d5;box-shadow:0 14px 36px #18232a22}
+.business-visual p{line-height:1.7;color:#526169}
+.business-visual small{display:block;font-size:12px;color:#667b84;margin-top:10px}
+.rfq-extra{background:#f8f7f2;border:1px solid #e0ded4;padding:25px;margin:23px 0}
+.rfq-extra h3{font-size:21px;margin:0 0 12px}
+.rfq-extra p{color:#5c696d;font-size:13px}
+.rfq-extra .fieldgrid{margin-top:20px}
+@media(max-width:760px){.business-visual{grid-template-columns:1fr;gap:22px}.rfq-extra{padding:16px}.portrait-contact{height:150px;width:150px}}
 .contact-owner{display:flex;align-items:center;gap:30px;margin:10px 0 50px;max-width:770px}
 .contact-owner b{font:800 27px Manrope}
 .contact-owner p{margin:12px 0;color:#5f6f73}

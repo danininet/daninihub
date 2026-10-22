@@ -7,8 +7,9 @@ async function get(path){
  const controller=new AbortController();
  const timer=setTimeout(()=>controller.abort(),12000);
  try{
-  const response=await fetch(origin+path,{signal:controller.signal,redirect:'error',
+  const response=await fetch(origin+path,{signal:controller.signal,redirect:'follow',
    headers:{'Accept':'text/html,image/jpeg,application/json,text/plain'}});
+  if(new URL(response.url).origin!==origin)throw new Error('Host redirect left trusted origin: '+new URL(response.url).origin);
   const buffer=Buffer.from(await response.arrayBuffer());
   return {response,buffer,text:buffer.subarray(0,120000).toString('utf8')};
  }finally{clearTimeout(timer);}

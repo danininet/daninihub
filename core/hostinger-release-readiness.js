@@ -20,6 +20,17 @@ function checkProductionConfiguration(env=process.env){
      ['localhost','127.0.0.1'].includes(origin.hostname)){
     throw new Error('PRODUCTION_PUBLIC_HTTPS_ORIGIN_REQUIRED');
   }
+  if(env.AUTODANINI_PREVIEW_ENABLED==='true' &&
+     ['daninihub.com','www.daninihub.com','calije.daninihub.com'].includes(origin.hostname.toLowerCase())){
+    throw new Error('AUTODANINI_PREVIEW_MUST_NOT_USE_LIVE_DOMAIN');
+  }
+  if(env.AUTODANINI_ADMIN_ENABLED==='true' && env.AUTODANINI_AUTH_ENABLED!=='true'){
+    throw new Error('AUTODANINI_ADMIN_REQUIRES_AUTH');
+  }
+  if(env.AUTODANINI_SUBMISSIONS_ENABLED==='true' &&
+    (env.AUTODANINI_AUTH_ENABLED!=='true'||env.AUTODANINI_ADMIN_ENABLED!=='true')){
+    throw new Error('AUTODANINI_SUBMISSIONS_REQUIRE_SECURE_ADMIN');
+  }
   // Payments are excluded from this first-release profile until separately approved.
   if(env.DANINI_IMPORTOS_CHECKOUT_ENABLED==='true'||
      env.DANINI_IMPORTOS_SERVICE_PAYMENTS_ENABLED==='true'){

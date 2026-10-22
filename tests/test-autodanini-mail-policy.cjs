@@ -47,3 +47,17 @@ test('invalid Reply-To target fails closed',()=>{
     AUTODANINI_CONTACT_EMAIL:'private@gmail.com'
   }),/AUTODANINI_EMAIL_DOMAIN_REQUIRED/);
 });
+
+test('existing working Brevo sender variable names are reused',()=>{
+  for(const field of ['DANINIHUB_SENDER_EMAIL','MAIL_FROM','EMAIL_FROM']){
+    const env={BREVO_API_KEY:'test-brevo-key-placeholder',[field]:'kontakt@daninihub.com'};
+    assert.equal(resolveAutoDaniniEmail(env).sender,'kontakt@daninihub.com');
+  }
+  // A configured foreign sender must never be silently accepted, even if
+  // an older fallback variable points at the correct mailbox.
+  assert.throws(()=>resolveAutoDaniniEmail({
+    BREVO_API_KEY:'test-brevo-key-placeholder',
+    BREVO_SENDER_EMAIL:'kontakt@calije.daninihub.com',
+    MAIL_FROM:'kontakt@daninihub.com'
+  }),/AUTODANINI_BREVO_NOT_CONFIGURED/);
+});

@@ -4,6 +4,8 @@ on:
     paths:
       - 'server.js'
       - 'core/hostinger-release-readiness.js'
+      - 'importos-store.js'
+      - 'tests/test-autodanini-prod-database.cjs'
       - 'core/autodanini-auth-security.js'
       - 'core/autodanini-customer-auth.js'
       - 'core/autodanini-mail-policy.js'
@@ -37,6 +39,8 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Test fail-closed startup rules
         run: node --test tests/test-hostinger-release-readiness.cjs
+      - name: Verify production cannot fall back to local customer JSON storage
+        run: node --test tests/test-autodanini-prod-database.cjs
       - name: Validate mail sender policy and customer support reply-to
         run: node --test tests/test-autodanini-mail-policy.cjs
       - name: Test OTP, CSRF origin and session token rules

@@ -148,9 +148,14 @@ async function session():Promise<void>{
   nextToken=null;
   await reload();
  }catch(_error){
-  if(signedOut)signedOut.hidden=true;
+  // A valid customer login without owner MFA is NOT an administrator.
+  // Keep the owner login button visible so MFA can be completed or a
+  // different private owner account can be used; never expose inbox data.
+  if(signedOut)signedOut.hidden=false;
   if(signedIn)signedIn.hidden=true;
-  notify('Pristup odbijen. Administratorska e-pošta mora biti posebno potvrđena u serveru.','Zugriff verweigert. Die Administrator-E-Mail muss serverseitig bestätigt werden.');
+  if(requests)requests.replaceChildren();
+  notify('Administratorska prijava nije potvrđena. Prijavite se privatnim vlasničkim nalogom i Authenticator kodom.',
+   'Administratorzugang nicht bestätigt. Bitte mit dem privaten Inhaberkonto und Authenticator-Code anmelden.');
  }
 }
 byId<HTMLButtonElement>('admin-login')?.addEventListener('click',async ()=>{

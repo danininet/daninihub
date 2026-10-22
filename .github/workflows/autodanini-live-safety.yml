@@ -1,0 +1,26 @@
+name: AutoDanini public security and photography smoke
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/check-autodanini-live-safety.cjs'
+      - '.github/workflows/autodanini-live-safety.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Verify public AutoDanini pages, individual photos, Support and private API
+        run: node scripts/check-autodanini-live-safety.cjs
+      - name: Check production npm dependencies for critical vulnerabilities
+        run: |
+          npm ci --no-audit --no-fund
+          npm audit --omit=dev --audit-level=critical

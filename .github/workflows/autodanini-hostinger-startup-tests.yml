@@ -1,0 +1,31 @@
+name: AutoDanini Hostinger startup regression tests
+on:
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'core/hostinger-release-readiness.js'
+      - 'tests/test-hostinger-release-readiness.cjs'
+      - '.github/workflows/autodanini-hostinger-startup-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readiness-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Test fail-closed startup rules
+        run: node --test tests/test-hostinger-release-readiness.cjs
+      - name: Check syntax of updated server code
+        run: |
+          node --check server.js
+          node --check core/hostinger-release-readiness.js
+      - name: Regression checks against the existing Hostinger code
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build

@@ -46,6 +46,7 @@ app.post('/api/importos/service-request',createPublicThrottle({scope:'service_re
 app.post('/api/importos/checkout',createPublicThrottle({scope:'checkout_attempts',max:40,windowMs:hour}));
 app.post('/api/importos/checkout/paypal',createPublicThrottle({scope:'paypal_attempts',max:40,windowMs:hour}));
 app.post('/api/auth/start',createPublicThrottle({scope:'customer_login',max:100,windowMs:hour}));
+app.post('/api/admin/elevate',createPublicThrottle({scope:'owner_mfa',max:12,windowMs:hour}));
 app.post('/api/advice',createPublicThrottle({scope:'public_advice',max:24,windowMs:24*hour}));
 
 app.get('/health',async(req,res)=>{
@@ -85,6 +86,12 @@ if(process.env.AUTODANINI_PREVIEW_ENABLED==='true'){
   if(process.env.AUTODANINI_AUTH_ENABLED==='true'){
     const {makeCustomerAuth}=require('./core/autodanini-customer-auth');
     const auth=makeCustomerAuth({store:app.locals.importOSStore});
+    if(process.env.AUTODANINI_ADMIN_ENABLED==='true'){
+      const {makeOwnerDesk}=require('./core/autodanini-owner-desk');
+      // Owner desk routes precede the intentionally disabled legacy
+      // /case-submissions handler in the customer-auth router.
+      app.use('/api',makeOwnerDesk({store:app.locals.importOSStore,customerAuth:auth}).router);
+    }
     app.use('/api',auth.router);
   }
   require('./core/hostinger-autodanini-preview').mountHostingerAutoDaniniPreview(app);

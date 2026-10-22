@@ -44,3 +44,15 @@ test('production allows a verified MySQL store',async()=>{
 test('production refuses database initialization errors',async()=>{
   await assert.rejects(checkProductionStorage({mode:'file',async init(){throw new Error('db down')}},safe),/db down/);
 });
+
+test('public AutoDanini preview refuses development mode',()=>{
+  assert.throws(()=>checkProductionConfiguration({
+    NODE_ENV:'development',AUTODANINI_PREVIEW_ENABLED:'true'
+  }),/AUTODANINI_PREVIEW_REQUIRES_PRODUCTION_MODE/);
+  assert.throws(()=>checkProductionConfiguration({
+    AUTODANINI_PREVIEW_ENABLED:'true'
+  }),/AUTODANINI_PREVIEW_REQUIRES_PRODUCTION_MODE/);
+  assert.doesNotThrow(()=>checkProductionConfiguration({
+    ...safe,AUTODANINI_PREVIEW_ENABLED:'true'
+  }));
+});

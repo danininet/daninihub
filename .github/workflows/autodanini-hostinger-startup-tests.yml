@@ -4,6 +4,9 @@ on:
     paths:
       - 'server.js'
       - 'core/hostinger-release-readiness.js'
+      - 'core/autodanini-auth-security.js'
+      - 'core/autodanini-customer-auth.js'
+      - 'tests/test-autodanini-auth-security.cjs'
       - 'tests/test-hostinger-release-readiness.cjs'
       - '.github/workflows/autodanini-hostinger-startup-tests.yml'
   workflow_dispatch:
@@ -21,10 +24,14 @@ jobs:
           cache: npm
       - name: Test fail-closed startup rules
         run: node --test tests/test-hostinger-release-readiness.cjs
+      - name: Test OTP, CSRF origin and session token rules
+        run: node --test tests/test-autodanini-auth-security.cjs
       - name: Check syntax of updated server code
         run: |
           node --check server.js
           node --check core/hostinger-release-readiness.js
+          node --check core/autodanini-auth-security.js
+          node --check core/autodanini-customer-auth.js
       - name: Regression checks against the existing Hostinger code
         run: |
           npm ci --no-audit --no-fund

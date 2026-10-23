@@ -67,6 +67,18 @@ test('only auto.daninihub.com serves the new support-enabled AutoDanini UI; old 
  assert.equal(support.status,200);
  assert.match(support.body,/autodanini-support-form/);
  assert.match(support.body,/WhatsApp/);
+ // Owner's existing business contact is available on both draft legal pages,
+ // and outdated collage provenance is not presented as current photography.
+ for (const legalPage of ['/impressum.html','/privacy.html']) {
+   const legal=await request(port,'auto.daninihub.com',legalPage);
+   assert.equal(legal.status,200,legalPage);
+   assert.match(legal.body,/mailto:kontakt@daninihub\.com/,legalPage);
+   assert.match(legal.body,/radni tekst koji zahteva pravnu i poslovnu potvrdu/,
+     'draft status must remain visible until full operator details are verified');
+   assert.doesNotMatch(legal.body,/prikaz iz postojećeg 3×3 materijala/,
+     'obsolete image provenance must not appear');
+ }
+
  // Regression: AI adviser must use the approved standalone portrait at 1x.
  // A 3x3 grid with CSS background-size:300% shows only mouth/chin.
  const advisor=await request(port,'auto.daninihub.com','/ai-advisor.html');

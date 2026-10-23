@@ -18,11 +18,12 @@ async function main(){
         assert.match(html,/IMPORT PASSPORT/);
         assert.match(html,/9,90 €/);
         assert.match(html,/od 79 €/);
+        assert.match(html,/Pošalji oglas Draganu na WhatsApp/);
         assert.doesNotMatch(html,/id="quickcheck"/);
       }
       if(route==='/sr/pregled-auta'){assert.match(html,/danini-pregled-auta\.webp/);assert.doesNotMatch(html,/danini-auto-uvoz\.webp/)}
       if(route==='/sr/uporedi-oglase'){assert.match(html,/id="buyer-plan"/);assert.match(html,/buyer-plan-client/)}
-      if(route==='/sr/upit'){assert.match(html,/id="service-form"/);assert.match(html,/danini-request\.js/);assert.match(html,/paypal\.me\/dragangaganet\/9\.90EUR/);}
+      if(route==='/sr/upit'){assert.match(html,/id="service-form"/);assert.match(html,/danini-request\.js/);assert.match(html,/id="danini-request-payment" hidden/);assert.match(html,/Pošalji oglas Draganu na WhatsApp/);assert.match(html,/paypal\.me\/dragangaganet\/9\.90EUR/);}
       if(route==='/sr/kalkulator'){assert.match(html,/id="quickcheck"/);assert.match(html,/danini-quickcheck\.js/);assert.match(html,/danini-sales\.js/);}
       
       if(route.includes('?quote=')){
@@ -36,6 +37,13 @@ async function main(){
     }
     for(const route of Object.keys(routes))assert.ok(ROUTES[route],route);
     for(const asset of ['/danini-sales.js','/danini-quickcheck.js','/danini-request.js']){const res=await fetch(base+asset);assert.equal(res.status,200,asset);assert.match(res.headers.get('content-type'),/javascript/,asset)}
+    for(const asset of ['/danini-sales.js','/danini-quickcheck.js','/danini-request.js']){
+      const js=await (await fetch(base+asset)).text();
+      assert.match(js,/Pozdrav Dragane, našao sam ovaj auto:/,asset);
+      assert.match(js,/Želim Import Passport proveru \(9,90 €\)\./,asset);
+      assert.match(js,/encodeURIComponent\(/,asset);
+      assert.match(js,/payment\.hidden|payment\) payment\.hidden/,asset);
+    }
     const map=await (await fetch(base+'/sitemap.xml')).text();
     assert.match(map,/\/sr\/upit/);
     for(const path of ['/danini-auto-uvoz.webp','/danini-pregled-auta.webp']){const image=await fetch(base+path);assert.equal(image.status,200);assert.match(image.headers.get('content-type'),/image\/webp/)}

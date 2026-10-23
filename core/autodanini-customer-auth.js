@@ -236,6 +236,16 @@ function makeCustomerAuth({store,env=process.env,sendEmail}){
     if(!/^[a-f0-9]{32}$/.test(id))return res.status(404).json({error:'CASE_NOT_FOUND'});
     try{
       const pool=await db();
+      // Keep a buyer's submitted request reachable in their account while
+      // owner correspondence is open. Deleting a local draft must not orphan
+      // an already-consented submission or its private replies.
+      if(env.AUTODANINI_SUBMISSIONS_ENABLED==='true'){
+        const [submitted]=await pool.execute(
+          'SELECT id FROM ad_submitted_requests WHERE customer_id=? AND source_case_id=? LIMIT 1',
+          [req.autodaniniCustomer.id,id]
+        );
+        if(submitted.length)return res.status(409).json({error:'SUBMITTED_REQUEST_REQUIRES_SUPPORT'});
+      }
       const [result]=await pool.execute(
         'DELETE FROM ad_private_cases WHERE id=? AND customer_id=?',
         [id,req.autodaniniCustomer.id]

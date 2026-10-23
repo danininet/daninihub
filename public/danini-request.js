@@ -1,20 +1,55 @@
 'use strict';
+
 (() => {
- const form=document.getElementById('service-form');
- if(!form)return;
- form.addEventListener('submit',event=>{
-  event.preventDefault();
-  if(!form.reportValidity())return;
-  const data=new FormData(form);
-  const url=String(data.get('adLink')||'').trim();
-  try{const target=new URL(url);if(!['https:','http:'].includes(target.protocol))throw Error('protocol');}
-  catch{const output=document.getElementById('service-result');output.textContent='Unesite ispravan link oglasa / Bitte gültigen Inserat-Link eingeben.';return;}
-  const pkg=String(data.get('package'));
-  const services={passport:'Import Passport — 9,90 €',field:'Field Check — od 79 €',free:'Besplatan upit / dovoz'};
-  const message=['DANINI — direktan upit','Usluga: '+(services[pkg]||services.free),'Oglas: '+url,'Vozilo / lokacija: '+String(data.get('vehicle')||'Nije navedeno'),'Molim potvrdu dostupnosti i cene pre narudžbine.'].join('\n');
-  const link='https://wa.me/4915730916621?text='+encodeURIComponent(message);
-  const anchor=document.createElement('a');anchor.href=link;anchor.target='_blank';anchor.rel='noopener noreferrer';anchor.textContent='Otvori WhatsApp / WhatsApp öffnen';anchor.className='btn';
-  const output=document.getElementById('service-result');output.replaceChildren(anchor);
-  window.location.assign(link);
- });
+  const form = document.getElementById('service-form');
+  if (!form) return;
+
+  const payment = document.getElementById('danini-request-payment');
+  const result = document.getElementById('service-result');
+  const de = document.documentElement.lang === 'de';
+  const tr = (sr, german) => de ? german : sr;
+
+  // A change to the selected vehicle or service invalidates the previous PayPal step.
+  const reset = () => { if (payment) payment.hidden = true; };
+  form.addEventListener('input', reset);
+  form.addEventListener('change', reset);
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    const data = new FormData(form);
+    const adLink = String(data.get('adLink') || '').trim();
+    let url;
+    try {
+      url = new URL(adLink);
+      if (!['https:', 'http:'].includes(url.protocol)) throw Error('Invalid protocol');
+    } catch {
+      result.textContent = tr('Unesi ispravan link oglasa.', 'Bitte gültigen Inserat-Link eingeben.');
+      return;
+    }
+
+    const service = String(data.get('package') || 'passport');
+    let message = 'Pozdrav Dragane, našao sam ovaj auto: ' + adLink + '. ';
+    if (service === 'passport') {
+      message += 'Želim Import Passport proveru (9,90 €).';
+    } else if (service === 'field') {
+      message += 'Želim ponudu za Field Check (od 79 €).';
+    } else {
+      message += 'Želim besplatan upit / informacije o dovozu.';
+    }
+
+    const whatsappUrl = 'https://wa.me/4915730916621?text=' + encodeURIComponent(message);
+    const fallback = document.createElement('a');
+    fallback.href = whatsappUrl;
+    fallback.target = '_blank';
+    fallback.rel = 'noopener noreferrer';
+    fallback.className = 'btn';
+    fallback.textContent = tr('Ponovo otvori WhatsApp', 'WhatsApp erneut öffnen');
+    result.replaceChildren(fallback);
+
+    // PayPal is optional and appears only after initiating the WhatsApp step.
+    if (payment) payment.hidden = service !== 'passport';
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  });
 })();

@@ -8,7 +8,7 @@
     "dev": "node server.js",
     "build": "npm run check:syntax && npm run test:importos && npm run build:front && npm run build:auto-release",
     "build:front": "node scripts/build-hostinger.js",
-    "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check site-experience.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js && node --check purchase-case-runtime.js && node --check core/purchase-case.js && node --check public/owner-case-client.js && node --check public/customer-case-client.js",
+    "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check site-experience.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js && node --check purchase-case-runtime.js && node --check core/purchase-case.js && node --check public/owner-case-client.js && node --check public/customer-case-client.js && node --check public/danini-order.js && node --check public/danini-quickcheck.js && node --check public/danini-sales.js",
     "test:importos": "node scripts/test-importos-clean.js",
     "test:site": "node scripts/test-site-experience.js",
     "test:funnel": "node scripts/test-service-funnel.js",
@@ -17,9 +17,10 @@
     "check:live": "node scripts/check-live.js",
     "test:purchase": "node scripts/test-purchase-journey.js",
     "test:cases": "node scripts/test-purchase-case.js",
-    "test:regression": "npm run test:importos && npm run test:site && npm run test:funnel && npm run test:buyer-plan && npm run test:purchase && npm run test:cases",
+    "test:regression": "npm run test:importos && npm run test:site && npm run test:funnel && npm run test:buyer-plan && npm run test:purchase && npm run test:cases && npm run test:danini",
     "build:ci": "npm run check:syntax && npm run test:regression && npm run build:front",
-    "build:auto-release": "node scripts/build-autodanini-auto-release.cjs"
+    "build:auto-release": "node scripts/build-autodanini-auto-release.cjs",
+    "test:danini": "node scripts/test-danini-calculator.js"
   },
   "keywords": [
     "vehicle-import",

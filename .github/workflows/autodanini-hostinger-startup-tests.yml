@@ -18,6 +18,7 @@ on:
       - 'core/autodanini-owner-desk.js'
       - 'tests/test-autodanini-admin-security.cjs'
       - 'tests/test-autodanini-owner-desk.cjs'
+      - 'tests/test-autodanini-buyer-owner-journey.cjs'
       - 'tests/test-autodanini-ai-advice.cjs'
       - 'tests/test-autodanini-public-throttle.cjs'
       - 'tests/test-autodanini-mail-policy.cjs'
@@ -58,6 +59,8 @@ jobs:
         run: node --test tests/test-autodanini-admin-security.cjs
       - name: Verify owner inbox, private submissions and audit controls
         run: node --test tests/test-autodanini-owner-desk.cjs
+      - name: Verify full buyer login to owner reply HTTP journey
+        run: node --test tests/test-autodanini-buyer-owner-journey.cjs
       - name: Check syntax of updated server code
         run: |
           node --check server.js

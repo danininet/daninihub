@@ -18,7 +18,7 @@ const env={
 };
 class FakeSql{
   constructor(){
-    this.mfa=null;this.elevations=new Map();this.submissions=new Map();this.audit=[];
+    this.mfa=null;this.elevations=new Map();this.submissions=new Map();this.replies=new Map();this.audit=[];
     this.saved=new Map([['c'.repeat(32),{id:'c'.repeat(32),customer_id:buyer.id,
       type:'sourcing',vehicle:'Mercedes C280',destination:'Srbija',
       budget:5900,listing:'https://example.net/offer',notes:'Bitte kontrollieren'}]]);
@@ -58,6 +58,23 @@ class FakeSql{
         this.submissions.set(a[0],{...x,id:a[0],status:'new',quote_eur:null,admin_note:'',
           created_at:new Date(),updated_at:new Date()});
       return [{affectedRows:1}];
+    }
+    if(sql.startsWith('SELECT id FROM ad_submitted_requests WHERE id=? LIMIT 1')){
+      return [this.submissions.has(a[0])?[{id:a[0]}]:[]];
+    }
+    if(sql.startsWith('INSERT INTO ad_buyer_replies')){
+      this.replies.set(a[0],{id:a[0],request_id:a[1],author_id:a[2],message:a[3],createdAt:new Date()});
+      return [{affectedRows:1}];
+    }
+    if(sql.includes('FROM ad_buyer_replies r')){
+      const request=this.submissions.get(a[0]);
+      if(request?.customer_id!==a[1]||request?.source_case_id!==a[2])return [[]];
+      return [[...this.replies.values()].filter(r=>r.request_id===a[0])
+        .map(r=>({id:r.id,message:r.message,createdAt:r.createdAt}))];
+    }
+    if(sql.includes('FROM ad_buyer_replies') && sql.includes('WHERE request_id=?')){
+      return [[...this.replies.values()].filter(r=>r.request_id===a[0])
+        .map(r=>({id:r.id,message:r.message,createdAt:r.createdAt}))];
     }
     if(sql.includes('SELECT id,status FROM ad_submitted_requests WHERE id=')){
       const x=this.submissions.get(a[0]);return [x?.customer_id===a[1]?[{id:x.id,status:x.status}]:[]];
@@ -161,6 +178,33 @@ test('owner MFA, buyer consent, tenant isolation, inbox edit and audit',async(t)
   assert.equal(edited.status,200);
   assert.equal(edited.data.paymentCaptured,false);
   assert.equal(db.audit.length,1,'status/price changes must create an audit receipt');
+  const replyPath='/api/admin/requests/'+submitted.data.submissionId+'/replies';
+  assert.equal((await call(replyPath,{method:'POST',cookie:buyerCookie,
+    body:{message:'Buyer cannot answer as owner.',confirmSend:true}})).status,403);
+  assert.equal((await call(replyPath,{method:'POST',cookie:adminCookie,
+    origin:'https://attacker.test',body:{message:'Wrong origin',confirmSend:true}})).status,403);
+  assert.equal((await call(replyPath,{method:'POST',cookie:adminCookie,
+    body:{message:'Draft only',confirmSend:false}})).status,400);
+  assert.equal((await call(replyPath,{method:'POST',cookie:adminCookie,
+    body:{message:' ',confirmSend:true}})).status,400);
+  const buyerAnswer='Hvala na upitu. Proverićemo dokumenta vozila i javiti sledeće korake.';
+  const reply=await call(replyPath,{method:'POST',cookie:adminCookie,
+    body:{message:buyerAnswer,confirmSend:true}});
+  assert.equal(reply.status,201);
+  assert.equal(reply.data.sentToBuyerAccount,true);
+  assert.equal(reply.data.emailSent,false);
+  assert.equal(reply.data.paymentCaptured,false);
+  assert.equal(db.replies.size,1);
+  const history=await call(replyPath,{cookie:adminCookie});
+  assert.equal(history.status,200);
+  assert.equal(history.data.replies[0].message,buyerAnswer);
+  assert.equal((await call(replyPath,{cookie:buyerCookie})).status,403);
+  assert.equal((await call('/api/my-submission/'+sourceId,{cookie:ownCookie})).data.submitted,false);
+  const buyerView=await call('/api/my-submission/'+sourceId,{cookie:buyerCookie});
+  assert.equal(buyerView.status,200);
+  assert.equal(buyerView.data.replies[0].message,buyerAnswer);
+  assert.equal((await call('/api/admin/requests',{cookie:adminCookie})).data.requests[0].adminNote,'Needs check',
+    'private admin note must remain separate from customer-visible reply');
   assert.equal((await call('/api/admin/requests/'+submitted.data.submissionId,{
     method:'PUT',cookie:adminCookie,
     body:{status:'closed',expectedStatus:'new',quoteEUR:30,adminNote:'outdated'}

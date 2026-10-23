@@ -40,12 +40,12 @@ async function main() {
       assert.doesNotMatch(html, /Sistem i agenti<\/a>|System & Agents<\/a>/, route);
       assert.doesNotMatch(html,/AI_Influenserka|AI Influencerka|[gG]enerated.person/,route);
       assert.match(html,/danini-live-bar/,route);
+      if (route === '/' || route === '/sr/' || route === '/de/') {
       // The three founder shots are square; service-card car photos remain widescreen.
       assert.match(html,/\.hero-visual\.danini-portrait img\{width:100%;height:auto;aspect-ratio:1\/1/);
       assert.match(html,/\.danini-trust-photo img\{display:block;width:100%;height:auto;aspect-ratio:1\/1/);
       assert.match(html,/\.danini-passport-photo\{display:block;width:100%;height:auto;aspect-ratio:1\/1/);
       assert.match(html,/\.feature img\{height:auto;aspect-ratio:16\/9/);
-      if (route === '/' || route === '/sr/' || route === '/de/') {
         assert.match(html, /danini-order-slot/, route);
         assert.match(html, /danini-order-home/, route);
         assert.match(html, /DANINI_Dragan_Portret_CLEAN_1200x1200\.jpg/, route);

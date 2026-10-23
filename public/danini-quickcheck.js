@@ -6,10 +6,18 @@
   const t=(sr,german)=>de?german:sr;
   const euros=n=>new Intl.NumberFormat(de?'de-DE':'sr-RS',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n);
   const extra=document.createElement('div');
-  extra.innerHTML='<label>'+t('Marka i model','Marke und Modell')+'<input name="vehicleModel" maxlength="120" placeholder="VW Golf 2018"></label>'+
+  extra.innerHTML='<label>'+t('Način dovoza','Transportart')+'<select name="deliveryMode"><option value="truck">'+t('Kamion / transporter','Lkw / Transporter')+'</option><option value="plates">'+t('Izvozne tablice / vožnja','Ausfuhrkennzeichen / Selbstfahrt')+'</option></select></label><label>'+t('Marka i model','Marke und Modell')+'<input name="vehicleModel" maxlength="120" placeholder="VW Golf 2018"></label>'+
     '<label>'+t('Link oglasa (opciono)','Inserat-Link (optional)')+'<input type="url" name="adLink" maxlength="2000" placeholder="https://www.mobile.de/..."></label>'+
     '<label>'+t('Trošak ispitivanja/uverenja (€) — okvirno, proveriti cenu','Prüfung/Bescheinigung (€) — Schätzung, Preis prüfen')+'<input name="certificateCost" type="number" min="0" max="10000" step="any" value="280"></label>';
   form.insertBefore(extra,form.querySelector('button[type="submit"]'));
+  const mode=extra.querySelector('[name="deliveryMode"]');
+  const transport=form.elements.namedItem('transportToSerbia');
+  const exportInput=form.elements.namedItem('exportCosts');
+  if(exportInput)exportInput.value='0';
+  mode.addEventListener('change',()=>{
+    if(mode.value==='truck'){if(transport)transport.value='700';if(exportInput)exportInput.value='0';}
+    else{if(transport)transport.value='0';if(exportInput)exportInput.value='180';}
+  });
   const origin=form.elements.namedItem('originProof');
   if(origin) {
     const verified=origin.querySelector('[value="verified"]');

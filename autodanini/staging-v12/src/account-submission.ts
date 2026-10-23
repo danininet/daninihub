@@ -26,8 +26,25 @@ export function attachCaseSubmission(
  const state=document.createElement('span');
  state.className='account-submit-state';
  state.setAttribute('role','status');
- wrapper.append(button,state);
+ const repliesBox=document.createElement('div');
+ repliesBox.className='account-buyer-replies';
+ repliesBox.setAttribute('aria-live','polite');
+ wrapper.append(button,state,repliesBox);
  actions.append(wrapper);
+ function renderReplies(value:unknown):void {
+  repliesBox.replaceChildren();
+  if(!Array.isArray(value)||!value.length)return;
+  const title=document.createElement('strong');
+  title.textContent=german()?'Antworten von AutoDanini':'Odgovori AutoDanini tima';
+  repliesBox.append(title);
+  for(const item of value){
+   if(typeof item?.message!=='string')continue;
+   const note=document.createElement('p');
+   note.style.cssText='white-space:pre-wrap;padding:10px 12px;border-left:3px solid #cda76e;background:#f0f3f1;margin:10px 0;';
+   note.textContent=item.message;
+   repliesBox.append(note);
+  }
+ }
  const setStatus=(sr:string,de:string)=>{
   state.textContent=german()?de:sr;
  };
@@ -36,6 +53,7 @@ export function attachCaseSubmission(
    const response=await api.get('/api/my-submission/'+encodeURIComponent(caseId));
    if(response.data?.submitted===true) {
     const code=String(response.data.status||'new');
+    renderReplies(response.data.replies);
     setStatus('Zahtev je predat. Status: '+code,'Anfrage eingereicht. Status: '+code);
     button.disabled=true;
     button.textContent=german()?'Bereits eingereicht':'Već poslato';
@@ -57,6 +75,7 @@ export function attachCaseSubmission(
      'Anfrage an das Team eingereicht, ID: '+String(response.data.submissionId));
    button.textContent=german()?'Bereits eingereicht':'Već poslato';
    notify('Zahtev je predat u obradu.','Die Anfrage wurde eingereicht.');
+   await check();
   }catch(_error){
    button.disabled=false;
    setStatus('Predaja nije potvrđena. Proverite status pre ponovnog pokušaja.',

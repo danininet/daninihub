@@ -23,7 +23,8 @@ function allowedPath(path:string):boolean {
   (ENABLE_ADMIN && (
     path==='/api/admin/requests' ||
     /^\/api\/admin\/requests\?nextToken=(0|[1-9]\d{0,3})$/.test(path) ||
-    /^\/api\/admin\/requests\/[a-f0-9]{40}$/.test(path)));
+    /^\/api\/admin\/requests\/[a-f0-9]{40}$/.test(path) ||
+    (ENABLE_SUBMISSIONS && /^\/api\/admin\/requests\/[a-f0-9]{40}\/replies$/.test(path))));
 }
 async function send<T=JsonObject>(method:'GET'|'POST'|'PUT'|'DELETE',path:string,body?:JsonObject):Promise<ApiResponse<T>> {
  if(!allowedPath(path))throw new Error(UNAVAILABLE);

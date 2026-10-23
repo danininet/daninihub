@@ -28,6 +28,8 @@
     const a=document.createElement('a');a.className='btn'+(secondary?' secondary':'');a.href=href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=text;a.style.cssText='display:block;margin:10px 0;padding:16px;text-align:center;min-height:50px';return a;
   };
   form.addEventListener('submit',event=>{
+    if(window.daniniQuickcheckAbort)window.daniniQuickcheckAbort.abort();
+    window.daniniQuickcheckAbort=new AbortController();
     event.preventDefault();
     const values=Object.fromEntries(new FormData(form));
     const number=key=>Number(values[key]||0);
@@ -63,16 +65,70 @@
       'Okvirna računica: carina 0% samo ako nadležna carina prihvati valjan dokaz o preferencijalnom poreklu. U suprotnom je ovde korišćeno 12,5%. Transport mora biti uračunat samo jednom. Nisu uključeni špedicija, registracija, eko takse niti moguća korekcija carinske vrednosti. Iznos uverenja i izvozne tablice su ručno podesive procene.',
       'Unverbindliche Schätzung: 0% Zoll nur bei anerkanntem Präferenzursprungsnachweis; sonst hier 12,5%. Transport nur einmal rechnen. Spedition, Zulassung, Umweltabgaben und abweichender Zollwert sind nicht enthalten. Prüf- und Exportkosten sind anpassbare Schätzungen.'
     );result.appendChild(warning);
-    const msg=[
-      'DANINI QUICKCHECK', 'Model: '+(values.vehicleModel||'Nije naveden'),
-      'Cena: '+euros(price),'Ukupna procena: '+euros(total),
-      'Carina: '+euros(duty),'PDV: '+euros(vat),
-      'Dokaz o poreklu (pretpostavka): '+(accepted?'prihvaćen':'nepotvrđen / bez dokaza'),
-      'Oglas: '+(values.adLink||'Nije unet'),
-      'Molim proveru i ponudu.'
-    ].join('\n');
-    result.appendChild(link(t('Pošalji ovaj proračun Draganu na WhatsApp','Diese Berechnung per WhatsApp senden'),'https://wa.me/4915730916621?text='+encodeURIComponent(msg)));
-    result.appendChild(link(t('Naruči proveru ovog auta (9,90 €) preko PayPal-a','Prüfung dieses Autos (9,90 €) via PayPal bestellen'),'https://www.paypal.me/dragangaganet/9.90EUR',true));
+    const adInput = form.elements.namedItem('adLink');
+    const whatsapp = link(
+      t('Pošalji oglas Draganu na WhatsApp (+49 1573 0916621)',
+        'Inserat per WhatsApp an Dragan senden (+49 1573 0916621)'),
+      '#'
+    );
+    result.appendChild(whatsapp);
+
+    const payment = document.createElement('div');
+    payment.hidden = true;
+    const note = document.createElement('p');
+    note.textContent = t(
+      'Uplata za proveru (9,90 €) se vrši nakon slanja oglasa putem PayPal-a:',
+      'Die Zahlung für die Prüfung (9,90 €) erfolgt nach dem Versand des Inserats über PayPal:'
+    );
+    const paypal = link('PayPal — 9,90 €', 'https://www.paypal.me/dragangaganet/9.90EUR', true);
+    paypal.style.display = 'inline-block';
+    const reminder = document.createElement('p');
+    reminder.className = 'muted';
+    reminder.textContent = t(
+      'PayPal.Me ne povezuje uplatu automatski sa oglasom. Navedi link oglasa u napomeni, ako je dostupna, ili pošalji potvrdu u istom WhatsApp razgovoru.',
+      'PayPal.Me ordnet die Zahlung nicht automatisch dem Inserat zu. Inserat-Link falls möglich als Notiz eintragen oder Zahlungsbeleg im selben WhatsApp-Chat senden.'
+    );
+    payment.append(note, paypal, reminder);
+    result.appendChild(payment);
+
+    const isValidLink = value => {
+      try {
+        const url = new URL(value);
+        return ['https:', 'http:'].includes(url.protocol);
+      } catch {
+        return false;
+      }
+    };
+    const updateLink = () => {
+      const adLink = adInput.value.trim();
+      const msg = 'Pozdrav Dragane, našao sam ovaj auto: ' + adLink +
+        '. Želim Import Passport proveru (9,90 €).';
+      whatsapp.href = isValidLink(adLink)
+        ? 'https://wa.me/4915730916621?text=' + encodeURIComponent(msg)
+        : '#';
+    };
+    updateLink();
+    const resetPayment = () => { payment.hidden = true; updateLink(); };
+    // Old results are replaced on recalculation, so listeners only matter for the current result.
+    adInput.addEventListener('input', resetPayment, {signal: window.daniniQuickcheckAbort.signal});
+    whatsapp.addEventListener('click', event => {
+      const adLink = adInput.value.trim();
+      if (!isValidLink(adLink)) {
+        event.preventDefault();
+        adInput.setCustomValidity(t(
+          'Unesi link oglasa pre slanja na WhatsApp.',
+          'Bitte Inserat-Link vor dem WhatsApp-Versand eingeben.'
+        ));
+        adInput.reportValidity();
+        adInput.focus();
+        return;
+      }
+      adInput.setCustomValidity('');
+      updateLink();
+      // WhatsApp itself does not confirm that the message was sent.
+      payment.hidden = false;
+    });
+
     if(typeof window.daniniTrack==='function')window.daniniTrack('calculator_completed',String(Math.round(total)));
   });
 })();

@@ -41,6 +41,13 @@ jobs:
           const home=fs.readFileSync('dist/index.html','utf8');
           if(!home.includes('AUTO<span>DANINI</span>'))throw new Error('AutoDanini branding altered');
           if(!home.includes('noindex'))throw new Error('Staging indexing guard missing');
+          const advisor=fs.readFileSync('dist/ai-advisor.html','utf8');
+          if(!fs.existsSync('dist/autodanini-founder-portrait.jpg'))
+            throw new Error('Owner portrait from Drive missing in Hostinger bundle');
+          if(!advisor.includes('src="./autodanini-founder-portrait.jpg"'))
+            throw new Error('AI advisor does not reference the dedicated first-party portrait');
+          if(!advisor.includes('alt="Dragan Zdravković — poslovni portret"'))
+            throw new Error('Accessible founder portrait missing on AI advisor');
           const admin=fs.readFileSync('dist/admin.html','utf8');
           for(const required of ['data-page="admin"','admin-login','admin-search','admin-status-filter']){
             if(!admin.includes(required))throw new Error('Missing owner admin UI element: '+required);

@@ -182,7 +182,21 @@ function languageLinks(route,xml=false){
 }
 function seoPage(page,route){
   if(!PUBLIC_ROUTES.includes(route))return page;
-  return page.replace('</head>','<link rel="canonical" href="'+ORIGIN+route+'">'+languageLinks(route)+'</head>');
+  const meta=ROUTES[route]||{};
+  const image=(route==='/sr/'||route==='/de/')
+    ?'/images/AutoDanini_business_portrait_single_2026-10-22.jpg'
+    :(route.includes('pregled-auta')||route.includes('fahrzeugpruefung'))
+      ?'/images/DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23.jpg'
+      :'/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg';
+  const social='<meta property="og:type" content="website">'+
+    '<meta property="og:site_name" content="DANINI · Od oglasa do odluke">'+
+    '<meta property="og:locale" content="'+(meta.lang==='de'?'de_DE':'sr_RS')+'">'+
+    '<meta property="og:url" content="'+ORIGIN+route+'">'+
+    '<meta property="og:title" content="'+esc(meta.title||'DANINI · Od oglasa do odluke')+'">'+
+    '<meta property="og:description" content="'+esc(meta.description||'Provera automobila iz Nemačke, troškovi i kupovina bez žurbe.')+'">'+
+    '<meta property="og:image" content="'+ORIGIN+image+'">'+
+    '<meta name="twitter:card" content="summary_large_image">';
+  return page.replace('</head>','<link rel="canonical" href="'+ORIGIN+route+'">'+languageLinks(route)+social+'</head>');
 }
 const RETIRED_ROUTES=['opportunity-map','opportunity-check','location-launch','balkan-desk','dach-desk','operations-desk-demo'].flatMap(slug=>['/sr/'+slug,'/de/'+slug]);
 

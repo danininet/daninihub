@@ -57,6 +57,7 @@
       Object.entries(services).map(([value, label]) =>
         '<option value="' + value + '"' + (value === defaultService ? ' selected' : '') + '>' + label + '</option>').join(''),
       '</select>',
+      '<p class="danini-url-status" role="status" aria-live="polite"></p>',
       '<a class="danini-order-wa" href="#" target="_blank" rel="noopener noreferrer">',
       '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.8 8.4 8.5 8.5 0 0 1-3.8-1L3 21l2.1-5.2a8.4 8.4 0 1 1 15.9-4.3Z"/><path d="M9 9c.4 2.5 2 4 4.6 5.5l1.3-1.1 2.1 1-1 2c-3.5.7-8.2-3.9-8.5-7.3L9 9Z"/></svg>',
       '<span>' + t('1. Pošalji oglas Draganu na WhatsApp',
@@ -84,13 +85,32 @@
     const select = host.querySelector('select');
     const whatsapp = host.querySelector('.danini-order-wa');
     const payment = host.querySelector('.danini-payment');
+    const urlStatus = host.querySelector('.danini-url-status');
 
     function update() {
       payment.hidden = true;
       const raw = input.value.trim();
-      whatsapp.href = validLink(raw)
+      const valid = validLink(raw);
+      let recognized = false;
+      if (valid) {
+        const hostname = new URL(raw).hostname.toLowerCase();
+        recognized = hostname === 'mobile.de' || hostname.endsWith('.mobile.de') ||
+          hostname === 'autoscout24.de' || hostname.endsWith('.autoscout24.de') ||
+          hostname === 'autoscout24.com' || hostname.endsWith('.autoscout24.com');
+      }
+      urlStatus.classList.toggle('recognized',recognized);
+      urlStatus.textContent = !raw ? t('Zalepi link da aktiviraš WhatsApp dugme.',
+        'Inserat-Link einfügen, um WhatsApp zu aktivieren.')
+        : !valid ? t('Unesi ispravan URL oglasa.',
+          'Bitte eine gültige Inserat-URL eingeben.')
+        : recognized ? t('✓ Oglas prepoznat — spreman za slanje.',
+          '✓ Inserat erkannt — versandbereit.')
+        : t('✓ Link je ispravan — spreman za slanje.',
+          '✓ Link gültig — versandbereit.');
+      whatsapp.href = valid
         ? 'https://wa.me/' + PHONE + '?text=' + encodeURIComponent(message(raw, select.value))
         : '#';
+      whatsapp.setAttribute('aria-disabled', String(!valid));
     }
 
     input.addEventListener('input', () => {
@@ -132,6 +152,8 @@
       '.danini-order-wa:hover{background:#65e99b}',
       '.danini-order-pay{background:#cfe4ff;color:#003087!important;max-width:450px}',
       '.danini-order-note{font-size:13px;color:#c3d5ca;margin-top:12px}',
+      '.danini-url-status{font-size:14px;color:#a7b8b1;margin:12px 0 0}.danini-url-status.recognized{color:#8df6b0;font-weight:850}',
+      '.danini-order-wa[aria-disabled="true"]{opacity:.55;cursor:not-allowed;filter:grayscale(.5)}',
       '.danini-payment[hidden]{display:none!important}',
       '@media(max-width:600px){.danini-order-card{border-radius:12px;padding:18px}.danini-order-wa{font-size:15px}}'
     ].join('');

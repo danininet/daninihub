@@ -83,6 +83,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
     '.danini-calc-card{background:#192b27;border:1px solid #3b5750;border-radius:12px;padding:18px}',
     '.danini-calc-card strong{display:block;font-size:clamp(23px,3vw,34px);line-height:1.3;margin:8px 0;color:#fff}',
     '.danini-calc-diff{font-size:clamp(19px,3vw,27px);font-weight:850;color:#89f0ac;margin:15px 0}',
+    '.danini-calc-risk-alert{border:1px solid #f87171;border-left:5px solid #ff5555;background:#471f26;color:#ffe9e9;padding:17px;border-radius:10px;font-size:clamp(16px,2.6vw,21px);font-weight:800;line-height:1.52;margin:18px 0}',
     '.danini-calc-details{list-style:none;padding:0;margin:12px 0 22px}',
     '.danini-calc-details li{padding:8px 0;border-bottom:1px solid #385046}',
     '.danini-calc-whatsapp,.danini-calc-pay{display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;border-radius:9px;min-height:56px;text-decoration:none;padding:15px 12px;line-height:1.4}',
@@ -115,9 +116,12 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
   }
 
   let activeListeners = null;
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
+  const calculate = (event, live = false) => {
+    if (event) event.preventDefault();
+    if (live ? !form.checkValidity() : !form.reportValidity()) {
+      if (live) result.replaceChildren();
+      return;
+    }
 
     if (activeListeners) activeListeners.abort();
     activeListeners = new AbortController();
@@ -170,6 +174,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
       t('Moguća dodatna ukupna obaveza bez prihvaćenog porekla: ',
         'Mögliche Mehrkosten ohne anerkannten Ursprung: ') + eur(difference),
       'danini-calc-diff');
+    addText(card, 'p', t('Razlika u carini: Bez EUR.1 ili drugog prihvaćenog dokaza o poreklu plaćate ', 'Zoll-Unterschied: Ohne anerkannten EUR.1 oder anderen Präferenzursprungsnachweis entstehen ') + eur(difference) + t(' VIŠE na carini i PDV-u! Pitajte Dragana za 9,90 € da li prodavac može da obezbedi odgovarajući dokaz.', ' zusätzliche Kosten für Zoll und MwSt.! Prüfen Sie für 9,90 € mit Dragan, ob der Verkäufer einen geeigneten Nachweis bereitstellen kann.'), 'danini-calc-risk-alert');
     const list = document.createElement('ul');
     list.className = 'danini-calc-details';
     card.appendChild(list);
@@ -251,8 +256,17 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
       payment.hidden = false;
     });
     buildLink();
-    if (typeof window.daniniTrack === 'function') {
+    if (!live && typeof window.daniniTrack === 'function') {
       window.daniniTrack('calculator_completed', String(Math.round(selected.total)));
     }
-  });
+  };
+  form.addEventListener('submit', calculate);
+  let liveTimer;
+  const refresh = () => {
+    clearTimeout(liveTimer);
+    liveTimer = setTimeout(() => calculate(null, true), 140);
+  };
+  form.addEventListener('input', refresh);
+  form.addEventListener('change', refresh);
+  if (form.checkValidity()) calculate(null, true);
 })();

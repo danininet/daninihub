@@ -38,10 +38,14 @@ async function main() {
       const { html, response } = await request(route);
       assert.match(html, /danini-sales\.js/, route);
       assert.doesNotMatch(html, /Sistem i agenti<\/a>|System & Agents<\/a>/, route);
+      assert.doesNotMatch(html,/AI_Influenserka|AI Influencerka|[gG]enerated.person/,route);
+      assert.match(html,/danini-live-bar/,route);
       if (route === '/' || route === '/sr/' || route === '/de/') {
         assert.match(html, /danini-order-slot/, route);
         assert.match(html, /danini-order-home/, route);
-        assert.match(html, /danini-auto-uvoz\.webp/, route);
+        assert.match(html, /AutoDanini_business_portrait_single_2026-10-22\.jpg/, route);
+        assert.match(html, /AutoDanini_business_phone_single_2026-10-22\.jpg/, route);
+        for(const image of ['DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg','DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg'])assert.ok(html.includes(image),image);
         assert.match(html, /IMPORT PASSPORT/, route);
         assert.match(html, /9,90 €/, route);
         assert.match(html, /79 €/, route);
@@ -66,7 +70,7 @@ async function main() {
         assert.match(html, /danini-order\.js/, route);
       }
       if (route === '/sr/pregled-auta') {
-        assert.match(html, /danini-pregled-auta\.webp/);
+        assert.match(html, /DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23\.jpg/);
         assert.doesNotMatch(html, /danini-auto-uvoz\.webp/);
       }
       if (route === '/sr/uporedi-oglase') {
@@ -122,6 +126,21 @@ async function main() {
     assert.match(calc, /Pošalji ovu računicu i oglas Draganu/);
     assert.match(calc, /danini-calc-payment/);
 
+    for(const name of [
+      'AutoDanini_business_portrait_single_2026-10-22.jpg',
+      'AutoDanini_business_phone_single_2026-10-22.jpg',
+      'DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg',
+      'DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg',
+      'DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg',
+      'DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23.jpg'
+    ]){
+      const response=await fetch(base+'/images/'+name);
+      assert.equal(response.status,200,name);
+      assert.match(response.headers.get('content-type'),/image\/jpeg/,name);
+    }
+    assert.match(calc,/form\.addEventListener\('input', refresh\)/);
+    assert.match(calc,/danini-calc-risk-alert/);
+    assert.match(order,/Oglas prepoznat/);
     const sitemap = await (await fetch(base+'/sitemap.xml')).text();
     assert.match(sitemap, /\/sr\/upit/);
     assert.match(sitemap, /xmlns:xhtml=/);

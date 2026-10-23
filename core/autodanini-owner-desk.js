@@ -45,6 +45,12 @@ function makeOwnerDesk({store,customerAuth,env=process.env,clock=()=>Date.now()}
         UNIQUE KEY idx_ad_submission_owner_case (customer_id,source_case_id),
         INDEX idx_ad_inbox_created (created_at,id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+      await db.execute(`CREATE TABLE IF NOT EXISTS ad_buyer_replies (
+        id CHAR(32) PRIMARY KEY, request_id CHAR(40) NOT NULL,
+        author_id CHAR(32) NOT NULL, message TEXT NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_ad_reply_request (request_id,created_at,id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
       await db.execute(`CREATE TABLE IF NOT EXISTS ad_admin_audit (
         id CHAR(32) PRIMARY KEY,request_id CHAR(40) NOT NULL,operator_id CHAR(32) NOT NULL,
         status_from VARCHAR(32) NOT NULL,status_to VARCHAR(32) NOT NULL,
@@ -191,7 +197,17 @@ function makeOwnerDesk({store,customerAuth,env=process.env,clock=()=>Date.now()}
         [receipt,req.adBuyer.id,id]);
       if(!rows.length)return res.json({submitted:false});
       const entry=rows[0];
-      return res.json({submitted:true,submissionId:entry.id,status:entry.status,createdAt:entry.createdAt,updatedAt:entry.updatedAt});
+      // Only this buyer may see messages written to their submitted request.
+      const [messages]=await db.execute(
+        `SELECT r.id,r.message,r.created_at AS createdAt
+         FROM ad_buyer_replies r
+         JOIN ad_submitted_requests s ON s.id=r.request_id
+         WHERE s.id=? AND s.customer_id=? AND s.source_case_id=?
+         ORDER BY r.created_at DESC,r.id DESC LIMIT 20`,
+        [receipt,req.adBuyer.id,id]
+      );
+      return res.json({submitted:true,submissionId:entry.id,status:entry.status,createdAt:entry.createdAt,updatedAt:entry.updatedAt,
+        replies:messages.reverse()});
     }catch{return res.status(503).json({error:'SUBMISSION_UNAVAILABLE'})}
   });
 
@@ -218,6 +234,38 @@ function makeOwnerDesk({store,customerAuth,env=process.env,clock=()=>Date.now()}
       return res.json({requests,nextToken:rows.length>30&&offset+30<=3000?String(offset+30):null});
     }catch{return res.status(503).json({error:'INBOX_UNAVAILABLE'})}
   });
+  // Private owner-to-buyer replies: visible only in this buyer's account.
+  // This never sends email, WhatsApp, a payment request or an invoice.
+  router.get('/admin/requests/:id/replies',owner,async(req,res)=>{
+    const id=req.params.id;
+    if(!SUBID.test(id))return res.status(404).json({error:'REQUEST_NOT_FOUND'});
+    try{
+      const db=await pool();
+      const [exists]=await db.execute('SELECT id FROM ad_submitted_requests WHERE id=? LIMIT 1',[id]);
+      if(!exists.length)return res.status(404).json({error:'REQUEST_NOT_FOUND'});
+      const [rows]=await db.execute(
+        `SELECT id,message,created_at AS createdAt FROM ad_buyer_replies
+         WHERE request_id=? ORDER BY created_at DESC,id DESC LIMIT 20`,[id]);
+      return res.json({replies:rows.reverse()});
+    }catch{return res.status(503).json({error:'REPLIES_UNAVAILABLE'})}
+  });
+  router.post('/admin/requests/:id/replies',express.json({limit:'4kb'}),submissionsEnabled,csrf,owner,async(req,res)=>{
+    const id=req.params.id,message=typeof req.body?.message==='string'?req.body.message.trim():'';
+    if(!SUBID.test(id)||message.length<2||message.length>2000||
+       req.body?.confirmSend!==true)return res.status(400).json({error:'INVALID_REPLY'});
+    try{
+      const db=await pool();
+      const [exists]=await db.execute('SELECT id FROM ad_submitted_requests WHERE id=? LIMIT 1',[id]);
+      if(!exists.length)return res.status(404).json({error:'REQUEST_NOT_FOUND'});
+      const replyId=hexId();
+      await db.execute(
+        'INSERT INTO ad_buyer_replies (id,request_id,author_id,message) VALUES (?,?,?,?)',
+        [replyId,id,req.adOwner.id,message]
+      );
+      return res.status(201).json({sentToBuyerAccount:true,replyId,emailSent:false,paymentCaptured:false});
+    }catch{return res.status(503).json({error:'REPLY_NOT_SAVED'})}
+  });
+
   router.put('/admin/requests/:id',express.json({limit:'7kb'}),csrf,owner,async(req,res)=>{
     const id=req.params.id,input=req.body||{};
     if(!SUBID.test(id)||!STATUSES.has(input.status)||!STATUSES.has(input.expectedStatus)||

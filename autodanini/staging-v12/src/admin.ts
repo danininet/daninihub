@@ -128,7 +128,72 @@ function show(items:AdminRequest[]):void {
     notify('Promena nije sačuvana. Osvežite i proverite dozvole.','Änderung nicht gespeichert. Bitte Berechtigung prüfen und neu laden.');
    }finally{save.disabled=false;}
   });
-  article.append(top,meta,contact,note,form);
+  const replySection=make('section','admin-edit');
+  const replyHeading=make('h4','',german()?'Antwort im Kundenkonto':'Odgovor kupcu u njegovom nalogu');
+  const replyInfo=make('p','admin-footnote',german()
+   ?'Diese Nachricht wird im privaten Kundenkonto angezeigt; keine E-Mail, kein Vertrag und keine Zahlung.'
+   :'Ova poruka biće vidljiva samo u privatnom nalogu kupca. Ne šalje se mejl, ugovor niti zahtev za uplatu.');
+  const replyText=make('textarea','admin-note') as HTMLTextAreaElement;
+  replyText.rows=4;replyText.maxLength=2000;
+  replyText.placeholder=german()?'Antwort an den Kunden (bis 2000 Zeichen)':'Poruka kupcu (do 2.000 znakova)';
+  replyText.setAttribute('aria-label',german()?'Antwort an den Käufer':'Odgovor kupcu');
+  replyText.style.cssText='display:block;width:100%;padding:13px;margin:12px 0;background:#fbfcfa;border:1px solid #c9d0cb;color:#21313a;font:inherit;';
+  const publish=make('button','btn gold',german()?'Antwort im Konto veröffentlichen':'Objavi odgovor u nalogu kupca') as HTMLButtonElement;
+  publish.type='button';
+  const historyButton=make('button','btn primary',german()?'Nachrichten anzeigen':'Prikaži prethodne odgovore') as HTMLButtonElement;
+  historyButton.type='button';
+  const history=make('div','admin-description');
+  history.setAttribute('aria-live','polite');
+  history.style.marginTop='14px';
+  const replyState=make('p','admin-footnote');
+  replyState.setAttribute('role','status');
+  const showHistory=async ():Promise<void>=>{
+   history.replaceChildren();
+   const result=await api.get('/api/admin/requests/'+encodeURIComponent(item.id)+'/replies');
+   const replies=result.data?.replies;
+   if(!Array.isArray(replies))throw new Error('Invalid reply history');
+   if(!replies.length)history.append(make('p','',german()?'Noch keine Antworten.':'Još nema odgovora.'));
+   for(const reply of replies){
+    if(typeof reply?.message!=='string')continue;
+    const line=make('p','admin-description',reply.message);
+    line.style.cssText='border-left:3px solid #c8a66b;padding:10px 13px;background:#f4f5f1;';
+    history.append(line);
+   }
+  };
+  historyButton.addEventListener('click',async()=>{
+   historyButton.disabled=true;
+   try{await showHistory();}
+   catch{replyState.textContent=german()?'Nachrichten nicht verfügbar.':'Istorija poruka nije dostupna.';}
+   finally{historyButton.disabled=false;}
+  });
+  publish.addEventListener('click',async()=>{
+   const message=replyText.value.trim();
+   if(message.length<2||message.length>2000){
+    replyState.textContent=german()?'Bitte 2–2000 Zeichen eingeben.':'Unesite poruku od 2 do 2.000 znakova.';return;
+   }
+   if(!window.confirm(german()?
+     'Diese Antwort jetzt im privaten Konto des Käufers veröffentlichen? Es wird keine E-Mail versendet.':
+     'Objaviti ovaj odgovor u privatnom nalogu kupca? Mejl se neće poslati.'))return;
+   publish.disabled=true;
+   replyState.textContent=german()?'Antwort wird gespeichert...':'Čuvam odgovor kupcu...';
+   try{
+    const result=await api.post('/api/admin/requests/'+encodeURIComponent(item.id)+'/replies',
+     {message,confirmSend:true});
+    if(result.data?.sentToBuyerAccount!==true)throw new Error('Reply not confirmed');
+    replyText.value='';
+    replyState.textContent=german()?'Antwort im Kundenkonto gespeichert. Keine E-Mail versendet.':
+     'Odgovor je sačuvan u nalogu kupca. Mejl nije poslat.';
+    await showHistory().catch(()=>{});
+   }catch{
+    replyState.textContent=german()?'Antwort nicht gespeichert. Vor Wiederholung Verlauf prüfen.':
+     'Čuvanje nije potvrđeno. Proverite istoriju pre ponovnog pokušaja.';
+   }finally{publish.disabled=false;}
+  });
+  if(import.meta.env.VITE_AUTODANINI_SUBMISSIONS_ENABLED==='true') {
+   const buttons=make('div','admin-buttons');buttons.append(publish,historyButton);
+   replySection.append(replyHeading,replyInfo,replyText,buttons,replyState,history);
+  }
+  article.append(top,meta,contact,note,form,replySection);
   requests.append(article);
  }
 }

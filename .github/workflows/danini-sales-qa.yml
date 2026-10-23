@@ -1,0 +1,25 @@
+name: DANINI sales funnel QA
+on:
+  pull_request:
+    paths:
+      - 'public/danini-*.js'
+      - 'site-experience.js'
+      - 'server-public-runtime.js'
+      - 'scripts/test-site-experience.js'
+      - 'package*.json'
+      - '.github/workflows/danini-sales-qa.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run check:syntax
+      - run: npm run test:regression
+      - run: npm run build

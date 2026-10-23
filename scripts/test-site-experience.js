@@ -22,8 +22,9 @@ async function main(){
       }
       if(route==='/sr/pregled-auta'){assert.match(html,/danini-pregled-auta\.webp/);assert.doesNotMatch(html,/danini-auto-uvoz\.webp/)}
       if(route==='/sr/uporedi-oglase'){assert.match(html,/id="buyer-plan"/);assert.match(html,/buyer-plan-client/)}
-      if(route==='/sr/upit')assert.match(html,/id="service-form"/);
-      if(route==='/sr/kalkulator'){assert.match(html,/\/api\/importos\/event/);assert.match(html,/calculator_completed/);assert.match(html,/passport_checkout_started/);assert.match(html,/id="quickcheck"/);assert.match(html,/Otključaj puni Import Passport/);assert.match(html,/Prihvatam/);assert.match(html,/termsAccepted:true/);assert.match(html,/\/api\/importos\/checkout/);assert.match(html,/\/api\/importos\/checkout\/paypal/);}
+      if(route==='/sr/upit'){assert.match(html,/id="service-form"/);assert.match(html,/danini-request\.js/);assert.match(html,/paypal\.me\/dragangaganet\/9\.90EUR/);}
+      if(route==='/sr/kalkulator'){assert.match(html,/id="quickcheck"/);assert.match(html,/danini-quickcheck\.js/);assert.match(html,/danini-sales\.js/);}
+      
       if(route.includes('?quote=')){
         assert.match(html,/id="quote-checkout"/);
         assert.match(html,/Kupovina auta iz Nemačke uz jasnu računicu/);
@@ -34,6 +35,7 @@ async function main(){
       if(route==='/de/wissen/vin-dokumente-checkliste')assert.match(html,/VIN vor Anreise/);
     }
     for(const route of Object.keys(routes))assert.ok(ROUTES[route],route);
+    for(const asset of ['/danini-sales.js','/danini-quickcheck.js','/danini-request.js']){const res=await fetch(base+asset);assert.equal(res.status,200,asset);assert.match(res.headers.get('content-type'),/javascript/,asset)}
     const map=await (await fetch(base+'/sitemap.xml')).text();
     assert.match(map,/\/sr\/upit/);
     for(const path of ['/danini-auto-uvoz.webp','/danini-pregled-auta.webp']){const image=await fetch(base+path);assert.equal(image.status,200);assert.match(image.headers.get('content-type'),/image\/webp/)}

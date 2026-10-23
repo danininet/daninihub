@@ -55,7 +55,7 @@ class FakeSql{
     }
     if(sql.startsWith('INSERT IGNORE INTO ad_submitted_requests')){
       const x=this.saved.get(a[1]);if(x?.customer_id===a[2]&&!this.submissions.has(a[0]))
-        this.submissions.set(a[0],{...x,id:a[0],status:'new',quote_eur:null,admin_note:'',
+        this.submissions.set(a[0],{...x,id:a[0],source_case_id:a[1],status:'new',quote_eur:null,admin_note:'',
           created_at:new Date(),updated_at:new Date()});
       return [{affectedRows:1}];
     }

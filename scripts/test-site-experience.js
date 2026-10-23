@@ -48,8 +48,8 @@ async function main() {
       if (route === '/' || route === '/sr/' || route === '/de/') {
         assert.match(html, /danini-order-slot/, route);
         assert.match(html, /danini-order-home/, route);
-        assert.match(html, /AutoDanini_business_portrait_single_2026-10-22\.jpg/, route);
-        assert.match(html, /AutoDanini_business_phone_single_2026-10-22\.jpg/, route);
+        assert.match(html, /DANINI_Dragan_Portret_CLEAN_1200x1200\.jpg/, route);
+        assert.match(html, /DANINI_Dragan_Telefon_CLEAN_1200x1200\.jpg/, route);
         for(const image of ['DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg','DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg'])assert.ok(html.includes(image),image);
         assert.match(html, /IMPORT PASSPORT/, route);
         assert.match(html, /9,90 €/, route);
@@ -75,7 +75,7 @@ async function main() {
         assert.match(html, /danini-order\.js/, route);
       }
       if (route === '/sr/pregled-auta') {
-        assert.match(html, /DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23\.jpg/);
+        assert.match(html, /DANINI_Dragan_Pregled_Auta_CLEAN_1200x1200\.jpg/);
         assert.doesNotMatch(html, /danini-auto-uvoz\.webp/);
       }
       if (route === '/sr/uporedi-oglase') {

@@ -228,7 +228,7 @@ function mountPublicRuntime(app){
     const page=experience.routes[req.path]?experience.render(experience.routes[req.path].lang,experience.routes[req.path].key,shell):req.path.includes('/wissen/')||req.path.includes('/vodic/')?knowledgePage(req.path):legalPage(req.path);
     if(!page)return res.status(404).end();
     res.set('Cache-Control','no-store');
-    if(req.path.endsWith('/moj-dosije')||req.path.endsWith('/mein-dossier'))res.set({'X-Robots-Tag':'noindex,nofollow','Referrer-Policy':'no-referrer'});
+    if(req.path.endsWith('/moj-dosije')||req.path.endsWith('/mein-dossier')||req.path.endsWith('/sistem')||req.path.endsWith('/system'))res.set({'X-Robots-Tag':'noindex,nofollow','Referrer-Policy':'no-referrer'});
     return res.type('html').send(page);
   });
 }

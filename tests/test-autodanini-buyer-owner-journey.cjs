@@ -88,6 +88,10 @@ class Sql {
      quote_eur:null,admin_note:'',created_at:new Date(),updated_at:new Date()});
    return [{affectedRows:1}];
   }
+  if(sql.startsWith('SELECT id FROM ad_submitted_requests WHERE customer_id=? AND source_case_id=? LIMIT 1')){
+   const x=[...this.submissions.values()].find(z=>z.customer_id===a[0]&&z.source_case_id===a[1]);
+   return [x?[{id:x.id}]:[]];
+  }
   if(sql.includes('SELECT id,status FROM ad_submitted_requests WHERE id=')){
    const x=this.submissions.get(a[0]);
    return [x?.customer_id===a[1]?[{id:x.id,status:x.status}]:[]];
@@ -200,6 +204,9 @@ test('full HTTP journey keeps drafts private and replies buyer-scoped',async t=>
   body:{caseId,submitConsent:true}});
  assert.equal(submitted.status,200);
  assert.equal(sql.submissions.size,1);
+ const blockedDelete=await call('/api/my-cases/'+caseId,{method:'DELETE',cookie:buyerCookie});
+ assert.equal(blockedDelete.status,409,'submitted draft must not be deleted while replies depend on it');
+ assert.equal(sql.cases.has(caseId),true);
  assert.equal((await call('/api/admin/elevate',{method:'POST',cookie:unrelatedCookie,
   body:{code:'287082'}})).status,403);
  const elevated=await call('/api/admin/elevate',{method:'POST',cookie:ownerCookie,

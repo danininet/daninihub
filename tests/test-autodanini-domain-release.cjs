@@ -67,6 +67,16 @@ test('only auto.daninihub.com serves the new support-enabled AutoDanini UI; old 
  assert.equal(support.status,200);
  assert.match(support.body,/autodanini-support-form/);
  assert.match(support.body,/WhatsApp/);
+ // Regression: AI adviser must use the approved standalone portrait at 1x.
+ // A 3x3 grid with CSS background-size:300% shows only mouth/chin.
+ const advisor=await request(port,'auto.daninihub.com','/ai-advisor.html');
+ assert.equal(advisor.status,200,'AI adviser must exist on actual Hostinger domain');
+ assert.match(advisor.body,/<img class="ai-owner-avatar" src="\.\/dragan-business-portrait\.jpg"/);
+ assert.doesNotMatch(advisor.body,/poslovni portret iz postojećeg 3×3 materijala/);
+ const avatarCss=fs.readFileSync(path.join(root,'autodanini','staging-v12','src','styles.css'),'utf8')
+   .split('\n').find(line=>line.startsWith('.ai-owner-avatar{'))||'';
+ assert.match(avatarCss,/object-fit:contain/,'entire founder portrait must fit, not crop');
+ assert.doesNotMatch(avatarCss,/background-size:300%/,'do not zoom founder face');
  for(const forbidden of ['/dragan-original-portrait.jpg','/dragan-business-grid-ai.png']){
   const response=await request(port,'auto.daninihub.com',forbidden);
   assert.equal(response.status,404,'Owner source/collage must not be public: '+forbidden);

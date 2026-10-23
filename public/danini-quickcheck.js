@@ -116,6 +116,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
   }
 
   let activeListeners = null;
+  // Preserve PayPal availability after WhatsApp, input blur and live recalculation.
+  let paymentUnlocked = false;
   const calculate = (event, live = false) => {
     if (event) event.preventDefault();
     if (live ? !form.checkValidity() : !form.reportValidity()) {
@@ -203,7 +205,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
     card.appendChild(whatsapp);
     const payment = document.createElement('div');
     payment.className = 'danini-calc-payment';
-    payment.hidden = true;
+    payment.hidden = !paymentUnlocked;
     addText(payment, 'p', t(
       'Nakon slanja oglasa na WhatsApp, uplatu za Import Passport (9,90 €) izvršite ovde:',
       'Nach dem Versand des Inserats per WhatsApp können Sie Import Passport (9,90 €) hier bezahlen:'
@@ -238,7 +240,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
     }
     function reset() {
       input.setCustomValidity('');
-      payment.hidden = true;
+      payment.hidden = !paymentUnlocked;
       buildLink();
     }
     input.addEventListener('input', reset, { signal: activeListeners.signal });
@@ -252,6 +254,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
         return;
       }
       buildLink();
+      // Cancel any pending blur/change recalculation before leaving for WhatsApp.
+      clearTimeout(liveTimer);
+      paymentUnlocked = true;
       // Initiates WhatsApp; message delivery is confirmed only by WhatsApp.
       payment.hidden = false;
     });

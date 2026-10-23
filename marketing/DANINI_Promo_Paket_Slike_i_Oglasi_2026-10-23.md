@@ -9,7 +9,7 @@ Vizuelno pravilo: samo Draganove poslovne fotografije i odabrane slike automobil
 
 **Naslov:** Provera auta u Nemačkoj pre kupovine | Poziv prodavcu 9,90 €
 **Cena:** 9,90 €
-**Prilog 1 (prva fotografija):** public/images/AutoDanini_business_phone_single_2026-10-22.jpg
+**Prilog 1 (prva fotografija):** public/images/DANINI_Dragan_Telefon_CLEAN_1200x1200.jpg
 **Prilog 2 (druga fotografija):** public/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg
 
 🚗 **NAŠLI STE AUTO U NEMAČKOJ? Proverite osnovne informacije pre kapare i puta.**
@@ -32,7 +32,7 @@ Ja sam **Dragan Zdravković**, DANINI · Od oglasa do odluke. Sa bazom u Duisbur
 
 ## 2. Facebook — grupa za uvoz automobila i dijasporu
 
-**Prilog:** public/images/AutoDanini_business_portrait_single_2026-10-22.jpg (Draganov portret).
+**Prilog:** public/images/DANINI_Dragan_Portret_CLEAN_1200x1200.jpg (Draganov portret).
 
 🚗🇩🇪 **KUPUJETE AUTO U NEMAČKOJ?**
 
@@ -54,7 +54,7 @@ Ne tvrdim da telefonski razgovor otkriva sve kvarove ili garantuje carinu 0%. Ci
 
 ## 3. B2B — Viber/WhatsApp vlasnicima auto-placeva
 
-**Prilog:** public/images/AutoDanini_business_phone_single_2026-10-22.jpg (Dragan sa telefonom).
+**Prilog:** public/images/DANINI_Dragan_Telefon_CLEAN_1200x1200.jpg (Dragan sa telefonom).
 
 Poštovani,
 
@@ -78,9 +78,9 @@ https://daninihub.com · info@daninihub.com
 
 | Namena | Tačan naziv datoteke u projektu |
 |---|---|
-| Hero i predstavljanje Dragana | public/images/AutoDanini_business_portrait_single_2026-10-22.jpg |
-| Import Passport | public/images/AutoDanini_business_phone_single_2026-10-22.jpg |
-| Pregled auta (jedan izrezani kadar 3×3 mreže) | public/images/DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23.jpg |
+| Hero i predstavljanje Dragana | public/images/DANINI_Dragan_Portret_CLEAN_1200x1200.jpg |
+| Import Passport | public/images/DANINI_Dragan_Telefon_CLEAN_1200x1200.jpg |
+| Pregled auta (jedan izrezani kadar 3×3 mreže) | public/images/DANINI_Dragan_Pregled_Auta_CLEAN_1200x1200.jpg |
 | Kartica 01 — pregled | public/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg |
 | Kartica 02 — uvoz | public/images/DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg |
 | Kartica 03 — dovoz | public/images/DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg |

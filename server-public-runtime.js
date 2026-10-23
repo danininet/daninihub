@@ -184,9 +184,9 @@ function seoPage(page,route){
   if(!PUBLIC_ROUTES.includes(route))return page;
   const meta=ROUTES[route]||{};
   const image=(route==='/sr/'||route==='/de/')
-    ?'/images/AutoDanini_business_portrait_single_2026-10-22.jpg'
+    ?'/images/DANINI_Dragan_Portret_CLEAN_1200x1200.jpg'
     :(route.includes('pregled-auta')||route.includes('fahrzeugpruefung'))
-      ?'/images/DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23.jpg'
+      ?'/images/DANINI_Dragan_Pregled_Auta_CLEAN_1200x1200.jpg'
       :'/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg';
   const social='<meta property="og:type" content="website">'+
     '<meta property="og:site_name" content="DANINI · Od oglasa do odluke">'+

@@ -4,6 +4,12 @@ const fs=require('node:fs');
 const os=require('node:os');
 const path=require('node:path');
 const express=require('express');
+// Regression guard: WhatsApp-first payment stays unlocked after a live recalculation.
+const calcClient=fs.readFileSync(path.join(__dirname,'..','public','danini-quickcheck.js'),'utf8');
+assert.match(calcClient,/let paymentUnlocked = false/);
+assert.match(calcClient,/payment\.hidden = !paymentUnlocked/);
+assert.match(calcClient,/clearTimeout\(liveTimer\);\s*paymentUnlocked = true/);
+assert.match(calcClient,/paypal\.me\/dragangaganet\/9\.90EUR/);
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'danini-funnel-'));
 process.env.DANINI_IMPORTOS_STORAGE_FILE=path.join(tmp,'records.json');
 process.env.DANINI_ADMIN_SECRET='test-only-owner-secret';

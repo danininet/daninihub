@@ -29,9 +29,9 @@ for(const directory of ['dist',path.join('daninihub-front','dist')]){
   const html=fs.readFileSync(path.join(output,'index.html'),'utf8');
   if(!html.includes('href="/sr/upit"')||
     !fs.existsSync(path.join(output,'sr','upit','index.html'))||
-    !fs.existsSync(path.join(output,'images','AutoDanini_business_portrait_single_2026-10-22.jpg'))||
-    !fs.existsSync(path.join(output,'images','AutoDanini_business_phone_single_2026-10-22.jpg'))||
-    !fs.existsSync(path.join(output,'images','DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23.jpg'))||
+    !fs.existsSync(path.join(output,'images','DANINI_Dragan_Portret_CLEAN_1200x1200.jpg'))||
+    !fs.existsSync(path.join(output,'images','DANINI_Dragan_Telefon_CLEAN_1200x1200.jpg'))||
+    !fs.existsSync(path.join(output,'images','DANINI_Dragan_Pregled_Auta_CLEAN_1200x1200.jpg'))||
     !fs.existsSync(path.join(output,'images','DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg'))||
     !fs.existsSync(path.join(output,'images','DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg'))||
     !fs.existsSync(path.join(output,'images','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg'))){

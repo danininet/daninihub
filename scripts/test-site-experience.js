@@ -40,6 +40,11 @@ async function main() {
       assert.doesNotMatch(html, /Sistem i agenti<\/a>|System & Agents<\/a>/, route);
       assert.doesNotMatch(html,/AI_Influenserka|AI Influencerka|[gG]enerated.person/,route);
       assert.match(html,/danini-live-bar/,route);
+      // The three founder shots are square; service-card car photos remain widescreen.
+      assert.match(html,/\.hero-visual\.danini-portrait img\{width:100%;height:auto;aspect-ratio:1\/1/);
+      assert.match(html,/\.danini-trust-photo img\{display:block;width:100%;height:auto;aspect-ratio:1\/1/);
+      assert.match(html,/\.danini-passport-photo\{display:block;width:100%;height:auto;aspect-ratio:1\/1/);
+      assert.match(html,/\.feature img\{height:auto;aspect-ratio:16\/9/);
       if (route === '/' || route === '/sr/' || route === '/de/') {
         assert.match(html, /danini-order-slot/, route);
         assert.match(html, /danini-order-home/, route);
@@ -127,12 +132,12 @@ async function main() {
     assert.match(calc, /danini-calc-payment/);
 
     for(const name of [
-      'AutoDanini_business_portrait_single_2026-10-22.jpg',
-      'AutoDanini_business_phone_single_2026-10-22.jpg',
+      'DANINI_Dragan_Portret_CLEAN_1200x1200.jpg',
+      'DANINI_Dragan_Telefon_CLEAN_1200x1200.jpg',
       'DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg',
       'DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg',
       'DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg',
-      'DANINI_Dragan_Pregled_Auta_Single_Crop_2026-10-23.jpg'
+      'DANINI_Dragan_Pregled_Auta_CLEAN_1200x1200.jpg'
     ]){
       const response=await fetch(base+'/images/'+name);
       assert.equal(response.status,200,name);
@@ -140,6 +145,10 @@ async function main() {
     }
     assert.match(calc,/form\.addEventListener\('input', refresh\)/);
     assert.match(calc,/danini-calc-risk-alert/);
+    assert.match(calc,/let paymentUnlocked = false/);
+    assert.match(calc,/payment\.hidden = !paymentUnlocked/);
+    assert.match(calc,/clearTimeout\(liveTimer\);\s*paymentUnlocked = true/);
+    assert.match(calc,/paypal\.me\/dragangaganet\/9\.90EUR/);
     assert.match(order,/Oglas prepoznat/);
     const sitemap = await (await fetch(base+'/sitemap.xml')).text();
     assert.match(sitemap, /\/sr\/upit/);

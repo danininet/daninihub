@@ -112,7 +112,7 @@
 .ai-founder-section{background:#f1eee7;padding:72px 0;border-bottom:1px solid #dedbd4}
 .ai-founder-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
 .ai-owner{display:flex;gap:23px;align-items:center}
-.ai-owner-avatar{width:164px;height:164px;flex:none;border-radius:50%;border:6px solid #bc975f;background-image:url('https://raw.githubusercontent.com/danininet/daninihub/assets/autodanini-business-20261020/public/branding/autodanini-business-grid.png');background-size:300% 300%;background-position:50% 50%;background-repeat:no-repeat;box-shadow:0 16px 38px #19262b33}
+.ai-owner-avatar{width:180px;height:180px;flex:none;display:block;object-fit:contain;object-position:center;border-radius:18px;border:6px solid #bc975f;background-color:#f4f1e9;box-shadow:0 16px 38px #19262b33}
 .ai-owner h2{font-size:26px;margin-bottom:10px}.ai-owner p,.ai-real p{color:#657175;font-size:14px}
 .ai-owner a,.ai-real a,.ai-warn a{color:#91682e;text-decoration:underline;font-weight:700;font-size:13px}
 .ai-real h2{font-size:30px}

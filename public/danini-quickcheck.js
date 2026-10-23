@@ -1,8 +1,24 @@
 'use strict';
 
+// Reused by browser and npm tests; figures are illustrative EUR-only estimates.
+// Transport is assumed not to be included in the purchase/customs value.
+function daniniEstimate(price, transport, exportCost, certificate, dutyRate) {
+  const numbers = [price, transport, exportCost, certificate, dutyRate];
+  if (numbers.some(value => !Number.isFinite(value) || value < 0)) {
+    throw new Error('All amounts and the duty rate must be non-negative finite numbers');
+  }
+  const customsBase = price + transport;
+  const duty = customsBase * dutyRate;
+  const vat = (customsBase + duty) * 0.20;
+  return { customsBase, duty, vat, total: customsBase + duty + vat + exportCost + certificate };
+}
+
+if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEstimate };
+
 // DANINI QuickCheck: transparent EUR-only estimates.
 // This is NOT a customs assessment. Shipment costs are counted only once.
 (() => {
+  if (typeof document === 'undefined') return;
   const form = document.getElementById('quickcheck');
   const result = document.getElementById('quick-result');
   if (!form || !result) return;
@@ -86,13 +102,7 @@
       return false;
     }
   };
-  function estimate(price, transport, exportCost, certificate, dutyRate) {
-    // Assumption: purchase price excludes freight; freight is part of customs value.
-    const customsBase = price + transport;
-    const duty = customsBase * dutyRate;
-    const vat = (customsBase + duty) * 0.20;
-    return { customsBase, duty, vat, total: customsBase + duty + vat + exportCost + certificate };
-  }
+  const estimate = daniniEstimate;
   function addText(parent, type, value, className) {
     const element = document.createElement(type);
     if (className) element.className = className;

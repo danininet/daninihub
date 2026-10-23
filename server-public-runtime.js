@@ -164,7 +164,7 @@ function ownerPage(){
 }
 
 const ORIGIN='https://daninihub.com';
-const PUBLIC_ROUTES=Object.keys(ROUTES).filter(route=>!route.endsWith('/moj-dosije')&&!route.endsWith('/mein-dossier'));
+const PUBLIC_ROUTES=Object.keys(ROUTES).filter(route=>!route.endsWith('/moj-dosije')&&!route.endsWith('/mein-dossier')&&!route.endsWith('/sistem')&&!route.endsWith('/system'));
 const PAGE_PAIRS=[['/sr/','/de/'],['/sr/impressum','/de/impressum'],['/sr/privatnost','/de/datenschutz'],['/sr/kolacici','/de/cookies'],['/sr/uslovi','/de/bedingungen']];
 for(const [route,meta] of Object.entries(experience.routes)){
   if(meta.lang==='sr'&&PUBLIC_ROUTES.includes(route)){
@@ -205,7 +205,7 @@ function mountPublicRuntime(app){
   });
   app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
 
-  app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(experience.render('sr','start',shell))});
+  app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(seoPage(experience.render('sr','start',shell),'/sr/'))});
   app.get(['/sr','/sr/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(experience.render('sr','start',shell))});
   app.get(['/de','/de/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(experience.render('de','start',shell))});
   app.get('/en',(req,res)=>res.redirect(308,'/sr/'));

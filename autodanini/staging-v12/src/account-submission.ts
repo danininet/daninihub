@@ -54,6 +54,12 @@ export function attachCaseSubmission(
    if(response.data?.submitted===true) {
     const code=String(response.data.status||'new');
     renderReplies(response.data.replies);
+    const remove=actions.querySelector<HTMLButtonElement>('.account-remove');
+    if(remove){
+     remove.disabled=true;
+     remove.title=german()?'Eingereichte Anfragen nur über den Support bearbeiten/löschen.':
+      'Poslat zahtev nije moguće obrisati kao skicu; kontaktirajte podršku.';
+    }
     setStatus('Zahtev je predat. Status: '+code,'Anfrage eingereicht. Status: '+code);
     button.disabled=true;
     button.textContent=german()?'Bereits eingereicht':'Već poslato';

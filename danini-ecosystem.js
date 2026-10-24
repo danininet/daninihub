@@ -1,6 +1,7 @@
 'use strict';
 /* DANINI commercial ecosystem: EUR-only illustrative pricing, no insurance sales or guaranteed customs outcomes. */
 const P='/images/';
+const storefront=require('./danini-business-store');
 const IMG={
   driving:'DANINI_Kartica_04_Zoll_Tablice_Dovoz_Na_Tockovima.jpg',
   service:'DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg',
@@ -54,7 +55,7 @@ function home(lang){
  return section(header('DANINI · 04 / 05 / 06',sr?'Transport · OE delovi · B2B':'Überführung · OE-Teile · B2B',sr?'Tri dodatna pravca usluge, sa zasebnim stranama i uslovima.':'Drei zusätzliche Leistungen mit eigenen Seiten und Leistungsgrenzen.')+
  '<div class="grid">'+cards.map(c=>'<a class="card feature" href="'+c.link+'">'+media(c.file,c.title)+'<span class="eyebrow">'+c.num+'</span><h3>'+c.title+'</h3><p>'+c.lead+'</p><strong>'+(sr?'Detalji':'Details')+' →</strong></a>').join('')+'</div>')+
  section(header('DANINI · EUR',sr?'Cenovnik pre narudžbine':'Preise vor Beauftragung',sr?'Prvo pošaljite oglas ili specifikaciju na WhatsApp. Potvrdite raspoloživost i obim, zatim platite odgovarajući PayPal iznos.':'Erst Inserat oder Spezifikation per WhatsApp senden, Leistungsumfang klären, danach den richtigen PayPal-Betrag bezahlen.')+
- '<div class="grid">'+plans.map(p=>card(p[0]+' · '+p[1],p[2])).join('')+'</div><p class="muted">'+DISCLAIMER[lang]+'</p>'+button(paths.b2b,sr?'B2B upit':'B2B-Anfrage'));
+ storefront.pricing(lang)+'<p class="muted">'+DISCLAIMER[lang]+'</p>'+button(paths.b2b,sr?'B2B upit':'B2B-Anfrage'));
 }
 const SERVICE_ROWS=[
  ['Mali servis / Kleine Inspektion','95–165 €','290–550 €','140–240 €','150–300 €'],
@@ -140,9 +141,9 @@ function place(lang){
  const sr=lang==='sr';
  return section(header('DANINI · NIŠ · ČALIJE',sr?'Auto-plac / showroom u Čalijama':'Autoplatz / Showroom in Niš Čalije',
  sr?'Dve zasebne radne površine, približno 345 m² i 648 m² (ukupno oko 993 m²), GO Pantelej, Niš. Ponuda za dugoročni komercijalni zakup: parking flote, prodajni plac ili prezentacioni prostor za modularne objekte.':'Zwei getrennte Nutzflächen von ca. 345 m² und 648 m² (zusammen rund 993 m²) in Niš, Stadtbezirk Pantelej. Langfristige Gewerbemiete für Fahrzeugbestand, Flottenparkplatz oder Ausstellung modularer Objekte.')+
- '<div class="grid">'+card('345 m²',sr?'Prva lokacija, zakup cele ponuđene površine — cena i uslovi na upit.':'Erste Fläche, Gesamtnutzung — Mietpreis und Bedingungen auf Anfrage.')+
- card('648 m²',sr?'Druga lokacija, zakup cele ponuđene površine — cena i uslovi na upit.':'Zweite Fläche, Gesamtnutzung — Preis und Bedingungen auf Anfrage.')+
- card('993 m²',sr?'Zbir dve radne površine, ne tvrdnja o jedinstvenoj katastarskoj parceli. Namena i dozvole proveravaju se za konkretan plan zakupca.':'Summe beider Nutzflächen, keine Behauptung einer gemeinsamen Katasterparzelle. Nutzung und Genehmigungen objektbezogen prüfen.')+'</div>'+
+ '<div class="grid">'+card('345 m²',sr?'Prva lokacija, kapacitet orijentaciono do 12 vozila; cena i uslovi na upit.':'Erste Fläche, vorläufig bis zu 12 Fahrzeuge; Mietpreis und Bedingungen auf Anfrage.')+
+ card('648 m²',sr?'Druga lokacija, kapacitet orijentaciono do 25 vozila; cena i uslovi na upit.':'Zweite Fläche, vorläufig bis zu 25 Fahrzeuge; Preis und Bedingungen auf Anfrage.')+
+ card('993 m²',sr?'Zbir dve odvojene radne površine: procena do 37 vozila uz odgovarajući raspored. Nisu jedinstvena katastarska parcela; namena i dozvole proveravaju se.':'Zusammen zwei getrennte Flächen: vorläufig bis zu 37 Fahrzeuge bei geeigneter Belegung. Keine einheitliche Katasterparzelle; Nutzung und Genehmigungen prüfen.')+'</div>'+
  '<p class="muted">'+(sr?'Ne tvrdimo da postoje građevinske dozvole, odobren showroom ili aktivni zakupci. Zakup i dozvoljenu namenu potrebno je pravno proveriti.':'Keine Behauptung über Baugenehmigungen, genehmigten Showroom oder bestehende Mieter. Nutzung und Mietvertrag sind rechtlich zu prüfen.')+'</p><p>'+button(wa,sr?'WhatsApp — zakup':'WhatsApp — Gewerbemiete')+'</p>');
 }
 const CHAPTERS={

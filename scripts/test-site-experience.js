@@ -32,6 +32,7 @@ async function main() {
       '/sr/vodic/landed-cost-kalkulation',
       '/sr/sistem', '/de/system',
       '/de/wissen/vin-dokumente-checkliste',
+      '/sr/auto-biznis-vodic-i-softver', '/de/auto-business-guide-software',
       '/sr/?quote=unknown'
     ];
     for (const route of routesToCheck) {
@@ -56,6 +57,13 @@ async function main() {
         assert.match(html, /79 €/, route);
         assert.match(html, /danini-order\.js/, route);
         assert.doesNotMatch(html, /id="quickcheck"/, route);
+      }
+      if (route.includes('auto-biznis-vodic-i-softver') || route.includes('auto-business-guide-software')) {
+        assert.match(html,/149,00 €/);
+        assert.match(html,/49,00 €/);
+        assert.match(html,/993 m²/);
+        assert.match(html,/PayPal/);
+        assert.match(html,/danini-order\.js/);
       }
       if (route === '/sr/') {
         assert.match(html, /Dragan Zdravković · Vaš čovek na terenu u Nemačkoj/);
@@ -122,6 +130,9 @@ async function main() {
     const order = await (await fetch(base+'/danini-order.js')).text();
     assert.match(order, /danini-order-slot/);
     assert.match(order, /paypal\.me\/dragangaganet\/9\.90EUR/);
+    assert.match(order, /paypal\.me\/dragangaganet\/149EUR/);
+    assert.match(order, /guide: t\(/);
+    assert.match(order, /software: t\(/);
     assert.match(order, /payment\.hidden = true/);
     assert.match(order, /wa\.me/);
     const calc = await (await fetch(base+'/danini-quickcheck.js')).text();

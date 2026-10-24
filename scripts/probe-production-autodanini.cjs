@@ -24,8 +24,10 @@ async function diagnosis(){
   try{const x=await dns.lookup('github.com');console.log('Runner comparison: github.com resolved (IPv'+x.family+')');}catch(error){console.log('Runner comparison DNS FAILED:',String(error.code||error.message));}
 }
 async function check(){
-  const [s,de,home,lead,form]=await Promise.all([
-    get('/sr/'),get('/de/'),get('/'),get('/api/importos/lead-readiness'),get('/danini-order.js')
+  const [s,de,home,lead,form,srSafety,deSafety,srTransport,deTransport]=await Promise.all([
+    get('/sr/'),get('/de/'),get('/'),get('/api/importos/lead-readiness'),get('/danini-order.js'),
+    get('/sr/vodic/safebuy-vor-kaution'),get('/de/wissen/safebuy-vor-kaution'),
+    get('/sr/vodic/transport-entscheidung'),get('/de/wissen/transport-entscheidung')
   ]);
   let body;
   try{body=JSON.parse(lead.text)}catch{body={}}
@@ -34,8 +36,16 @@ async function check(){
     de.text.includes('Klares Angebot für ein konkretes Fahrzeug') &&
     lead.status===200 && body.ok===true && typeof body.onlineIntakeReady==='boolean' &&
     form.status===200 && form.text.includes('danini-order-online-submit') &&
-    !form.text.includes('paypal.me');
-  return {deployed,s,de,home,lead,form,leadStatus:body};
+    !form.text.includes('paypal.me') &&
+    s.text.includes('Praktični članci pre kupovine i dovoza') &&
+    de.text.includes('Praxisartikel zu Kauf und Überführung') &&
+    srSafety.status===200 && srSafety.text.includes('Pre kapare: kako proveriti polovan auto') &&
+    deSafety.status===200 && deSafety.text.includes('Vor der Anzahlung: Gebrauchtwagen in Deutschland prüfen') &&
+    srTransport.status===200 && srTransport.text.includes('Dovoz auta iz Nemačke: na točkovima') &&
+    deTransport.status===200 && deTransport.text.includes('Auto nach Serbien bringen: selbst fahren') &&
+    srSafety.text.includes('www.adac.de/') &&
+    srTransport.text.includes('carina.rs/');
+  return {deployed,s,de,home,lead,form,leadStatus:body,srSafety,deSafety,srTransport,deTransport};
 }
 async function main(){
   console.log('AutoDanini GitHub → Hostinger read-only QA',new Date().toISOString());
@@ -50,6 +60,12 @@ async function main(){
   }
   if(!state.deployed)add('AutoDanini deployment detected',false,'Root and both languages must contain new brand and editorial proof; '+(state.s.error||state.de.error||state.home.error||'the server may still be deploying')+'.');
   else add('AutoDanini deployment detected',true,'Existing single domain serves the new SR/DE storefront.');
+  for(const [label,page,marker] of [
+    ['SR expert buyer article',state.srSafety,'Pre kapare: kako proveriti polovan auto'],
+    ['DE expert buyer article',state.deSafety,'Vor der Anzahlung: Gebrauchtwagen in Deutschland prüfen'],
+    ['SR expert transport article',state.srTransport,'Dovoz auta iz Nemačke: na točkovima'],
+    ['DE expert transport article',state.deTransport,'Auto nach Serbien bringen: selbst fahren']
+  ])add(label,page.status===200&&page.text.includes(marker),'HTTP '+page.status+'; source-based editorial content');
   add('Full AutoDanini sales form',state.form.status===200 && state.form.text.includes('danini-order-online-submit') && !state.form.text.includes('paypal.me'),'HTTP '+state.form.status+'; no premature PayPal.Me link');
   add('ImportOS lead endpoint',state.lead.status===200 && state.leadStatus.ok===true && typeof state.leadStatus.onlineIntakeReady==='boolean','HTTP '+state.lead.status);
   console.log('INFO | Production online lead automation | '+(state.leadStatus.onlineIntakeReady===true?'READY: MySQL and Brevo sender configured':'BLOCKED: MySQL and/or Brevo sender not ready; WhatsApp/e-mail remain available'));

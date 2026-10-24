@@ -5,7 +5,25 @@ const path=require('path');
 
 const DB_FIELDS=new Set(['status','reviewedAt','reviewNote','lastError','payload']);
 
-function databaseConfigured(env){return Boolean(env.DB_HOST&&env.DB_USER&&env.DB_NAME)}
+// Compatible with the Hostinger DB_* variables and older Prisma / Node
+// DATABASE_URL deployments. A URL is parsed in memory; credentials never logged.
+function databaseOptions(env){
+  if(env.DB_HOST&&env.DB_USER&&env.DB_NAME){
+    return {host:env.DB_HOST,port:env.DB_PORT?Number(env.DB_PORT):undefined,
+      user:env.DB_USER,password:env.DB_PASSWORD,database:env.DB_NAME};
+  }
+  const raw=env.DATABASE_URL||env.MYSQL_URL;
+  if(!raw)return null;
+  try{
+    const url=new URL(raw);
+    if(!['mysql:','mariadb:'].includes(url.protocol)||!url.hostname||
+       !url.username||!url.pathname.slice(1))return null;
+    return {host:url.hostname,port:url.port?Number(url.port):undefined,
+      user:decodeURIComponent(url.username),password:decodeURIComponent(url.password),
+      database:decodeURIComponent(url.pathname.slice(1))};
+  }catch{return null}
+}
+function databaseConfigured(env){return Boolean(databaseOptions(env))}
 function nowIso(){return new Date().toISOString()}
 function safeJson(value){try{return typeof value==='string'?JSON.parse(value):value}catch{return {}}}
 
@@ -33,7 +51,8 @@ class ImportOSStore{
     this.storageFile=options.storageFile||this.env.DANINI_IMPORTOS_STORAGE_FILE||path.join(__dirname,'runtime','importos-records.json');
     this.mysql=options.mysql||null;
     this.pool=null;
-    this.databaseConfigured=databaseConfigured(this.env);
+    this.connectionOptions=databaseOptions(this.env);
+    this.databaseConfigured=Boolean(this.connectionOptions);
     this.databaseErrorCode=null;
     this.mode=this.databaseConfigured?'mysql':'file';
     this.initialized=false;
@@ -51,11 +70,7 @@ class ImportOSStore{
       const mysql=this.mysql||require('mysql2/promise');
       try{
         this.pool=mysql.createPool({
-          host:this.env.DB_HOST,
-          port:this.env.DB_PORT?Number(this.env.DB_PORT):undefined,
-          user:this.env.DB_USER,
-          password:this.env.DB_PASSWORD,
-          database:this.env.DB_NAME,
+          ...this.connectionOptions,
           waitForConnections:true,
           connectionLimit:5,
           queueLimit:0
@@ -207,4 +222,4 @@ class ImportOSStore{
 }
 
 function createImportOSStore(options){return new ImportOSStore(options)}
-module.exports={ImportOSStore,createImportOSStore};
+module.exports={ImportOSStore,createImportOSStore,databaseConfigured};

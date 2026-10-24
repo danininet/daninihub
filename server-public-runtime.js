@@ -207,7 +207,7 @@ function mountPublicRuntime(app){
     if(PUBLIC_ROUTES.includes(canonicalRoute)){
       const send=res.send.bind(res);
       res.send=body=>{
-        res.set('Cache-Control',Object.keys(req.query).length?'no-store':'public, max-age=0, s-maxage=300, stale-while-revalidate=60');
+        if(!res.get('Cache-Control'))res.set('Cache-Control',Object.keys(req.query).length?'no-store':'public, max-age=0, s-maxage=300, stale-while-revalidate=60');
         return send(typeof body==='string'?seoPage(body,canonicalRoute):body);
       };
     }
@@ -220,7 +220,7 @@ function mountPublicRuntime(app){
   });
   app.use(express.static(PUBLIC_ASSETS,{index:false,maxAge:'1h'}));
 
-  app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(seoPage(experience.render('sr','start',shell),'/sr/'))});
+  app.get('/',(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(experience.render('sr','start',shell))});
   app.get(['/sr','/sr/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(experience.render('sr','start',shell))});
   app.get(['/de','/de/'],(req,res)=>{res.set('Cache-Control','no-store');return res.type('html').send(experience.render('de','start',shell))});
   app.get('/en',(req,res)=>res.redirect(308,'/sr/'));

@@ -5,6 +5,8 @@
 (() => {
   const PHONE = '4915730916621';
   const PAYPAL = 'https://www.paypal.me/dragangaganet/9.90EUR';
+  const CHECKOUT = {passport:PAYPAL, oe:'https://www.paypal.me/dragangaganet/19EUR', combo:'https://www.paypal.me/dragangaganet/29.90EUR', transport:'https://www.paypal.me/dragangaganet/59EUR', b2b:'https://www.paypal.me/dragangaganet/99EUR'};
+  const AMOUNT = {passport:'9,90 €',oe:'19,00 €',combo:'29,90 €',transport:'59,00 €',b2b:'99,00 €'};
   const de = document.documentElement.lang === 'de';
   const t = (sr, german) => de ? german : sr;
   const services = {
@@ -12,7 +14,11 @@
       'Import Passport — Verkäuferanruf und Dokumentencheck (9,90 €)'),
     field: t('Field Check — Pregled vozila uživo u Nemačkoj (od 79 €)',
       'Field Check — Fahrzeugbesichtigung in Deutschland (ab 79 €)'),
-    delivery: t('Upit za dovoz vozila', 'Anfrage zur Fahrzeugüberführung')
+    delivery: t('Upit za dovoz vozila', 'Anfrage zur Fahrzeugüberführung'),
+    oe: t('OE servis i originalni delovi po VIN-u (19,00 €)', 'OE-Service und Originalteile nach VIN (19,00 €)'),
+    combo: t('SVE PRE KUPOVINE: Passport + OE + ruta (29,90 €)', 'ALLES VOR DEM KAUF: Passport + OE + Route (29,90 €)'),
+    transport: t('Koordinacija šlepera ili dovoza na točkovima (59,00 €)', 'Lkw- oder Fahrerüberführung koordinieren (59,00 €)'),
+    b2b: t('B2B pretraga do tri vozila (99,00 €)', 'B2B Suche nach bis zu drei Fahrzeugen (99,00 €)')
   };
 
   function validLink(value) {
@@ -24,23 +30,29 @@
     }
   }
 
-  function message(link, service) {
-    const vehicle = de
-      ? 'Hallo Dragan, ich habe dieses Fahrzeug gefunden: ' + link + '. '
-      : 'Pozdrav Dragane, našao sam ovaj auto: ' + link + '. ';
-    const request = service === 'field'
-      ? t('Želim Field Check pregled vozila (od 79 €).',
-          'Ich möchte einen Field Check (ab 79 €).')
-      : service === 'delivery'
-        ? t('Želim ponudu za dovoz vozila.', 'Ich möchte ein Überführungsangebot.')
-        : t('Želim Import Passport proveru (9,90 €).',
-            'Ich möchte die Import Passport Prüfung (9,90 €).');
-    return vehicle + request;
+  function message(link, service, details) {
+    const vehicle = link
+      ? t('Pozdrav Dragane, šaljem oglas: ', 'Hallo Dragan, mein Inserat: ') + link + '. '
+      : t('Pozdrav Dragane, dostavljam specifikaciju usluge. ',
+          'Hallo Dragan, meine Spezifikation zur Anfrage. ');
+    const intent = {
+      passport:t('Import Passport 9,90 €','Import Passport 9,90 €'),
+      field:t('Field Check od 79 €','Field Check ab 79 €'),
+      delivery:t('Dovoz: tražim individualnu ponudu','Überführung: individuelles Angebot'),
+      oe:t('OE servis i delovi 19,00 €','OE Service und Teile 19,00 €'),
+      combo:t('Sve pre kupovine 29,90 €','Alles vor dem Kauf 29,90 €'),
+      transport:t('Koordinacija transporta 59,00 €, ne cena prevoza','Transportkoordination 59,00 €, ohne Frachtkosten'),
+      b2b:t('B2B do tri vozila 99,00 €','B2B bis drei Fahrzeuge 99,00 €')
+    };
+    return vehicle + (intent[service] || intent.passport) +
+      (details ? '\n' + t('Specifikacija: ','Details: ') + details : '') +
+      '\n' + t('Molim potvrdu dostupnosti, obima i roka pre uplate.',
+        'Bitte Verfügbarkeit, Umfang und Termin vor Zahlung bestätigen.');
   }
 
   function mount(host, index) {
     const formId = 'danini-order-' + index;
-    const defaultService = ['passport', 'field', 'delivery'].includes(host.dataset.service)
+    const defaultService = Object.prototype.hasOwnProperty.call(services,host.dataset.service)
       ? host.dataset.service : 'passport';
     host.classList.add('danini-order-host');
     host.innerHTML = [
@@ -50,8 +62,10 @@
       '<p>' + t('Prvo šalješ oglas Draganu. Zatim dogovaramo konkretnu proveru.',
         'Sende zuerst das Inserat. Danach stimmen wir die konkrete Prüfung ab.') + '</p>',
       '<label for="' + formId + '-url">' + t('Link oglasa', 'Inserat-Link') + '</label>',
-      '<input type="url" id="' + formId + '-url" required maxlength="2000" placeholder="' +
+      '<input type="url" id="' + formId + '-url" maxlength="2000" placeholder="' +
         t('Zalepi link oglasa sa mobile.de ili AutoScout24...', 'Inserat-Link von mobile.de oder AutoScout24 einfügen...') + '">',
+      '<label for="' + formId + '-details">' + t('VIN / HSN/TSN / model / grad / tražena vozila ili ruta', 'VIN / HSN/TSN / Modell / Ort / Wunschfahrzeuge oder Route') + '</label>',
+      '<textarea class="danini-order-details" id="' + formId + '-details" rows="3" maxlength="1500" placeholder="' + t('Za B2B i OE narudžbine navedite specifikaciju; za oglas možete dodati pitanja.', 'Für B2B/OE bitte Spezifikation, zum Inserat weitere Fragen angeben.') + '"></textarea>',
       '<label for="' + formId + '-service">' + t('Izaberi uslugu', 'Leistung wählen') + '</label>',
       '<select id="' + formId + '-service">',
       Object.entries(services).map(([value, label]) =>
@@ -83,6 +97,9 @@
 
     const input = host.querySelector('input');
     const select = host.querySelector('select');
+    const details = host.querySelector('.danini-order-details');
+    const paymentLink = host.querySelector('.danini-order-pay');
+    const paymentTitle = host.querySelector('.danini-payment strong');
     const whatsapp = host.querySelector('.danini-order-wa');
     const payment = host.querySelector('.danini-payment');
     const urlStatus = host.querySelector('.danini-url-status');
@@ -90,9 +107,10 @@
     function update() {
       payment.hidden = true;
       const raw = input.value.trim();
-      const valid = validLink(raw);
+      const exempt = ['oe','b2b','transport','delivery'].includes(select.value);
+      const valid = validLink(raw) || (exempt && !raw && details.value.trim().length >= 10);
       let recognized = false;
-      if (valid) {
+      if (validLink(raw)) {
         const hostname = new URL(raw).hostname.toLowerCase();
         recognized = hostname === 'mobile.de' || hostname.endsWith('.mobile.de') ||
           hostname === 'autoscout24.de' || hostname.endsWith('.autoscout24.de') ||
@@ -101,25 +119,31 @@
       urlStatus.classList.toggle('recognized',recognized);
       urlStatus.textContent = !raw ? t('Zalepi link da aktiviraš WhatsApp dugme.',
         'Inserat-Link einfügen, um WhatsApp zu aktivieren.')
-        : !valid ? t('Unesi ispravan URL oglasa.',
-          'Bitte eine gültige Inserat-URL eingeben.')
+        : !valid ? t('Unesi link oglasa ili barem 10 znakova specifikacije za OE, B2B ili transport.',
+          'Bitte Inserat-Link oder mindestens 10 Zeichen für OE, B2B oder Transport eingeben.')
         : recognized ? t('✓ Oglas prepoznat — spreman za slanje.',
           '✓ Inserat erkannt — versandbereit.')
         : t('✓ Link je ispravan — spreman za slanje.',
           '✓ Link gültig — versandbereit.');
       whatsapp.href = valid
-        ? 'https://wa.me/' + PHONE + '?text=' + encodeURIComponent(message(raw, select.value))
+        ? 'https://wa.me/' + PHONE + '?text=' + encodeURIComponent(message(validLink(raw)?raw:'', select.value, details.value.trim()))
         : '#';
       whatsapp.setAttribute('aria-disabled', String(!valid));
+      const amount = AMOUNT[select.value];
+      paymentLink.href = CHECKOUT[select.value] || PAYPAL;
+      paymentLink.textContent = t('2. PayPal — plati ','2. PayPal — ') + (amount || '9,90 €');
+      paymentTitle.textContent = t('Nakon potvrde obima, uplata usluge: ', 'Nach Bestätigung der Leistung: ') + (amount || '9,90 €');
     }
 
     input.addEventListener('input', () => {
       input.setCustomValidity('');
       update();
     });
+    details.addEventListener('input', update);
     select.addEventListener('change', update);
     whatsapp.addEventListener('click', (event) => {
-      if (!validLink(input.value.trim())) {
+      const exempt = ['oe','b2b','transport','delivery'].includes(select.value);
+      if (!(validLink(input.value.trim()) || (exempt && !input.value.trim() && details.value.trim().length >= 10))) {
         event.preventDefault();
         input.setCustomValidity(t('Unesite ispravan link oglasa pre slanja.',
           'Bitte zuerst einen gültigen Inserat-Link eingeben.'));
@@ -130,7 +154,7 @@
       update();
       // Browser cannot know whether the buyer actually pressed Send in WhatsApp.
       // This only unlocks the optional payment step after opening that inquiry.
-      payment.hidden = select.value !== 'passport';
+      payment.hidden = !Boolean(CHECKOUT[select.value]);
     });
     update();
   }
@@ -146,7 +170,7 @@
       '.danini-order-card p{line-height:1.6}',
       '.danini-order-eyebrow{font-size:12px;letter-spacing:.14em;color:#77e4a3;font-weight:800}',
       '.danini-order-card label{display:block;margin:18px 0 7px;font-size:15px;font-weight:800;color:#fff}',
-      '.danini-order-card input,.danini-order-card select{display:block;width:100%;padding:14px;border-radius:9px;border:1px solid #84968c;background:#fff;color:#171a18;font-size:16px;min-height:52px}',
+      '.danini-order-card input,.danini-order-card textarea,.danini-order-card select{display:block;width:100%;padding:14px;border-radius:9px;border:1px solid #84968c;background:#fff;color:#171a18;font-size:16px;min-height:52px}',
       '.danini-order-wa,.danini-order-pay{display:flex;gap:9px;align-items:center;justify-content:center;text-align:center;border-radius:9px;padding:16px 14px;min-height:54px;text-decoration:none;font-weight:850;margin:20px 0 8px;line-height:1.35}',
       '.danini-order-wa{background:#25d366;color:#072a18!important}',
       '.danini-order-wa:hover{background:#65e99b}',

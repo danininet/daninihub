@@ -64,6 +64,9 @@ async function main() {
         assert.match(html,/993 m²/);
         assert.match(html,/PayPal/);
         assert.match(html,/danini-order\.js/);
+        assert.match(html,/danini-digital-checkout\.js/);
+        assert.match(html,/name="instantDeliveryConsent"/);
+        assert.doesNotMatch(html,/paypal\.me\/dragangaganet\/149EUR/);
       }
       if (route === '/sr/') {
         assert.match(html, /Dragan Zdravković · Vaš čovek na terenu u Nemačkoj/);
@@ -118,7 +121,7 @@ async function main() {
     }
     for (const route of Object.keys(routes)) assert.ok(ROUTES[route], route);
     for (const asset of ['/danini-sales.js','/danini-order.js',
-      '/danini-quickcheck.js','/danini-mobile-nav.js']) {
+      '/danini-quickcheck.js','/danini-mobile-nav.js', '/danini-digital-checkout.js']) {
       const response = await fetch(base + asset);
       assert.equal(response.status, 200, asset);
       assert.match(response.headers.get('content-type'), /javascript/, asset);
@@ -130,7 +133,7 @@ async function main() {
     const order = await (await fetch(base+'/danini-order.js')).text();
     assert.match(order, /danini-order-slot/);
     assert.match(order, /paypal\.me\/dragangaganet\/9\.90EUR/);
-    assert.match(order, /paypal\.me\/dragangaganet\/149EUR/);
+    assert.doesNotMatch(order, /paypal\.me\/dragangaganet\/149EUR/);
     assert.match(order, /guide: t\(/);
     assert.match(order, /software: t\(/);
     assert.match(order, /payment\.hidden = true/);

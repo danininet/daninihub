@@ -4,6 +4,7 @@ require('dotenv').config({path:require('path').join(__dirname,'.env')});
 const express=require('express');
 const {mountImportOSRuntime}=require('./server-importos-runtime');
 const {mountPublicRuntime}=require('./server-public-runtime');
+const {mountDigitalCommerce}=require('./digital-commerce');
 
 const app=express();
 const PORT=Number(process.env.PORT||4242);
@@ -107,6 +108,7 @@ app.get('/api/runtime-version',(req,res)=>res.json({
 }));
 
 mountImportOSRuntime(app);
+mountDigitalCommerce(app);
 mountPublicRuntime(app);
 
 app.use((req,res)=>res.status(404).type('text/plain').send('Not found'));

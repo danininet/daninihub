@@ -5,7 +5,7 @@
 (() => {
   const PHONE = '4915730916621';
   const PAYPAL = 'https://www.paypal.me/dragangaganet/9.90EUR';
-  const CHECKOUT = {passport:PAYPAL, oe:'https://www.paypal.me/dragangaganet/19EUR', combo:'https://www.paypal.me/dragangaganet/29.90EUR',vat:'https://www.paypal.me/dragangaganet/49EUR',guide:'https://www.paypal.me/dragangaganet/49EUR',transport:'https://www.paypal.me/dragangaganet/59EUR',b2b:'https://www.paypal.me/dragangaganet/99EUR',software:'https://www.paypal.me/dragangaganet/149EUR'};
+  const CHECKOUT = {passport:PAYPAL, oe:'https://www.paypal.me/dragangaganet/19EUR', combo:'https://www.paypal.me/dragangaganet/29.90EUR',vat:'https://www.paypal.me/dragangaganet/49EUR',transport:'https://www.paypal.me/dragangaganet/59EUR',b2b:'https://www.paypal.me/dragangaganet/99EUR'};
   const AMOUNT = {passport:'9,90 €',oe:'19,00 €',combo:'29,90 €',vat:'49,00 €',guide:'49,00 €',transport:'59,00 €',field:'od 79,00 €',b2b:'99,00 €',software:'149,00 €'};
   const de = document.documentElement.lang === 'de';
   const t = (sr, german) => de ? german : sr;

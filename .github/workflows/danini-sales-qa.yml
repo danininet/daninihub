@@ -4,6 +4,9 @@ on:
     paths:
       - 'public/danini-*.js'
       - 'site-experience.js'
+      - 'danini-ecosystem.js'
+      - 'scripts/test-danini-ecosystem.js'
+      - 'public/images/**'
       - 'server-public-runtime.js'
       - 'scripts/test-site-experience.js'
       - 'package*.json'

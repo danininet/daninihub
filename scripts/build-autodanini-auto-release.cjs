@@ -1,7 +1,7 @@
 'use strict';
 /**
  * Self-contained AutoDanini visual-only release.
- * All 23 source pages and browser sources are VENDORED from the reviewed
+ * All 24 source pages and browser sources are VENDORED from the reviewed
  * AutoDanini v12 snapshot into this repository. No nested GitHub clone,
  * no external GitHub branch used during Hostinger's build.
  */
@@ -12,7 +12,7 @@ const frontend=path.join(__dirname,'..','autodanini','staging-v12');
 const out=path.resolve(__dirname,'../autodanini-auto-dist');
 const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
  'auctions','guides','about','contact','impressum','privacy','terms','cookies',
- 'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin'];
+ 'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
 function run(args,env){
  const npm=process.platform==='win32'?'npm.cmd':'npm';
  const result=spawnSync(npm,args,{cwd:frontend,env,stdio:'inherit',shell:process.platform==='win32'});

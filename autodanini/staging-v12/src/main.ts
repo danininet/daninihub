@@ -59,10 +59,33 @@ function setLang(l: Lang): void {
  lang=l; document.documentElement.lang=l; localStorage.setItem('autodanini-language',l);
  document.querySelectorAll<HTMLElement>('[data-sr][data-de]').forEach(el=>{el.textContent=el.dataset[l]||'';});
  if(e('language')) e('language')!.textContent=l==='sr'?'DE':'SR';
+ const menuButton=e('toggle');
+ if(menuButton)menuButton.setAttribute('aria-label',l==='de'?
+   (e('mobile')?.hidden?'Menü öffnen':'Menü schließen'):
+   (e('mobile')?.hidden?'Otvori meni':'Zatvori meni'));
  updateImport(); updateLive();
 }
 e('language')?.addEventListener('click',()=>setLang(lang==='sr'?'de':'sr'));
-e('toggle')?.addEventListener('click',()=>{const m=e('mobile');if(m)m.hidden=!m.hidden;});
+const menuButton=e('toggle') as HTMLButtonElement|null;
+const mobileMenu=e('mobile');
+if(menuButton&&mobileMenu){
+ menuButton.setAttribute('aria-controls','mobile');
+ const setMenu=(open:boolean)=>{
+  mobileMenu.hidden=!open;
+  menuButton.setAttribute('aria-expanded',String(open));
+  menuButton.setAttribute('aria-label',lang==='de'?
+   (open?'Menü schließen':'Menü öffnen'):
+   (open?'Zatvori meni':'Otvori meni'));
+ };
+ setMenu(false);
+ menuButton.addEventListener('click',()=>setMenu(mobileMenu.hidden));
+ mobileMenu.addEventListener('click',event=>{
+  if((event.target as HTMLElement).closest('a'))setMenu(false);
+ });
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&!mobileMenu.hidden){setMenu(false);menuButton.focus();}
+ });
+}
 // Preselect the actual service when visitors follow a service-specific link.
 // Whitelist existing <option> values; never insert query-string HTML.
 const selectedService=new URLSearchParams(window.location.search).get('service');
@@ -92,8 +115,19 @@ document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer]').forEach(form=>{
     'Hinweise: '+(v('notes')||'-'),
     'Bitte Umfang, Kosten und Termin schriftlich bestätigen. Keine Reservierung oder Bestellung.'
   ];
-  window.open('https://wa.me/4915730916621?text='+encodeURIComponent(lines.join('\n')),'_blank','noopener,noreferrer');
-  const output=form.querySelector<HTMLElement>('[role=status]');if(output)output.textContent=lang==='sr'?'Otvoren je WhatsApp. Potvrdite slanje poruke tamo.':'WhatsApp wurde geöffnet. Bitte Nachricht dort senden.';
+  const target='https://wa.me/4915730916621?text='+encodeURIComponent(lines.join('\n'));
+  const output=form.querySelector<HTMLElement>('[role=status]');
+  if(target.length>4500){
+   if(output)output.textContent=lang==='sr'?
+    'Upit je predugačak za WhatsApp. Skratite napomene ili linkove.':
+    'Die Anfrage ist für WhatsApp zu lang. Bitte Notizen oder Links kürzen.';
+   return;
+  }
+  if(output)output.textContent=lang==='sr'?
+   'Otvara se WhatsApp. Poruka nije poslata dok je sami ne potvrdite.':
+   'WhatsApp wird geöffnet. Die Nachricht wird erst nach Ihrer Bestätigung gesendet.';
+  // Same-tab navigation is not blocked by popup blockers; visitor confirms in WhatsApp.
+  window.location.assign(target);
  });
 });
 function updateLive():void {

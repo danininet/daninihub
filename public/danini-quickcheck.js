@@ -116,8 +116,6 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
   }
 
   let activeListeners = null;
-  // Preserve PayPal availability after WhatsApp, input blur and live recalculation.
-  let paymentUnlocked = false;
   const calculate = (event, live = false) => {
     if (event) event.preventDefault();
     if (live ? !form.checkValidity() : !form.reportValidity()) {
@@ -176,7 +174,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
       t('Moguća dodatna ukupna obaveza bez prihvaćenog porekla: ',
         'Mögliche Mehrkosten ohne anerkannten Ursprung: ') + eur(difference),
       'danini-calc-diff');
-    addText(card, 'p', t('Razlika u carini: Bez EUR.1 ili drugog prihvaćenog dokaza o poreklu plaćate ', 'Zoll-Unterschied: Ohne anerkannten EUR.1 oder anderen Präferenzursprungsnachweis entstehen ') + eur(difference) + t(' VIŠE na carini i PDV-u! Pitajte Dragana za 9,90 € da li prodavac može da obezbedi odgovarajući dokaz.', ' zusätzliche Kosten für Zoll und MwSt.! Prüfen Sie für 9,90 € mit Dragan, ob der Verkäufer einen geeigneten Nachweis bereitstellen kann.'), 'danini-calc-risk-alert');
+    addText(card, 'p', t('Razlika u carini: Bez EUR.1 ili drugog prihvaćenog dokaza o poreklu plaćate ', 'Zoll-Unterschied: Ohne anerkannten EUR.1 oder anderen Präferenzursprungsnachweis entstehen ') + eur(difference) + t(' VIŠE na carini i PDV-u! Pre kupovine proverite sa prodavcem i nadležnim stručnjakom koji dokaz zaista može biti prihvaćen.', ' zusätzliche Kosten für Zoll und MwSt.! Klären Sie vor dem Kauf mit Verkäufer und Fachleuten, welcher Nachweis tatsächlich anerkannt werden kann.'), 'danini-calc-risk-alert');
     const list = document.createElement('ul');
     list.className = 'danini-calc-details';
     card.appendChild(list);
@@ -199,37 +197,18 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
     whatsapp.target = '_blank';
     whatsapp.rel = 'noopener noreferrer';
     whatsapp.textContent = t(
-      'Pošalji ovu računicu i oglas Draganu na WhatsApp za proveru (9,90 €)',
-      'Berechnung und Inserat für Prüfung (9,90 €) per WhatsApp senden'
+      'Pošalji ovu računicu i oglas za konkretnu ponudu',
+      'Berechnung und Inserat für individuelles Angebot senden'
     );
     card.appendChild(whatsapp);
-    const payment = document.createElement('div');
-    payment.className = 'danini-calc-payment';
-    payment.hidden = !paymentUnlocked;
-    addText(payment, 'p', t(
-      'Nakon slanja oglasa na WhatsApp, uplatu za Import Passport (9,90 €) izvršite ovde:',
-      'Nach dem Versand des Inserats per WhatsApp können Sie Import Passport (9,90 €) hier bezahlen:'
-    ));
-    const payLink = document.createElement('a');
-    payLink.className = 'danini-calc-pay';
-    payLink.href = 'https://www.paypal.me/dragangaganet/9.90EUR';
-    payLink.target = '_blank';
-    payLink.rel = 'noopener noreferrer';
-    payLink.textContent = t('2. Plati 9,90 € preko PayPal-a', '2. 9,90 € über PayPal bezahlen');
-    payment.appendChild(payLink);
-    addText(payment, 'p', t(
-      'Pošaljite potvrdu PayPal uplate u istom WhatsApp razgovoru. Plaćanje nije automatski povezano s oglasom.',
-      'Bitte den PayPal-Beleg im selben WhatsApp-Chat senden. Zahlung wird nicht automatisch einem Inserat zugeordnet.'
-    ), 'danini-calc-warning');
-    card.appendChild(payment);
 
     function buildLink() {
       const ad = input.value.trim();
       const msg = (de
         ? 'Hallo Dragan, ich habe dieses Fahrzeug gefunden: '
         : 'Pozdrav Dragane, našao sam ovaj auto: ') + ad + '. ' +
-        (de ? 'Ich möchte die Import Passport Prüfung (9,90 €).'
-            : 'Želim Import Passport proveru (9,90 €).') + '\n' +
+        (de ? 'Ich möchte eine konkrete Prüfung und ein Angebot mit Umfang, Preis und Termin vor Zahlung.'
+            : 'Želim ponudu sa obimom, cenom i rokom, pre bilo kakve uplate.') + '\n' +
         t('Cena auta: ', 'Fahrzeugpreis: ') + eur(price) + '\n' +
         t('Procena sa 0% carine: ', 'Schätzung mit 0% Zoll: ') + eur(zero.total) + '\n' +
         t('Procena sa 12,5% carine: ', 'Schätzung mit 12,5% Zoll: ') + eur(standard.total) + '\n' +
@@ -240,7 +219,6 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
     }
     function reset() {
       input.setCustomValidity('');
-      payment.hidden = !paymentUnlocked;
       buildLink();
     }
     input.addEventListener('input', reset, { signal: activeListeners.signal });
@@ -256,9 +234,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
       buildLink();
       // Cancel any pending blur/change recalculation before leaving for WhatsApp.
       clearTimeout(liveTimer);
-      paymentUnlocked = true;
-      // Initiates WhatsApp; message delivery is confirmed only by WhatsApp.
-      payment.hidden = false;
+      // Opening WhatsApp never confirms message delivery or payment.
     });
     buildLink();
     if (!live && typeof window.daniniTrack === 'function') {

@@ -1,0 +1,23 @@
+name: AutoDanini live-site QA (read-only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site-experience.js'
+      - 'server-public-runtime.js'
+      - 'scripts/probe-production-autodanini.cjs'
+      - '.github/workflows/danini-production-autodanini-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-hostinger-deployment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check current domain and live SR/DE product, SEO, health and images
+        run: node scripts/probe-production-autodanini.cjs

@@ -46,7 +46,7 @@ async function main() {
       // The three founder shots are square; service-card car photos remain widescreen.
       assert.match(html,/\.hero-visual\.danini-portrait img\{width:100%;height:auto;aspect-ratio:1\/1/);
       assert.match(html,/\.danini-trust-photo img\{display:block;width:100%;height:auto;aspect-ratio:1\/1/);
-      assert.match(html,/\.danini-passport-photo\{display:block;width:100%;height:auto;aspect-ratio:1\/1/);
+      assert.match(html,/\.feature img\{height:auto;aspect-ratio:16\/9/);
       assert.match(html,/\.feature img\{height:auto;aspect-ratio:16\/9/);
         assert.match(html, /danini-order-slot/, route);
         assert.match(html, /danini-order-home/, route);
@@ -55,16 +55,15 @@ async function main() {
         assert.match(html,/decision-proof/,route);
         assert.equal((html.match(/rel="canonical"/g)||[]).length,1,'canonical exactly once: '+route);
         assert.match(html, /DANINI_Dragan_Portret_CLEAN_1200x1200\.jpg/, route);
-        assert.match(html, /DANINI_Dragan_Telefon_CLEAN_1200x1200\.jpg/, route);
+        assert.match(html, /Jasna ponuda za stvaran automobil|Klares Angebot für ein konkretes Fahrzeug/, route);
         for(const image of ['DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg','DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg'])assert.ok(html.includes(image),image);
-        assert.match(html, /IMPORT PASSPORT/, route);
-        assert.match(html, /9,90 €/, route);
-        assert.match(html, /79 €/, route);
+        assert.match(html, /B2B/, route);
+        assert.doesNotMatch(html, /Sve 9 opcija|Alle 9 Leistungen/, route);
         assert.match(html, /danini-order\.js/, route);
         assert.doesNotMatch(html, /id="quickcheck"/, route);
       }
       if (route.includes('auto-biznis-vodic-i-softver') || route.includes('auto-business-guide-software')) {
-        assert.match(html,/149,00 €/);
+        assert.doesNotMatch(html,/data-sku="software"/);
         assert.match(html,/49,00 €/);
         assert.match(html,/993 m²/);
         assert.match(html,/PayPal/);
@@ -149,7 +148,7 @@ async function main() {
     assert.match(calc, /0\.20/);
     assert.match(calc, /Moguća dodatna ukupna obaveza/);
     assert.match(calc, /Pošalji ovu računicu i oglas Draganu/);
-    assert.match(calc, /danini-calc-payment/);
+    assert.doesNotMatch(calc,/paypal\.me|danini-calc-pay|paymentUnlocked/);
 
     for(const name of [
       'DANINI_Dragan_Portret_CLEAN_1200x1200.jpg',
@@ -165,10 +164,9 @@ async function main() {
     }
     assert.match(calc,/form\.addEventListener\('input', refresh\)/);
     assert.match(calc,/danini-calc-risk-alert/);
-    assert.match(calc,/let paymentUnlocked = false/);
-    assert.match(calc,/payment\.hidden = !paymentUnlocked/);
-    assert.match(calc,/clearTimeout\(liveTimer\);\s*paymentUnlocked = true/);
-    assert.match(calc,/paypal\.me\/dragangaganet\/9\.90EUR/);
+    assert.match(calc,/pre bilo kakve uplate/);
+    assert.match(order,/danini-order-online-submit/);
+    assert.match(order,/lead-readiness/);
     assert.match(order,/Oglas prepoznat/);
     const sitemap = await (await fetch(base+'/sitemap.xml')).text();
     assert.match(sitemap, /\/sr\/upit/);

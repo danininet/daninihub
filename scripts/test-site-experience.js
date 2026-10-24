@@ -147,7 +147,7 @@ async function main() {
     assert.match(calc, /0\.125/);
     assert.match(calc, /0\.20/);
     assert.match(calc, /Moguća dodatna ukupna obaveza/);
-    assert.match(calc, /Pošalji ovu računicu i oglas Draganu/);
+    assert.match(calc, /Pošalji ovu računicu i oglas za konkretnu ponudu/);
     assert.doesNotMatch(calc,/paypal\.me|danini-calc-pay|paymentUnlocked/);
 
     for(const name of [

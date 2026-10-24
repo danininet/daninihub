@@ -115,6 +115,7 @@ function legalPage(route){
   return shell({lang:meta.lang,title:meta.title,description:meta.description,body});
 }
 
+const expertGuides=require('./knowledge-expert-articles');
 function knowledgePage(route){
   const meta=ROUTES[route]; if(!meta)return null;
   const slug=route.split('/').filter(Boolean).pop();
@@ -146,7 +147,7 @@ function knowledgePage(route){
     'eur1-herkunft':'<section class="section"><h2>Zemlja kupovine nije isto što i poreklo</h2><p class="lead">Auto može biti kupljen u Nemačkoj, a da nema dokaz koji omogućava preferencijalnu carinsku stopu. EUR.1 ili odgovarajuću izjavu proveri pre nego što u računici koristiš carinu 0%.</p><div class="grid"><article class="card"><h3>Do 6.000 €</h3><p>Uprava carina navodi da se u određenim slučajevima kao dokaz može koristiti izjava na fakturi do vrednosti od 6.000 €.</p></article><article class="card"><h3>EUR.1</h3><p>Za vozila sa odgovarajućim poreklom EUR.1 je jedan od dokaza koji se može priložiti carinskom organu.</p></article><article class="card"><h3>Bez dokaza</h3><p>Dok dokaz nije potvrđen, računaj skuplji scenario i ne šalji kaparu na osnovu obećanja da će papir biti sređen kasnije.</p></article></div><p><a class="btn" href="/sr/kalkulator">Uporedi scenarije</a></p></section>',
     'vin-dokumente-checkliste':'<section class="section"><h2>Minimalna dokumentacija pre puta ili kapare</h2><div class="grid"><article class="card"><h3>VIN</h3><p>Traži broj šasije pre puta i uporedi ga sa fotografijama vozila i dokumentacije.</p></article><article class="card"><h3>Vlasništvo i prodavac</h3><p>Ime prodavca, račun ili ugovor i dokaz vlasništva moraju biti međusobno logični pre nego što novac promeni vlasnika.</p></article><article class="card"><h3>Poreklo i registracija</h3><p>Traži dokumente koji će ti trebati za izvoz, uvoz i dokazivanje porekla. Ako nešto nedostaje, razjasni to pre plaćanja.</p></article></div><p><a class="btn" href="/sr/upit">Pošalji oglas na proveru</a></p></section>'
   };
-  const deep=sr?(deepSr[slug]||''):'';
+  const deep=(sr?(deepSr[slug]||''):'')+expertGuides.render(meta.lang,slug);
   const body='<header class="head"><div class="top"><a class="brand" href="/'+meta.lang+'/"><img src="/importos-mark.svg" alt="DANINI"><div><strong>DANINI</strong><small>'+(sr?'UVOZ AUTOMOBILA':'FAHRZEUGIMPORT')+'</small></div></a></div></header><main class="wrap"><section class="section"><p class="eyebrow">'+(sr?'PRAKTIČNI VODIČ':'PRAXIS-RATGEBER')+'</p><h2>'+esc(title)+'</h2><p class="lead">'+esc(desc)+'</p><div class="grid">'+points.map((p,i)=>'<article class="card"><p class="eyebrow">'+(sr?'KORAK ':'SCHRITT ')+(i+1)+'</p><p>'+esc(p)+'</p></article>').join('')+'</div><p class="muted">'+(sr?'Ovo je početna kontrolna lista. Konačni uslovi zavise od konkretnog vozila i važećih pravila.':'Diese Hinweise sind eine erste Checkliste für das konkrete Fahrzeug.')+'</p><a class="btn" href="/'+meta.lang+'/'+(sr?'kalkulator':'rechner')+'">'+(sr?'Izračunaj okvirni trošak':'Kosten prüfen')+'</a> <a class="btn secondary" href="/'+meta.lang+'/'+(sr?'upit':'anfrage')+'">'+(sr?'Pošalji upit za auto':'Anfrage senden')+'</a></section>'+deep+'</main>';
   return shell({lang:meta.lang,title:meta.title,description:meta.description,body});
 }

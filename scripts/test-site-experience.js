@@ -28,6 +28,8 @@ async function main() {
       '/sr/kalkulator', '/de/rechner',
       '/sr/upit', '/de/anfrage',
       '/sr/vodici', '/sr/kako-radimo',
+      '/sr/vodic/safebuy-vor-kaution', '/de/wissen/safebuy-vor-kaution',
+      '/sr/vodic/transport-entscheidung', '/de/wissen/transport-entscheidung',
       '/sr/vodic/vin-dokumente-checkliste',
       '/sr/vodic/landed-cost-kalkulation',
       '/sr/sistem', '/de/system',
@@ -109,6 +111,17 @@ async function main() {
       if (route.includes('?quote=')) {
         assert.match(html, /id="quote-checkout"/);
         assert.match(html, /AutoDanini — proverite automobil i trošak pre kupovine/);
+      }
+      if (route.includes('safebuy-vor-kaution')) {
+        assert.match(html, /AutoDanini — preverite|Pre kapare: kako proveriti|Vor der Anzahlung: Gebrauchtwagen/);
+        assert.match(html, /www\.adac\.de\/rund-ums-fahrzeug/);
+        assert.match(html, /AUTODANINI/);
+        assert.match(html, /Vorsicht|dokumenta|Dokumente/i);
+      }
+      if (route.includes('transport-entscheidung')) {
+        assert.match(html, /Duisburg/);
+        assert.match(html, /Niš/);
+        assert.match(html, /Transport|dovoz/);
       }
       if (route === '/sr/vodic/landed-cost-kalkulation') {
         assert.match(html, /Uvoz auta iz Nemačke u Srbiju 2026/);

@@ -36,7 +36,7 @@ app.use((req,res,next)=>{
   if(['/dragan-original-portrait.jpg','/dragan-business-grid-ai.png'].includes(req.path)){
     return res.status(404).type('text/plain').send('Not found');
   }
-  if(req.path==='/robots.txt')return res.type('text/plain').send('User-agent: *\\nDisallow: /\\n');
+  if(req.path==='/robots.txt')return res.type('text/plain').send('User-agent: *\nDisallow: /\n');
   // Hostinger's proxy returned 502 for ordinary streamed JPEG responses
   // even while HTML and error routes worked. Send approved fixed-size images
   // as bounded buffers; never accept arbitrary file paths or user uploads.

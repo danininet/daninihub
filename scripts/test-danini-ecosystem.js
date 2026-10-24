@@ -7,12 +7,12 @@ const {ROUTES,shell}=require('../server-public-runtime');
 const eco=require('../danini-ecosystem');
 const needed=['parts','b2b','place','article1','article2'];
 const checks={
-  start:['DANINI_Kartica_04_Zoll_Tablice_Dovoz_Na_Tockovima.jpg','DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg','DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg','9,90 €','19,00 €','29,90 €','59,00 €','99,00 €'],
+  start:['DANINI_Kartica_04_Zoll_Tablice_Dovoz_Na_Tockovima.jpg','DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg','DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg','Usluge po transparentnoj individualnoj ponudi'],
   delivery:['Ausfuhrkennzeichen','CMR','Haftpflicht','Zoll'],
   calculator:['6.000 €','EUR.1','MwSt'],
   guides:['provera-oglasa-pre-kapare','uvoz-zoll-eur1-i-dovoz'],
   eco_parts:['VIN','110–180 €/h','25–45 €/h'],
-  eco_b2b:['99,00 €','290,00 €','MwSt'],
+  eco_b2b:['cena po ponudi','MwSt'],
   eco_place:['345 m²','648 m²','993 m²'],
   eco_article1:['VIN','DANINI'],
   eco_article2:['EUR.1','CMR']

@@ -12,17 +12,39 @@ const DEPLOYMENT_MARKER='daninihub-sales-20260924';
 
 app.set('trust proxy',1);
 
-// Separate domains share this repository but must NOT share public content.
-// auto.daninihub.com gets the AutoDanini visual-only release; the existing
-// DaniniHub root domain continues using the original public runtime.
+// AutoDanini is the site's brand on the EXISTING daninihub.com domain.
+// The cutover is explicit and reversible. Existing /sr/, /de/, /api/,
+// /owner/, /health, robots and sitemap routes stay on the proven backend.
+// Do not enable before the legal/operator review and production QA.
 const fs=require('node:fs');
 const path=require('node:path');
 const autoDist=path.join(__dirname,'autodanini-auto-dist');
+const autoRootEnabled=process.env.DANINI_AUTODANINI_ROOT_ENABLED==='true';
+const autoPages=new Set([
+  'index','buyers','dealers','live','inspection','import','exclusive','tender',
+  'auctions','guides','about','contact','impressum','privacy','terms','cookies',
+  'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'
+].map(name=>'/'+name+'.html'));
+const autoStatic=express.static(autoDist,{index:false,fallthrough:false,maxAge:0});
+const approvedAutoImages=Object.freeze({
+  '/dragan-business-phone.jpg':'image/jpeg',
+  '/dragan-business-portrait.jpg':'image/jpeg',
+  '/danini-auto-uvoz.webp':'image/webp',
+  '/danini-pregled-auta.webp':'image/webp'
+});
 app.use((req,res,next)=>{
-  // Use only the actual HTTP Host, NOT spoofable X-Forwarded-Host.
   const host=String(req.headers.host||'').split(':')[0].toLowerCase();
-  if(host!=='auto.daninihub.com')return next();
+  if(!autoRootEnabled||!['daninihub.com','www.daninihub.com'].includes(host))return next();
+  if(['/dragan-original-portrait.jpg','/dragan-business-grid-ai.png'].includes(req.path)){
+    return res.status(404).type('text/plain').send('Not found');
+  }
+  const isPage=req.path==='/'||autoPages.has(req.path);
+  const isImage=Object.prototype.hasOwnProperty.call(approvedAutoImages,req.path);
+  const isAsset=req.path.startsWith('/assets/');
+  if(!isPage&&!isImage&&!isAsset)return next();
+  if(req.method!=='GET'&&req.method!=='HEAD')return res.sendStatus(405);
   res.set({
+    // Preview stays unindexed until the legal operator and site claims are verified.
     'X-Robots-Tag':'noindex,nofollow',
     'Cache-Control':'no-store',
     'X-Content-Type-Options':'nosniff',
@@ -31,31 +53,13 @@ app.use((req,res,next)=>{
     'Permissions-Policy':'camera=(), microphone=(), geolocation=(), payment=()',
     'Content-Security-Policy':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; form-action 'self'; upgrade-insecure-requests"
   });
-  // Do not publish the owner's source portrait or the 3x3 grid. The owner
-  // approved ONLY individually cropped, clearly identified business scenes.
-  if(['/dragan-original-portrait.jpg','/dragan-business-grid-ai.png'].includes(req.path)){
-    return res.status(404).type('text/plain').send('Not found');
-  }
-  if(req.path==='/robots.txt')return res.type('text/plain').send('User-agent: *\nDisallow: /\n');
-  // Hostinger's proxy returned 502 for ordinary streamed JPEG responses
-  // even while HTML and error routes worked. Send approved fixed-size images
-  // as bounded buffers; never accept arbitrary file paths or user uploads.
-  const approvedImages=Object.freeze({
-    '/dragan-business-phone.jpg':'image/jpeg',
-    '/dragan-business-portrait.jpg':'image/jpeg',
-    '/danini-auto-uvoz.webp':'image/webp',
-    '/danini-pregled-auta.webp':'image/webp'
-  });
-  if(Object.prototype.hasOwnProperty.call(approvedImages,req.path)){
-    if(req.method!=='GET'&&req.method!=='HEAD')return res.sendStatus(405);
+  if(isImage){
     const absolute=path.join(autoDist,req.path.slice(1));
     try{
       const stat=fs.statSync(absolute);
       if(!stat.isFile()||stat.size<100||stat.size>2000000)throw Error('image unavailable');
       const image=fs.readFileSync(absolute);
-      res.set('Content-Type',approvedImages[req.path]);
-      // Public, immutable-in-content images may be cached briefly by the
-      // Hostinger edge, reducing concurrent backend reads and 502 bursts.
+      res.set('Content-Type',approvedAutoImages[req.path]);
       res.set('Cache-Control','public, max-age=300, must-revalidate');
       res.set('Content-Length',String(image.length));
       return req.method==='HEAD'?res.status(200).end():res.status(200).end(image);
@@ -63,22 +67,11 @@ app.use((req,res,next)=>{
       return res.status(404).type('text/plain').send('Image not found');
     }
   }
-
-  if(req.path==='/health' && req.method==='GET')return res.json({
-    ok:true,service:'AutoDanini preview',releaseMode:'public-visual-only',
-    adminEnabled:false,accountsEnabled:false,checkoutEnabled:false,
-    durableStore:false
-  });
-  if(req.path.startsWith('/api/')||req.path==='/owner'||req.path.startsWith('/owner/')){
-    return res.status(503).json({ok:false,error:'AUTODANINI_INTERACTIVE_SERVICES_NOT_RELEASED'});
-  }
-  if(req.method!=='GET'&&req.method!=='HEAD'){
-    return res.status(405).type('text/plain').send('Not available in this preview');
-  }
   if(!fs.existsSync(path.join(autoDist,'index.html'))){
     return res.status(503).type('text/plain').send('AutoDanini release build unavailable');
   }
-  return express.static(autoDist,{index:'index.html',fallthrough:false,maxAge:0})(req,res,next);
+  if(req.path==='/')return res.sendFile(path.join(autoDist,'index.html'));
+  return autoStatic(req,res,next);
 });
 
 app.get('/health',async(req,res)=>{

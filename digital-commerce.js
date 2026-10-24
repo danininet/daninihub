@@ -36,6 +36,7 @@ function enabled(app){
   return process.env.DANINI_DIGITAL_CHECKOUT_ENABLED==='true' &&
     process.env.PAYPAL_CLIENT_ID &&
     process.env.PAYPAL_CLIENT_SECRET &&
+    process.env.PAYPAL_WEBHOOK_ID &&
     ['live','sandbox'].includes(process.env.PAYPAL_ENV) &&
     (process.env.PAYPAL_ENV==='live'?(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'').toLowerCase()==='draganganet@gmail.com':RE.test(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'')) &&
     (process.env.DANINI_DIGITAL_SIGNING_SECRET||'').length>=32 &&
@@ -140,7 +141,7 @@ function mountDigitalCommerce(app){
   app.get('/api/danini/digital/status',async(req,res)=>{
     try{await store.init()}catch{return res.status(503).json({ok:false,enabled:false})}
     res.set({'Cache-Control':'no-store','X-Robots-Tag':'noindex,nofollow'});
-    res.json({ok:true,enabled:Boolean(enabled(app)),delivery:'private-pdf-after-paypal-capture'});
+    res.json({ok:true,enabled:Boolean(enabled(app)),softwareEnabled:process.env.DANINI_SOFTWARE_READY==='true',delivery:'private-pdf-after-paypal-capture'});
   });
   app.post('/api/danini/digital/checkout',express.json({limit:'12kb'}),async(req,res)=>{
     res.set('Cache-Control','no-store');
@@ -149,6 +150,7 @@ function mountDigitalCommerce(app){
     const d=req.body||{},sku=d.sku,language=d.language==='de'?'de':'sr',email=String(d.email||'').trim().toLowerCase();
     if(!Object.hasOwn(SKU,sku)||!RE.test(email)||email.length>191)return res.status(400).json({ok:false,error:'INVALID_ORDER_DATA'});
     if(d.termsAccepted!==true||d.instantDeliveryConsent!==true)return res.status(400).json({ok:false,error:'TERMS_CONSENT_REQUIRED'});
+    if(sku==='software'&&process.env.DANINI_SOFTWARE_READY!=='true')return res.status(503).json({ok:false,error:'SOFTWARE_DELIVERY_NOT_READY'});
     const reference='DGD-'+crypto.randomBytes(18).toString('hex').toUpperCase();
     try{
       const order=await api('/v2/checkout/orders',{method:'POST',requestId:'DANINI-'+reference,

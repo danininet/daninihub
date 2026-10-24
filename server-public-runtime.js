@@ -207,7 +207,7 @@ function mountPublicRuntime(app){
     if(PUBLIC_ROUTES.includes(canonicalRoute)){
       const send=res.send.bind(res);
       res.send=body=>{
-        if(!res.get('Cache-Control'))res.set('Cache-Control',Object.keys(req.query).length?'no-store':'public, max-age=0, s-maxage=300, stale-while-revalidate=60');
+        res.set('Cache-Control',Object.keys(req.query).length?'no-store':'public, max-age=0, s-maxage=300, stale-while-revalidate=60');
         return send(typeof body==='string'?seoPage(body,canonicalRoute):body);
       };
     }

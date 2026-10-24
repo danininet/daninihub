@@ -5,6 +5,7 @@
   const sr=document.documentElement.lang!=='de';
   const msg=(a,b)=>sr?a:b;
   let ready=false;
+  let resultSoftwareEnabled=false;
   function status(form,label){
     const el=form.querySelector('.danini-digital-status');
     if(el)el.textContent=label;
@@ -14,17 +15,18 @@
       const response=await fetch('/api/danini/digital/status',{cache:'no-store'});
       const result=await response.json();
       ready=response.ok && result.enabled===true;
+      resultSoftwareEnabled=result.softwareEnabled===true;
     }catch{ready=false}
     for(const form of forms){
-      form.querySelector('button').disabled=!ready;
-      status(form,ready
+      form.querySelector('button').disabled=!(ready && (form.dataset.sku!=='software' || resultSoftwareEnabled));
+      status(form,ready && (form.dataset.sku!=='software'||resultSoftwareEnabled)
         ? msg('Plaćanje se potvrđuje direktno kroz PayPal. PDF je dostupan odmah po uspešnoj uplati.','PayPal bestätigt Ihre Zahlung. PDF-Download direkt nach erfolgreicher Zahlung.')
         : msg('Automatska kupovina još nije aktivirana. Za naručivanje trenutno koristite WhatsApp, bez uplate unapred.','Automatischer Kauf ist noch nicht freigeschaltet. Bitte per WhatsApp anfragen und vorerst nicht bezahlen.'));
     }
   }
   for(const form of forms)form.addEventListener('submit',async event=>{
     event.preventDefault();
-    if(!ready)return;
+    if(!ready || (form.dataset.sku==='software'&&!resultSoftwareEnabled))return;
     if(!form.reportValidity())return;
     const button=form.querySelector('button');
     button.disabled=true;
@@ -45,7 +47,7 @@
       window.location.assign(url.href);
     }catch(e){
       status(form,msg('Plaćanje trenutno nije dostupno. Niste zaduženi na ovoj stranici. Obratite nam se na WhatsApp.','Zahlung derzeit nicht verfügbar. Hier wurde nichts abgebucht. Bitte per WhatsApp anfragen.'));
-      button.disabled=!ready;
+      button.disabled=!(ready && (form.dataset.sku!=='software'||resultSoftwareEnabled));
     }
   });
   probe();

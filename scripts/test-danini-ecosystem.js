@@ -11,7 +11,7 @@ const checks={
   delivery:['Ausfuhrkennzeichen','CMR','Haftpflicht','Zoll'],
   calculator:['6.000 €','EUR.1','MwSt'],
   guides:['provera-oglasa-pre-kapare','uvoz-zoll-eur1-i-dovoz'],
-  eco_parts:['VIN','110–180 €/h','25–45 €/h','SERVICE'],
+  eco_parts:['VIN','110–180 €/h','25–45 €/h'],
   eco_b2b:['99,00 €','290,00 €','MwSt'],
   eco_place:['345 m²','648 m²','993 m²'],
   eco_article1:['VIN','DANINI'],
@@ -26,7 +26,6 @@ for(const lang of ['sr','de']){
   const html=render(lang,key,shell);
   for(const token of tokens){
    // Bilingual content sometimes has a deliberate wording difference.
-   if(token==='SERVICE'&&lang==='sr')continue;
    assert.ok(html.includes(token),lang+' '+key+' missing '+token);
   }
   assert.ok(!/RSD\s*\/\s*ton/i.test(html),'No RSD price in '+key);

@@ -1,6 +1,13 @@
 'use strict';
 
-require('dotenv').config({path:require('path').join(__dirname,'.env')});
+// Preserve existing Hostinger environment variables. Existing .env may be in
+// the application root or the Node process working directory, depending on
+// hosting release layout. Dotenv never overrides already configured variables.
+const nodePath=require('node:path');
+const dotenv=require('dotenv');
+const projectEnv=nodePath.join(__dirname,'.env');
+dotenv.config({path:projectEnv,quiet:true});
+if(process.cwd()!==__dirname)dotenv.config({path:nodePath.join(process.cwd(),'.env'),quiet:true});
 const express=require('express');
 const {mountImportOSRuntime}=require('./server-importos-runtime');
 const {mountPublicRuntime}=require('./server-public-runtime');

@@ -24,9 +24,18 @@ async function diagnosis(){
   try{const x=await dns.lookup('github.com');console.log('Runner comparison: github.com resolved (IPv'+x.family+')');}catch(error){console.log('Runner comparison DNS FAILED:',String(error.code||error.message));}
 }
 async function check(){
-  const s=await get('/sr/'),de=await get('/de/'),home=await get('/');
-  if(!brandFound(s.text)||!brandFound(de.text)||!brandFound(home.text))return {deployed:false,s,de,home};
-  return {deployed:true,s,de,home};
+  const [s,de,home,lead,form]=await Promise.all([
+    get('/sr/'),get('/de/'),get('/'),get('/api/importos/lead-readiness'),get('/danini-order.js')
+  ]);
+  let body;
+  try{body=JSON.parse(lead.text)}catch{body={}}
+  const deployed=brandFound(s.text)&&brandFound(de.text)&&brandFound(home.text) &&
+    s.text.includes('Jasna ponuda za stvaran automobil') &&
+    de.text.includes('Klares Angebot für ein konkretes Fahrzeug') &&
+    lead.status===200 && body.ok===true && typeof body.onlineIntakeReady==='boolean' &&
+    form.status===200 && form.text.includes('danini-order-online-submit') &&
+    !form.text.includes('paypal.me');
+  return {deployed,s,de,home,lead,form,leadStatus:body};
 }
 async function main(){
   console.log('AutoDanini GitHub → Hostinger read-only QA',new Date().toISOString());
@@ -34,13 +43,16 @@ async function main(){
   for(let attempt=1;attempt<=pauses;attempt++){
     state=await check();
     if(state.deployed)break;
-    console.log('Connection diagnosis:',JSON.stringify({sr:{status:state.s.status,error:state.s.error,url:state.s.url},de:{status:state.de.status,error:state.de.error,url:state.de.url},root:{status:state.home.status,error:state.home.error,url:state.home.url}}));
+    console.log('Connection diagnosis:',JSON.stringify({sr:{status:state.s.status,error:state.s.error,url:state.s.url},de:{status:state.de.status,error:state.de.error,url:state.de.url},root:{status:state.home.status,error:state.home.error,url:state.home.url},lead:{status:state.lead.status,error:state.lead.error},form:{status:state.form.status,error:state.form.error}}));
     if(attempt===1)await diagnosis();
     console.log('Current site not yet showing this version; deployment attempt',attempt+'/'+pauses);
     if(attempt<pauses)await sleep(24000);
   }
   if(!state.deployed)add('AutoDanini deployment detected',false,'Root and both languages must contain new brand and editorial proof; '+(state.s.error||state.de.error||state.home.error||'the server may still be deploying')+'.');
   else add('AutoDanini deployment detected',true,'Existing single domain serves the new SR/DE storefront.');
+  add('Full AutoDanini sales form',state.form.status===200 && state.form.text.includes('danini-order-online-submit') && !state.form.text.includes('paypal.me'),'HTTP '+state.form.status+'; no premature PayPal.Me link');
+  add('ImportOS lead endpoint',state.lead.status===200 && state.leadStatus.ok===true && typeof state.leadStatus.onlineIntakeReady==='boolean','HTTP '+state.lead.status);
+  console.log('INFO | Production online lead automation | '+(state.leadStatus.onlineIntakeReady===true?'READY: MySQL and Brevo sender configured':'BLOCKED: MySQL and/or Brevo sender not ready; WhatsApp/e-mail remain available'));
   for(const [language,page] of [['SR',state.s],['DE',state.de],['ROOT',state.home]]){
     const ok=page.status===200 && !/2[–-]4 radna sata|2 do 4 radna sata|2 bis 4 Arbeitsstunden|Antwortziel per WhatsApp/.test(page.text);
     add(language+' no invented response SLA',ok,'HTTP '+page.status+(page.error?' ('+page.error+')':''));

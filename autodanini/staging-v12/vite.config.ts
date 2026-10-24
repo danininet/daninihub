@@ -89,7 +89,7 @@ function packageOriginalPhotos(){
     html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
     const socialImage=ownerPage?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
     html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
-      '$1https://auto.daninihub.com/'+socialImage);
+      '$1https://daninihub.com/'+socialImage);
     writeFileSync(dest,html);
   }
   // Historical business grid URLs must resolve to ONE approved individual

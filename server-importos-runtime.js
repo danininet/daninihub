@@ -243,7 +243,7 @@ function mountImportOSRuntime(app){
   app.post('/api/importos/service-request',async(req,res)=>{
     const data=req.body||{};
     if(data.website)return res.status(400).json({ok:false,error:'INVALID_REQUEST'});
-    if(!limitLeads(req))return res.status(429).json({ok:false,error:'TOO_MANY_REQUESTS'});
+    if(data.source==='autodanini-web'&&!limitLeads(req))return res.status(429).json({ok:false,error:'TOO_MANY_REQUESTS'});
     const email=clean(data.email,191).toLowerCase();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({ok:false,error:'VALID_EMAIL_REQUIRED'});
     if(data.privacyAcknowledged!==true)return res.status(400).json({ok:false,error:'PRIVACY_NOTICE_REQUIRED'});

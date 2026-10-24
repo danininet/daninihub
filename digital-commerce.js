@@ -37,7 +37,7 @@ function enabled(app){
     process.env.PAYPAL_CLIENT_ID &&
     process.env.PAYPAL_CLIENT_SECRET &&
     ['live','sandbox'].includes(process.env.PAYPAL_ENV) &&
-    (process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'').toLowerCase()==='draganganet@gmail.com' &&
+    (process.env.PAYPAL_ENV==='live'?(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'').toLowerCase()==='draganganet@gmail.com':RE.test(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'')) &&
     (process.env.DANINI_DIGITAL_SIGNING_SECRET||'').length>=32 &&
     process.env.DANINI_PUBLIC_URL===fixedOrigin &&
     store&&store.mode==='mysql' && privateFile();
@@ -46,7 +46,12 @@ function sign(ref,sku,expires){
   const message=[ref,sku,String(expires)].join('.');
   return crypto.createHmac('sha256',process.env.DANINI_DIGITAL_SIGNING_SECRET||'not-configured').update(message).digest('base64url');
 }
-function tokenFor(record,expires=Date.now()+MAX_AGE){
+function tokenFor(record,expires){
+  const paidAt=Date.parse(record?.payload?.paymentVerifiedAt||'');
+  if(!Number.isFinite(paidAt))throw Error('PAYMENT_TIMESTAMP_REQUIRED');
+  const deadline=paidAt+MAX_AGE;
+  expires=expires===undefined?deadline:expires;
+  if(expires>deadline)throw Error('DOWNLOAD_EXPIRY_OUT_OF_BOUNDS');
   const sku=record?.payload?.sku;
   if(!Object.hasOwn(SKU,sku)||!record?.reference)throw Error('INVALID_ORDER');
   const t=[record.reference,sku,String(expires),sign(record.reference,sku,expires)].join('.');
@@ -57,7 +62,8 @@ function validToken(record,token,now=Date.now()){
   const parts=token.split('.');
   if(parts.length!==4||parts[0]!==record.reference||parts[1]!==record.payload?.sku||! /^\d{13}$/.test(parts[2]))return false;
   const exp=Number(parts[2]);
-  if(exp<=now||exp>now+MAX_AGE||!process.env.DANINI_DIGITAL_SIGNING_SECRET)return false;
+  const paidAt=Date.parse(record.payload?.paymentVerifiedAt||'');
+  if(!Number.isFinite(paidAt)||exp>paidAt+MAX_AGE||exp<=now||exp>now+MAX_AGE||!process.env.DANINI_DIGITAL_SIGNING_SECRET)return false;
   const expected=sign(parts[0],parts[1],exp);
   const provided=Buffer.from(parts[3]||'','utf8');
   const correct=Buffer.from(expected,'utf8');
@@ -131,12 +137,14 @@ function page(lang,record,url){
 }
 function mountDigitalCommerce(app){
   const store=app.locals.importOSStore;
-  app.get('/api/danini/digital/status',(req,res)=>{
+  app.get('/api/danini/digital/status',async(req,res)=>{
+    try{await store.init()}catch{return res.status(503).json({ok:false,enabled:false})}
     res.set({'Cache-Control':'no-store','X-Robots-Tag':'noindex,nofollow'});
     res.json({ok:true,enabled:Boolean(enabled(app)),delivery:'private-pdf-after-paypal-capture'});
   });
   app.post('/api/danini/digital/checkout',express.json({limit:'12kb'}),async(req,res)=>{
     res.set('Cache-Control','no-store');
+    try{await store.init()}catch{return res.status(503).json({ok:false,error:'STORAGE_UNAVAILABLE'})}
     if(!enabled(app))return res.status(503).json({ok:false,error:'DIGITAL_CHECKOUT_NOT_READY'});
     const d=req.body||{},sku=d.sku,language=d.language==='de'?'de':'sr',email=String(d.email||'').trim().toLowerCase();
     if(!Object.hasOwn(SKU,sku)||!RE.test(email)||email.length>191)return res.status(400).json({ok:false,error:'INVALID_ORDER_DATA'});
@@ -156,6 +164,7 @@ function mountDigitalCommerce(app){
   });
   app.get('/digital/paypal/return',async(req,res)=>{
     res.set({'Cache-Control':'no-store','X-Robots-Tag':'noindex,nofollow','Referrer-Policy':'no-referrer'});
+    try{await store.init()}catch{return res.sendStatus(503)}
     if(!enabled(app))return res.status(503).type('text/plain').send('Checkout unavailable');
     const reference=String(req.query.ref||''),orderId=String(req.query.token||'');
     if(!/^DGD-[0-9A-F]{36}$/.test(reference)||!/^[A-Z0-9-]{8,80}$/.test(orderId))return res.sendStatus(400);
@@ -166,6 +175,7 @@ function mountDigitalCommerce(app){
   });
   app.get('/digital/download/:reference',async(req,res)=>{
     res.set({'Cache-Control':'private, no-store, max-age=0','Pragma':'no-cache','X-Robots-Tag':'noindex,nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; frame-ancestors 'none'"});
+    try{await store.init()}catch{return res.sendStatus(503)}
     if(!enabled(app))return res.sendStatus(503);
     const ref=String(req.params.reference||'');
     if(!/^DGD-[0-9A-F]{36}$/.test(ref))return res.sendStatus(404);
@@ -178,6 +188,7 @@ function mountDigitalCommerce(app){
     });
   });
   app.post('/api/danini/digital/paypal/webhook',express.json({limit:'100kb'}),async(req,res)=>{
+    try{await store.init()}catch{return res.sendStatus(503)}
     if(!process.env.PAYPAL_WEBHOOK_ID||!enabled(app))return res.sendStatus(503);
     try{
       const body=req.body||{};

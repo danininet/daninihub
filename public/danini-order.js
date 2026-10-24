@@ -5,20 +5,20 @@
 (() => {
   const PHONE = '4915730916621';
   const PAYPAL = 'https://www.paypal.me/dragangaganet/9.90EUR';
-  const CHECKOUT = {passport:PAYPAL, oe:'https://www.paypal.me/dragangaganet/19EUR', combo:'https://www.paypal.me/dragangaganet/29.90EUR', transport:'https://www.paypal.me/dragangaganet/59EUR', b2b:'https://www.paypal.me/dragangaganet/99EUR'};
-  const AMOUNT = {passport:'9,90 €',oe:'19,00 €',combo:'29,90 €',transport:'59,00 €',b2b:'99,00 €'};
+  const CHECKOUT = {passport:PAYPAL, oe:'https://www.paypal.me/dragangaganet/19EUR', combo:'https://www.paypal.me/dragangaganet/29.90EUR',vat:'https://www.paypal.me/dragangaganet/49EUR',guide:'https://www.paypal.me/dragangaganet/49EUR',transport:'https://www.paypal.me/dragangaganet/59EUR',b2b:'https://www.paypal.me/dragangaganet/99EUR',software:'https://www.paypal.me/dragangaganet/149EUR'};
+  const AMOUNT = {passport:'9,90 €',oe:'19,00 €',combo:'29,90 €',vat:'49,00 €',guide:'49,00 €',transport:'59,00 €',field:'od 79,00 €',b2b:'99,00 €',software:'149,00 €'};
   const de = document.documentElement.lang === 'de';
   const t = (sr, german) => de ? german : sr;
   const services = {
-    passport: t('Import Passport — Poziv prodavcu i provera papira (9,90 €)',
-      'Import Passport — Verkäuferanruf und Dokumentencheck (9,90 €)'),
-    field: t('Field Check — Pregled vozila uživo u Nemačkoj (od 79 €)',
-      'Field Check — Fahrzeugbesichtigung in Deutschland (ab 79 €)'),
-    delivery: t('Upit za dovoz vozila', 'Anfrage zur Fahrzeugüberführung'),
-    oe: t('OE servis i originalni delovi po VIN-u (19,00 €)', 'OE-Service und Originalteile nach VIN (19,00 €)'),
-    combo: t('SVE PRE KUPOVINE: Passport + OE + ruta (29,90 €)', 'ALLES VOR DEM KAUF: Passport + OE + Route (29,90 €)'),
-    transport: t('Koordinacija šlepera ili dovoza na točkovima (59,00 €)', 'Lkw- oder Fahrerüberführung koordinieren (59,00 €)'),
-    b2b: t('B2B pretraga do tri vozila (99,00 €)', 'B2B Suche nach bis zu drei Fahrzeugen (99,00 €)')
+    passport: t('Import Passport — Poziv prodavcu i provera oglasa (9,90 €)','Import Passport — Verkäuferanruf und Inseratcheck (9,90 €)'),
+    oe: t('OE servisni plan i originalni delovi po VIN-u (19,00 €)','OE-Serviceplan und Originalteile nach VIN (19,00 €)'),
+    combo: t('Combo — Sve pre kupovine (29,90 €)','Kombi — Alles vor dem Kauf (29,90 €)'),
+    vat: t('Asistencija za 19% MwSt, ABD/MRN (49,00 €)','19% MwSt., ABD/MRN-Assistenz (49,00 €)'),
+    guide: t('Auto-Biznis Master Vodič — PDF (49,00 €)','Auto-Business Master-Guide — PDF (49,00 €)'),
+    transport: t('Koordinacija transporta / na točkovima (59,00 €)','Transport / Fahrerüberführung koordinieren (59,00 €)'),
+    field: t('Field Check — Fizički pregled NRW (od 79,00 €)','Field Check — Fahrzeugbesichtigung NRW (ab 79,00 €)'),
+    b2b: t('B2B Sourcing — do tri vozila (99,00 €)','B2B Sourcing — bis drei Fahrzeuge (99,00 €)'),
+    software: t('DANINI Softverski Paket + Vodič GRATIS (149,00 €)','DANINI Softwarepaket + Guide GRATIS (149,00 €)')
   };
 
   function validLink(value) {
@@ -38,6 +38,9 @@
     const intent = {
       passport:t('Import Passport 9,90 €','Import Passport 9,90 €'),
       field:t('Field Check od 79 €','Field Check ab 79 €'),
+      vat:t('MwSt. / ABD / MRN asistencija 49,00 €','MwSt. / ABD / MRN Assistenz 49,00 €'),
+      guide:t('PDF Master Vodič 49,00 €','PDF Master-Guide 49,00 €'),
+      software:t('Softverski Paket 149,00 €, vodič GRATIS','Softwarepaket 149,00 €, Guide GRATIS'),
       delivery:t('Dovoz: tražim individualnu ponudu','Überführung: individuelles Angebot'),
       oe:t('OE servis i delovi 19,00 €','OE Service und Teile 19,00 €'),
       combo:t('Sve pre kupovine 29,90 €','Alles vor dem Kauf 29,90 €'),
@@ -88,19 +91,19 @@
         '1. Inserat per WhatsApp an Dragan senden') + '</span></a>',
       '<div class="danini-payment" hidden>',
       '<p><strong>' + t(
-        'Nakon slanja oglasa na WhatsApp, uplatu za Import Passport (9,90 €) izvršite ovde:',
-        'Nach dem Versand des Inserats per WhatsApp können Sie den Import Passport (9,90 €) hier bezahlen:') +
+        'Nakon potvrde usluge putem WhatsApp-a možete izvršiti odgovarajuću PayPal uplatu:',
+        'Nach Bestätigung der Leistung per WhatsApp können Sie den passenden PayPal-Betrag bezahlen:') +
         '</strong></p>',
       '<a class="danini-order-pay" href="' + PAYPAL +
         '" target="_blank" rel="noopener noreferrer">2. ' +
         t('Plati 9,90 € preko PayPal-a', '9,90 € über PayPal bezahlen') + '</a>',
       '<p class="danini-order-note">' + t(
-        'PayPal.Me ne povezuje automatski uplatu sa oglasom. Pošaljite potvrdu u istom WhatsApp razgovoru; pre početka usluge potvrđujemo obim i dostupnost.',
-        'PayPal.Me ordnet die Zahlung nicht automatisch dem Inserat zu. Bitte senden Sie den Beleg im gleichen WhatsApp-Chat; Umfang und Verfügbarkeit werden vorab bestätigt.') + '</p>',
+        'PayPal.Me ne povezuje automatski uplatu sa narudžbinom. Pošaljite potvrdu u WhatsApp razgovoru; PDF dostavljamo privatno tek nakon provere uplate. Za dva proizvoda od 49 € obavezno navedite naziv.',
+        'PayPal.Me ordnet die Zahlung nicht automatisch zu. Bitte Zahlungsbeleg per WhatsApp senden; PDF erst nach Prüfung privat. Bei 49-€-Angeboten bitte die Leistung nennen.') + '</p>',
       '</div>',
       '<p class="danini-order-note">' + t(
-        'Import Passport: 9,90 €. Field Check: od 79 €, po potvrđenoj lokaciji i obimu. Upit za dovoz: bez obaveze plaćanja.',
-        'Import Passport: 9,90 €. Field Check: ab 79 € je nach Standort und Umfang. Transportanfrage: ohne Zahlungspflicht.') +
+        'Odaberite jednu od 9 usluga. Za PDF i softver nije potreban oglas. PayPal.Me nije automatska potvrda uplate niti isporuka digitalnog proizvoda.',
+        'Wählen Sie eine der 9 Leistungen. Für PDF und Software ist kein Inserat nötig. PayPal.Me bestätigt keine Zahlung und liefert kein digitales Produkt automatisch.') +
         '</p>',
       '</section>'
     ].join('');
@@ -117,8 +120,9 @@
     function update() {
       payment.hidden = true;
       const raw = input.value.trim();
-      const exempt = ['oe','b2b','transport','delivery'].includes(select.value);
-      const valid = validLink(raw) || (exempt && !raw && details.value.trim().length >= 10);
+      const exempt = ['oe','b2b','transport','field','vat'].includes(select.value);
+      const digital = ['guide','software'].includes(select.value);
+      const valid = validLink(raw) || (exempt && !raw && details.value.trim().length >= 10) || (digital && !raw);
       let recognized = false;
       if (validLink(raw)) {
         const hostname = new URL(raw).hostname.toLowerCase();
@@ -127,10 +131,10 @@
           hostname === 'autoscout24.com' || hostname.endsWith('.autoscout24.com');
       }
       urlStatus.classList.toggle('recognized',recognized);
-      urlStatus.textContent = !raw ? t('Zalepi link da aktiviraš WhatsApp dugme.',
+      urlStatus.textContent = !raw && !digital ? t('Zalepi link ili unesi specifikaciju da aktiviraš WhatsApp dugme.',
         'Inserat-Link einfügen, um WhatsApp zu aktivieren.')
-        : !valid ? t('Unesi link oglasa ili barem 10 znakova specifikacije za OE, B2B ili transport.',
-          'Bitte Inserat-Link oder mindestens 10 Zeichen für OE, B2B oder Transport eingeben.')
+        : !valid ? t('Unesi link ili najmanje 10 znakova specifikacije za terenske usluge.',
+          'Bitte Inserat-Link oder mindestens 10 Zeichen zur Vor-Ort-Leistung eingeben.')
         : recognized ? t('✓ Oglas prepoznat — spreman za slanje.',
           '✓ Inserat erkannt — versandbereit.')
         : t('✓ Link je ispravan — spreman za slanje.',
@@ -152,8 +156,9 @@
     details.addEventListener('input', update);
     select.addEventListener('change', update);
     whatsapp.addEventListener('click', (event) => {
-      const exempt = ['oe','b2b','transport','delivery'].includes(select.value);
-      if (!(validLink(input.value.trim()) || (exempt && !input.value.trim() && details.value.trim().length >= 10))) {
+      const exempt = ['oe','b2b','transport','field','vat'].includes(select.value);
+      const digital = ['guide','software'].includes(select.value);
+      if (!(validLink(input.value.trim()) || (exempt && !input.value.trim() && details.value.trim().length >= 10) || (digital && !input.value.trim()))) {
         event.preventDefault();
         input.setCustomValidity(t('Unesite ispravan link oglasa pre slanja.',
           'Bitte zuerst einen gültigen Inserat-Link eingeben.'));

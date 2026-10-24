@@ -38,7 +38,7 @@
     if (details) lines.push(t('Opis zahteva: ', 'Beschreibung: ') + details);
     lines.push(t('Molim pisanu ponudu sa obimom usluge, ukupnom cenom i rokom, pre bilo kakve uplate.',
       'Bitte ein schriftliches Angebot mit Leistungsumfang, Gesamtpreis und Termin vor einer Zahlung.'));
-    return lines.join('\\n');
+    return lines.join('\n');
   }
 
   function mount(host, index) {

@@ -13,7 +13,17 @@ process.env.DANINI_IMPORTOS_STORAGE_FILE=path.join(tmp,'records.json');
 process.env.DANINI_ADMIN_SECRET='test-only-owner-secret';
 process.env.BREVO_API_KEY='';
 process.env.DB_HOST='';
+process.env.DATABASE_URL='';
+process.env.MYSQL_URL='';
 process.env.DANINI_IMPORTOS_CHECKOUT_ENABLED='';
+const {databaseConfigured,ImportOSStore}=require('../importos-store');
+assert.equal(databaseConfigured({DATABASE_URL:'mysql://old_user:test-password@mysql.example.invalid:3306/old_database'}),true);
+assert.equal(databaseConfigured({MYSQL_URL:'mariadb://user:secret@localhost/db'}),true);
+assert.equal(databaseConfigured({DATABASE_URL:'postgresql://user:secret@localhost/db'}),false);
+const oldStyle=new ImportOSStore({env:{DATABASE_URL:'mysql://old_user:test-password@mysql.example.invalid:3306/old_database'}});
+assert.equal(oldStyle.mode,'mysql');
+assert.equal(oldStyle.connectionOptions.database,'old_database');
+assert.equal(oldStyle.connectionOptions.user,'old_user');
 const {mountImportOSRuntime}=require('../server-importos-runtime');
 async function main(){
   const app=express();mountImportOSRuntime(app);

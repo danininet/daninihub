@@ -37,24 +37,9 @@ function home(lang){
  {file:IMG.service,num:'05',title:sr?'OE delovi i servis po VIN-u':'OE-Teile und Service nach VIN',lead:sr?'Provera delova, mali/veliki servis i uporedni rasponi DE vs Srbija.':'Teileabgleich, Wartungsplan und Kostenspannen DE vs Serbien.',link:paths.parts},
  {file:IMG.b2b,num:'06',title:sr?'B2B nabavka vozila + Čalije':'B2B Fahrzeugsuche + Niš',lead:sr?'Do tri kandidata za firmu, opcija pojedinačne nabavke i poslovni plac u Nišu.':'Bis drei Kandidaten für Unternehmen, Sourcing und Gewerbefläche in Niš.',link:paths.b2b}
  ];
- const plans=sr?[
- ['IMPORT PASSPORT','9,90 €','Skener oglasa, sedam pitanja prodavcu, status EUR.1 / porekla i PDF dosije (na osnovu dostupnih podataka).'],
- ['OE SERVIS & DELOVI','19,00 €','VIN + HSN/TSN kada postoje; lista kompatibilnih OE/OEM delova i plan održavanja.'],
- ['SVE PRE KUPOVINE · COMBO','29,90 €','Import Passport + OE plan + kontrolna lista izvozne tablice, osiguranje i ruta.'],
- ['TRANSPORT KOORDINACIJA','59,00 €','Zahtev za ponude CMR prevoznika ili procena dovoza na točkovima; cena samog dovoza nije uključena.'],
- ['FIELD CHECK NRW','od 79 €','Pregled vidljivog stanja uživo, dostupnost i putni trošak po ponudi.'],
- ['B2B · DO 3 VOZILA','99,00 €','Ciljana pretraga do tri kandidata sa proverom dostupnih podataka.']
- ]:[
- ['IMPORT PASSPORT','9,90 €','Inserat-Check, sieben Verkäuferfragen, Ursprungs-/EUR.1-Status und PDF-Dossier aus verfügbaren Angaben.'],
- ['OE SERVICE & TEILE','19,00 €','VIN + HSN/TSN soweit vorhanden; OE/OEM-Teileliste und Wartungsplan.'],
- ['ALLES VOR DEM KAUF · COMBO','29,90 €','Import Passport + Teileplan + Checkliste für Ausfuhrkennzeichen, Versicherung und Strecke.'],
- ['TRANSPORTKOORDINATION','59,00 €','CMR-Transportangebote oder Überführungsplanung; reine Frachtkosten nicht enthalten.'],
- ['FIELD CHECK NRW','ab 79 €','Sichtprüfung vor Ort; Verfügbarkeit und Anfahrt nach Angebot.'],
- ['B2B · BIS 3 FAHRZEUGE','99,00 €','Gezielte Suche nach bis zu drei Kandidaten und Prüfung verfügbarer Daten.']
- ];
  return section(header('DANINI · 04 / 05 / 06',sr?'Transport · OE delovi · B2B':'Überführung · OE-Teile · B2B',sr?'Tri dodatna pravca usluge, sa zasebnim stranama i uslovima.':'Drei zusätzliche Leistungen mit eigenen Seiten und Leistungsgrenzen.')+
  '<div class="grid">'+cards.map(c=>'<a class="card feature" href="'+c.link+'">'+media(c.file,c.title)+'<span class="eyebrow">'+c.num+'</span><h3>'+c.title+'</h3><p>'+c.lead+'</p><strong>'+(sr?'Detalji':'Details')+' →</strong></a>').join('')+'</div>')+
- section(header('DANINI · EUR',sr?'Cenovnik pre narudžbine':'Preise vor Beauftragung',sr?'Prvo pošaljite oglas ili specifikaciju na WhatsApp. Potvrdite raspoloživost i obim, zatim platite odgovarajući PayPal iznos.':'Erst Inserat oder Spezifikation per WhatsApp senden, Leistungsumfang klären, danach den richtigen PayPal-Betrag bezahlen.')+
+ section(header('DANINI · EUR',sr?'Cenovnik pre narudžbine':'Preise vor Beauftragung',sr?'Pošaljite oglas ili specifikaciju. Potvrđujemo izvodljivost, obim, cenu i termin pre ugovaranja i bilo kakve naplate.':'Inserat oder Spezifikation senden. Wir bestätigen Machbarkeit, Umfang, Preis und Termin vor Beauftragung und Zahlung.')+
  storefront.pricing(lang)+'<p class="muted">'+DISCLAIMER[lang]+'</p>'+button(paths.b2b,sr?'B2B upit':'B2B-Anfrage'));
 }
 const SERVICE_ROWS=[
@@ -80,11 +65,11 @@ function delivery(lang){
  const cases=sr?[
  ['01 · Kupac sam vozi','Zakazivanje u Zulassungsstelle; nemačke crvene izvozne tablice (Ausfuhrkennzeichen), registracioni dokumenti, polisa za sve tranzitne države, proverena ruta i ulazna špedicija. Trajanje tablica i polise (npr. 9, 15 ili 30 dana) proverava se prema ponudi i tehničkom pregledu. Žute Kurzzeitkennzeichen nisu pouzdan izvozni plan do Srbije.'],
  ['02 · Naš dovoz na točkovima','DANINI dogovara preuzimanje vozila u NRW, izvozne tablice / dokaz o izvozu (ABD kada je potreban), vozača, dokumenta i predaju na dogovorenoj carinskoj lokaciji u Srbiji. Cena zavisi od rute, kilometara, vozila i raspoloživosti.'],
- ['03 · Šleper / autotransporter','Koordinacija ponuda prevoznika za 59,00 €; ugovoreni prevoznik, važeće osiguranje odgovornosti po CMR-u i foto-zapisnik iz osam uglova pre primopredaje. Proveriti limite i izuzetke pokrića. Prevoz i osiguranje robe nisu uključeni u 59,00 €.']
+ ['03 · Šleper / autotransporter','Koordinacija ponuda prevoznika po dogovorenoj ceni; pre ugovaranja proveriti prevoznika, osiguranje odgovornosti po CMR-u i foto-zapisnik pre primopredaje. Proveriti limite i izuzetke pokrića. Troškovi prevoza i osiguranja robe računaju se posebno.']
  ]:[
  ['01 · Käufer fährt selbst','Termin bei Zulassungsstelle, rote Ausfuhrkennzeichen, Zulassungsunterlagen, Deckung in allen Transitstaaten, Strecke und Einfuhrspedition. Gültigkeit von Kennzeichen und Versicherung (z. B. 9, 15, 30 Tage) individuell prüfen. Gelbe Kurzzeitkennzeichen sind keine sichere Exportlösung nach Serbien.'],
  ['02 · Fahrerüberführung','DANINI koordiniert Übernahme in NRW, Exportkennzeichen und ggf. Ausfuhrbegleitdokument (ABD), Fahrer, Dokumente und Übergabe an der vereinbarten serbischen Zollstelle. Preis nur nach Strecke und Verfügbarkeit.'],
- ['03 · Lkw / Autotransporter','Für 59,00 € Angebote von Transportpartnern koordinieren, CMR-Haftungsdeckung und Foto-Protokoll aus acht Blickwinkeln anfragen. Haftungsgrenzen beachten. Fracht und Ladungsversicherung nicht im Koordinationsentgelt enthalten.']
+ ['03 · Lkw / Autotransporter','Transportangebote nach individueller Vereinbarung koordinieren; CMR-Haftungsdeckung und Foto-Protokoll vor der Übergabe prüfen. Haftungsgrenzen beachten. Fracht und Ladungsversicherung nicht im Koordinationsentgelt enthalten.']
  ];
  return section(header('DANINI · TRANSPORT',sr?'Tri načina da auto stigne do Srbije':'Drei Wege nach Serbien',sr?'Izbor prema stanju automobila, dokumentima i budžetu.':'Auswahl nach Fahrzeugzustand, Papieren und Budget.')+
  '<div class="grid">'+cases.map(x=>card(x[0],x[1])).join('')+'</div><div class="two">'+media(IMG.driving,sr?'Izvozna registracija i dovoz na točkovima':'Ausfuhrkennzeichen und Überführung')+media(IMG.truck,sr?'Transport vozila na kamionu':'Fahrzeugtransport per Lkw')+'</div>'+
@@ -128,12 +113,12 @@ function b2b(lang){
  sr?'Putnička i N1 vozila, tačna specifikacija, proverljive informacije i kontakt prodavca.':'Pkw und N1-Nutzfahrzeuge, konkrete Anforderungen, nachvollziehbare Angaben und Verkäuferkontakt.')+
  media(IMG.b2b,sr?'B2B nabavka vozila za firme':'B2B Fahrzeugsuche')+
  '<div class="grid">'+(sr?[
- ['B2B shortlist · 99,00 €','Do 3 kandidata prema marki, modelu, godištu, kilometraži, budžetu, lokaciji i zahtevima firme. Provera javnih i dostupnih podataka; ne znači tri fizička pregleda.'],
- ['B2B sourcing po vozilu · 290,00 €','Detaljnija koordinacija jednog odabranog vozila, pregovora, dokumentacije i opcija preuzimanja prema pisanoj specifikaciji. Troškovi automobila, puta i prevoza posebno.'],
+ ['B2B shortlist · cena po ponudi','Do 3 kandidata prema marki, modelu, godištu, kilometraži, budžetu, lokaciji i zahtevima firme. Provera javnih i dostupnih podataka; ne znači tri fizička pregleda.'],
+ ['B2B sourcing po vozilu · cena po ponudi','Detaljnija koordinacija jednog odabranog vozila, pregovora, dokumentacije i opcija preuzimanja prema pisanoj specifikaciji. Troškovi automobila, puta i prevoza posebno.'],
  ['19% MwSt ausweisbar','Tražimo oglase sa iskazanim PDV-om kada je relevantno. Iskazani PDV ne znači automatski povrat; transakcija, pravo na odbitak i dokaz izvoza moraju zadovoljiti poreske uslove.']
  ]:[
- ['B2B Shortlist · 99,00 €','Bis drei Kandidaten nach Marke, Modell, Laufleistung, Budget und Anforderungen; verfügbare Daten prüfen. Keine drei physischen Fahrzeugchecks.'],
- ['B2B Sourcing je Fahrzeug · 290,00 €','Erweiterte Koordination eines Fahrzeugs, Verhandlungen, Dokumente und Übergabe nach schriftlicher Spezifikation. Kaufpreis, Fahrt und Fracht extra.'],
+ ['B2B Shortlist · Preis nach Angebot','Bis drei Kandidaten nach Marke, Modell, Laufleistung, Budget und Anforderungen; verfügbare Daten prüfen. Keine drei physischen Fahrzeugchecks.'],
+ ['B2B Sourcing je Fahrzeug · Preis nach Angebot','Erweiterte Koordination eines Fahrzeugs, Verhandlungen, Dokumente und Übergabe nach schriftlicher Spezifikation. Kaufpreis, Fahrt und Fracht extra.'],
  ['19% MwSt ausweisbar','Nur sofern in der Anzeige und Rechnung tatsächlich ausweisbar. Ausgewiesene MwSt bedeutet keinen automatischen Vorsteuerabzug oder Rückerstattung; steuerliche Einzelfallprüfung ist erforderlich.']
  ]).map(p=>card(p[0],p[1])).join('')+'</div>'+button(PATHS[lang].place,sr?'Poslovni plac u Nišu':'Gewerbeflächen in Niš')+order('b2b'));
 }
@@ -153,12 +138,12 @@ article1:[
  ['2. Sedam pitanja koja postavljamo prodavcu','Pitajte ko je ugovorna strana; da li se prodaje im Kundenauftrag; postoji li uredan račun ili ugovor; šta pokazuje servisna istorija; da li je vozilo imalo sudar ili poznat kvar; da li je VIN dostupan; može li se dokumentovati preferencijalno poreklo. Odgovore beležimo kao izjave, ne kao nezavisno dokazane činjenice.'],
  ['3. Ne mešajte vizuelni pregled i tehničku garanciju','Video poziv i terenski obilazak prikazuju vidljivo stanje, razmake karoserije, gume, signalne lampice i dokumente. Mehaničar ili nezavisan tehnički pregled ima drugačiji obim. Ni jedan obilazak ne garantuje da nema skrivenih kvarova. Predvidite rezervu u budžetu.'],
  ['4. Finansijska bezbednost pre uplate','Proverite identitet prodavca i vlasnika računa. Za ozbiljnu kupovinu prednost dajte proverljivom bankarskom transferu prema ugovoru, a ne uplati trećoj osobi. Ako se račun, VIN ili cena iznenada promene, zaustavite postupak dok se ne objasni odstupanje.'],
- ['5. Koji paket ima smisla','Import Passport 9,90 € odgovara osnovnoj telefonskoj proveri i zapisu. Za OE plan po šasiji postoji paket 19,00 €, kombinacija 29,90 €, a vidljivi Field Check u NRW od 79 € uz odobrenu lokaciju. Prvo šaljete oglas na WhatsApp i dobijate potvrdu dostupnosti. PayPal uplata se ručno povezuje sa zahtevom.']
+ ['5. Koji paket ima smisla','Ponudu birajte prema stvarnoj potrebi: procena oglasa i dokumentacije, nezavisan pregled na licu mesta, organizacija dovoza ili delovi po VIN-u. Konkretan obim i cenu potvrđujemo pre ugovaranja. Ne plaćajte samo zato što ste otvorili WhatsApp.']
 ],
 article2:[
  ['1. Prvo proverite poreklo, ne lokaciju prodaje','Auto kupljen u Nemačkoj ne mora imati EU preferencijalno poreklo. Stopa carine od 0% zavisi od prihvaćenog dokaza. Za vrednost do 6.000 € može važiti propisana izjava na računu; iznad toga prema pravilima EUR.1 ili ovlašćeni izvoznik. Bez dokaza kalkulišite i scenario sa uobičajenom carinskom stopom do 12,5%.'],
  ['2. Račun i PDV nisu isto što i povrat PDV-a','Kod vozila fakturisanog uz nemačku Differenzbesteuerung obično nema posebno iskazanog 19% MwSt za povrat. Kod drugih računa izvoz i status kupca moraju biti pravilno dokumentovani. Izvozni ABD/MRN i izlazna potvrda su značajni, ali povrat nije automatsko pravo nakon skeniranja barkoda.'],
- ['3. Tri realna modela transporta','Samostalni dovoz podrazumeva crvene Ausfuhrkennzeichen, osiguranje za tranzit, ispravnost vozila i granicu. Profesionalni vozač preuzima na točkovima po dogovorenoj ruti. Šleper / kamion se ugovara kroz prevoznika sa odgovarajućom CMR odgovornošću i zapisnikom. Koordinacija ponuda 59,00 € nije sama cena šlepa.'],
+ ['3. Tri realna modela transporta','Samostalni dovoz podrazumeva crvene Ausfuhrkennzeichen, osiguranje za tranzit, ispravnost vozila i granicu. Profesionalni vozač preuzima na točkovima po dogovorenoj ruti. Šleper / kamion se ugovara kroz prevoznika sa odgovarajućom CMR odgovornošću i zapisnikom. Trošak organizacije se potvrđuje u ponudi i nije sam po sebi cena transporta.'],
  ['4. Izvozna polisa ne plaća automatski šlep','Haftpflicht uz tablice prvenstveno štiti treća lica. Posebno proverite pomoć na putu, uslove prethodnog aktiviranja, pokriće vozača i vozila, kao i zemlje trase. Zimska oprema i 3PMSF zavise od zemlje i uslova. Špediter potvrđuje T1 i rok završetka carinskog postupka ako se primenjuje.'],
  ['5. Kada auto uđe u Srbiju','Uvoznu vrednost i dažbine proverava carina; može tražiti dodatne dokaze vrednosti. Za relevantne kategorije postoji naknada po masi vozila, prema važećim pravilima. Za kontrolisanje polovnog vozila proverite saobraćajnu dokumentaciju, COC kad postoji, VIN, greške bezbednosnih sistema i stanje vetrobrana.'],
  ['6. Izračunajte sve pre kupovine','Zbir nije samo cena vozila. Dodajte izvozne dokumente, put ili šlep, moguću carinu, PDV u Srbiji, ekološku naknadu, špediciju, kontrolisanje, registraciju i rezervu za servis. Kalkulator je početna procena u evrima, ne carinsko rešenje.']
@@ -170,12 +155,12 @@ article1:[
  ['2. Sieben Fragen an den Verkäufer','Wer ist Vertragspartner? Verkauf im Kundenauftrag? Rechnung oder Vertrag? Wartungsbelege? Bekannte Schäden oder Unfälle? VIN verfügbar? Präferenzursprung belegbar? Antworten als Aussagen dokumentieren und nicht mit einer Garantie verwechseln.'],
  ['3. Foto, Vor-Ort-Check und Werkstatt unterscheiden','Live-Video und Sichtprüfung können Karosserie, Reifen, Kontrolllampen und Unterlagen erfassen. Diagnose beim Sachverständigen oder Mechaniker ist ein anderer Auftrag. Versteckte Mängel sind nicht ausgeschlossen; Budgetreserve vorsehen.'],
  ['4. Zahlung absichern','Empfänger und Verkäuferdaten abgleichen. Verifizierbare Überweisung an den Vertragspartner bevorzugen; weder auf unklare Dritt-Konten noch auf plötzliche Zahlungsänderungen reagieren. Abweichungen zuerst klären.'],
- ['5. Passender Leistungsumfang','Import Passport 9,90 €: Verkäuferkontakt und Dossier; OE-Serviceplan 19,00 €; Kombi 29,90 €; Field Check NRW ab 79 € nach Standort. Inserat zuerst per WhatsApp senden. PayPal.Me-Zahlungen werden manuell einem Auftrag zugeordnet.']
+ ['5. Passender Leistungsumfang','Wählen Sie die tatsächlich benötigte Leistung: Inserat- und Dokumentenprüfung, unabhängige Besichtigung, Transport oder OE-Teile nach FIN. Umfang und Preis werden vor Auftrag bestätigt. Ein geöffneter WhatsApp-Chat ist keine Zahlungsauslösung.']
 ],
 article2:[
  ['1. Ursprung statt Verkaufsort','Ein in Deutschland verkauftes Fahrzeug hat nicht automatisch EU-Präferenzursprung. Bis 6.000 € ist gegebenenfalls eine formgerechte Erklärung möglich; darüber gelten Nachweise wie EUR.1 oder Erklärung des ermächtigten Ausführers. Ohne Nachweis auch eine Verzollung bis 12,5% kalkulieren.'],
  ['2. MwSt und Ausfuhr belegen','Bei Differenzbesteuerung wird regelmäßig keine gesonderte Umsatzsteuer für eine Rückerstattung ausgewiesen. Exportstatus und Rechnung vor Kauf klären. ABD/MRN sowie Ausgangsbestätigung der EU-Ausgangszollstelle beachten. Barcode allein begründet keine Erstattung.'],
- ['3. Drei Transportwege','Selbst fahren mit gültigem Ausfuhrkennzeichen und internationaler Versicherung; professionelle Fahrerüberführung auf Auftrag; oder Lkw mit überprüfter CMR-Haftungsdeckung und Übergabeprotokoll. Die DANINI-Koordinationsgebühr von 59,00 € enthält nicht den Transportpreis.'],
+ ['3. Drei Transportwege','Selbst fahren mit gültigem Ausfuhrkennzeichen und internationaler Versicherung; professionelle Fahrerüberführung auf Auftrag; oder Lkw mit überprüfter CMR-Haftungsdeckung und Übergabeprotokoll. Die vereinbarte Koordinationsgebühr enthält nicht automatisch den Transportpreis.'],
  ['4. Kfz-Haftpflicht ist keine Pannenhilfe','Abschleppen und Pannenhilfe sind meist nicht in der Pflichtversicherung enthalten. Externe Schutzbriefe nach Fahrer, Staat, Kennzeichen, Wartezeit und Leistungsgrenzen vergleichen. Transit- und Winterreifenpflichten sowie Zoll-Transitfristen für die Strecke individuell prüfen.'],
  ['5. Serbische Zoll- und Fahrzeugkontrolle','Zollwert kann behördlich überprüft werden. Abgaben und massenabhängige Umweltgebühren richten sich nach dem geltenden Tarif. VIN, Sicherheitsmängel, COC falls vorhanden und gegebenenfalls Umbauten vor Abreise prüfen.'],
  ['6. Gesamtbudget in Euro','Fahrzeugpreis, Ausfuhr, Kennzeichen, Fahrt oder Spedition, Zoll, serbische Mehrwertsteuer, technische Prüfung, Anmeldung und Reparaturreserve berücksichtigen. Online-Rechner ist eine Schätzung, keine amtliche Auskunft.']

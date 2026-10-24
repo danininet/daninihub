@@ -57,7 +57,7 @@ async function notifyServiceRequest(record,trackingUrl){
     sender:from,to:[{email:admin,name:'DANINI'}],
     replyTo:record.email?{email:record.email,name:record.name||'ImportOS Kunde'}:undefined,
     subject:'ImportOS Anfrage '+record.reference+' · '+clean(p.serviceType,120),
-    htmlContent:`<h2>Neue ImportOS Service-Anfrage</h2><p><strong>Referenz:</strong> ${html(record.reference)}</p><p><strong>Service:</strong> ${html(p.serviceType)}</p><p><strong>Name:</strong> ${html(record.name)}<br><strong>E-Mail:</strong> ${html(record.email)}<br><strong>Telefon:</strong> ${html(p.phone)}</p><p><strong>Fahrzeug:</strong> ${html(p.vehicle)}<br><strong>VIN:</strong> ${html(p.vin)}<br><strong>Teilenummer:</strong> ${html(p.partNumber)}</p><p><strong>Abholort:</strong> ${html(p.pickupLocation)}<br><strong>Ziel:</strong> ${html(p.destination)}</p><p><strong>Nachricht:</strong><br>${html(p.message).replace(/\n/g,'<br>')}</p>`
+    htmlContent:`<h2>Neue ImportOS Service-Anfrage</h2><p><strong>Referenz:</strong> ${html(record.reference)}</p><p><strong>Service:</strong> ${html(p.serviceType)}</p><p><strong>Name:</strong> ${html(record.name)}<br><strong>E-Mail:</strong> ${html(record.email)}<br><strong>Telefon:</strong> ${html(p.phone)}</p><p><strong>Fahrzeug:</strong> ${html(p.vehicle)}<br><strong>VIN:</strong> ${html(p.vin)}<br><strong>Teilenummer:</strong> ${html(p.partNumber)}</p><p><strong>Abholort:</strong> ${html(p.pickupLocation)}<br><strong>Ziel:</strong> ${html(p.destination)}<br><strong>Inserat:</strong> ${html(p.listingUrl)}<br><strong>Budget:</strong> ${html(p.budgetEur)} EUR<br><strong>Quelle:</strong> ${html(p.source)}</p><p><strong>Nachricht:</strong><br>${html(p.message).replace(/\n/g,'<br>')}</p>`
   });
   if(record.email)await api.sendTransacEmail({
     sender:from,to:[{email:record.email,name:record.name||'ImportOS Kunde'}],
@@ -177,6 +177,19 @@ function summarizeRevenueAgent(records,events){
 function mountImportOSRuntime(app){
   const store=createImportOSStore();
   app.locals.importOSStore=store;
+  // Public contact endpoint: short in-memory anti-spam window on top of validation.
+  // Hostinger or a reverse proxy may also apply stricter edge throttling.
+  const leadAttempts=new Map();
+  function limitLeads(req){
+    const now=Date.now(),ip=clean(req.ip,90);
+    if(leadAttempts.size>2000)for(const [key,values] of leadAttempts){
+      const recent=values.filter(ts=>now-ts<3600000);
+      if(recent.length)leadAttempts.set(key,recent);else leadAttempts.delete(key);
+    }
+    const recent=(leadAttempts.get(ip)||[]).filter(ts=>now-ts<3600000);
+    if(recent.length>=6 || recent.some(ts=>now-ts<12000))return false;
+    recent.push(now);leadAttempts.set(ip,recent);return true;
+  }
   app.use('/api/importos',express.json({limit:'120kb'}));
   mountPurchaseCases(app,{store,adminAllowed});
 
@@ -215,19 +228,45 @@ function mountImportOSRuntime(app){
     catch(error){return res.status(400).json({ok:false,error:error.message||'SERVICE_ESTIMATE_FAILED'})}
   });
 
+  app.get('/api/importos/lead-readiness',async(req,res)=>{
+    try{
+      await store.init();
+      res.set('Cache-Control','no-store');
+      const ready=store.mode==='mysql'&&Boolean(process.env.BREVO_API_KEY&&sender());
+      return res.json({ok:true,onlineIntakeReady:ready,whatsappAvailable:true,emailAlternative:true});
+    }catch(error){
+      console.error('Lead readiness unavailable:',error.message);
+      return res.status(503).json({ok:false,onlineIntakeReady:false});
+    }
+  });
+
   app.post('/api/importos/service-request',async(req,res)=>{
     const data=req.body||{};
+    if(data.website)return res.status(400).json({ok:false,error:'INVALID_REQUEST'});
+    if(data.source==='autodanini-web'&&!limitLeads(req))return res.status(429).json({ok:false,error:'TOO_MANY_REQUESTS'});
     const email=clean(data.email,191).toLowerCase();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({ok:false,error:'VALID_EMAIL_REQUIRED'});
     if(data.privacyAcknowledged!==true)return res.status(400).json({ok:false,error:'PRIVACY_NOTICE_REQUIRED'});
     const serviceType=clean(data.serviceType,120);
-    const allowed=new Set(['AD_REVIEW','FIELD_CHECK_LIVE','PRO_MECHANIC_CHECK','DRIVER_ONLY','TRAILER_TRANSPORT','TRUCK_TRANSPORT','ORIGINAL_PARTS','IMPORT_BASE']);
+    const allowed=new Set(['AD_REVIEW','FIELD_CHECK_LIVE','PRO_MECHANIC_CHECK','DRIVER_ONLY','TRAILER_TRANSPORT','TRUCK_TRANSPORT','ORIGINAL_PARTS','IMPORT_BASE','B2B_SOURCING','EXPORT_DOCS']);
     if(!allowed.has(serviceType))return res.status(400).json({ok:false,error:'INVALID_SERVICE_TYPE'});
+    if(data.source==='autodanini-web'){
+      await store.init();
+      if(store.mode!=='mysql'||!process.env.BREVO_API_KEY||!sender())
+        return res.status(503).json({ok:false,error:'ONLINE_INTAKE_NOT_READY'});
+    }
+    const listingUrl=clean(data.listingUrl,2000);
+    if(listingUrl && !/^https?:\/\/[a-z0-9.-]+(?:\/|:|\?|$)/i.test(listingUrl))
+      return res.status(400).json({ok:false,error:'INVALID_LISTING_URL'});
+    const budgetEur=data.budgetEur==null?'':clean(data.budgetEur,20);
+    if(budgetEur&&!/^(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,2})?$/.test(budgetEur))
+      return res.status(400).json({ok:false,error:'INVALID_BUDGET'});
     const caseToken=crypto.randomBytes(32).toString('base64url');
-    const record=await store.create({
+    let record;
+    try{record=await store.create({
       reference:reference('SRV'),type:'service-request',language:data.language==='sr'?'sr':'de',email,name:clean(data.name,180),status:'NEW',
-      payload:{purchaseCase:initialCase(data),caseTokenHash:tokenHash(caseToken),serviceType,phone:clean(data.phone,120),vehicle:clean(data.vehicle,280),vin:clean(data.vin,80),partNumber:clean(data.partNumber,120),pickupLocation:clean(data.pickupLocation,280),destination:clean(data.destination,280),message:clean(data.message,4000)}
-    });
+      payload:{purchaseCase:initialCase(data),caseTokenHash:tokenHash(caseToken),serviceType,phone:clean(data.phone,120),vehicle:clean(data.vehicle,280),vin:clean(data.vin,80),partNumber:clean(data.partNumber,120),pickupLocation:clean(data.pickupLocation,280),destination:clean(data.destination,280),message:clean(data.message,4000),listingUrl,budgetEur,source:clean(data.source,80)}
+    });}catch(error){console.error('Service request save failed:',error.message);return res.status(503).json({ok:false,error:'REQUEST_STORAGE_UNAVAILABLE'});}
     const trackingUrl=publicUrl(req)+'/'+record.language+'/'+(record.language==='sr'?'moj-dosije':'mein-dossier')+'#'+new URLSearchParams({reference:record.reference,token:caseToken}).toString();
     let delivered=false;
     try{delivered=await notifyServiceRequest(record,trackingUrl)}catch(error){console.error('ImportOS request email failed:',error.message)}

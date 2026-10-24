@@ -113,12 +113,12 @@ function b2b(lang){
  sr?'Putnička i N1 vozila, tačna specifikacija, proverljive informacije i kontakt prodavca.':'Pkw und N1-Nutzfahrzeuge, konkrete Anforderungen, nachvollziehbare Angaben und Verkäuferkontakt.')+
  media(IMG.b2b,sr?'B2B nabavka vozila za firme':'B2B Fahrzeugsuche')+
  '<div class="grid">'+(sr?[
- ['B2B shortlist · 99,00 €','Do 3 kandidata prema marki, modelu, godištu, kilometraži, budžetu, lokaciji i zahtevima firme. Provera javnih i dostupnih podataka; ne znači tri fizička pregleda.'],
- ['B2B sourcing po vozilu · 290,00 €','Detaljnija koordinacija jednog odabranog vozila, pregovora, dokumentacije i opcija preuzimanja prema pisanoj specifikaciji. Troškovi automobila, puta i prevoza posebno.'],
+ ['B2B shortlist · cena po ponudi','Do 3 kandidata prema marki, modelu, godištu, kilometraži, budžetu, lokaciji i zahtevima firme. Provera javnih i dostupnih podataka; ne znači tri fizička pregleda.'],
+ ['B2B sourcing po vozilu · cena po ponudi','Detaljnija koordinacija jednog odabranog vozila, pregovora, dokumentacije i opcija preuzimanja prema pisanoj specifikaciji. Troškovi automobila, puta i prevoza posebno.'],
  ['19% MwSt ausweisbar','Tražimo oglase sa iskazanim PDV-om kada je relevantno. Iskazani PDV ne znači automatski povrat; transakcija, pravo na odbitak i dokaz izvoza moraju zadovoljiti poreske uslove.']
  ]:[
- ['B2B Shortlist · 99,00 €','Bis drei Kandidaten nach Marke, Modell, Laufleistung, Budget und Anforderungen; verfügbare Daten prüfen. Keine drei physischen Fahrzeugchecks.'],
- ['B2B Sourcing je Fahrzeug · 290,00 €','Erweiterte Koordination eines Fahrzeugs, Verhandlungen, Dokumente und Übergabe nach schriftlicher Spezifikation. Kaufpreis, Fahrt und Fracht extra.'],
+ ['B2B Shortlist · Preis nach Angebot','Bis drei Kandidaten nach Marke, Modell, Laufleistung, Budget und Anforderungen; verfügbare Daten prüfen. Keine drei physischen Fahrzeugchecks.'],
+ ['B2B Sourcing je Fahrzeug · Preis nach Angebot','Erweiterte Koordination eines Fahrzeugs, Verhandlungen, Dokumente und Übergabe nach schriftlicher Spezifikation. Kaufpreis, Fahrt und Fracht extra.'],
  ['19% MwSt ausweisbar','Nur sofern in der Anzeige und Rechnung tatsächlich ausweisbar. Ausgewiesene MwSt bedeutet keinen automatischen Vorsteuerabzug oder Rückerstattung; steuerliche Einzelfallprüfung ist erforderlich.']
  ]).map(p=>card(p[0],p[1])).join('')+'</div>'+button(PATHS[lang].place,sr?'Poslovni plac u Nišu':'Gewerbeflächen in Niš')+order('b2b'));
 }

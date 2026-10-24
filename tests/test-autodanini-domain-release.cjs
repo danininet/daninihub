@@ -137,6 +137,13 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.match(original.body,/\/sr\/upit/);
  const german=await request(port,'daninihub.com','/de/');
  assert.equal(german.status,200);
+ // No fabricated response-time SLA or misleading "seller call is the service" promise.
+ assert.doesNotMatch(original.body,/2\s*[–-]\s*4\s*radna\s*sata|2\s*do\s*4\s*radna\s*sata/i);
+ assert.doesNotMatch(german.body,/2\s*[–-]\s*4\s*Arbeitsstunden|2\s*bis\s*4\s*Arbeitsstunden/i);
+ assert.match(original.body,/ukupne troškove|ukupnih troškova/i);
+ assert.match(german.body,/Gesamtkosten|Importkosten/i);
+ assert.match(auto.body,/procena ukupnih troškova uvoza/i);
+ assert.doesNotMatch(auto.body,/Kontaktiranje prodavca i priprema upita za rezervaciju/);
  const robotsLegacy=await request(port,'daninihub.com','/robots.txt');
  assert.match(robotsLegacy.body,/Allow: \/|Sitemap:/);
  const sitemap=await request(port,'daninihub.com','/sitemap.xml');

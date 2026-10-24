@@ -66,6 +66,12 @@ test('only auto.daninihub.com serves the new support-enabled AutoDanini UI; old 
  const support=await request(port,'auto.daninihub.com','/support.html');
  assert.equal(support.status,200);
  assert.match(support.body,/autodanini-support-form/);
+ const privacy=await request(port,'auto.daninihub.com','/privacy.html');
+ assert.equal(privacy.status,200);
+ assert.match(privacy.body,/AI savetnik nije aktivan na ovoj javnoj preglednoj verziji/);
+ assert.match(privacy.body,/Prijava korisnika i trajno čuvanje zahteva trenutno su isključeni/);
+ assert.match(privacy.body,/Das Einreichen privater Kontoanfragen ist derzeit nicht freigeschaltet/);
+ assert.doesNotMatch(privacy.body,/U ovoj verziji beležimo samo dnevni broj AI poziva/);
  assert.match(support.body,/WhatsApp/);
  // Owner's existing business contact is available on both draft legal pages,
  // and outdated collage provenance is not presented as current photography.

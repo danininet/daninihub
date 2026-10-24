@@ -12,7 +12,7 @@ async function main(){
   binary.write('%PDF-1.7\n',0);
   binary.write('%%EOF',binary.length-5);
   fs.writeFileSync(pdf,binary);
-  const keys=['DANINI_GUIDE_PDF_PATH','DANINI_DIGITAL_CHECKOUT_ENABLED','PAYPAL_CLIENT_ID','PAYPAL_CLIENT_SECRET','PAYPAL_ENV','DANINI_PAYPAL_RECEIVER_EMAIL','DANINI_DIGITAL_SIGNING_SECRET','DANINI_PUBLIC_URL'];
+  const keys=['DANINI_GUIDE_PDF_PATH','DANINI_DIGITAL_CHECKOUT_ENABLED','PAYPAL_CLIENT_ID','PAYPAL_CLIENT_SECRET','PAYPAL_ENV','DANINI_PAYPAL_RECEIVER_EMAIL','DANINI_DIGITAL_SIGNING_SECRET','DANINI_PUBLIC_URL','PAYPAL_WEBHOOK_ID'];
   const previous=Object.fromEntries(keys.map(k=>[k,process.env[k]]));
   let server;
   try{
@@ -24,7 +24,8 @@ async function main(){
       PAYPAL_ENV:'sandbox',
       DANINI_PAYPAL_RECEIVER_EMAIL:'merchant-sandbox@example.test',
       DANINI_DIGITAL_SIGNING_SECRET:'0123456789-abcdefghijklmnopqrstuvwxyz-0123456789',
-      DANINI_PUBLIC_URL:'https://daninihub.com'
+      DANINI_PUBLIC_URL:'https://daninihub.com',
+      PAYPAL_WEBHOOK_ID:'TEST-WEBHOOK-ID'
     });
     assert.equal(privateFile(),fs.realpathSync(pdf));
     const record={
@@ -61,6 +62,7 @@ async function main(){
     const base='http://127.0.0.1:'+server.address().port;
     const status=await (await fetch(base+'/api/danini/digital/status')).json();
     assert.equal(status.enabled,true);
+    assert.equal(status.softwareEnabled,false);
     const good=await fetch(base+'/digital/download/'+record.reference+'?token='+encodeURIComponent(token));
     assert.equal(good.status,200);
     assert.match(good.headers.get('content-type'),/application\/pdf/);

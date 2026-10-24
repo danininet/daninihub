@@ -41,4 +41,7 @@ const order=fs.readFileSync(path.join(__dirname,'..','public','danini-order.js')
 for(const pay of ['9.90EUR','19EUR','29.90EUR','59EUR','99EUR'])assert.ok(order.includes('dragangaganet/'+pay),pay);
 assert.match(order,/payment\.hidden = true/);
 assert.match(order,/PayPal\.Me ne povezuje automatski/);
+assert.match(order,/danini-order-checklist/);
+assert.match(order,/10\.000 €/);
+assert.match(order,/uvoz-zoll-eur1-i-dovoz/);
 console.log('DANINI SR/DE 6-card ecosystem, payment menu, compliance, SEO routes and 9 approved photos: OK');

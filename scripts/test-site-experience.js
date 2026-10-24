@@ -77,7 +77,7 @@ async function main() {
         assert.match(html, /Dragan Zdravković · Vaš čovek na terenu u Nemačkoj/);
         assert.match(html, /Duisburg \(Severna Rajna-Vestfalija\) & Niš/);
         assert.match(html, /Šta ako nemački prodavac odbije razgovor ili pregled\?/);
-        assert.match(html, /Koliko brzo dobijam izveštaj\?/);
+        assert.match(html, /Šta zapravo dobijam kao rezultat provere\?/);
         assert.match(html, /Kako plaćam uslugu\?/);
       }
       if (route === '/de/') {

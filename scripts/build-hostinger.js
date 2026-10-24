@@ -34,7 +34,10 @@ for(const directory of ['dist',path.join('daninihub-front','dist')]){
     !fs.existsSync(path.join(output,'images','DANINI_Dragan_Pregled_Auta_CLEAN_1200x1200.jpg'))||
     !fs.existsSync(path.join(output,'images','DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg'))||
     !fs.existsSync(path.join(output,'images','DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg'))||
-    !fs.existsSync(path.join(output,'images','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg'))){
+    !fs.existsSync(path.join(output,'images','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg'))||
+    !fs.existsSync(path.join(output,'images','DANINI_Kartica_04_Zoll_Tablice_Dovoz_Na_Tockovima.jpg'))||
+    !fs.existsSync(path.join(output,'images','DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg'))||
+    !fs.existsSync(path.join(output,'images','DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg'))){
     throw new Error('Hostinger build output is incomplete: '+directory);
   }
   console.log('Hostinger build output ready: '+directory);

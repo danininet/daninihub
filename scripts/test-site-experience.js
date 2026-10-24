@@ -137,12 +137,13 @@ async function main() {
     assert.match(float, /encodeURIComponent/);
     const order = await (await fetch(base+'/danini-order.js')).text();
     assert.match(order, /danini-order-slot/);
-    assert.match(order, /paypal\.me\/dragangaganet\/9\.90EUR/);
-    assert.doesNotMatch(order, /paypal\.me\/dragangaganet\/149EUR/);
-    assert.match(order, /guide: t\(/);
-    assert.match(order, /software: t\(/);
-    assert.match(order, /payment\.hidden = true/);
+    assert.doesNotMatch(order, /paypal\.me|payment\.hidden|danini-order-pay/);
+    assert.match(order, /danini-order-consent-check/);
+    assert.match(order, /mailto:/);
     assert.match(order, /wa\.me/);
+    assert.match(order, /Kaufbudget in €|Budžet za kupovinu vozila/);
+    assert.match(order, /Poruka se šalje tek kada je potvrdite/);
+    assert.match(order, /AUTODANINI · ZAHTEV ZA KONKRETNU PONUDU/);
     const calc = await (await fetch(base+'/danini-quickcheck.js')).text();
     assert.match(calc, /0\.125/);
     assert.match(calc, /0\.20/);

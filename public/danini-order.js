@@ -83,9 +83,15 @@
       '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.8 8.4 8.5 8.5 0 0 1-3.8-1L3 21l2.1-5.2a8.4 8.4 0 1 1 15.9-4.3Z"/><path d="M9 9c.4 2.5 2 4 4.6 5.5l1.3-1.1 2.1 1-1 2c-3.5.7-8.2-3.9-8.5-7.3L9 9Z"/></svg>',
       '<span>' + t('1. Pošalji oglas Draganu na WhatsApp',
         '1. Inserat per WhatsApp an Dragan senden') + '</span></a>',
+      '<label for="' + formId + '-email">' + t('E-mail za potvrdu preko sajta (opciono za WhatsApp)', 'E-Mail für eine Anfrage über die Website (optional für WhatsApp)') + '</label>',
+      '<input class="danini-order-contact-email" id="' + formId + '-email" type="email" maxlength="190" autocomplete="email" placeholder="ime@primer.com">',
       '<label class="danini-order-consent"><input type="checkbox" class="danini-order-consent-check"><span>' + t(
-        'Razumem da će se poruka sa unetim podacima otvoriti u WhatsApp-u ili mejlu, gde je ja potvrđujem. Ne šaljem lozinke ni lična dokumenta. <a href="/sr/privatnost">Privatnost</a>.',
-        'Ich verstehe, dass meine Angaben in WhatsApp oder E-Mail geöffnet und erst von mir versendet werden. Keine Passwörter oder Ausweisdokumente. <a href="/de/datenschutz">Datenschutz</a>.') + '</span></label>',
+        'Razumem da se upit šalje preko izabrane aplikacije ili, kada je omogućeno, kroz AutoDanini sistem radi obrade ponude i potvrde e-mejlom. Ne šaljem lozinke ni lična dokumenta. <a href="/sr/privatnost">Privatnost</a>.',
+        'Ich verstehe, dass meine Anfrage über die gewählte App oder, wenn verfügbar, über das AutoDanini-System zur Angebotserstellung und E-Mail-Bestätigung verarbeitet wird. Keine Passwörter oder Ausweisdokumente. <a href="/de/datenschutz">Datenschutz</a>.') + '</span></label>',
+      '<div class="danini-order-online" hidden><button type="button" class="danini-order-online-submit">' +
+       t('Pošalji upit preko sajta i dobij broj predmeta', 'Anfrage über die Website senden und Vorgangsnummer erhalten') +
+       '</button><p class="danini-order-online-note">' +
+       t('Dostupno samo kada su baza i potvrda mejlom aktivne. Upit se ne naplaćuje.', 'Nur verfügbar, wenn Datenbank und E-Mail-Bestätigung aktiv sind. Anfrage kostenlos.') + '</p></div>',
       '<p class="danini-order-help" role="status" aria-live="polite"></p>',
       '<a class="danini-order-email" href="#" aria-disabled="true">' +
         t('Nemate WhatsApp? Pošaljite upit mejlom →', 'Kein WhatsApp? Anfrage per E-Mail senden →') + '</a>',
@@ -103,10 +109,15 @@
     const location = host.querySelector('.danini-order-location');
     const budget = host.querySelector('.danini-order-budget');
     const consent = host.querySelector('.danini-order-consent-check');
+    const contactEmail = host.querySelector('.danini-order-contact-email');
+    const onlineContainer = host.querySelector('.danini-order-online');
+    const onlineSubmit = host.querySelector('.danini-order-online-submit');
+    let onlineIntakeReady = false;
     const whatsapp = host.querySelector('.danini-order-wa');
     const email = host.querySelector('.danini-order-email');
     const urlStatus = host.querySelector('.danini-url-status');
     const help = host.querySelector('.danini-order-help');
+    const serviceTypes={passport:'AD_REVIEW',field:'FIELD_CHECK_LIVE',transport:'TRAILER_TRANSPORT',b2b:'B2B_SOURCING',combo:'AD_REVIEW',oe:'ORIGINAL_PARTS',vat:'EXPORT_DOCS'};
 
     function update() {
       const raw = input.value.trim();
@@ -150,7 +161,7 @@
       }
     }
 
-    for (const control of [input,select,details,name,location,budget,consent]) {
+    for (const control of [input,select,details,name,location,budget,consent,contactEmail]) {
       control.addEventListener(control===select||control===consent?'change':'input',update);
     }
     function validateOpen(event) {
@@ -167,6 +178,60 @@
     }
     whatsapp.addEventListener('click',validateOpen);
     email.addEventListener('click',validateOpen);
+    async function submitOnline(){
+      if(!onlineIntakeReady)return;
+      update();
+      const raw=input.value.trim(),note=details.value.trim(),mail=contactEmail.value.trim();
+      if(!consent.checked || !(validLink(raw)||(!raw&&note.length>=15))){
+        help.textContent=t('Popunite oglas ili opis i potvrdite obaveštenje o privatnosti.',
+          'Bitte Inserat oder Beschreibung eingeben und Datenschutzhinweis bestätigen.');return;
+      }
+      if(!mail||!contactEmail.checkValidity()){
+        help.textContent=t('Za zahtev preko sajta obavezan je ispravan e-mail.',
+          'Für die Anfrage über die Website benötigen wir eine gültige E-Mail-Adresse.');
+        contactEmail.focus();return;
+      }
+      const body={
+        language:de?'de':'sr',source:'autodanini-web',
+        serviceType:serviceTypes[select.value]||'AD_REVIEW',
+        email:mail,name:name.value.trim(),privacyAcknowledged:true,
+        vehicle:raw||note.slice(0,180),listingUrl:raw,
+        pickupLocation:location.value.trim(),budgetEur:budget.value.trim(),
+        message:(raw?t('Oglas: ','Inserat: ')+raw+'\n':'')+note,
+        website:''
+      };
+      onlineSubmit.disabled=true;
+      help.textContent=t('Proveravam prijem zahteva…','Anfrage wird übermittelt…');
+      try{
+        const response=await fetch('/api/importos/service-request',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(body),signal:AbortSignal.timeout(15000)
+        });
+        const result=await response.json();
+        if(!response.ok || !result.ok)throw new Error(result.error||'REQUEST_FAILED');
+        help.replaceChildren();
+        const paragraph=document.createElement('p');
+        paragraph.textContent=t('Zahtev je evidentiran pod brojem ','Anfrage erfasst unter ')+result.reference+
+          (result.delivered?t('. Potvrda je upućena mejlom.','. Bestätigung per E-Mail verschickt.')
+          :t('. E-mail nije potvrđen; sačuvajte broj i kontaktirajte nas na WhatsApp.','. E-Mail nicht bestätigt; Nummer notieren und per WhatsApp nachfragen.'));
+        help.appendChild(paragraph);
+        if(result.trackingUrl && result.trackingUrl.startsWith('https://daninihub.com/')){
+          const link=document.createElement('a');link.href=result.trackingUrl;
+          link.textContent=t('Otvori svoj privatni dosije','Privates Dossier öffnen');
+          link.rel='nofollow';help.appendChild(link);
+        }
+        if(typeof window.daniniTrack==='function')window.daniniTrack('service_request_started',body.serviceType);
+      }catch(error){
+        help.textContent=t('Zahtev nije potvrđen kroz sajt. Pošaljite ga preko WhatsApp-a ili mejla. Detalj: ',
+          'Website-Eingang nicht bestätigt. Bitte per WhatsApp oder E-Mail senden. Hinweis: ')+error.message;
+      }finally{onlineSubmit.disabled=false;}
+    }
+    onlineSubmit.addEventListener('click',submitOnline);
+    fetch('/api/importos/lead-readiness',{cache:'no-store',signal:AbortSignal.timeout(9000)})
+      .then(r=>r.ok?r.json():null).then(data=>{
+        onlineIntakeReady=data?.onlineIntakeReady===true;
+        onlineContainer.hidden=!onlineIntakeReady;
+      }).catch(()=>{onlineContainer.hidden=true;});
     update();
   }
 
@@ -190,7 +255,7 @@
       '.danini-order-checklist{margin:16px 0;background:#0f1d22;border:1px solid #48645a;border-radius:9px;padding:12px 15px;color:#e2edea}.danini-order-checklist summary{cursor:pointer;font-weight:800}.danini-order-checklist li{padding:4px 0;line-height:1.45}.danini-order-checklist a{color:#abf3c8}',
       '.danini-url-status{font-size:14px;color:#a7b8b1;margin:12px 0 0}.danini-url-status.recognized{color:#8df6b0;font-weight:850}',
       '.danini-order-wa[aria-disabled="true"]{opacity:.55;cursor:not-allowed;filter:grayscale(.5)}',
-      '.danini-order-consent{display:flex!important;gap:12px;align-items:flex-start;line-height:1.45;font-size:13px!important}.danini-order-consent input{width:20px!important;min-height:20px!important;flex:0 0 20px;margin-top:2px}.danini-order-consent a{color:#adedd0}.danini-order-help{color:#f1d19f;font-size:13px}',
+      '.danini-order-online[hidden]{display:none!important}.danini-order-online-submit{display:block;width:100%;margin:17px 0 6px;border-radius:10px;border:0;background:#d5a866;color:#131b20;padding:15px;font-size:16px;font-weight:850;cursor:pointer}.danini-order-online-submit:disabled{opacity:.6}.danini-order-online-note{font-size:13px;color:#e2d2bf}.danini-order-consent{display:flex!important;gap:12px;align-items:flex-start;line-height:1.45;font-size:13px!important}.danini-order-consent input{width:20px!important;min-height:20px!important;flex:0 0 20px;margin-top:2px}.danini-order-consent a{color:#adedd0}.danini-order-help{color:#f1d19f;font-size:13px}',
       '@media(max-width:600px){.danini-order-card{border-radius:12px;padding:18px}.danini-order-wa{font-size:15px}}'
     ].join('');
     document.head.appendChild(css);

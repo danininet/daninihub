@@ -1,4 +1,4 @@
-name: Isolated AutoDanini auto-domain release
+name: AutoDanini existing-root readiness
 on:
   pull_request:
     branches: [main]
@@ -26,9 +26,9 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Build isolated existing DANINI and AutoDanini incl. Support from vendored sources
         run: npm run build
-      - name: Check host isolation, disabled payments and private API
+      - name: Check root cutover, legacy API and disabled commerce
         run: node --test tests/test-autodanini-domain-release.cjs
-      - name: Validate isolated domains, approved single photos and Support
+      - name: Validate existing root, approved single photos and Support
         run: |
           node - <<'NODE'
           const fs=require('node:fs');
@@ -56,7 +56,7 @@ jobs:
             ['contact',contact,'dragan-business-phone.jpg']
           ]){
             if(!page.includes(`--image:url('./${photo}')`))throw new Error('Wrong business hero image on '+name);
-            if(!page.includes('content="https://auto.daninihub.com/dragan-business-portrait.jpg"'))
+            if(!page.includes('content="https://daninihub.com/dragan-business-portrait.jpg"'))
               throw new Error('Social business photo replaced with car on '+name);
           }
           const businessPhotos=['dragan-business-phone.jpg','dragan-business-portrait.jpg'];
@@ -73,6 +73,6 @@ jobs:
           const support=fs.readFileSync('autodanini-auto-dist/support.html','utf8');
           if(!support.includes('autodanini-support-form') || !support.includes('WhatsApp'))throw Error('Support Desk not built');
           if(!about.includes('dragan-business-phone.jpg'))throw Error('Separate business photo not shown on About');
-          console.log('Two approved single business photos, no original portrait/collage, Support, legacy and AutoDanini: OK');
+          console.log('Two approved single business photos, no original portrait/collage, Support, legacy and AutoDanini root: OK');
           console.log('Both site builds and original imagery verified');
           NODE

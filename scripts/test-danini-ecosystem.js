@@ -38,10 +38,13 @@ for(const file of Object.values({driving:'DANINI_Kartica_04_Zoll_Tablice_Dovoz_N
  assert.equal(data[0],0xff,file);assert.equal(data[1],0xd8,file);assert.equal(data[2],0xff,file);
 }
 const order=fs.readFileSync(path.join(__dirname,'..','public','danini-order.js'),'utf8');
-for(const pay of ['9.90EUR','19EUR','29.90EUR','59EUR','99EUR'])assert.ok(order.includes('dragangaganet/'+pay),pay);
-assert.match(order,/payment\.hidden = true/);
-assert.match(order,/PayPal\.Me ne povezuje automatski/);
+// Public inquiries require buyer approval of external transfer, not a premature payment.
+assert.doesNotMatch(order,/paypal\.me|danini-order-pay|payment\.hidden/);
+assert.match(order,/danini-order-consent-check/);
+assert.match(order,/mailto:/);
+assert.match(order,/wa\.me/);
+assert.match(order,/pre bilo kakve uplate/i);
 assert.match(order,/danini-order-checklist/);
 assert.match(order,/10\.000 €/);
 assert.match(order,/uvoz-zoll-eur1-i-dovoz/);
-console.log('DANINI SR/DE 6-card ecosystem, payment menu, compliance, SEO routes and 9 approved photos: OK');
+console.log('AutoDanini SR/DE ecosystem, safe inquiries, SEO routes and approved photos: OK');

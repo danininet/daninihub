@@ -41,6 +41,7 @@ async function main() {
       assert.doesNotMatch(html, /Sistem i agenti<\/a>|System & Agents<\/a>/, route);
       assert.doesNotMatch(html,/AI_Influenserka|AI Influencerka|[gG]enerated.person/,route);
       assert.match(html,/danini-live-bar/,route);
+      assert.doesNotMatch(html,/Cilj odgovora na WhatsApp: 2[–-]4|Antwortziel per WhatsApp: 2[–-]4/,route);
       if (route === '/' || route === '/sr/' || route === '/de/') {
       // The three founder shots are square; service-card car photos remain widescreen.
       assert.match(html,/\.hero-visual\.danini-portrait img\{width:100%;height:auto;aspect-ratio:1\/1/);
@@ -49,6 +50,10 @@ async function main() {
       assert.match(html,/\.feature img\{height:auto;aspect-ratio:16\/9/);
         assert.match(html, /danini-order-slot/, route);
         assert.match(html, /danini-order-home/, route);
+        assert.match(html, /<strong>AutoDanini<\/strong>/,route);
+        assert.match(html,/href="\/(sr\/upit|de\/anfrage)"/,route);
+        assert.match(html,/decision-proof/,route);
+        assert.equal((html.match(/rel="canonical"/g)||[]).length,1,'canonical exactly once: '+route);
         assert.match(html, /DANINI_Dragan_Portret_CLEAN_1200x1200\.jpg/, route);
         assert.match(html, /DANINI_Dragan_Telefon_CLEAN_1200x1200\.jpg/, route);
         for(const image of ['DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg','DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg'])assert.ok(html.includes(image),image);
@@ -104,7 +109,7 @@ async function main() {
       }
       if (route.includes('?quote=')) {
         assert.match(html, /id="quote-checkout"/);
-        assert.match(html, /Kupovina auta iz Nemačke uz jasnu računicu/);
+        assert.match(html, /AutoDanini — proverite automobil i trošak pre kupovine/);
       }
       if (route === '/sr/vodic/landed-cost-kalkulation') {
         assert.match(html, /Uvoz auta iz Nemačke u Srbiju 2026/);

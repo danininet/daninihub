@@ -33,7 +33,7 @@ function privateFile(){
 }
 function enabled(app){
   const store=app.locals.importOSStore;
-  return process.env.DANINI_DIGITAL_CHECKOUT_ENABLED==='true' &&
+  return Boolean(process.env.DANINI_DIGITAL_CHECKOUT_ENABLED==='true' &&
     process.env.PAYPAL_CLIENT_ID &&
     process.env.PAYPAL_CLIENT_SECRET &&
     process.env.PAYPAL_WEBHOOK_ID &&
@@ -41,7 +41,7 @@ function enabled(app){
     (process.env.PAYPAL_ENV==='live'?(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'').toLowerCase()==='draganganet@gmail.com':RE.test(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'')) &&
     (process.env.DANINI_DIGITAL_SIGNING_SECRET||'').length>=32 &&
     process.env.DANINI_PUBLIC_URL===fixedOrigin &&
-    store&&store.mode==='mysql' && privateFile();
+    store&&store.mode==='mysql' && privateFile());
 }
 function sign(ref,sku,expires){
   const message=[ref,sku,String(expires)].join('.');

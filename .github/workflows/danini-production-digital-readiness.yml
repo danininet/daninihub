@@ -1,0 +1,28 @@
+name: DANINI production digital readiness (read-only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/probe-production-digital.cjs'
+      - '.github/workflows/danini-production-digital-readiness.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/probe-production-digital.cjs'
+      - '.github/workflows/danini-production-digital-readiness.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  readiness-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only production check (no money and no secrets)
+        run: node scripts/probe-production-digital.cjs

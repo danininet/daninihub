@@ -29,9 +29,20 @@ function request(port,host,route){
  });
 }
 test('only auto.daninihub.com serves the new support-enabled AutoDanini UI; old DANINI unaffected',async t=>{
- for(const page of ['index','admin','buyers','dealers','auctions','live','support']){
-  assert.equal(fs.existsSync(path.join(root,'autodanini-auto-dist',page+'.html')),true,page);
+ const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
+  'auctions','guides','about','contact','impressum','privacy','terms','cookies',
+  'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
+ for(const page of pages){
+  const file=path.join(root,'autodanini-auto-dist',page+'.html');
+  assert.equal(fs.existsSync(file),true,'missing page: '+page);
+  const html=fs.readFileSync(file,'utf8');
+  for(const match of html.matchAll(/(?:href|src)="(?:\.\/)?([a-z0-9-]+\.html)(?:\?[^"]*)?"/g)){
+   assert.equal(fs.existsSync(path.join(root,'autodanini-auto-dist',match[1])),true,
+    'broken internal link on '+page+': '+match[1]);
+  }
  }
+ const release=JSON.parse(fs.readFileSync(path.join(root,'autodanini-auto-dist','AUTODANINI_RELEASE_INFO.json'),'utf8'));
+ assert.equal(release.pages,pages.length,'release manifest must count all published pages');
  const port=await freePort();
  const child=spawn(process.execPath,['server.js'],{cwd:root,
   env:{...process.env,NODE_ENV:'development',PORT:String(port),DB_HOST:'',
@@ -102,7 +113,7 @@ test('only auto.daninihub.com serves the new support-enabled AutoDanini UI; old 
   assert.match(response.headers['cache-control'],/public, max-age=300/);
  }
  const robots=await request(port,'auto.daninihub.com','/robots.txt');
- assert.match(robots.body,/Disallow:/);
+ assert.equal(robots.body,'User-agent: *\nDisallow: /\n','robots.txt must use real line breaks');
 
  const api=await request(port,'auto.daninihub.com','/api/importos/checkout');
  assert.equal(api.status,503);

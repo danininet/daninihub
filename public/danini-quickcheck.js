@@ -86,10 +86,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { daniniEs
     '.danini-calc-risk-alert{border:1px solid #f87171;border-left:5px solid #ff5555;background:#471f26;color:#ffe9e9;padding:17px;border-radius:10px;font-size:clamp(16px,2.6vw,21px);font-weight:800;line-height:1.52;margin:18px 0}',
     '.danini-calc-details{list-style:none;padding:0;margin:12px 0 22px}',
     '.danini-calc-details li{padding:8px 0;border-bottom:1px solid #385046}',
-    '.danini-calc-whatsapp,.danini-calc-pay{display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;border-radius:9px;min-height:56px;text-decoration:none;padding:15px 12px;line-height:1.4}',
+    '.danini-calc-whatsapp{display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;border-radius:9px;min-height:56px;text-decoration:none;padding:15px 12px;line-height:1.4}',
     '.danini-calc-whatsapp{background:#25d366;color:#082b19!important}',
-    '.danini-calc-pay{background:#cee6ff;color:#003087!important;max-width:420px;margin-top:8px}',
-    '.danini-calc-payment[hidden]{display:none!important}',
     '.danini-calc-warning{color:#c5d4cc;line-height:1.65;font-size:14px}',
     '@media(max-width:650px){.danini-calc-extra,.danini-calc-cards{grid-template-columns:1fr}}'
   ].join('');

@@ -30,7 +30,7 @@ The API is a development pilot, not a hosted service. Its file adapter is only s
 
 Still required: authenticated users and tenant-scoped database authorization; fail-closed durable database configuration; authenticated admin UI and reviewer roles; a durable job runner with retry/lease/error ledger; actual payment-provider sandbox and webhook verification; deduplicated transactional email and private delivery; retention deletion job; encrypted backup and tested restoration; observability, abuse limits and privacy/legal review. Seven-day API access expiry is enforced, but automatic deletion of stored records is not implemented. There is no autonomous background execution in the browser.
 
-Current model calls, input tokens, output tokens and API spend are exactly zero. A future language-model mentor must preserve the constitution's decision/utility/governance distinction and the decision cycle `1 question / 1 question / A-B-C / execute and lock`; it must not fabricate tool completion. Do not count a deterministic stage as an active LLM agent.
+Current model calls, input tokens, output tokens and API spend are exactly zero. A future language-model mentor must preserve the constitution's decision/utility/governance distinction and must not fabricate tool completion. The retrieved master collection specifies four decision cycles, while later references mention a different limit; confirm the canonical policy version before enabling public decision sessions. Do not count a deterministic stage as an active LLM agent.
 
 ## Validation
 

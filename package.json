@@ -5,6 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "test:catalog": "node --test tests/test-catalog-pilot.cjs",
+    "build:catalog": "node scripts/build-catalog-pilot.cjs",
+    "pilot:catalog": "node catalog-pilot-server.js",
     "dev": "node server.js",
     "test": "npm run test:regression",
     "build": "npm run check:syntax && npm run test:importos && npm run build:front && npm run build:auto-release",

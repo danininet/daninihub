@@ -41,6 +41,19 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
     'broken internal link on '+page+': '+match[1]);
   }
  }
+ // Cloudflare static hosting needs physical localized HTML entrypoints.
+ // Express route tests alone do not detect a static /de/ 404.
+ for(const locale of ['sr','de']){
+  const file=path.join(root,'autodanini-auto-dist',locale,'index.html');
+  assert.ok(fs.existsSync(file),'missing Cloudflare /'+locale+'/ entrypoint');
+  const html=fs.readFileSync(file,'utf8');
+  assert.ok(html.includes('autodanini-language","'+locale+'"'),
+    'localized page must select the correct language before Vite starts');
+  assert.match(html,/href="\/buyers\.html"/,
+    'localized nav must link to the actual root HTML files');
+  assert.match(html,/\/assets\//,
+    'localized Vite assets must load from the site root');
+ }
  const release=JSON.parse(fs.readFileSync(path.join(root,'autodanini-auto-dist','AUTODANINI_RELEASE_INFO.json'),'utf8'));
  assert.equal(release.pages,pages.length,'release manifest must count all published pages');
  const port=await freePort();

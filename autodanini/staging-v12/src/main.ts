@@ -5,7 +5,7 @@ import './styles.css';
 function addCommerceNavigation(): void {
   function makeAnchor(path: string, sr: string, de: string): HTMLAnchorElement {
     const a = document.createElement('a');
-    a.href = path + '.html';
+    a.href = '/' + path + '.html';
     a.dataset.sr = sr;
     a.dataset.de = de;
     a.textContent = lang === 'de' ? de : sr;

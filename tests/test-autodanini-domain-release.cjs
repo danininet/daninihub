@@ -90,8 +90,8 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.ok(sitemap.includes('<loc>https://daninihub.com/import.html</loc>'));
  assert.ok(sitemap.includes('<loc>https://daninihub.com/de/</loc>'));
  assert.ok(!sitemap.includes('admin.html')&&!sitemap.includes('auctions.html'));
- const robots=fs.readFileSync(path.join(root,'autodanini-auto-dist','robots.txt'),'utf8');
- assert.ok(robots.includes('Sitemap: https://daninihub.com/sitemap.xml'));
+ const seoRobots=fs.readFileSync(path.join(root,'autodanini-auto-dist','robots.txt'),'utf8');
+ assert.ok(seoRobots.includes('Sitemap: https://daninihub.com/sitemap.xml'));
  const importPage=fs.readFileSync(path.join(root,'autodanini-auto-dist','import.html'),'utf8');
  assert.ok(importPage.includes('<title>Kalkulator uvoza auta iz Nemačke (carina i PDV) | AutoDanini</title>'));
  const frontend=fs.readFileSync(path.join(root,'autodanini','staging-v12','src','main.ts'),'utf8');

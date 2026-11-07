@@ -70,6 +70,24 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  for(const page of pages)assert.ok(builtFiles.includes(page+'.html'),
    'Cloudflare deployment missing public page '+page);
 
+ // Public pre-launch enquiry is not a payment processor or auto-reservation.
+ const prepurchaseFile=path.join(root,'autodanini-auto-dist','prepurchase.html');
+ const brandedMark=path.join(root,'autodanini-auto-dist','autodanini-mark.svg');
+ assert.ok(fs.existsSync(prepurchaseFile),'Pre-purchase landing missing in Cloudflare output');
+ assert.ok(fs.existsSync(brandedMark),'New brandmark missing in Cloudflare output');
+ const prepurchase=fs.readFileSync(prepurchaseFile,'utf8');
+ assert.ok(prepurchase.includes('https://wa.me/4915730916621'),'Prelaunch lead form missing known WhatsApp');
+ assert.ok(prepurchase.includes('Naplata još nije omogućena'),'Prelaunch must not sell before business registration');
+ assert.ok(prepurchase.includes('Pripremi WhatsApp upit'),'Prelaunch needs working enquiry CTA');
+ assert.ok(!prepurchase.includes('sk_test_')&&!prepurchase.includes('sk_live_'),'No Stripe secret in browser');
+ for(const name of pages.filter(page=>page!=='admin')){
+  const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',name+'.html'),'utf8');
+  assert.ok(html.includes('src="/autodanini-mark.svg"'),'Branded navigation missing: '+name);
+ }
+ const homepage=fs.readFileSync(path.join(root,'autodanini-auto-dist','index.html'),'utf8');
+ assert.ok(homepage.includes('href="/prepurchase.html"'),'New lead magnet must be linked on homepage');
+ const sitemapForLead=fs.readFileSync(path.join(root,'autodanini-auto-dist','sitemap.xml'),'utf8');
+ assert.ok(sitemapForLead.includes('<loc>https://daninihub.com/prepurchase.html</loc>'));
  // SEO publication must not inherit staging's site-wide noindex.
  const publicSeo=['index','buyers','dealers','live','inspection','import',
   'exclusive','tender','guides','about','contact','cenovnik','faq'];

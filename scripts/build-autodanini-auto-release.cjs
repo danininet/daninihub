@@ -44,6 +44,37 @@ if(!admin.includes('data-page="admin"')||!admin.includes('noindex'))
  throw Error('AUTODANINI_OWNER_PAGE_UNSAFE');
 fs.rmSync(out,{recursive:true,force:true});
 fs.cpSync(compiled,out,{recursive:true});
+// The public Cloudflare static release must include real /de/ and /sr/ entry
+// points. Without these files, Workers static assets return 404 for /de/.
+// The source site uses client-side DE/SR switching; prime the language before
+// its Vite module loads and make all links/assets root-relative so /de/ does
+// not accidentally request /de/assets/* or /de/buyers.html.
+const rootHome=fs.readFileSync(path.join(out,'index.html'),'utf8');
+for(const locale of ['sr','de']){
+  let localized=rootHome
+    .replace('<html lang="sr">','<html lang="'+locale+'">')
+    .replace(/\b(href|src)=(["'])([^"']+)\2/g,(full,attribute,quote,url)=>{
+      if(/^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(url))return full;
+      return attribute+'='+quote+'/'+url.replace(/^\.\//,'')+quote;
+    })
+    .replace(/url\((['"]?)\.\/([^)'"]+)\1\)/g,
+      (full,quote,url)=>'url('+quote+'/'+url+quote+')');
+  localized=localized.replace('</head>',
+    '<script>try{localStorage.setItem("autodanini-language","'+locale+'")}catch(_){}</script></head>');
+  if(locale==='de'){
+    localized=localized.replace(/<title>[^<]*<\/title>/,
+      '<title>AutoDanini | Fahrzeugprüfung und Importberatung</title>');
+    localized=localized.replace(/(<meta name="description" content=")[^"]*(")/,
+      '$1Fahrzeugangebote vergleichen, Dokumente prüfen, Besichtigung und Import nach Serbien vorbereiten. Unabhängige Unterstützung zwischen Deutschland und Balkan.$2');
+  }
+  const localeDir=path.join(out,locale);
+  fs.mkdirSync(localeDir,{recursive:true});
+  fs.writeFileSync(path.join(localeDir,'index.html'),localized);
+  if(!localized.includes('autodanini-language') ||
+     !localized.includes('href="/buyers.html"') ||
+     !localized.includes('/assets/'))
+    throw Error('AUTODANINI_LOCALE_BUILD_INVALID '+locale);
+}
 fs.writeFileSync(path.join(out,'AUTODANINI_RELEASE_INFO.json'),
  JSON.stringify({site:'AutoDanini',source:'vendored-reviewed-v12-20261022',pages:pages.length,
   releaseMode:'public-visual-only',accounts:false,admin:false,payments:false,ai:false},null,2)+'\n');

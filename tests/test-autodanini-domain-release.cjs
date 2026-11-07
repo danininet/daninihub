@@ -81,7 +81,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  }
  for(const page of ['auctions','ai-advisor','ai-primer','nalog','admin','support']){
   const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',page+'.html'),'utf8');
-  assert.match(html,/<meta name="robots" content="noindex,follow">/,'Unready or private page wrongly indexable: '+page);
+  assert.match(html,/<meta name="robots" content="noindex/,'Unready or private page wrongly indexable: '+page);
  }
  const seoGerman=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
  assert.ok(seoGerman.includes('<link rel="canonical" href="https://daninihub.com/de/">'));

@@ -54,6 +54,20 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
   assert.match(html,/\/assets\//,
     'localized Vite assets must load from the site root');
  }
+ // Cloudflare Git Builds used to lack an explicit assets directory. That can
+ // publish an incomplete or legacy dist while only the homepage appears live.
+ const wrangler=JSON.parse(fs.readFileSync(path.join(root,'wrangler.jsonc'),'utf8'));
+ assert.equal(wrangler.name,'daninihub');
+ assert.equal(wrangler.assets.directory,'./autodanini-auto-dist');
+ assert.equal(wrangler.assets.html_handling,'auto-trailing-slash');
+ assert.notEqual(wrangler.assets.not_found_handling,'single-page-application',
+   'Every navigation request must resolve to the real multi-page asset');
+ const builtFiles=fs.readdirSync(path.join(root,'autodanini-auto-dist'));
+ for(const page of pages)assert.ok(builtFiles.includes(page+'.html'),
+   'Cloudflare deployment missing public page '+page);
+ const frontend=fs.readFileSync(path.join(root,'autodanini','staging-v12','src','main.ts'),'utf8');
+ assert.ok(frontend.includes("a.href = '/' + path + '.html';"),
+   'Dynamic links must work from both / and /de/');
  const release=JSON.parse(fs.readFileSync(path.join(root,'autodanini-auto-dist','AUTODANINI_RELEASE_INFO.json'),'utf8'));
  assert.equal(release.pages,pages.length,'release manifest must count all published pages');
  const port=await freePort();

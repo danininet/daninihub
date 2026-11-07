@@ -5,5 +5,15 @@
     "directory": "./autodanini-auto-dist",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "daninihub.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.daninihub.com",
+      "custom_domain": true
+    }
+  ]
 }

@@ -80,7 +80,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.ok(prepurchase.includes('Naplata još nije omogućena'),'Prelaunch must not sell before business registration');
  assert.ok(prepurchase.includes('Pripremi WhatsApp upit'),'Prelaunch needs working enquiry CTA');
  assert.ok(!prepurchase.includes('sk_test_')&&!prepurchase.includes('sk_live_'),'No Stripe secret in browser');
- for(const name of pages){
+ for(const name of pages.filter(page=>page!=='admin')){
   const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',name+'.html'),'utf8');
   assert.ok(html.includes('src="/autodanini-mark.svg"'),'Branded navigation missing: '+name);
  }

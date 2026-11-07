@@ -60,6 +60,8 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.equal(wrangler.name,'daninihub');
  assert.equal(wrangler.assets.directory,'./autodanini-auto-dist');
  assert.equal(wrangler.assets.html_handling,'auto-trailing-slash');
+ assert.deepEqual(wrangler.routes,[{pattern:'www.daninihub.com/*',zone_name:'daninihub.com'}],
+   'Only www may be routed via existing proxied DNS; mail, calije and apex remain unchanged');
  assert.notEqual(wrangler.assets.not_found_handling,'single-page-application',
    'Every navigation request must resolve to the real multi-page asset');
  const builtFiles=fs.readdirSync(path.join(root,'autodanini-auto-dist'));

@@ -5,5 +5,11 @@
     "directory": "./autodanini-auto-dist",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "www.daninihub.com/*",
+      "zone_name": "daninihub.com"
+    }
+  ]
 }

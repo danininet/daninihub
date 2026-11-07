@@ -44,6 +44,48 @@ if(!admin.includes('data-page="admin"')||!admin.includes('noindex'))
  throw Error('AUTODANINI_OWNER_PAGE_UNSAFE');
 fs.rmSync(out,{recursive:true,force:true});
 fs.cpSync(compiled,out,{recursive:true});
+// SEO: the reviewed staging pages deliberately had noindex. The public
+// Worker release may index ONLY useful public service/guide pages.
+const indexablePages=['index','buyers','dealers','live','inspection','import',
+ 'exclusive','tender','guides','about','contact','cenovnik','faq'];
+for(const page of indexablePages){
+ const dest=path.join(out,page+'.html');
+ let html=fs.readFileSync(dest,'utf8');
+ const noindex='<meta name="robots" content="noindex,follow">';
+ if(!html.includes(noindex))throw Error('AUTODANINI_SEO_META_NOT_FOUND '+page);
+ html=html.replace(noindex,'<meta name="robots" content="index,follow">');
+ const canonical=page==='index'?'https://daninihub.com/':
+  'https://daninihub.com/'+page+'.html';
+ const alternates=page==='index'?
+  '<link rel="alternate" hreflang="sr" href="https://daninihub.com/">'+
+  '<link rel="alternate" hreflang="de" href="https://daninihub.com/de/">'+
+  '<link rel="alternate" hreflang="x-default" href="https://daninihub.com/">':'';
+ html=html.replace('</head>','<link rel="canonical" href="'+canonical+'">'+alternates+'</head>');
+ // The import calculator is only indicative. Its title must NOT promise
+ // registration-ready all-in costs, because several charges are unknown.
+ if(page==='import'){
+  const seoTitle='Kalkulator uvoza auta iz Nemačke (carina i PDV) | AutoDanini';
+  html=html.replace(/<title>[^<]*<\/title>/,
+   '<title>'+seoTitle+'</title>');
+  html=html.replace(/(<meta property="og:title" content=")[^"]*(")/,
+   '$1'+seoTitle+'$2');
+  html=html.replace(/(<meta name="description" content=")[^"]*(")/,
+   '$1Orijentacioni kalkulator uvoza vozila iz Nemačke u Srbiju: scenariji carine i PDV-a. Konačna osnovica i dodatni troškovi zahtevaju potvrdu.$2');
+ }
+ fs.writeFileSync(dest,html);
+}
+// A real indexable sitemap. Do not include account, admin, incomplete AI,
+// empty auctions, legal holding pages or any pretend inventory.
+const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/',
+ ...indexablePages.filter(p=>p!=='index').map(p=>'https://daninihub.com/'+p+'.html')];
+const sitemap='<?xml version="1.0" encoding="UTF-8"?>\n'+
+ '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+
+ sitemapEntries.map(url=>'  <url><loc>'+url+'</loc></url>').join('\n')+
+ '\n</urlset>\n';
+fs.writeFileSync(path.join(out,'sitemap.xml'),sitemap);
+fs.writeFileSync(path.join(out,'robots.txt'),
+ 'User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /payment/\nDisallow: /owner/\n'+
+ 'Sitemap: https://daninihub.com/sitemap.xml\n');
 // The public Cloudflare static release must include real /de/ and /sr/ entry
 // points. Without these files, Workers static assets return 404 for /de/.
 // The source site uses client-side DE/SR switching; prime the language before
@@ -61,7 +103,11 @@ for(const locale of ['sr','de']){
       (full,quote,url)=>'url('+quote+'/'+url+quote+')');
   localized=localized.replace('</head>',
     '<script>try{localStorage.setItem("autodanini-language","'+locale+'")}catch(_){}</script></head>');
+  // /sr/ duplicates the root SR landing page and stays canonical to '/'.
+  // /de/ is a distinct indexed entrypoint with its own canonical URL.
   if(locale==='de'){
+    localized=localized.replace(/(<link rel="canonical" href=")[^"]*(")/,
+      '$1https://daninihub.com/de/$2');
     localized=localized.replace(/<title>[^<]*<\/title>/,
       '<title>AutoDanini | Fahrzeugprüfung und Importberatung</title>');
     localized=localized.replace(/(<meta name="description" content=")[^"]*(")/,

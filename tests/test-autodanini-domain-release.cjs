@@ -69,6 +69,31 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  const builtFiles=fs.readdirSync(path.join(root,'autodanini-auto-dist'));
  for(const page of pages)assert.ok(builtFiles.includes(page+'.html'),
    'Cloudflare deployment missing public page '+page);
+
+ // SEO publication must not inherit staging's site-wide noindex.
+ const publicSeo=['index','buyers','dealers','live','inspection','import',
+  'exclusive','tender','guides','about','contact','cenovnik','faq'];
+ for(const page of publicSeo){
+  const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',page+'.html'),'utf8');
+  assert.match(html,/<meta name="robots" content="index,follow">/,'Public SEO blocked: '+page);
+  const canonical=page==='index'?'https://daninihub.com/':'https://daninihub.com/'+page+'.html';
+  assert.ok(html.includes('<link rel="canonical" href="'+canonical+'">'),'Missing canonical: '+page);
+ }
+ for(const page of ['auctions','ai-advisor','ai-primer','nalog','admin','support']){
+  const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',page+'.html'),'utf8');
+  assert.match(html,/<meta name="robots" content="noindex/,'Unready or private page wrongly indexable: '+page);
+ }
+ const seoGerman=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
+ assert.ok(seoGerman.includes('<link rel="canonical" href="https://daninihub.com/de/">'));
+ assert.ok(seoGerman.includes('<meta name="robots" content="index,follow">'));
+ const seoSitemap=fs.readFileSync(path.join(root,'autodanini-auto-dist','sitemap.xml'),'utf8');
+ assert.ok(seoSitemap.includes('<loc>https://daninihub.com/import.html</loc>'));
+ assert.ok(seoSitemap.includes('<loc>https://daninihub.com/de/</loc>'));
+ assert.ok(!seoSitemap.includes('admin.html')&&!seoSitemap.includes('auctions.html'));
+ const seoRobots=fs.readFileSync(path.join(root,'autodanini-auto-dist','robots.txt'),'utf8');
+ assert.ok(seoRobots.includes('Sitemap: https://daninihub.com/sitemap.xml'));
+ const importPage=fs.readFileSync(path.join(root,'autodanini-auto-dist','import.html'),'utf8');
+ assert.ok(importPage.includes('<title>Kalkulator uvoza auta iz Nemačke (carina i PDV) | AutoDanini</title>'));
  const frontend=fs.readFileSync(path.join(root,'autodanini','staging-v12','src','main.ts'),'utf8');
  assert.ok(frontend.includes("a.href = '/' + path + '.html';"),
    'Dynamic links must work from both / and /de/');

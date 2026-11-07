@@ -57,7 +57,7 @@ for(const page of pages){
   replaced++;
   return '<img class="ad-monogram" src="/autodanini-mark.svg" width="50" height="50" alt="AutoDanini znak">';
  });
- if(!replaced)throw Error('AUTODANINI_MARK_MISSING '+page);
+ if(!replaced && page!=='admin')throw Error('AUTODANINI_MARK_MISSING '+page);
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
  if(page==='index'){
   const hero='<div class="heroactions">';

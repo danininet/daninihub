@@ -1,0 +1,20 @@
+name: DANINI Cloudflare full-site live QA
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cloudflare-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify all public pages on actual daninihub.com
+        run: node scripts/check-cloudflare-live-pages.cjs

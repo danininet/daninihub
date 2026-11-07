@@ -83,13 +83,13 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
   const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',page+'.html'),'utf8');
   assert.match(html,/<meta name="robots" content="noindex,follow">/,'Unready or private page wrongly indexable: '+page);
  }
- const german=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
- assert.ok(german.includes('<link rel="canonical" href="https://daninihub.com/de/">'));
- assert.ok(german.includes('<meta name="robots" content="index,follow">'));
- const sitemap=fs.readFileSync(path.join(root,'autodanini-auto-dist','sitemap.xml'),'utf8');
- assert.ok(sitemap.includes('<loc>https://daninihub.com/import.html</loc>'));
- assert.ok(sitemap.includes('<loc>https://daninihub.com/de/</loc>'));
- assert.ok(!sitemap.includes('admin.html')&&!sitemap.includes('auctions.html'));
+ const seoGerman=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
+ assert.ok(seoGerman.includes('<link rel="canonical" href="https://daninihub.com/de/">'));
+ assert.ok(seoGerman.includes('<meta name="robots" content="index,follow">'));
+ const seoSitemap=fs.readFileSync(path.join(root,'autodanini-auto-dist','sitemap.xml'),'utf8');
+ assert.ok(seoSitemap.includes('<loc>https://daninihub.com/import.html</loc>'));
+ assert.ok(seoSitemap.includes('<loc>https://daninihub.com/de/</loc>'));
+ assert.ok(!seoSitemap.includes('admin.html')&&!seoSitemap.includes('auctions.html'));
  const seoRobots=fs.readFileSync(path.join(root,'autodanini-auto-dist','robots.txt'),'utf8');
  assert.ok(seoRobots.includes('Sitemap: https://daninihub.com/sitemap.xml'));
  const importPage=fs.readFileSync(path.join(root,'autodanini-auto-dist','import.html'),'utf8');

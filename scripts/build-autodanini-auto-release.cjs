@@ -44,6 +44,29 @@ if(!admin.includes('data-page="admin"')||!admin.includes('noindex'))
  throw Error('AUTODANINI_OWNER_PAGE_UNSAFE');
 fs.rmSync(out,{recursive:true,force:true});
 fs.cpSync(compiled,out,{recursive:true});
+// Branded asset from the reviewed design: replace the former inline monogram
+// in the Cloudflare visual release only. Keep layout, photos and static safety.
+for(const name of ['autodanini-mark.svg','prepurchase.html']){
+ if(!fs.existsSync(path.join(out,name)))throw Error('AUTODANINI_PRELAUNCH_FILE_MISSING '+name);
+}
+for(const page of pages){
+ const dest=path.join(out,page+'.html');
+ let html=fs.readFileSync(dest,'utf8');
+ let replaced=0;
+ html=html.replace(/<svg class="ad-monogram"[^>]*>[\s\S]*?<\/svg>/g,()=>{
+  replaced++;
+  return '<img class="ad-monogram" src="/autodanini-mark.svg" width="50" height="50" alt="AutoDanini znak">';
+ });
+ if(!replaced)throw Error('AUTODANINI_MARK_MISSING '+page);
+ html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
+ if(page==='index'){
+  const hero='<div class="heroactions">';
+  if(!html.includes(hero))throw Error('AUTODANINI_HERO_ACTIONS_MISSING');
+  html=html.replace(hero,hero+
+   '<a class="btn gold" href="/prepurchase.html"><span data-sr="Provera pre kapare" data-de="Check vor Anzahlung">Provera pre kapare</span></a>');
+ }
+ fs.writeFileSync(dest,html);
+}
 // SEO: the reviewed staging pages deliberately had noindex. The public
 // Worker release may index ONLY useful public service/guide pages.
 const indexablePages=['index','buyers','dealers','live','inspection','import',

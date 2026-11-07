@@ -60,7 +60,10 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.equal(wrangler.name,'daninihub');
  assert.equal(wrangler.assets.directory,'./autodanini-auto-dist');
  assert.equal(wrangler.assets.html_handling,'auto-trailing-slash');
- assert.equal(wrangler.routes,undefined,'Do not deploy the unsuccessful www Worker route');
+ assert.deepEqual(wrangler.routes,[
+   {pattern:'daninihub.com',custom_domain:true},
+   {pattern:'www.daninihub.com',custom_domain:true}
+ ],'Wrangler must preserve existing apex custom domain and create only the missing www custom domain');
  assert.notEqual(wrangler.assets.not_found_handling,'single-page-application',
    'Every navigation request must resolve to the real multi-page asset');
  const builtFiles=fs.readdirSync(path.join(root,'autodanini-auto-dist'));

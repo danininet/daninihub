@@ -99,7 +99,7 @@ for(const page of indexablePages){
 }
 // A real indexable sitemap. Do not include account, admin, incomplete AI,
 // empty auctions, legal holding pages or any pretend inventory.
-const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/',
+const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/prepurchase.html',
  ...indexablePages.filter(p=>p!=='index').map(p=>'https://daninihub.com/'+p+'.html')];
 const sitemap='<?xml version="1.0" encoding="UTF-8"?>\n'+
  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+

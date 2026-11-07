@@ -65,7 +65,7 @@ for(const page of indexablePages){
  // registration-ready all-in costs, because several charges are unknown.
  if(page==='import'){
   const seoTitle='Kalkulator uvoza auta iz Nemačke (carina i PDV) | AutoDanini';
-  html=html.replace(/<title>[^<]*<\\/title>/,
+  html=html.replace(/<title>[^<]*<\/title>/,
    '<title>'+seoTitle+'</title>');
   html=html.replace(/(<meta property="og:title" content=")[^"]*(")/,
    '$1'+seoTitle+'$2');

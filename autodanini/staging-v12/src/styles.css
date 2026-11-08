@@ -271,3 +271,32 @@
 .danini-guide-action{display:flex;flex-wrap:wrap;gap:14px;margin-top:25px}
 @media(max-width:920px){.danini-rfq-layout{grid-template-columns:1fr}.danini-b2b-grid{grid-template-columns:1fr}}
 @media(max-width:550px){.danini-rfq-form{padding:19px}.danini-rfq-2{grid-template-columns:1fr}.danini-guide-step{grid-template-columns:44px 1fr;gap:12px}.danini-guide-number{font-size:26px}.danini-b2b-hero,.danini-guide-hero{padding:55px 0}}
+
+
+/* DANINI service intake: accessible, email-first, mobile-first design. */
+.danini-intake-section{background:linear-gradient(115deg,#f3f7fc,#eaf2f8);padding:70px 0}
+.danini-intake-layout{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:48px;align-items:start}
+.danini-intake-intro h2{font:800 clamp(31px,3.8vw,50px)/1.17 Manrope,sans-serif;color:#132e45;letter-spacing:-.033em;margin:15px 0 20px}
+.danini-intake-intro>p{font-size:16px;line-height:1.75;color:#435a70}
+.danini-intake-flow{display:grid;gap:11px;margin:28px 0}
+.danini-intake-flow>span{background:#fff;border:1px solid #d5e1eb;border-radius:11px;padding:15px 17px;color:#205a86;font-weight:800;font-size:13px}
+.danini-intake-flow b{color:#223c54;margin-left:13px}
+.danini-intake-caveat{border-left:4px solid #3d7ead;padding:13px 18px;background:#e5eef6;color:#3a5870!important;font-size:13px!important}
+.danini-direct-link{display:inline-flex;gap:8px;align-items:center;color:#155587;font-weight:750;text-decoration:underline;text-underline-offset:3px;margin-top:12px}
+.danini-general-form{display:grid;gap:15px;background:#fff;border-radius:19px;padding:34px;box-shadow:0 18px 58px #0c315326;border:1px solid #dce5ee}
+.danini-general-form h3{font:800 26px/1.25 Manrope,sans-serif;color:#142c40;margin:0 0 8px}
+.danini-general-form label{display:grid;gap:7px;font-weight:700;font-size:13px;color:#213d54}
+.danini-general-form input:not([type=checkbox]),.danini-general-form select,.danini-general-form textarea,
+.danini-intake-email input{background:#fff;width:100%;min-height:45px;border:1px solid #bbccd9;border-radius:9px;padding:11px 12px;font:inherit;font-size:14px;color:#1b3346}
+.danini-general-form textarea{resize:vertical;min-height:120px}
+.danini-general-form .check{grid-template-columns:auto 1fr;align-items:start;gap:11px;line-height:1.6}
+.danini-general-form .check input{width:18px;height:18px;margin:2px 0 0}
+.danini-general-form :is(input,textarea,select):focus-visible,.danini-intake-email input:focus-visible{outline:3px solid #2e8bcb;outline-offset:2px}
+.danini-general-form .btn{justify-self:start;min-height:47px}
+.danini-general-form button:disabled,.rfq button:disabled,#autodanini-support-form button:disabled{opacity:.52;cursor:not-allowed}
+.danini-intake-status,[role="status"].danini-intake-status{color:#274c68;font-size:13px;line-height:1.6;margin:0}
+.danini-intake-email{display:grid;gap:7px;color:#233e53;font-size:13px;font-weight:700;margin:14px 0}
+.danini-intake-email input{min-height:45px}
+.danini-captcha{min-height:65px;max-width:100%;margin:12px 0;overflow:hidden}
+@media(max-width:900px){.danini-intake-layout{grid-template-columns:1fr;gap:28px}}
+@media(max-width:530px){.danini-intake-section{padding:46px 0}.danini-general-form{padding:23px 17px}.danini-intake-flow{gap:8px}}

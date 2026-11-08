@@ -48,16 +48,17 @@ jobs:
           const buyers=fs.readFileSync('autodanini-auto-dist/buyers.html','utf8');
           const dealers=fs.readFileSync('autodanini-auto-dist/dealers.html','utf8');
           if(index.includes('images.unsplash.com')||about.includes('images.unsplash.com'))throw new Error('Remote stock imagery still used');
-          if(!about.includes('dragan-business-phone.jpg'))throw new Error('Approved standalone business phone photo missing');
+          if(!about.includes('danini-pregled-auta.webp'))throw new Error('Service visual missing from About');
           const contact=fs.readFileSync('autodanini-auto-dist/contact.html','utf8');
           for(const [name,page,photo] of [
-            ['index',index,'dragan-business-phone.jpg'],
+            ['index',index,'danini-auto-uvoz.webp'],
             ['about',about,'dragan-business-portrait.jpg'],
-            ['contact',contact,'dragan-business-phone.jpg']
+            ['contact',contact,'danini-pregled-auta.webp']
           ]){
             if(!page.includes(`--image:url('./${photo}')`))throw new Error('Wrong business hero image on '+name);
-            if(!page.includes('content="https://daninihub.com/dragan-business-portrait.jpg"'))
-              throw new Error('Social business photo replaced with car on '+name);
+            const socialImage=name==='about'?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
+            if(!page.includes('content="https://daninihub.com/'+socialImage+'"'))
+              throw new Error('Social image mismatch on '+name);
           }
           const businessPhotos=['dragan-business-phone.jpg','dragan-business-portrait.jpg'];
           const signatures=['ffd8ff','ffd8ff'];
@@ -72,7 +73,7 @@ jobs:
           }
           const support=fs.readFileSync('autodanini-auto-dist/support.html','utf8');
           if(!support.includes('autodanini-support-form') || !support.includes('WhatsApp'))throw Error('Support Desk not built');
-          if(!about.includes('dragan-business-phone.jpg'))throw Error('Separate business photo not shown on About');
+          if(!about.includes('danini-pregled-auta.webp'))throw Error('Service visual not shown on About');
           console.log('Two approved single business photos, no original portrait/collage, Support, legacy and AutoDanini root: OK');
           console.log('Both site builds and original imagery verified');
           NODE

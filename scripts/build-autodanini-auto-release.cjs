@@ -11,7 +11,7 @@ const {spawnSync}=require('node:child_process');
 const frontend=path.join(__dirname,'..','autodanini','staging-v12');
 const out=path.resolve(__dirname,'../autodanini-auto-dist');
 const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
- 'auctions','guides','digital','ai-solutions','about','contact','impressum','privacy','terms','cookies',
+ 'auctions','guides','digital','ai-solutions','business','cnc','selbstimport','uvoz-vodic','about','contact','impressum','privacy','terms','cookies',
  'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
 function run(args,env){
  const npm=process.platform==='win32'?'npm.cmd':'npm';
@@ -70,7 +70,7 @@ for(const page of pages){
 // SEO: the reviewed staging pages deliberately had noindex. The public
 // Worker release may index ONLY useful public service/guide pages.
 const indexablePages=['index','buyers','dealers','live','inspection','import',
- 'exclusive','tender','guides','about','contact','cenovnik','faq'];
+ 'exclusive','tender','guides','selbstimport','uvoz-vodic','about','contact','cenovnik','faq'];
 for(const page of indexablePages){
  const dest=path.join(out,page+'.html');
  let html=fs.readFileSync(dest,'utf8');
@@ -82,7 +82,10 @@ for(const page of indexablePages){
  const alternates=page==='index'?
   '<link rel="alternate" hreflang="sr" href="https://daninihub.com/">'+
   '<link rel="alternate" hreflang="de" href="https://daninihub.com/de/">'+
-  '<link rel="alternate" hreflang="x-default" href="https://daninihub.com/">':'';
+  '<link rel="alternate" hreflang="x-default" href="https://daninihub.com/">':
+  (page==='selbstimport'||page==='uvoz-vodic'?
+    '<link rel="alternate" hreflang="sr" href="https://daninihub.com/uvoz-vodic.html">'+
+    '<link rel="alternate" hreflang="de" href="https://daninihub.com/selbstimport.html">':'');
  html=html.replace('</head>','<link rel="canonical" href="'+canonical+'">'+alternates+'</head>');
  // The import calculator is only indicative. Its title must NOT promise
  // registration-ready all-in costs, because several charges are unknown.
@@ -97,6 +100,28 @@ for(const page of indexablePages){
  }
  fs.writeFileSync(dest,html);
 }
+// Match legacy URLs to equivalent new content; never redirect everything home.
+const legacyRedirects=[
+  "# DANINI SEO legacy routes identified in Search Console export",
+  "/de/wissen/deutschland-selbstimport /selbstimport.html 301",
+  "/de/autoimport /selbstimport.html 301",
+  "/de/wissen/uvoz-zoll-eur1-i-dovoz /selbstimport.html 301",
+  "/sr/vodic/uvoz-zoll-eur1-i-dovoz /uvoz-vodic.html 301",
+  "/sr/uvoz-auta /uvoz-vodic.html 301",
+  "/sr/kalkulator /import.html 301",
+  "/de/rechner /import.html 301",
+  "/de/wissen/landed-cost-kalkulation /import.html 301",
+  "/de/fahrzeugpruefung /inspection.html 301",
+  "/de/b2b-fahrzeugsuche /dealers.html 301",
+  "/sr/b2b-pretraga-vozila /dealers.html 301",
+  "/de/ratgeber /guides.html 301",
+  "/sr/vodici /guides.html 301",
+  "/de/impressum /impressum.html 301",
+  "/de/datenschutz /privacy.html 301",
+  "/de/bedingungen /terms.html 301",
+  "/de/wissen/provera-oglasa-pre-kapare /prepurchase.html 301"
+];
+fs.writeFileSync(path.join(out,'_redirects'),legacyRedirects.join('\n')+'\n');
 // A real indexable sitemap. Do not include account, admin, incomplete AI,
 // empty auctions, legal holding pages or any pretend inventory.
 const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/prepurchase.html',

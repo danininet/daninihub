@@ -12,11 +12,11 @@ function addCommerceNavigation(): void {
     return a;
   }
   const navItems: [string,string,string][] = [
-    ['buyers','Auto i kupovina','Auto & Kaufberatung'],
+    ['business','DANINI Business','DANINI Business'],
+    ['buyers','AutoDanini','AutoDanini'],
     ['auctions','Aukcije (uskoro)','Auktionen (geplant)'],
     ['digital','Digitalni proizvodi','Digitale Produkte'],
     ['ai-solutions','AI i automatizacija','KI & Automatisierung'],
-    ['dealers','B2B','B2B'],
     ['contact','Kontakt','Kontakt']
   ];
   const desktop = document.querySelector<HTMLElement>('.desktop');
@@ -28,6 +28,8 @@ function addCommerceNavigation(): void {
   if (mobile) {
     const mobileItems: [string,string,string][] = [
       ...navItems,
+      ['cnc','CNC / Industrijski upiti','CNC / Industrie-RFQs'],
+      ['dealers','Auto B2B','Auto B2B'],
       ['cenovnik','Pilot cenovnik','Pilotpreise'],
       ['guides','Vodiči','Ratgeber'],
       ['support','Podrška','Support'],
@@ -38,6 +40,8 @@ function addCommerceNavigation(): void {
   const footerCols = document.querySelectorAll<HTMLElement>('footer .foot > div');
   if (footerCols.length > 1) {
     footerCols[1].append(
+      makeAnchor('business','DANINI Business','DANINI Business'),
+      makeAnchor('cnc','CNC i RFQ','CNC & RFQ'),
       makeAnchor('digital','Digitalni proizvodi','Digitale Produkte'),
       makeAnchor('ai-solutions','AI i automatizacija','KI & Automatisierung'),
       makeAnchor('cenovnik','Pilot cenovnik','Pilotpreise')
@@ -241,3 +245,63 @@ aiForm?.addEventListener('submit', async (ev) => {
 
 // Initialize shared navigation after language state exists.
 addCommerceNavigation();
+
+
+/* CNC/B2B prelaunch RFQ: local preview only. Never posts to DANINI.
+   No file upload, automated outreach, contracts or backend storage. */
+const rfqForm = document.querySelector<HTMLFormElement>('#danini-rfq-form');
+if (rfqForm) {
+  const preview = rfqForm.querySelector<HTMLElement>('.danini-rfq-preview');
+  const result = document.getElementById('danini-rfq-output');
+  const status = document.getElementById('danini-rfq-status');
+  const copyButton = document.getElementById('danini-rfq-copy') as HTMLButtonElement|null;
+  const whatsApp = document.getElementById('danini-rfq-whatsapp') as HTMLAnchorElement|null;
+  let draft = '';
+  rfqForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!rfqForm.reportValidity()) return;
+    const field = (key: string) => String((rfqForm.elements.namedItem(key) as HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement|null)?.value||'').trim();
+    const process=field('process'), material=field('material'), quantity=field('quantity');
+    if(!/^\d+$/.test(quantity) || Number(quantity)<1 || Number(quantity)>10000000) {
+      if(status)status.textContent=lang==='de'?'Ungültige Stückzahl.':'Nevažeća količina.';
+      return;
+    }
+    draft=[
+      'DANINI BUSINESS / CNC RFQ-ENTWURF – UNVERBINDLICH',
+      'Fertigungsverfahren: '+process,
+      'Material: '+material.slice(0,70),
+      'Stückzahl: '+quantity,
+      'Wunschtermin: '+(field('deadline')||'noch offen'),
+      'Lieferland: '+field('destination'),
+      'Anforderungen: '+(field('notes').slice(0,600)||'noch zu klären'),
+      '',
+      'Bitte technische Machbarkeit, Toleranzen, Zertifikate, Preis und Lieferzeit individuell prüfen.',
+      'Keine Bestellung, keine Produktionsfreigabe und keine vertraulichen Zeichnungen.',
+      'Erstellt als unverbindlicher RFQ-Entwurf im Browser.'
+    ].join('\n');
+    if(result)result.textContent=draft;
+    if(preview)preview.hidden=false;
+    if(status)status.textContent=lang==='de'?
+      'Entwurf lokal erstellt. Nur durch Ihre Bestätigung wird WhatsApp geöffnet.':
+      'Nacrt je pripremljen lokalno. Samo vi odlučujete da li ćete otvoriti WhatsApp.';
+    if(whatsApp){
+      const url='https://wa.me/4915730916621?text='+encodeURIComponent(draft);
+      whatsApp.href=url.length<1900?url:'#';
+      whatsApp.hidden=url.length>=1900;
+    }
+  });
+  copyButton?.addEventListener('click',async()=>{
+    if(!draft)return;
+    try {
+      await navigator.clipboard.writeText(draft);
+      if(status)status.textContent=lang==='de'?'Text kopiert.':'Tekst je kopiran.';
+    } catch (_) {
+      if(status)status.textContent=lang==='de'?'Kopieren nicht möglich: Text oben markieren.':'Kopiranje nije moguće: označite tekst iznad.';
+    }
+  });
+  rfqForm.addEventListener('input',()=>{
+    if(preview)preview.hidden=true;
+    draft='';
+    if(whatsApp)whatsApp.removeAttribute('href');
+  });
+}

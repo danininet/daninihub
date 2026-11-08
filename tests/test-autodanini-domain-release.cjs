@@ -30,7 +30,7 @@ function request(port,host,route){
 }
 test('AutoDanini root cutover preserves legacy APIs, language pages and legal safety gates',async t=>{
  const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
-  'auctions','guides','digital','ai-solutions','about','contact','impressum','privacy','terms','cookies',
+  'auctions','guides','digital','ai-solutions','business','cnc','selbstimport','uvoz-vodic','about','contact','impressum','privacy','terms','cookies',
   'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
  for(const page of pages){
   const file=path.join(root,'autodanini-auto-dist',page+'.html');
@@ -57,13 +57,34 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  const germanHome=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
  assert.match(germanHome,/Fahrzeuge\. Digitale Tools\. Klare Entscheidungen\./,
    'German homepage HTML must be localized without requiring JavaScript');
- for(const newPage of ['digital','ai-solutions']){
+ for(const newPage of ['digital','ai-solutions','business','cnc']){
    const page=fs.readFileSync(path.join(root,'autodanini-auto-dist',newPage+'.html'),'utf8');
    assert.match(page,/<meta name="robots" content="noindex,follow">/,
      'Prelaunch products must not be search-indexed');
    assert.doesNotMatch(page,/checkout\.stripe\.com|paypal\.me/,
      'No live checkout in prelaunch digital/AI pages');
  }
+ for(const guide of ['selbstimport','uvoz-vodic']){
+   const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',guide+'.html'),'utf8');
+   assert.match(html,/<meta name="robots" content="index,follow">/,
+     guide+' must serve useful informational content to Google');
+   assert.match(html,/<link rel="canonical" href="https:\/\/daninihub.com\//,
+     guide+' must have canonical');
+   assert.match(html,/hreflang="de"/);
+   assert.match(html,/hreflang="sr"/);
+   assert.match(html,/carina\.rs/,guide+' must cite Serbian customs authority');
+ }
+ const redirectList=fs.readFileSync(path.join(root,'autodanini-auto-dist','_redirects'),'utf8');
+ assert.match(redirectList,/\/de\/wissen\/deutschland-selbstimport \/selbstimport\.html 301/);
+ assert.match(redirectList,/\/sr\/kalkulator \/import\.html 301/);
+ assert.doesNotMatch(redirectList,/\/de\/wissen\/deutschland-selbstimport \/ 301/,
+   'old organic URLs must not all redirect to homepage');
+ const cncHtml=fs.readFileSync(path.join(root,'autodanini-auto-dist','cnc.html'),'utf8');
+ assert.match(cncHtml,/id="danini-rfq-form"/);
+ assert.match(cncHtml,/keine Online-Bestellung|ne kreira narudžbinu|keine Bestellung/i);
+ assert.doesNotMatch(cncHtml,/type="file"/,'do not collect confidential CAD drawings in public prelaunch');
+ const homepageHtml=fs.readFileSync(path.join(root,'autodanini-auto-dist','index.html'),'utf8');
+ assert.match(homepageHtml,/danini-feature-business" href="business.html"/);
  // Cloudflare Git Builds used to lack an explicit assets directory. That can
  // publish an incomplete or legacy dist while only the homepage appears live.
  const wrangler=JSON.parse(fs.readFileSync(path.join(root,'wrangler.jsonc'),'utf8'));

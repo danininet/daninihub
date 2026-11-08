@@ -8,7 +8,7 @@ const pages = [
   '/', '/sr/', '/de/',
   '/index.html', '/buyers.html', '/dealers.html', '/live.html',
   '/inspection.html', '/import.html', '/exclusive.html', '/tender.html',
-  '/auctions.html', '/guides.html', '/digital.html', '/ai-solutions.html', '/about.html', '/contact.html',
+  '/auctions.html', '/guides.html', '/digital.html', '/ai-solutions.html', '/business.html', '/cnc.html', '/selbstimport.html', '/uvoz-vodic.html', '/about.html', '/contact.html',
   '/impressum.html', '/privacy.html', '/terms.html', '/cookies.html',
   '/ai-advisor.html', '/disclaimer.html', '/cenovnik.html',
   '/ai-primer.html', '/faq.html', '/nalog.html', '/admin.html', '/support.html'
@@ -16,7 +16,7 @@ const pages = [
 const root = process.env.DANINI_SITE_URL || 'https://daninihub.com';
 // A PR tests the existing live site, whereas a main push validates its newly deployed pages.
 const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
-const proposedPages = new Set(['/digital.html','/ai-solutions.html']);
+const proposedPages = new Set(['/business.html','/cnc.html','/selbstimport.html','/uvoz-vodic.html']);
 const build = process.env.GITHUB_SHA || 'manual';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function check(path) {

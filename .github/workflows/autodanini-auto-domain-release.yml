@@ -7,6 +7,9 @@ on:
       - 'package.json'
       - 'scripts/build-autodanini-auto-release.cjs'
       - 'autodanini/staging-v12/**'
+      - 'workers/**'
+      - 'wrangler.jsonc'
+      - 'tests/test-danini-contact-worker.mjs'
       - 'tests/test-autodanini-domain-release.cjs'
       - '.github/workflows/autodanini-auto-domain-release.yml'
   workflow_dispatch:
@@ -22,10 +25,21 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Test Brevo/Turnstile contact security without external calls
+        run: node --test tests/test-danini-contact-worker.mjs
       - name: Install existing server dependencies
         run: npm ci --no-audit --no-fund
       - name: Build isolated existing DANINI and AutoDanini incl. Support from vendored sources
         run: npm run build
+      - name: Verify Cloudflare API worker configuration
+        run: |
+          node - <<'NODE'
+          const c=require('./wrangler.jsonc');
+          if(c.main!=='workers/danini-intake.mjs')throw Error('Wrong API worker');
+          if(c.assets.binding!=='ASSETS')throw Error('Missing static asset binding');
+          if(!c.assets.run_worker_first.includes('/api/*'))throw Error('Missing API routing');
+          if(c.assets.run_worker_first.includes('/*'))throw Error('Do not proxy static assets through email worker');
+          NODE
       - name: Check root cutover, legacy API and disabled commerce
         run: node --test tests/test-autodanini-domain-release.cjs
       - name: Validate existing root, approved single photos and Support

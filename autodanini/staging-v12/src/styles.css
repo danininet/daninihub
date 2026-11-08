@@ -234,3 +234,40 @@
 
 /* Readable plain-text local demo output */
 #ai-output{white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
+
+/* DANINI Business / industrial sourcing & SEO knowledge content */
+.danini-b2b-hero,.danini-guide-hero{background:linear-gradient(115deg,#10243a 0%,#16415b 68%,#0e293e 100%);color:#fff;padding:76px 0 72px}
+.danini-b2b-hero h1,.danini-guide-hero h1{font:800 clamp(37px,4.8vw,67px)/1.1 Manrope,sans-serif;letter-spacing:-.035em;max-width:990px;margin:15px 0 23px}
+.danini-b2b-hero p,.danini-guide-hero p{max-width:870px;color:#d9e5ec;line-height:1.8;font-size:17px}
+.danini-b2b-hero .heroactions{margin-top:27px}
+.danini-prelaunch{display:inline-block;border:1px solid #7592a8;background:#244c65;padding:8px 13px;border-radius:12px;font-weight:750;font-size:13px!important}
+.danini-b2b-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:26px 0}
+.danini-b2b-grid article{background:#fff;border:1px solid #dfe8ef;border-radius:16px;padding:28px;box-shadow:0 8px 25px #192c3b12}
+.danini-b2b-grid article small{color:#356a91;letter-spacing:.13em;font-weight:800}
+.danini-b2b-grid h3{font:800 23px/1.25 Manrope,sans-serif;color:#142c42;margin:10px 0}
+.danini-b2b-grid p{font-size:14px;line-height:1.75;color:#516579}
+.danini-b2b-grid a,.danini-guide-language{color:#f8d25c;font-weight:750}
+.danini-b2b-grid a{color:#12568f}
+.danini-b2b-disclaimer{margin:25px 0;border-left:4px solid #397eb6;background:#edf4f9;padding:19px 23px;color:#23445b;line-height:1.7;font-size:14px}
+.danini-rfq-layout{display:grid;grid-template-columns:1fr 1.1fr;gap:42px;align-items:start}
+.danini-rfq-layout>div>p{line-height:1.7}
+.danini-rfq-form{background:#fff;border:1px solid #dae4ee;border-radius:18px;padding:28px;box-shadow:0 15px 35px #122d4412}
+.danini-rfq-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.danini-rfq-form .danini-field{display:flex;flex-direction:column;gap:7px;margin-bottom:15px}
+.danini-field label{color:#233f58;font-size:13px;font-weight:800}
+.danini-field input,.danini-field select,.danini-field textarea{max-width:100%;width:100%;border:1px solid #b8cbdc;border-radius:8px;padding:12px;background:#fff;color:#17344c;font:inherit;font-size:14px}
+.danini-field :focus-visible{outline:3px solid #347ec0;outline-offset:1px}
+.danini-rfq-preview{background:#eef5f9;border:1px solid #a4bccf;border-radius:13px;margin-top:21px;padding:18px}
+.danini-rfq-preview[hidden]{display:none}
+.danini-rfq-preview pre{font:13px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:390px;overflow:auto}
+.danini-rfq-preview .btn{margin:7px 9px 7px 0}
+.danini-guide-body{max-width:960px;margin:40px auto 85px}
+.danini-guide-intro{padding:24px 28px;background:#edf4f8;border-left:4px solid #2c6b99;margin:30px 0}
+.danini-guide-step{display:grid;grid-template-columns:70px 1fr;gap:18px;padding:31px 0;border-bottom:1px solid #dce5ea}
+.danini-guide-number{font:800 36px/1 Manrope,sans-serif;color:#84a6bc}
+.danini-guide-step h2{font:800 clamp(21px,2.4vw,30px)/1.3 Manrope,sans-serif;margin:0 0 10px}
+.danini-guide-step p,.danini-guide-sources p{color:#526576;font-size:16px;line-height:1.8}
+.danini-guide-sources{margin-top:35px;padding:26px;border-radius:14px;background:#f6f9fb}
+.danini-guide-action{display:flex;flex-wrap:wrap;gap:14px;margin-top:25px}
+@media(max-width:920px){.danini-rfq-layout{grid-template-columns:1fr}.danini-b2b-grid{grid-template-columns:1fr}}
+@media(max-width:550px){.danini-rfq-form{padding:19px}.danini-rfq-2{grid-template-columns:1fr}.danini-guide-step{grid-template-columns:44px 1fr;gap:12px}.danini-guide-number{font-size:26px}.danini-b2b-hero,.danini-guide-hero{padding:55px 0}}

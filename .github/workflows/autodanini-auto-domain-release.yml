@@ -34,7 +34,8 @@ jobs:
       - name: Verify Cloudflare API worker configuration
         run: |
           node - <<'NODE'
-          const c=require('./wrangler.jsonc');
+          const fs=require('node:fs');
+          const c=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
           if(c.main!=='workers/danini-intake.mjs')throw Error('Wrong API worker');
           if(c.assets.binding!=='ASSETS')throw Error('Missing static asset binding');
           if(!c.assets.run_worker_first.includes('/api/*'))throw Error('Missing API routing');

@@ -106,7 +106,7 @@ try{
  await page.locator('#recalc').click();
  assert.notEqual((await page.locator('#total').innerText()).trim(),'—');
  console.log('PASS import: calculator changes result for valid example');
- await page.goto(base+'/contact.html',{waitUntil:'networkidle'});
+ await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded',timeout:15000});
  const form=page.locator('#danini-general-inquiry-form');
  assert.equal(await form.count(),1);
  assert.equal(await form.locator('button[type="submit"]').isDisabled(),true,

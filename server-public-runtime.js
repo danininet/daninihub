@@ -105,7 +105,7 @@ function legalPage(route){
     :route.includes('cookies')||route.includes('kolacici')?(sr?'Kolačići':'Cookies')
     :(sr?'Uslovi korišćenja':'Nutzungsbedingungen');
   const text=route.includes('impressum')
-    ?'Dragan Zdravković · AutoDanini · Fischerstraße 54 · 47055 Duisburg · Deutschland · E-Mail: info@daninihub.com · WhatsApp: +49 1573 0916621 · <a href="https://wa.me/4915730916621">Kontakt über WhatsApp / Kontakt preko WhatsApp-a</a>'
+    ?'Dragan Zdravković · AutoDanini · Fischerstraße 54 · 47055 Duisburg · Deutschland · E-Mail: info@daninihub.com'
     :route.includes('datenschutz')||route.includes('privatnost')
       ?(sr?'Obrađujemo podatke potrebne za procenu, servisni upit, ponudu i plaćanje, kao i anonimne tehničke događaje toka korišćenja radi funkcionalnosti i unapređenja usluge. Ne koristimo reklamne kolačiće. Za pitanja: info@daninihub.com.':'Wir verarbeiten Daten für Prüfung, Serviceanfrage, Angebot und Zahlung sowie anonyme technische Nutzungsereignisse zur Funktions- und Serviceverbesserung. Wir verwenden keine Werbe-Cookies. Kontakt: info@daninihub.com.')
       :route.includes('cookies')||route.includes('kolacici')

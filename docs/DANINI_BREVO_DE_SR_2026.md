@@ -106,3 +106,11 @@ Brevo rendered final transactional template 39 with and without sample `REFERENC
 
 **SMS deferred until DANINI earns revenue** per explicit owner decision; no credits, setup, campaign, sender registration or paid feature.
 
+
+## QA update — 2026-11-08 evening
+
+- GitHub CI for PR #118 at commit 922562fad801d921272cb851ea46a075d39a6fa7: three workflows PASSED (DANINI ImportOS Core, DANINI Cloudflare full-site live QA, AutoDanini existing-root readiness).
+- Brevo template #39 (SR contact, logo-final) rendered in Brevo successfully with an existing contact; immutable logo URL and sample `REFERENCE` both present in the rendered HTML.
+- Attempted Brevo template **test send** of #39 to `danininet@gmail.com`, explicitly the business test inbox agreed by owner. Brevo **rejected** it with HTTP 400 `invalid_parameter` / `Test emails cannot be sent to non-existent/blacklisted/without-contact-list users`. Confirmed `danininet@gmail.com` is an existing, unblacklisted Brevo contact with no list memberships. **No test email was queued or delivered.**
+- Blocker: In Brevo UI create a new INTERNAL TEST list named `DANINI – Interni test`, add the existing `danininet@gmail.com` contact to that list. Do not subscribe it to DANINI marketing or change old lists. After list membership is confirmed, re-attempt test #39 and #38 with the same confirmed target and verify actual delivery and reply-to.
+- Do not turn on `DANINI_BREVO_TEMPLATES_ACTIVE` or `DANINI_CONTACT_ACTIVE` before real end-to-end verification. No merge to production has been performed.

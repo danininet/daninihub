@@ -152,7 +152,7 @@ import { api } from '@appdeploy/client';
 const aiForm = document.querySelector<HTMLFormElement>('#ai-form');
 // Current Cloudflare release is deliberately visual-only. The checklist remains
 // available without generating API costs or implying a live AI implementation.
-const aiRuntimeEnabled = import.meta.env.VITE_AUTODANINI_AI_ENABLED === 'true';
+// Interactive dossier: local output only; a separate AI service may be added after verified activation.
 function localVehicleChecklist(mode: string, description: string, lang: Lang): string {
   const q = description.toLocaleLowerCase();
   const de = lang === 'de';
@@ -184,6 +184,75 @@ function localVehicleChecklist(mode: string, description: string, lang: Lang): s
     'Sledeći korak: potvrditi pitanja prodavcu pismeno i angažovati nezavisnog kontrolora. Nije kupoprodajni, poreski ni tehnički nalaz.');
   return lines.join('\n');
 }
+// This is a useful local self-service case file, NOT a live AI or seller verification.
+// All content comes from the visitor's own entries; no external fetch or persistence.
+let lastDossier = '';
+function evidenceLabel(key: string, value: string, de: boolean): string {
+  const values: Record<string,Record<string,string>> = {
+    seller: {
+      unknown: de?'Unbekannt / nicht geprüft':'Nepoznato / nije provereno',
+      claimed: de?'Vom Verkäufer behauptet; nicht überprüft':'Navod prodavca; nije provereno',
+      missing: de?'Eigentumsnachweis fehlt':'Dokaz o vlasništvu nedostaje'
+    },
+    service: {
+      unknown: de?'Unbekannt / nicht geprüft':'Nepoznato / nije provereno',
+      claimed: de?'Laut Verkäufer vorhanden; nicht überprüft':'Navod prodavca; nije provereno',
+      missing: de?'Servicebelege fehlen':'Servisni dokazi nedostaju'
+    },
+    inspection: {
+      unknown: de?'Nicht vereinbart / unbekannt':'Nije zakazano / nepoznato',
+      claimed: de?'Bericht nur behauptet, nicht überprüft':'Izveštaj se pominje, nije proveren',
+      planned: de?'Prüfung geplant oder angefragt':'Pregled planiran ili tražen'
+    }
+  };
+  return values[key]?.[value]||values[key]?.unknown||'–';
+}
+function buildLocalVehicleDossier(mode: string, description: string, listing: string, evidence: Record<string,string>, locale: Lang): string {
+ const de = locale==='de';
+ const date=new Date().toLocaleDateString(de?'de-DE':'sr-RS');
+ const lines=[
+  de?'DANINI / FAHRZEUGDOSSIER (lokal, keine KI-Analyse)':'DANINI / DIGITALNI DOSIJE VOZILA (lokalno, nije AI analiza)',
+  (de?'Datum: ':'Datum: ')+date,
+  de?'QUELLE: AUSSCHLIESSLICH ANGABEN DES NUTZERS':'IZVOR: ISKLJUČIVO PODACI KOJE JE UNEO KORISNIK',
+  '',
+  (de?'Aufgabe: ':'Zadatak: ')+mode,
+  de?'Fahrzeug / Fragen:':'Vozilo / pitanja:',
+  description,
+  '',
+  (de?'Inserat (ungeprüfter Link): ':'Oglas (neproveren link): ')+(listing||'–'),
+  '',
+  de?'DOKUMENTATION / OFFENE BELEGE':'DOKUMENTACIJA / NEPOZNATI DOKAZI',
+  (de?'Eigentum / Verkäufer: ':'Vlasništvo / prodavac: ')+evidenceLabel('seller',evidence.seller,de),
+  (de?'Servicehistorie: ':'Servisna istorija: ')+evidenceLabel('service',evidence.service,de),
+  (de?'Unabhängige Prüfung: ':'Nezavisan pregled: ')+evidenceLabel('inspection',evidence.inspection,de),
+  ''
+ ];
+ if(evidence.seller==='missing')lines.push(de?'WICHTIG: Eigentumsunterlagen vor Zahlung einfordern.':'VAŽNO: Pre uplate tražiti dokumente o vlasništvu.');
+ if(evidence.service==='missing')lines.push(de?'OFFEN: Fehlende Wartungsbelege schriftlich klären.':'OTVORENO: Razjasniti nedostajuću servisnu istoriju.');
+ if(evidence.inspection==='unknown')lines.push(de?'OFFEN: Unabhängige Prüfung vor verbindlicher Zusage erwägen.':'OTVORENO: Razmotriti nezavisan pregled pre obavezujućeg dogovora.');
+ lines.push('',localVehicleChecklist(mode,description,locale),'',
+  de?'Dieses Dossier ist eine persönliche Vorbereitung, keine Fahrzeugprüfung, Preisgarantie, Verifizierung, Kauf- oder Rechtsberatung.':
+     'Dosije je lična priprema, ne tehnička provera, garancija, potvrda oglasa, kupoprodajni ili pravni savet.',
+  de?'Bei Bedarf unabhängige Prüfung / Unterstützung separat beauftragen.':
+     'Po potrebi, nezavisni pregled ili pomoć posebno zatražiti.');
+ return lines.join('\n');
+}
+const caseDownload=document.querySelector<HTMLButtonElement>('#ai-download-case');
+caseDownload?.addEventListener('click',()=>{
+ if(!lastDossier)return;
+ const blob=new Blob([lastDossier],{type:'text/plain;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;
+ a.download='danini-fahrzeugdossier-'+new Date().toISOString().slice(0,10)+'.txt';
+ document.body.append(a);a.click();a.remove();
+ window.setTimeout(()=>URL.revokeObjectURL(url),2000);
+});
+aiForm?.addEventListener('input',()=>{
+ lastDossier='';
+ if(caseDownload)caseDownload.hidden=true;
+});
+
 aiForm?.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   if (!aiForm.reportValidity()) return;
@@ -193,22 +262,28 @@ aiForm?.addEventListener('submit', async (ev) => {
   const button = document.querySelector<HTMLButtonElement>('#ai-go');
   if (!select || !question || !output || !button) return;
   if (question.value.trim().length < 30) return;
-  if (!aiRuntimeEnabled) {
-    output.textContent = localVehicleChecklist(select.value,question.value.trim(),lang);
+  const listingInput=document.querySelector<HTMLInputElement>('#ai-listing-url');
+  const listing=listingInput?.value.trim()||'';
+  if(listing){
+   try{
+    const u=new URL(listing);
+    if(u.protocol!=='https:'&&u.protocol!=='http:')throw new Error('invalid_url');
+   }catch{
+    output.textContent=lang==='de'?'Bitte nur eine gültige http(s)-Inserat-URL angeben.':'Unesite ispravan http(s) link oglasa.';
     return;
+   }
   }
-  button.disabled = true;
-  output.textContent = lang === 'de' ? 'Die KI erstellt eine erste Einschätzung...' : 'AI priprema preliminarnu analizu...';
-  try {
-    const response = await api.post('/api/advice', { mode: select.value, question: question.value.trim(), lang, consent: true });
-    const answer = response.data?.answer;
-    if (typeof answer !== 'string' || !answer.trim()) throw new Error('No answer');
-    output.textContent = answer;
-  } catch (_error) {
-    output.textContent = lang === 'de' ? 'KI gerade nicht verfügbar oder Tageslimit erreicht. Bitte WhatsApp nutzen oder später erneut versuchen.' : 'AI je trenutno nedostupan ili je dostignut dnevni limit. Koristite WhatsApp ili pokušajte ponovo kasnije.';
-  } finally {
-    button.disabled = false;
-  }
+  const evidence={
+   seller:document.querySelector<HTMLSelectElement>('#ai-evidence-seller')?.value||'unknown',
+   service:document.querySelector<HTMLSelectElement>('#ai-evidence-service')?.value||'unknown',
+   inspection:document.querySelector<HTMLSelectElement>('#ai-evidence-inspection')?.value||'unknown'
+  };
+  lastDossier=buildLocalVehicleDossier(select.value,question.value.trim(),listing,evidence,lang);
+  // The structured dossier works regardless of optional AI credentials.
+  // This action never performs an API call or sends the visitor's notes.
+  output.textContent=lastDossier;
+  if(caseDownload)caseDownload.hidden=false;
+  return;
 });
 
 // Initialize shared navigation after language state exists.

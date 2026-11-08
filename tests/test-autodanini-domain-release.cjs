@@ -30,7 +30,7 @@ function request(port,host,route){
 }
 test('AutoDanini root cutover preserves legacy APIs, language pages and legal safety gates',async t=>{
  const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
-  'auctions','guides','about','contact','impressum','privacy','terms','cookies',
+  'auctions','guides','digital','ai-solutions','about','contact','impressum','privacy','terms','cookies',
   'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
  for(const page of pages){
   const file=path.join(root,'autodanini-auto-dist',page+'.html');
@@ -53,6 +53,16 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
     'localized nav must link to the actual root HTML files');
   assert.match(html,/\/assets\//,
     'localized Vite assets must load from the site root');
+ }
+ const germanHome=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
+ assert.match(germanHome,/Ihr Wunschfahrzeug\. Eine Entscheidung mit Substanz\./,
+   'German homepage HTML must be localized without requiring JavaScript');
+ for(const newPage of ['digital','ai-solutions']){
+   const page=fs.readFileSync(path.join(root,'autodanini-auto-dist',newPage+'.html'),'utf8');
+   assert.match(page,/<meta name="robots" content="noindex,follow">/,
+     'Prelaunch products must not be search-indexed');
+   assert.doesNotMatch(page,/checkout\.stripe\.com|paypal\.me/,
+     'No live checkout in prelaunch digital/AI pages');
  }
  // Cloudflare Git Builds used to lack an explicit assets directory. That can
  // publish an incomplete or legacy dist while only the homepage appears live.

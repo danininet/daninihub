@@ -54,8 +54,21 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
   assert.match(html,/\/assets\//,
     'localized Vite assets must load from the site root');
  }
+ const home=fs.readFileSync(path.join(root,'autodanini-auto-dist','index.html'),'utf8');
+ assert.ok(home.includes('Pripremite kupovinu auta sami. Pomoć kada zatreba.'));
+ assert.ok(home.includes('href="ai-advisor.html"'),'Self-service primary CTA leads to existing advisor');
+ assert.ok(home.includes('Pomoć na zahtev'),'Human service stays secondary');
+ const advisorHtml=fs.readFileSync(path.join(root,'autodanini-auto-dist','ai-advisor.html'),'utf8');
+ for(const id of ['ai-listing-url','ai-evidence-seller','ai-evidence-service','ai-evidence-inspection','ai-download-case']){
+   assert.ok(advisorHtml.includes('id="'+id+'"'),'Missing self-service evidence field: '+id);
+ }
+ assert.ok(advisorHtml.includes('bez naloga ili slanja podataka'),'Explain local privacy');
+ const advisorSource=fs.readFileSync(path.join(root,'autodanini/staging-v12/src/main.ts'),'utf8');
+ assert.ok(advisorSource.includes('buildLocalVehicleDossier('),'Local case generation must exist');
+ assert.ok(advisorSource.includes('new Blob([lastDossier]'),'Local text download must exist');
+ assert.ok(!advisorSource.includes("api.post('/api/advice'"),'Do not transmit visitor notes during local case building');
  const germanHome=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
- assert.match(germanHome,/Fahrzeuge\. Digitale Tools\. Klare Entscheidungen\./,
+ assert.match(germanHome,/Autokauf selbst vorbereiten\. Hilfe nur bei Bedarf\./,
    'German homepage HTML must be localized without requiring JavaScript');
  for(const newPage of ['digital','ai-solutions','business','cnc']){
    const page=fs.readFileSync(path.join(root,'autodanini-auto-dist',newPage+'.html'),'utf8');

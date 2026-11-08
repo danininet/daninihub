@@ -14,6 +14,9 @@ const pages = [
   '/ai-primer.html', '/faq.html', '/nalog.html', '/admin.html', '/support.html'
 ];
 const root = process.env.DANINI_SITE_URL || 'https://daninihub.com';
+// A PR tests the existing live site, whereas a main push validates its newly deployed pages.
+const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
+const proposedPages = new Set(['/digital.html','/ai-solutions.html']);
 const build = process.env.GITHUB_SHA || 'manual';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function check(path) {
@@ -32,7 +35,7 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
-  if (path === '/de/' && !/Fahrzeugkauf, digitale Produkte und KI-Lösungen/.test(html))
+  if (path === '/de/' && !(isPullRequest ? /Fahrzeugprüfung und Importberatung|Fahrzeugkauf, digitale Produkte und KI-Lösungen/ : /Fahrzeugkauf, digitale Produkte und KI-Lösungen/).test(html))
     throw new Error('Wrong /de/ release (expected localized page)');
   if (path === '/sr/' && !/DANINI/.test(html))
     throw new Error('Wrong /sr/ release');
@@ -47,7 +50,8 @@ async function withRetries(path) {
   throw last;
 }
 async function main(){
-  const results = await Promise.all(pages.map(async path => {
+  const pathsToCheck = isPullRequest ? pages.filter(path=>!proposedPages.has(path)) : pages;
+  const results = await Promise.all(pathsToCheck.map(async path => {
     try {
       const res = await withRetries(path);
       console.log('PASS',path,res.status,res.bytes+'B');

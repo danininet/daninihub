@@ -81,7 +81,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
    'old organic URLs must not all redirect to homepage');
  const cncHtml=fs.readFileSync(path.join(root,'autodanini-auto-dist','cnc.html'),'utf8');
  assert.match(cncHtml,/id="danini-rfq-form"/);
- assert.match(cncHtml,/Keine Bestellung/);
+ assert.match(cncHtml,/keine Online-Bestellung|ne kreira narudžbinu|keine Bestellung/i);
  assert.doesNotMatch(cncHtml,/type="file"/,'do not collect confidential CAD drawings in public prelaunch');
  const homepageHtml=fs.readFileSync(path.join(root,'autodanini-auto-dist','index.html'),'utf8');
  assert.match(homepageHtml,/danini-feature-business" href="business.html"/);

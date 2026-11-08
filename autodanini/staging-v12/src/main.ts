@@ -174,10 +174,44 @@ document.querySelectorAll<HTMLButtonElement>('[data-ai-example]').forEach(btn=>b
  if(!example||!mode||!question)return;
  mode.value=example.mode;question.value=example[lang];question.focus();
  const output=document.getElementById('ai-output');
- if(output)output.textContent=lang==='de'?'Demotext eingefügt. Bitte Einwilligung bestätigen und echte Analyse starten.':'Demonstracioni tekst je unet. Potvrdite saglasnost i pokrenite stvarnu analizu.';
+ if(output)output.textContent=lang==='de'?'Demotext eingefügt. Lokale Checkliste anzeigen.':'Demonstracioni tekst je unet. Prikažite lokalnu kontrolnu listu.';
 }));
 import { api } from '@appdeploy/client';
 const aiForm = document.querySelector<HTMLFormElement>('#ai-form');
+// Current Cloudflare release is deliberately visual-only. The checklist remains
+// available without generating API costs or implying a live AI implementation.
+const aiRuntimeEnabled = import.meta.env.VITE_AUTODANINI_AI_ENABLED === 'true';
+function localVehicleChecklist(mode: string, description: string, lang: Lang): string {
+  const q = description.toLocaleLowerCase();
+  const de = lang === 'de';
+  const lines = de ?
+    ['DANINI / LOKALE DEMO-CHECKLISTE (KEINE KI-ANALYSE)',
+     'Diese Fragen sind allgemeine Hinweise. Ihr Inserat und das Fahrzeug wurden NICHT überprüft.',
+     '1. Verkäuferidentität, Eigentumsnachweis und vollständige Fahrzeugunterlagen prüfen.',
+     '2. Servicebelege, HU-Berichte, Unfallhistorie und Widersprüche im Inserat erfragen.',
+     '3. Vor einer Anzahlung unabhängige Besichtigung und sichere Vertragsbedingungen klären.'] :
+    ['DANINI / LOKALNA KONTROLNA LISTA (NIJE AI ANALIZA)',
+     'Ovo su opšta pitanja. Nismo proverili oglas, dokumenta niti stvarno stanje automobila.',
+     '1. Proveriti identitet prodavca, vlasništvo i kompletnu dokumentaciju vozila.',
+     '2. Tražiti račune servisa, tehničke izveštaje, istoriju nezgoda i razjašnjenje neslaganja u oglasu.',
+     '3. Pre kapare dogovoriti nezavisan pregled i bezbedne ugovorne uslove.'];
+  if (/km|kilomet|laufleistung|tacho/i.test(q)) lines.push(de ?
+    '4. Laufleistung mit Service- und HU-Nachweisen abgleichen.' :
+    '4. Uporediti kilometražu sa servisnim i tehničkim zapisima.');
+  if (/automatik|automatic|dsg|menjač|getriebe/i.test(q)) lines.push(de ?
+    '• Automatikgetriebe: Wartungsnachweise und Testfahrt unter Last prüfen.' :
+    '• Automatski menjač: proveriti servisnu istoriju i probnu vožnju pod opterećenjem.');
+  if (mode === 'import' || /uvoz|import|carina|zoll|eur.1/i.test(q)) lines.push(de ?
+    '• Import: Ursprung, Ausfuhrbelege, Zoll, Einfuhrumsatzsteuer und Zulassung separat klären.' :
+    '• Uvoz: posebno proveriti poreklo, izvoznu dokumentaciju, carinu, PDV i registraciju.');
+  if (mode === 'dealer') lines.push(de ?
+    '• B2B: Unternehmensidentität, Vollmachten, Rechnungsart, Mengen und Lieferfristen belegen lassen.' :
+    '• B2B: proveriti identitet firme, ovlašćenja, vrstu računa, količine i rokove.');
+  lines.push('',de ?
+    'Nächster Schritt: Verkäuferfragen schriftlich bestätigen und unabhängigen Prüfer beauftragen. Keine Kauf- oder Steuerberatung.' :
+    'Sledeći korak: potvrditi pitanja prodavcu pismeno i angažovati nezavisnog kontrolora. Nije kupoprodajni, poreski ni tehnički nalaz.');
+  return lines.join('\n');
+}
 aiForm?.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   if (!aiForm.reportValidity()) return;
@@ -187,6 +221,10 @@ aiForm?.addEventListener('submit', async (ev) => {
   const button = document.querySelector<HTMLButtonElement>('#ai-go');
   if (!select || !question || !output || !button) return;
   if (question.value.trim().length < 30) return;
+  if (!aiRuntimeEnabled) {
+    output.textContent = localVehicleChecklist(select.value,question.value.trim(),lang);
+    return;
+  }
   button.disabled = true;
   output.textContent = lang === 'de' ? 'Die KI erstellt eine erste Einschätzung...' : 'AI priprema preliminarnu analizu...';
   try {

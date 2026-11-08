@@ -1,7 +1,7 @@
 import './styles.css';
 
-/* Shared navigation for pilot pricing, educational article, FAQ.
-   These links are inserted without modifying every individual HTML entry point. */
+/* DANINI navigation is kept consistent across the existing public pages.
+   Sections planned for later are explicitly described as not yet selling. */
 function addCommerceNavigation(): void {
   function makeAnchor(path: string, sr: string, de: string): HTMLAnchorElement {
     const a = document.createElement('a');
@@ -11,41 +11,50 @@ function addCommerceNavigation(): void {
     a.textContent = lang === 'de' ? de : sr;
     return a;
   }
-  const desktopContact = document.querySelector('.desktop .navcta');
-  const mobileMenu = document.querySelector('.mobile');
-  if (mobileMenu) mobileMenu.append(makeAnchor('nalog','Moj nalog','Mein Konto'));
-  const footerInfo = document.querySelectorAll('footer .foot > div');
-  if (footerInfo.length > 2) footerInfo[2].append(makeAnchor('nalog','Moj nalog','Mein Konto'));
-  if (desktopContact) {desktopContact.before(makeAnchor('cenovnik', 'Cenovnik', 'Preise')); desktopContact.before(makeAnchor('nalog','Moj nalog','Mein Konto'));}
-  // Visible, human-operated Support — WhatsApp handoff only.
-  if (desktopContact) desktopContact.before(makeAnchor('support','Podrška','Support'));
-  if (mobileMenu) mobileMenu.append(makeAnchor('support','Podrška','Support'));
-  const mobile = document.querySelector('.mobile');
+  const navItems: [string,string,string][] = [
+    ['buyers','Auto i kupovina','Auto & Kaufberatung'],
+    ['auctions','Aukcije (uskoro)','Auktionen (geplant)'],
+    ['digital','Digitalni proizvodi','Digitale Produkte'],
+    ['ai-solutions','AI i automatizacija','KI & Automatisierung'],
+    ['dealers','B2B','B2B'],
+    ['contact','Kontakt','Kontakt']
+  ];
+  const desktop = document.querySelector<HTMLElement>('.desktop');
+  if (desktop) {
+    desktop.replaceChildren(...navItems.map(([p,sr,de])=>makeAnchor(p,sr,de)));
+    desktop.lastElementChild?.classList.add('navcta');
+  }
+  const mobile = document.querySelector<HTMLElement>('.mobile');
   if (mobile) {
-    mobile.append(makeAnchor('cenovnik', 'Cenovnik', 'Preise'));
-    mobile.append(makeAnchor('ai-primer', 'AI primer', 'KI-Beispiel'));
-    mobile.append(makeAnchor('faq', 'Česta pitanja', 'FAQ'));
+    const mobileItems: [string,string,string][] = [
+      ...navItems,
+      ['cenovnik','Pilot cenovnik','Pilotpreise'],
+      ['guides','Vodiči','Ratgeber'],
+      ['support','Podrška','Support'],
+      ['about','O nama','Über uns']
+    ];
+    mobile.replaceChildren(...mobileItems.map(([p,sr,de])=>makeAnchor(p,sr,de)));
   }
-  const footerColumns = document.querySelectorAll('footer .foot > div');
-  if (footerColumns.length > 1) {
-    footerColumns[1].append(makeAnchor('cenovnik', 'Cenovnik', 'Preise'));
-    footerColumns[1].append(makeAnchor('ai-primer', 'AI primer', 'KI-Beispiel'));
-    footerColumns[1].append(makeAnchor('faq', 'Česta pitanja', 'FAQ'));
-    footerColumns[1].append(makeAnchor('support', 'Podrška', 'Support'));
+  const footerCols = document.querySelectorAll<HTMLElement>('footer .foot > div');
+  if (footerCols.length > 1) {
+    footerCols[1].append(
+      makeAnchor('digital','Digitalni proizvodi','Digitale Produkte'),
+      makeAnchor('ai-solutions','AI i automatizacija','KI & Automatisierung'),
+      makeAnchor('cenovnik','Pilot cenovnik','Pilotpreise')
+    );
   }
+  if (footerCols.length > 2) {
+    footerCols[2].append(makeAnchor('support','Podrška','Support'));
+  }
+  // Existing demo links remain deep-linkable without any external data transfer.
   const demo = new URLSearchParams(window.location.search).get('demo');
-  const cases: Record<string, { mode: string; sr: string; de: string }> = {
-    mercedes: {
-      mode: 'buyer',
-      sr: 'Demonstracioni primer: Mercedes C280 benzin automatik, godište 2007, 215000 km. Servisna istorija nije potpuna. Koji su konkretni rizici i pitanja prodavcu pre kapare?',
-      de: 'Demobeispiel: Mercedes C280 Benzin Automatik, Baujahr 2007, 215000 km. Die Servicehistorie ist unvollständig. Welche Risiken, Nachweise und Verkäuferfragen gibt es vor der Anzahlung?'
-    }
-  };
   const textArea = document.querySelector<HTMLTextAreaElement>('#ai-question');
   const mode = document.querySelector<HTMLSelectElement>('#ai-mode');
-  if (demo && cases[demo] && textArea && mode) {
-    textArea.value = cases[demo][lang];
-    mode.value = cases[demo].mode;
+  if (demo === 'mercedes' && textArea && mode) {
+    textArea.value = lang === 'de' ?
+      'Demobeispiel: Mercedes C280 Benzin Automatik, Baujahr 2007, 215000 km, Servicehistorie nicht vollständig. Was vor einer Anzahlung prüfen?' :
+      'Demonstracioni primer: Mercedes C280 benzin automatik, 2007, 215000 km. Servisna istorija nije potpuna. Šta proveriti pre kapare?';
+    mode.value = 'buyer';
   }
   setLang(lang);
 }

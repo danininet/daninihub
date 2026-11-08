@@ -71,3 +71,11 @@ Official docs:
 - Customer data NEVER automatically sent to newsletter lists; customer receipt generic and does not echo untrusted user content.
 - Positive 202 means BREVO ACCEPTED owner notification; physical inbox delivery needs separate real test.
 - Existing real Cloudflare domains and 301 redirects unmodified; payments and legal status untouched.
+
+## Stvarna provera prijema — 8. novembar 2026.
+- Poslat jedan interni test iz povezanog Gmail naloga na `kontakt@daninihub.com` (predmet: `DANINI routing test — 08.11.2026 (technical only)`).
+- Gmail je vratio **Delivery Status Notification (Failure)**. SMTP odgovor udaljenog servera: **`554 5.7.1 : Relay access denied`**. Dakle, dolazna pošta trenutno NE RADI; javna adresa ne sme biti označena aktivnom dok novi test ne stigne u sanduče.
+- Uzrok sumnjivo zaostalo ili neusaglašeno Hostinger MX/routing podešavanje, ali precizan DNS uzrok zahteva pregled stvarnih Cloudflare DNS i Email Routing pravila. Ne menjati DNS naslepo.
+- Cloudflare Workers produkcija: uspešan build. Poslednji javni smoke test: 33/33 stranice, 4/4 SEO 301 i /api/lead/status HTTP 200; e-mail API bez Brevo i Turnstile podešavanja odgovara `enabled:false`.
+- Sledeći neophodan potez u potvrđenom Cloudflare nalogu: Email Routing, verifikovan Gmail destination, odgovarajući MX/SPF i pravilo kontakt@ → ciljna adresa. Posle toga poslati novu poruku SA SPOLJNE ADRESE i proveriti Inbox, Spam i zaglavlja.
+- Posebno u Brevo: potvrditi domenski sender, DKIM/DMARC i API; postaviti tajne u Workers settings; aktivacioni prekidač ostaviti false dok pravno-obaveštajni i E2E koraci ne prođu.

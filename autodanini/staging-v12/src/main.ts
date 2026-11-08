@@ -1,7 +1,7 @@
 import './styles.css';
 
-/* Shared navigation for pilot pricing, educational article, FAQ.
-   These links are inserted without modifying every individual HTML entry point. */
+/* DANINI navigation is kept consistent across the existing public pages.
+   Sections planned for later are explicitly described as not yet selling. */
 function addCommerceNavigation(): void {
   function makeAnchor(path: string, sr: string, de: string): HTMLAnchorElement {
     const a = document.createElement('a');
@@ -11,41 +11,50 @@ function addCommerceNavigation(): void {
     a.textContent = lang === 'de' ? de : sr;
     return a;
   }
-  const desktopContact = document.querySelector('.desktop .navcta');
-  const mobileMenu = document.querySelector('.mobile');
-  if (mobileMenu) mobileMenu.append(makeAnchor('nalog','Moj nalog','Mein Konto'));
-  const footerInfo = document.querySelectorAll('footer .foot > div');
-  if (footerInfo.length > 2) footerInfo[2].append(makeAnchor('nalog','Moj nalog','Mein Konto'));
-  if (desktopContact) {desktopContact.before(makeAnchor('cenovnik', 'Cenovnik', 'Preise')); desktopContact.before(makeAnchor('nalog','Moj nalog','Mein Konto'));}
-  // Visible, human-operated Support — WhatsApp handoff only.
-  if (desktopContact) desktopContact.before(makeAnchor('support','Podrška','Support'));
-  if (mobileMenu) mobileMenu.append(makeAnchor('support','Podrška','Support'));
-  const mobile = document.querySelector('.mobile');
+  const navItems: [string,string,string][] = [
+    ['buyers','Auto i kupovina','Auto & Kaufberatung'],
+    ['auctions','Aukcije (uskoro)','Auktionen (geplant)'],
+    ['digital','Digitalni proizvodi','Digitale Produkte'],
+    ['ai-solutions','AI i automatizacija','KI & Automatisierung'],
+    ['dealers','B2B','B2B'],
+    ['contact','Kontakt','Kontakt']
+  ];
+  const desktop = document.querySelector<HTMLElement>('.desktop');
+  if (desktop) {
+    desktop.replaceChildren(...navItems.map(([p,sr,de])=>makeAnchor(p,sr,de)));
+    desktop.lastElementChild?.classList.add('navcta');
+  }
+  const mobile = document.querySelector<HTMLElement>('.mobile');
   if (mobile) {
-    mobile.append(makeAnchor('cenovnik', 'Cenovnik', 'Preise'));
-    mobile.append(makeAnchor('ai-primer', 'AI primer', 'KI-Beispiel'));
-    mobile.append(makeAnchor('faq', 'Česta pitanja', 'FAQ'));
+    const mobileItems: [string,string,string][] = [
+      ...navItems,
+      ['cenovnik','Pilot cenovnik','Pilotpreise'],
+      ['guides','Vodiči','Ratgeber'],
+      ['support','Podrška','Support'],
+      ['about','O nama','Über uns']
+    ];
+    mobile.replaceChildren(...mobileItems.map(([p,sr,de])=>makeAnchor(p,sr,de)));
   }
-  const footerColumns = document.querySelectorAll('footer .foot > div');
-  if (footerColumns.length > 1) {
-    footerColumns[1].append(makeAnchor('cenovnik', 'Cenovnik', 'Preise'));
-    footerColumns[1].append(makeAnchor('ai-primer', 'AI primer', 'KI-Beispiel'));
-    footerColumns[1].append(makeAnchor('faq', 'Česta pitanja', 'FAQ'));
-    footerColumns[1].append(makeAnchor('support', 'Podrška', 'Support'));
+  const footerCols = document.querySelectorAll<HTMLElement>('footer .foot > div');
+  if (footerCols.length > 1) {
+    footerCols[1].append(
+      makeAnchor('digital','Digitalni proizvodi','Digitale Produkte'),
+      makeAnchor('ai-solutions','AI i automatizacija','KI & Automatisierung'),
+      makeAnchor('cenovnik','Pilot cenovnik','Pilotpreise')
+    );
   }
+  if (footerCols.length > 2) {
+    footerCols[2].append(makeAnchor('support','Podrška','Support'));
+  }
+  // Existing demo links remain deep-linkable without any external data transfer.
   const demo = new URLSearchParams(window.location.search).get('demo');
-  const cases: Record<string, { mode: string; sr: string; de: string }> = {
-    mercedes: {
-      mode: 'buyer',
-      sr: 'Demonstracioni primer: Mercedes C280 benzin automatik, godište 2007, 215000 km. Servisna istorija nije potpuna. Koji su konkretni rizici i pitanja prodavcu pre kapare?',
-      de: 'Demobeispiel: Mercedes C280 Benzin Automatik, Baujahr 2007, 215000 km. Die Servicehistorie ist unvollständig. Welche Risiken, Nachweise und Verkäuferfragen gibt es vor der Anzahlung?'
-    }
-  };
   const textArea = document.querySelector<HTMLTextAreaElement>('#ai-question');
   const mode = document.querySelector<HTMLSelectElement>('#ai-mode');
-  if (demo && cases[demo] && textArea && mode) {
-    textArea.value = cases[demo][lang];
-    mode.value = cases[demo].mode;
+  if (demo === 'mercedes' && textArea && mode) {
+    textArea.value = lang === 'de' ?
+      'Demobeispiel: Mercedes C280 Benzin Automatik, Baujahr 2007, 215000 km, Servicehistorie nicht vollständig. Was vor einer Anzahlung prüfen?' :
+      'Demonstracioni primer: Mercedes C280 benzin automatik, 2007, 215000 km. Servisna istorija nije potpuna. Šta proveriti pre kapare?';
+    mode.value = 'buyer';
   }
   setLang(lang);
 }
@@ -165,10 +174,44 @@ document.querySelectorAll<HTMLButtonElement>('[data-ai-example]').forEach(btn=>b
  if(!example||!mode||!question)return;
  mode.value=example.mode;question.value=example[lang];question.focus();
  const output=document.getElementById('ai-output');
- if(output)output.textContent=lang==='de'?'Demotext eingefügt. Bitte Einwilligung bestätigen und echte Analyse starten.':'Demonstracioni tekst je unet. Potvrdite saglasnost i pokrenite stvarnu analizu.';
+ if(output)output.textContent=lang==='de'?'Demotext eingefügt. Lokale Checkliste anzeigen.':'Demonstracioni tekst je unet. Prikažite lokalnu kontrolnu listu.';
 }));
 import { api } from '@appdeploy/client';
 const aiForm = document.querySelector<HTMLFormElement>('#ai-form');
+// Current Cloudflare release is deliberately visual-only. The checklist remains
+// available without generating API costs or implying a live AI implementation.
+const aiRuntimeEnabled = import.meta.env.VITE_AUTODANINI_AI_ENABLED === 'true';
+function localVehicleChecklist(mode: string, description: string, lang: Lang): string {
+  const q = description.toLocaleLowerCase();
+  const de = lang === 'de';
+  const lines = de ?
+    ['DANINI / LOKALE DEMO-CHECKLISTE (KEINE KI-ANALYSE)',
+     'Diese Fragen sind allgemeine Hinweise. Ihr Inserat und das Fahrzeug wurden NICHT überprüft.',
+     '1. Verkäuferidentität, Eigentumsnachweis und vollständige Fahrzeugunterlagen prüfen.',
+     '2. Servicebelege, HU-Berichte, Unfallhistorie und Widersprüche im Inserat erfragen.',
+     '3. Vor einer Anzahlung unabhängige Besichtigung und sichere Vertragsbedingungen klären.'] :
+    ['DANINI / LOKALNA KONTROLNA LISTA (NIJE AI ANALIZA)',
+     'Ovo su opšta pitanja. Nismo proverili oglas, dokumenta niti stvarno stanje automobila.',
+     '1. Proveriti identitet prodavca, vlasništvo i kompletnu dokumentaciju vozila.',
+     '2. Tražiti račune servisa, tehničke izveštaje, istoriju nezgoda i razjašnjenje neslaganja u oglasu.',
+     '3. Pre kapare dogovoriti nezavisan pregled i bezbedne ugovorne uslove.'];
+  if (/km|kilomet|laufleistung|tacho/i.test(q)) lines.push(de ?
+    '4. Laufleistung mit Service- und HU-Nachweisen abgleichen.' :
+    '4. Uporediti kilometražu sa servisnim i tehničkim zapisima.');
+  if (/automatik|automatic|dsg|menjač|getriebe/i.test(q)) lines.push(de ?
+    '• Automatikgetriebe: Wartungsnachweise und Testfahrt unter Last prüfen.' :
+    '• Automatski menjač: proveriti servisnu istoriju i probnu vožnju pod opterećenjem.');
+  if (mode === 'import' || /uvoz|import|carina|zoll|eur.1/i.test(q)) lines.push(de ?
+    '• Import: Ursprung, Ausfuhrbelege, Zoll, Einfuhrumsatzsteuer und Zulassung separat klären.' :
+    '• Uvoz: posebno proveriti poreklo, izvoznu dokumentaciju, carinu, PDV i registraciju.');
+  if (mode === 'dealer') lines.push(de ?
+    '• B2B: Unternehmensidentität, Vollmachten, Rechnungsart, Mengen und Lieferfristen belegen lassen.' :
+    '• B2B: proveriti identitet firme, ovlašćenja, vrstu računa, količine i rokove.');
+  lines.push('',de ?
+    'Nächster Schritt: Verkäuferfragen schriftlich bestätigen und unabhängigen Prüfer beauftragen. Keine Kauf- oder Steuerberatung.' :
+    'Sledeći korak: potvrditi pitanja prodavcu pismeno i angažovati nezavisnog kontrolora. Nije kupoprodajni, poreski ni tehnički nalaz.');
+  return lines.join('\n');
+}
 aiForm?.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   if (!aiForm.reportValidity()) return;
@@ -178,6 +221,10 @@ aiForm?.addEventListener('submit', async (ev) => {
   const button = document.querySelector<HTMLButtonElement>('#ai-go');
   if (!select || !question || !output || !button) return;
   if (question.value.trim().length < 30) return;
+  if (!aiRuntimeEnabled) {
+    output.textContent = localVehicleChecklist(select.value,question.value.trim(),lang);
+    return;
+  }
   button.disabled = true;
   output.textContent = lang === 'de' ? 'Die KI erstellt eine erste Einschätzung...' : 'AI priprema preliminarnu analizu...';
   try {

@@ -30,7 +30,7 @@ function request(port,host,route){
 }
 test('AutoDanini root cutover preserves legacy APIs, language pages and legal safety gates',async t=>{
  const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
-  'auctions','guides','about','contact','impressum','privacy','terms','cookies',
+  'auctions','guides','digital','ai-solutions','about','contact','impressum','privacy','terms','cookies',
   'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
  for(const page of pages){
   const file=path.join(root,'autodanini-auto-dist',page+'.html');
@@ -53,6 +53,16 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
     'localized nav must link to the actual root HTML files');
   assert.match(html,/\/assets\//,
     'localized Vite assets must load from the site root');
+ }
+ const germanHome=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
+ assert.match(germanHome,/Fahrzeuge\. Digitale Tools\. Klare Entscheidungen\./,
+   'German homepage HTML must be localized without requiring JavaScript');
+ for(const newPage of ['digital','ai-solutions']){
+   const page=fs.readFileSync(path.join(root,'autodanini-auto-dist',newPage+'.html'),'utf8');
+   assert.match(page,/<meta name="robots" content="noindex,follow">/,
+     'Prelaunch products must not be search-indexed');
+   assert.doesNotMatch(page,/checkout\.stripe\.com|paypal\.me/,
+     'No live checkout in prelaunch digital/AI pages');
  }
  // Cloudflare Git Builds used to lack an explicit assets directory. That can
  // publish an incomplete or legacy dist while only the homepage appears live.
@@ -141,7 +151,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  ]);
  const auto=await request(port,'daninihub.com','/');
  assert.equal(auto.status,200);
- assert.match(auto.body,/AUTO\s*<span>\s*DANINI/i);
+ assert.match(auto.body,/<strong>DANINI<\/strong>/i);
  assert.match(auto.headers['x-robots-tag'],/noindex/);
  const adm=await request(port,'daninihub.com','/admin.html');
  assert.equal(adm.status,200);
@@ -168,7 +178,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  // A 3x3 grid with CSS background-size:300% shows only mouth/chin.
  const advisor=await request(port,'daninihub.com','/ai-advisor.html');
  assert.equal(advisor.status,200,'AI adviser must exist on actual Hostinger domain');
- assert.match(advisor.body,/<img class="ai-owner-avatar" src="\.\/dragan-business-portrait\.jpg"/);
+ assert.match(advisor.body,/<img class="ai-owner-avatar" src="\.\/autodanini-mark\.svg"/);
  assert.doesNotMatch(advisor.body,/poslovni portret iz postojećeg 3×3 materijala/);
  const avatarCss=fs.readFileSync(path.join(root,'autodanini','staging-v12','src','styles.css'),'utf8')
    .split('\n').find(line=>line.startsWith('.ai-owner-avatar{'))||'';
@@ -216,7 +226,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.doesNotMatch(german.body,/2\s*[–-]\s*4\s*Arbeitsstunden|2\s*bis\s*4\s*Arbeitsstunden/i);
  assert.match(original.body,/ukupne troškove|ukupnih troškova/i);
  assert.match(german.body,/Gesamtkosten|Importkosten/i);
- assert.match(auto.body,/procena ukupnih troškova uvoza/i);
+ assert.match(auto.body,/podrška pri izboru vozila/i);
  assert.doesNotMatch(auto.body,/Kontaktiranje prodavca i priprema upita za rezervaciju/);
  const robotsLegacy=await request(port,'daninihub.com','/robots.txt');
  assert.match(robotsLegacy.body,/Allow: \/|Sitemap:/);

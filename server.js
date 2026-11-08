@@ -29,7 +29,7 @@ const autoDist=path.join(__dirname,'autodanini-auto-dist');
 const autoRootEnabled=process.env.DANINI_AUTODANINI_ROOT_ENABLED==='true';
 const autoPages=new Set([
   'index','buyers','dealers','live','inspection','import','exclusive','tender',
-  'auctions','guides','about','contact','impressum','privacy','terms','cookies',
+  'auctions','guides','digital','ai-solutions','about','contact','impressum','privacy','terms','cookies',
   'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'
 ].map(name=>'/'+name+'.html'));
 const autoStatic=express.static(autoDist,{index:false,fallthrough:false,maxAge:0});

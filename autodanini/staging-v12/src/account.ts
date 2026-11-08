@@ -83,6 +83,17 @@ async function loadCases(): Promise<void> {
  showCases(cases);
 }
 async function refreshAccount(): Promise<void> {
+ // Do not display a login button that cannot work on the public Cloudflare
+ // visual-only release. This branch never enables authentication by itself.
+ if(import.meta.env.VITE_AUTODANINI_AUTH_ENABLED !== 'true'){
+   if(signedOut)signedOut.hidden=true;
+   if(signedIn)signedIn.hidden=true;
+   const login=one<HTMLButtonElement>('account-login');
+   if(login)login.disabled=true;
+   message('Privatni nalog je u pripremi. Prijava, čuvanje zahteva i aukcije trenutno nisu aktivni. Za upite koristite Kontakt / WhatsApp.',
+     'Das private Konto ist in Vorbereitung. Anmeldung, gespeicherte Anfragen und Auktionen sind noch nicht aktiv. Bitte Kontakt / WhatsApp nutzen.');
+   return;
+ }
  message('Proveravam prijavu…','Anmeldung wird geprüft…');
  try {
   const user: User|null=await auth.getUser();

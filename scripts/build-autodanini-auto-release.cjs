@@ -11,7 +11,7 @@ const {spawnSync}=require('node:child_process');
 const frontend=path.join(__dirname,'..','autodanini','staging-v12');
 const out=path.resolve(__dirname,'../autodanini-auto-dist');
 const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
- 'auctions','guides','about','contact','impressum','privacy','terms','cookies',
+ 'auctions','guides','digital','ai-solutions','about','contact','impressum','privacy','terms','cookies',
  'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
 function run(args,env){
  const npm=process.platform==='win32'?'npm.cmd':'npm';
@@ -115,6 +115,11 @@ fs.writeFileSync(path.join(out,'robots.txt'),
 // its Vite module loads and make all links/assets root-relative so /de/ does
 // not accidentally request /de/assets/* or /de/buyers.html.
 const rootHome=fs.readFileSync(path.join(out,'index.html'),'utf8');
+// Make the German page readable and indexable without client-side translation.
+function germanTextInStaticHome(html){
+  return html.replace(/(<span\b[^>]*\bdata-de="([^"]*)"[^>]*>)([^<]*)(<\/span>)/g,
+    (_full,open,de,_old,close)=>open+de+close);
+}
 for(const locale of ['sr','de']){
   let localized=rootHome
     .replace('<html lang="sr">','<html lang="'+locale+'">')
@@ -129,12 +134,13 @@ for(const locale of ['sr','de']){
   // /sr/ duplicates the root SR landing page and stays canonical to '/'.
   // /de/ is a distinct indexed entrypoint with its own canonical URL.
   if(locale==='de'){
+    localized=germanTextInStaticHome(localized);
     localized=localized.replace(/(<link rel="canonical" href=")[^"]*(")/,
       '$1https://daninihub.com/de/$2');
     localized=localized.replace(/<title>[^<]*<\/title>/,
-      '<title>AutoDanini | Fahrzeugprüfung und Importberatung</title>');
+      '<title>DANINI | Fahrzeugkauf, digitale Produkte und KI-Lösungen</title>');
     localized=localized.replace(/(<meta name="description" content=")[^"]*(")/,
-      '$1Fahrzeugangebote vergleichen, Dokumente prüfen, Besichtigung und Import nach Serbien vorbereiten. Unabhängige Unterstützung zwischen Deutschland und Balkan.$2');
+      '$1DANINI: Fahrzeugberatung zwischen Deutschland und dem Balkan, digitale Produkte und KI-Tools in Vorbereitung. Keine aktiven Online-Zahlungen.$2');
   }
   const localeDir=path.join(out,locale);
   fs.mkdirSync(localeDir,{recursive:true});

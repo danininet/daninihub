@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve, join } from 'node:path';
 import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync, mkdirSync, rmSync } from 'node:fs';
 
-const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin","support"];
+const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","digital","ai-solutions","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin","support"];
 const hostinger=process.env.AUTODANINI_BUILD_TARGET === 'hostinger';
 
 function prepareOwnedImages(){
@@ -73,7 +73,7 @@ function packageOriginalPhotos(){
     // photographs; never quietly replace the user's portrait or business grid
     // with car imagery or unrelated stock photography.
     const ownerPage=['index','about','contact'].includes(page);
-    const ownerImage=page==='about'?'dragan-business-portrait.jpg':'dragan-business-phone.jpg';
+    const ownerImage=page==='about'?'dragan-business-portrait.jpg':page==='index'?'danini-auto-uvoz.webp':'danini-pregled-auta.webp';
     if(ownerPage){
       // Match the first hero image by fixed HTML delimiter, with no regex
       // ambiguity in TypeScript/Vite and no effect on vehicle imagery.
@@ -87,7 +87,7 @@ function packageOriginalPhotos(){
       html=html.slice(0,imageBegin)+"'./"+ownerImage+html.slice(imageEnd);
     }
     html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
-    const socialImage=ownerPage?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
+    const socialImage=page==='about'?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
     html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
       '$1https://daninihub.com/'+socialImage);
     writeFileSync(dest,html);

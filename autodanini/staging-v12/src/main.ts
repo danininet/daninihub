@@ -1,4 +1,5 @@
 import './styles.css';
+import './intake';
 
 /* DANINI navigation is kept consistent across the existing public pages.
    Sections planned for later are explicitly described as not yet selling. */
@@ -110,39 +111,8 @@ document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer]').forEach(form=>{
  const wanted=selectedService||fallback;
  if(wanted && Array.from(select.options).some(option=>option.value===wanted))select.value=wanted;
 });
-document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer]').forEach(form=>{
- form.addEventListener('submit',event=>{
-  event.preventDefault(); if(!form.reportValidity())return;
-  const d=new FormData(form);const v=(k:string)=>String(d.get(k)||'').trim().slice(0,700);
-  const lines=[
-    'AutoDanini '+(form.dataset.dealer==='true'?'B2B RFQ':'Privat Anfrage'),
-    'Kontakt: '+v('person'),
-    ...(form.dataset.dealer==='true'?['Firma: '+v('company'),'Anzahl: '+v('quantity')]:[]),
-    'Leistung: '+v('service'),
-    'Fahrzeug: '+v('vehicle'),'Kategorie: '+v('category'),
-    'Antrieb: '+v('fuel'),'Getriebe: '+v('gearbox'),
-    'Budget: '+v('budget')+' EUR','Budget umfasst: '+v('budgetScope'),
-    'Zielland: '+v('country'),'Zeitrahmen: '+v('deadline'),
-    'Transport: '+v('transport'),'Dokumente/Ursprung: '+v('documents'),
-    'Inserate 1–3: '+([v('listing'),v('listing2'),v('listing3')].filter(Boolean).join(' | ')||'-'),
-    'Hinweise: '+(v('notes')||'-'),
-    'Bitte Umfang, Kosten und Termin schriftlich bestätigen. Keine Reservierung oder Bestellung.'
-  ];
-  const target='https://wa.me/4915730916621?text='+encodeURIComponent(lines.join('\n'));
-  const output=form.querySelector<HTMLElement>('[role=status]');
-  if(target.length>4500){
-   if(output)output.textContent=lang==='sr'?
-    'Upit je predugačak za WhatsApp. Skratite napomene ili linkove.':
-    'Die Anfrage ist für WhatsApp zu lang. Bitte Notizen oder Links kürzen.';
-   return;
-  }
-  if(output)output.textContent=lang==='sr'?
-   'Otvara se WhatsApp. Poruka nije poslata dok je sami ne potvrdite.':
-   'WhatsApp wird geöffnet. Die Nachricht wird erst nach Ihrer Bestätigung gesendet.';
-  // Same-tab navigation is not blocked by popup blockers; visitor confirms in WhatsApp.
-  window.location.assign(target);
- });
-});
+// All RFQ/contact submissions are handled by the Brevo-ready shared intake
+// module. Direct WhatsApp remains a separate optional user-initiated link.
 function updateLive():void {
  const km=e('km') as HTMLInputElement|null,out=e('liveout'),wa=e('livewa') as HTMLAnchorElement|null;
  if(!km||!out||!wa)return;

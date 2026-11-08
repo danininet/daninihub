@@ -73,7 +73,7 @@ function packageOriginalPhotos(){
     // photographs; never quietly replace the user's portrait or business grid
     // with car imagery or unrelated stock photography.
     const ownerPage=['index','about','contact'].includes(page);
-    const ownerImage=page==='about'?'dragan-business-portrait.jpg':'dragan-business-phone.jpg';
+    const ownerImage=page==='about'?'dragan-business-portrait.jpg':page==='index'?'danini-auto-uvoz.webp':'danini-pregled-auta.webp';
     if(ownerPage){
       // Match the first hero image by fixed HTML delimiter, with no regex
       // ambiguity in TypeScript/Vite and no effect on vehicle imagery.
@@ -87,7 +87,7 @@ function packageOriginalPhotos(){
       html=html.slice(0,imageBegin)+"'./"+ownerImage+html.slice(imageEnd);
     }
     html=html.replace(/https:\/\/images\.unsplash\.com\/[^'"<>\s)]+/g,'./danini-auto-uvoz.webp');
-    const socialImage=ownerPage?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
+    const socialImage=page==='about'?'dragan-business-portrait.jpg':'danini-auto-uvoz.webp';
     html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/g,
       '$1https://daninihub.com/'+socialImage);
     writeFileSync(dest,html);

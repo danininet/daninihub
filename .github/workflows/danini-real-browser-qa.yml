@@ -1,0 +1,36 @@
+name: DANINI real-browser customer journey
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'autodanini/staging-v12/**'
+      - 'scripts/test-danini-browser-qa.mjs'
+      - '.github/workflows/danini-real-browser-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'autodanini/staging-v12/**'
+      - 'scripts/test-danini-browser-qa.mjs'
+      - '.github/workflows/danini-real-browser-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  customer-journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Build existing public site and run offline security checks
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+          node --test tests/test-danini-contact-worker.mjs
+      - name: Install headless browser driver for QA only, no browser download
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright-core
+      - name: Verify SR/DE self-service journey in real Chromium
+        run: node scripts/test-danini-browser-qa.mjs

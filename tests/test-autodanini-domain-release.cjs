@@ -30,7 +30,7 @@ function request(port,host,route){
 }
 test('AutoDanini root cutover preserves legacy APIs, language pages and legal safety gates',async t=>{
  const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
-  'auctions','guides','digital','ai-solutions','about','contact','impressum','privacy','terms','cookies',
+  'auctions','guides','digital','ai-solutions','business','cnc','selbstimport','uvoz-vodic','about','contact','impressum','privacy','terms','cookies',
   'ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support'];
  for(const page of pages){
   const file=path.join(root,'autodanini-auto-dist',page+'.html');

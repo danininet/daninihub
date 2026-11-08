@@ -14,6 +14,14 @@ const pages = [
   '/ai-primer.html', '/faq.html', '/nalog.html', '/admin.html', '/support.html'
 ];
 const root = process.env.DANINI_SITE_URL || 'https://daninihub.com';
+// Search Console migration: these historic search entrypoints must keep their
+// original intent and never silently fall through to a generic homepage.
+const seoRedirectCases = [
+  ['/de/wissen/deutschland-selbstimport','/selbstimport.html'],
+  ['/sr/vodic/uvoz-zoll-eur1-i-dovoz','/uvoz-vodic.html'],
+  ['/sr/kalkulator','/import.html'],
+  ['/de/impressum','/impressum.html']
+];
 // A PR tests the existing live site, whereas a main push validates its newly deployed pages.
 const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
 const proposedPages = new Set(['/business.html','/cnc.html','/selbstimport.html','/uvoz-vodic.html']);
@@ -49,6 +57,23 @@ async function withRetries(path) {
   }
   throw last;
 }
+async function checkSeoRedirect(oldPath,expectedPath){
+  const url=new URL(oldPath,root);
+  url.searchParams.set('_danini_qa', build.slice(0,12));
+  const response=await fetch(url,{
+    redirect:'manual',
+    headers:{accept:'text/html'},
+    signal:AbortSignal.timeout(12000)
+  });
+  if(response.status!==301)throw Error('Expected HTTP 301, got HTTP '+response.status);
+  const location=response.headers.get('location');
+  if(!location)throw Error('HTTP 301 lacks Location');
+  const resolved=new URL(location,url);
+  if(resolved.origin!==url.origin||resolved.pathname!==expectedPath){
+    throw Error('Unexpected destination '+resolved.href+' instead of '+expectedPath);
+  }
+  return {status:response.status,destination:resolved.pathname};
+}
 async function main(){
   const pathsToCheck = isPullRequest ? pages.filter(path=>!proposedPages.has(path)) : pages;
   const results = await Promise.all(pathsToCheck.map(async path => {
@@ -61,6 +86,18 @@ async function main(){
       return {path, pass:false, error:error.message};
     }
   }));
+  // HTTP 200 on a target does not prove Google's former URLs were preserved.
+  // Check real Cloudflare 301 + Location after the website was deployed.
+  const redirects=await Promise.all(seoRedirectCases.map(async ([oldPath,target])=>{
+    try {
+      const res=await checkSeoRedirect(oldPath,target);
+      console.log('PASS 301',oldPath,'→',res.destination);
+      return {path:oldPath,pass:true};
+    }catch(error){
+      console.error('FAIL 301',oldPath,error.message);
+      return {path:oldPath,pass:false,error:error.message};
+    }
+  }));
   // This hostname may still point to Hostinger. Report separately; avoid hiding it.
   try {
     const r=await fetch('https://www.daninihub.com/', {signal:AbortSignal.timeout(12000),redirect:'manual'});
@@ -69,13 +106,17 @@ async function main(){
       console.warn('WARNING: www is not serving the Cloudflare site. Correct DNS/custom-domain separately.');
   } catch(error) {console.warn('WARNING: www check:',error.message);}
   const failed=results.filter(x=>!x.pass);
-  const summary = 'Cloudflare live pages: '+(pages.length-failed.length)+'/'+pages.length+' passed';
+  const failedRedirects=redirects.filter(x=>!x.pass);
+  const summary = 'Cloudflare live pages: '+(results.length-failed.length)+'/'+results.length+' passed';
+  const redirectSummary='Cloudflare SEO redirects: '+(redirects.length-failedRedirects.length)+'/'+redirects.length+' passed';
   console.log(summary);
+  console.log(redirectSummary);
   if (process.env.GITHUB_STEP_SUMMARY) {
     const fs=require('node:fs');
     fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-      '## '+summary+'\n\n'+results.map(r=>'- '+(r.pass?'✅':'❌')+' `'+r.path+'`'+(r.error?' — '+r.error:'')).join('\n')+'\n');
+      '## '+summary+'\n\n'+results.map(r=>'- '+(r.pass?'✅':'❌')+' `'+r.path+'`'+(r.error?' — '+r.error:'')).join('\n')+
+      '\n\n## '+redirectSummary+'\n\n'+redirects.map(r=>'- '+(r.pass?'✅':'❌')+' `'+r.path+'`'+(r.error?' — '+r.error:'')).join('\n')+'\n');
   }
-  if (failed.length) process.exitCode=1;
+  if (failed.length || failedRedirects.length) process.exitCode=1;
 }
 main().catch(err=>{console.error(err);process.exitCode=1;});

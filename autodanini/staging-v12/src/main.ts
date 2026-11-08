@@ -29,7 +29,6 @@ function addCommerceNavigation(): void {
   if (mobile) {
     const mobileItems: [string,string,string][] = [
       ...navItems,
-      ['cnc','CNC / Industrijski upiti','CNC / Industrie-RFQs'],
       ['dealers','Auto B2B','Auto B2B'],
       ['cenovnik','Pilot cenovnik','Pilotpreise'],
       ['guides','Vodiči','Ratgeber'],
@@ -42,7 +41,6 @@ function addCommerceNavigation(): void {
   if (footerCols.length > 1) {
     footerCols[1].append(
       makeAnchor('business','DANINI Business','DANINI Business'),
-      makeAnchor('cnc','CNC i RFQ','CNC & RFQ'),
       makeAnchor('digital','Digitalni proizvodi','Digitale Produkte'),
       makeAnchor('ai-solutions','AI i automatizacija','KI & Automatisierung'),
       makeAnchor('cenovnik','Pilot cenovnik','Pilotpreise')

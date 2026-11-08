@@ -4,7 +4,11 @@
   "assets": {
     "directory": "./autodanini-auto-dist",
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "routes": [
     {
@@ -15,5 +19,6 @@
       "pattern": "www.daninihub.com",
       "custom_domain": true
     }
-  ]
+  ],
+  "main": "workers/danini-intake.mjs"
 }

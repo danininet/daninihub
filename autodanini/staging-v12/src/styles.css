@@ -231,3 +231,6 @@
 @media(max-width:850px){.danini-portfolio-heading{display:block}.danini-portfolio-heading .btn{margin-top:22px}.danini-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.danini-offer-cards{grid-template-columns:1fr}}
 @media(max-width:540px){.danini-feature-grid{grid-template-columns:1fr}.danini-feature{min-height:unset}.danini-feature h3{min-height:0}.danini-portfolio{padding-top:52px}.danini-offer-hero{padding:60px 0}}
 @media(min-width:801px) and (max-width:1150px){.desktop>a:nth-child(3),.desktop>a:nth-child(4){display:inline-flex}.desktop{gap:11px}.desktop a{font-size:11px}}
+
+/* Readable plain-text local demo output */
+#ai-output{white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}

@@ -178,7 +178,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  // A 3x3 grid with CSS background-size:300% shows only mouth/chin.
  const advisor=await request(port,'daninihub.com','/ai-advisor.html');
  assert.equal(advisor.status,200,'AI adviser must exist on actual Hostinger domain');
- assert.match(advisor.body,/<img class="ai-owner-avatar" src="\.\/dragan-business-portrait\.jpg"/);
+ assert.match(advisor.body,/<img class="ai-owner-avatar" src="\.\/autodanini-mark\.svg"/);
  assert.doesNotMatch(advisor.body,/poslovni portret iz postojećeg 3×3 materijala/);
  const avatarCss=fs.readFileSync(path.join(root,'autodanini','staging-v12','src','styles.css'),'utf8')
    .split('\n').find(line=>line.startsWith('.ai-owner-avatar{'))||'';

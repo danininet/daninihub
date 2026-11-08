@@ -154,9 +154,32 @@ function makeFallback(form:HTMLFormElement){
    return;
   }
   const target='mailto:'+recipient+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  let preview=form.querySelector<HTMLTextAreaElement>('.danini-manual-draft');
+  if(!preview){
+   const wrapper=document.createElement('div');
+   wrapper.className='danini-manual-preview';
+   preview=document.createElement('textarea');
+   preview.className='danini-manual-draft';
+   preview.readOnly=true;preview.rows=6;
+   preview.setAttribute('aria-label',translate('Nacrt poruke za kopiranje','E-Mail-Entwurf zum Kopieren'));
+   const copy=document.createElement('button');
+   copy.type='button';copy.className='btn outline';
+   copy.textContent=translate('Kopiraj poruku','Nachricht kopieren');
+   copy.addEventListener('click',async()=>{
+    try{
+     if(!preview)return;
+     await navigator.clipboard.writeText(preview.value);
+     status.textContent=translate('Kopirano. Pošaljite tekst preko svoje e-mail aplikacije.','Kopiert. Bitte senden Sie den Text über Ihre E-Mail-App.');
+    }catch{preview?.focus();preview?.select();
+     status.textContent=translate('Označen tekst: ručno kopirajte.','Text markiert: bitte manuell kopieren.');}
+   });
+   wrapper.append(preview,copy);
+   form.append(wrapper);
+  }
+  preview.value='To: '+recipient+'\nSubject: '+subject+'\n\n'+body;
   status.textContent=translate(
-   'Otvara se vaša e-mail aplikacija. Poruka NIJE poslata dok sami ne kliknete Pošalji.',
-   'Ihre E-Mail-App wird geöffnet. Die Nachricht wurde NICHT versendet, bis Sie selbst auf Senden klicken.'
+   'Otvara se vaša e-mail aplikacija. Poruka NIJE poslata dok sami ne kliknete Pošalji. Nacrt možete i kopirati ispod.',
+   'Ihre E-Mail-App wird geöffnet. Die Nachricht wurde NICHT versendet, bis Sie selbst auf Senden klicken. Der Entwurf ist unten kopierbar.'
   );
   window.location.href=target;
  });

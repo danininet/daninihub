@@ -163,9 +163,9 @@ for(const locale of ['sr','de']){
     localized=localized.replace(/(<link rel="canonical" href=")[^"]*(")/,
       '$1https://daninihub.com/de/$2');
     localized=localized.replace(/<title>[^<]*<\/title>/,
-      '<title>DANINI | Fahrzeugkauf, digitale Produkte und KI-Lösungen</title>');
+      '<title>DANINI | Autokauf selbst vorbereiten · Hilfe auf Anfrage</title>');
     localized=localized.replace(/(<meta name="description" content=")[^"]*(")/,
-      '$1DANINI: Fahrzeugberatung zwischen Deutschland und dem Balkan, digitale Produkte und KI-Tools in Vorbereitung. Keine aktiven Online-Zahlungen.$2');
+      '$1DANINI Auto: Fahrzeugdossier selbst erstellen, Unterlagen prüfen und Importkosten einschätzen. Unabhängige Hilfe nur bei Bedarf, keine aktiven Online-Zahlungen.$2');
   }
   const localeDir=path.join(out,locale);
   fs.mkdirSync(localeDir,{recursive:true});

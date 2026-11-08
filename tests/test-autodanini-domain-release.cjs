@@ -55,7 +55,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
     'localized Vite assets must load from the site root');
  }
  const germanHome=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
- assert.match(germanHome,/Ihr Wunschfahrzeug\. Eine Entscheidung mit Substanz\./,
+ assert.match(germanHome,/Fahrzeuge\. Digitale Tools\. Klare Entscheidungen\./,
    'German homepage HTML must be localized without requiring JavaScript');
  for(const newPage of ['digital','ai-solutions']){
    const page=fs.readFileSync(path.join(root,'autodanini-auto-dist',newPage+'.html'),'utf8');

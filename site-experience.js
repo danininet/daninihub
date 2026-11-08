@@ -38,13 +38,17 @@ Object.assign(routes,ecosystem.routeMeta);
 Object.assign(routes,storefront.routeMeta);
 
 const contactPaths=Object.freeze({
-  sr:Object.freeze({generalContact:'/sr/kontakt',businessContact:'/sr/poslovni-upit',supportContact:'/sr/podrska'}),
-  de:Object.freeze({generalContact:'/de/kontakt',businessContact:'/de/geschaeftsanfrage',supportContact:'/de/support'})
+  sr:Object.freeze({generalContact:'/sr/kontakt',businessContact:'/sr/poslovni-upit',supportContact:'/sr/podrska',infoContact:'/sr/informacije',invoiceContact:'/sr/racuni',partnerContact:'/sr/partnerstva',privacyContact:'/sr/zastita-podataka'}),
+  de:Object.freeze({generalContact:'/de/kontakt',businessContact:'/de/geschaeftsanfrage',supportContact:'/de/support',infoContact:'/de/informationen',invoiceContact:'/de/rechnungen',partnerContact:'/de/partnerschaft',privacyContact:'/de/datenschutz-anfrage'})
 });
 const contactTypes=Object.freeze({
   generalContact:Object.freeze({kind:'general',email:'kontakt@daninihub.com',sr:['Kontaktirajte DANINI','Pišite nam o uslugama, saradnji ili drugim pitanjima. Ne šaljite lozinke ni lične dokumente.'],de:['DANINI kontaktieren','Fragen zu unseren Leistungen oder allgemeine Anfragen. Bitte keine Passwörter oder Ausweisdokumente senden.']}),
   businessContact:Object.freeze({kind:'business',email:'business@daninihub.com',sr:['DANINI Business – poslovni upit','Za firme, partnere i poslovnu saradnju između Nemačke i Balkana. Opišite konkretan zahtev; ovo nije prihvatanje ponude.'],de:['DANINI Business – Geschäftsanfrage','Für Unternehmen, Partner und geschäftliche Zusammenarbeit zwischen Deutschland und dem Balkan. Bitte das konkrete Anliegen beschreiben; keine verbindliche Zusage.']}),
-  supportContact:Object.freeze({kind:'support',email:'support@daninihub.com',sr:['DANINI – podrška','Imate pitanje o prethodnom upitu, isporuci ili korišćenju sajta? Navedite broj predmeta, ako postoji. Ne šaljite podatke o kartici.'],de:['DANINI – Support','Fragen zu einer bestehenden Anfrage, zur Lieferung oder zur Nutzung der Website? Bitte ggf. Ihre Referenz angeben. Keine Zahlungsdaten senden.']})
+  supportContact:Object.freeze({kind:'support',email:'support@daninihub.com',sr:['DANINI – podrška','Imate pitanje o prethodnom upitu, isporuci ili korišćenju sajta? Navedite broj predmeta, ako postoji. Ne šaljite podatke o kartici.'],de:['DANINI – Support','Fragen zu einer bestehenden Anfrage, zur Lieferung oder zur Nutzung der Website? Bitte ggf. Ihre Referenz angeben. Keine Zahlungsdaten senden.']}),
+  infoContact:Object.freeze({kind:'info',email:'info@daninihub.com',sr:['DANINI – informacije','Tražite dodatne informacije o uslugama ili proizvodima? Pošaljite pitanje.'],de:['DANINI – Informationen','Sie benötigen weitere Informationen über unsere Leistungen oder Produkte? Senden Sie Ihre Frage.']}),
+  invoiceContact:Object.freeze({kind:'invoice',email:'rechnung@daninihub.com',sr:['DANINI – računi i plaćanja','Za pitanja o postojećim računima ili uplatama. Ovaj formular ne potvrđuje plaćanje niti automatski izdaje račun.'],de:['DANINI – Rechnungen und Zahlungen','Für Fragen zu bestehenden Rechnungen oder Zahlungen. Dieses Formular bestätigt weder Zahlungen noch erstellt es eine Rechnung.']}),
+  partnerContact:Object.freeze({kind:'partner',email:'partner@daninihub.com',sr:['DANINI – partnerstva','Pošaljite konkretan predlog saradnje. Zahtev ne znači potvrdu partnerstva.'],de:['DANINI – Partnerschaften','Bitte senden Sie einen konkreten Kooperationsvorschlag. Diese Anfrage ist keine Annahme einer Partnerschaft.']}),
+  privacyContact:Object.freeze({kind:'privacy',email:'datenschutz@daninihub.com',sr:['DANINI – zaštita podataka','Za pristup podacima, ispravke, brisanje i druge zahteve povezane sa privatnošću. Ne šaljite lična dokumenta preko obrasca.'],de:['DANINI – Datenschutzanfrage','Für Auskunft, Berichtigung, Löschung und weitere Datenschutzanliegen. Bitte keine Ausweiskopien über das Formular senden.']})
 });
 for(const lang of ['sr','de'])for(const [key,path] of Object.entries(contactPaths[lang])) {
  const item=contactTypes[key];
@@ -101,7 +105,7 @@ function contactPage(lang,key){
   '<textarea name="message" rows="6" minlength="10" maxlength="3200" required></textarea></label>'+
   '<label class="check wide"><input type="checkbox" name="consent" required>'+
   '<span>'+label('Pročitao/la sam','Ich habe die')+' <a href="/'+lang+'/'+(sr?'privatnost':'datenschutz')+'">'+
-  label('obaveštenje o privatnosti','Datenschutzhinweise')+'</a> '+label('i saglasan/na sam da se podaci koriste za odgovor na moj upit.','gelesen. Meine Angaben dürfen zur Beantwortung der Anfrage verarbeitet werden.')+'</span></label>'+
+  label('obaveštenje o privatnosti','Datenschutzhinweise')+'</a> '+label('i razumem da se podaci obrađuju radi odgovora na upit.','gelesen und weiß, dass meine Angaben zur Bearbeitung der Anfrage verwendet werden.')+'</span></label>'+
   '<label style="display:none" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label>'+
   '<div class="wide danini-lead-turnstile"></div>'+
   '<button class="btn wide" type="submit">'+label('Pošalji upit','Anfrage senden')+'</button>'+

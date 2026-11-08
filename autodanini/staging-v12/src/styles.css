@@ -140,9 +140,9 @@
 .owner-copy h2{font-size:clamp(32px,3.3vw,51px);max-width:700px}
 .owner-copy p{font-size:16px;color:#59656b;max-width:650px;margin-bottom:25px}
 .portrait-single{background-image:url('/dragan-business-portrait.jpg');background-repeat:no-repeat;background-size:cover;background-position:center 57%;background-color:#303a40;box-shadow:0 15px 40px #18232a26;aspect-ratio:1 / 1;max-width:520px;width:100%;border:7px solid #f4f1e9}
-.portrait-home{background-position:center 57%}
+.portrait-home{background-image:url('/danini-pregled-auta.webp');background-position:center;background-size:cover}
 .portrait-about{background-position:center 57%;min-height:350px}
-.portrait-contact{background-position:center 57%;height:230px;width:230px;max-width:none;flex:none}
+.portrait-contact{background-image:url('/autodanini-mark.svg');background-position:center;background-repeat:no-repeat;background-size:75% auto;background-color:#15232e;height:230px;width:230px;max-width:none;flex:none}
 .business-visual{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:40px;margin-top:50px}
 .business-visual img{display:block;max-width:100%;width:100%;height:auto;border:1px solid #d7d9d5;box-shadow:0 14px 36px #18232a22}
 .business-visual p{line-height:1.7;color:#526169}

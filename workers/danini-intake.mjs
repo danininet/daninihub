@@ -24,12 +24,14 @@ function safeField(v,max){return asText(v,max).replace(/[\u0000-\u0008\u000b\u00
 function validatePayload(body){
  if(!body||typeof body!=='object'||Array.isArray(body))return null;
  const kind=asText(body.kind,12);
- if(!['general','vehicle','business','support'].includes(kind))return null;
+ if(!['general','vehicle','business','support','info','invoice','partner','privacy'].includes(kind))return null;
  const name=safeField(body.name,90);
  const email=safeField(body.email,254).toLowerCase();
  const topic=safeField(body.topic,120);
  const message=safeField(body.message,3200);
- const language=body.language==='de'?'de':'sr';
+ const language=body.language;
+ if(!['de','sr'].includes(language))return null;
+ if(typeof body.website==='string' && body.website.trim())return null;
  const company=safeField(body.company,120);
  if(!name||!validEmail(email)||!topic||message.length<10||body.consent!==true)return null;
  const details={};
@@ -69,14 +71,17 @@ async function brevoSend(env,message){
  return data.messageId;
 }
 const sender=env=>({name:'DANINI',email:env.DANINI_BREVO_SENDER});
-// Brevo templates created for DANINI: four existing form kinds, two explicit languages.
-// Templates for Info, Rechnungen, Partner and Datenschutz are available in Brevo
-// but are intentionally not triggered because there are no matching intake forms yet.
+// Eight departmental Brevo confirmation templates, each with DE/SR language.
+// This endpoint never subscribes customers or issues payment confirmations.
 const ACK_TEMPLATE_IDS=Object.freeze({
  general:Object.freeze({de:38,sr:39}),
  vehicle:Object.freeze({de:40,sr:41}),
  support:Object.freeze({de:42,sr:43}),
- business:Object.freeze({de:48,sr:49})
+ business:Object.freeze({de:48,sr:49}),
+ info:Object.freeze({de:44,sr:45}),
+ invoice:Object.freeze({de:46,sr:47}),
+ partner:Object.freeze({de:50,sr:51}),
+ privacy:Object.freeze({de:52,sr:53})
 });
 function acknowledgementFor(data,ref,env){
  const replyTo=env.DANINI_BREVO_REPLYTO||env.DANINI_BREVO_SENDER;

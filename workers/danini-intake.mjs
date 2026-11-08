@@ -85,8 +85,8 @@ function acknowledgementFor(data,ref,env){
   if(!Number.isSafeInteger(templateId))throw Error('UNKNOWN_BREVO_TEMPLATE');
   return {
    to:[{email:data.email,name:data.name}],
-   templateId,params:{REFERENCE:ref},
-   replyTo:{email:replyTo}
+   // Brevo template owns its departmental sender and Reply-To.
+   templateId,params:{REFERENCE:ref}
   };
  }
  return {

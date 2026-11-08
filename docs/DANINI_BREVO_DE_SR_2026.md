@@ -78,3 +78,31 @@ No SMS campaign was created, no SMS was sent, no SMS credits were purchased. Aft
 ## Business decision: SMS deferred until revenue (2026-11-08)
 
 Owner explicitly decided: **do not pursue SMS now**. No SMS marketing, transactional SMS, Sender ID registration, SMS credit purchases, paid SMS subscription or retrying SMS setup. Resume only after DANINI starts generating revenue and the owner explicitly authorizes it. For now concentrate on the existing no-extra-cost Brevo email / Cloudflare routes, German and Serbian acknowledgments, and first customers. This overrides the earlier SMS activation checklist as a present priority.
+
+## Logo remediation and final asset mapping (2026-11-08)
+
+The current live-site code refers to `public/importos-mark.svg`. That existing site symbol was converted to an email-safe 128×128 PNG, stored at `public/danini-email-mark-128.png` on this PR branch and referenced via the public immutable GitHub raw URL at commit `4a474636a9dc95d2f757b885dd8fca60f7f8b9bf`. No unrelated historical DaniniHub/Property Promotion logo was used.
+
+**FINAL production-candidate Brevo templates with actual image logo:**
+
+| Purpose | DE | SR |
+| --- | ---: | ---: |
+| Contact | 38 | 39 |
+| Vehicle inquiry | 40 | 41 |
+| Support | 42 | 43 |
+| Information | 44 | 45 |
+| Invoice inquiry | 46 | 47 |
+| B2B | 48 | 49 |
+| Partner | 50 | 51 |
+| Privacy | 52 | 53 |
+
+Old IDs 18–33 remain in Brevo for backwards compatibility and are **superseded**. No existing templates were overwritten. Worker mapping on this branch has been changed to final IDs for the four real form kinds. `DANINI_BREVO_TEMPLATES_ACTIVE` remains OFF until staging/production QA. Logo image delivery is referenced from public GitHub, not an embedded SVG.
+
+**FINAL logo-branded marketing drafts:** general DE 54, general SR 55, Auto DE 56, Auto SR 57. They have no recipient lists, are not scheduled, and have not been sent. Previous draft campaigns 34–37 are superseded and remain in Brevo because this connector has no update/archive/delete action. Their sender name may still appear as `[DEFAULT_FROM_NAME]` in the API response and must be checked/selected in Brevo before sending. Unsubscribe page and consent verification remain required.
+
+Brevo rendered final transactional template 39 with and without sample `REFERENCE` successfully with an existing eligible contact; the logo URL and reference appeared in rendered HTML. **This verifies template rendering only; no live customer mail delivery has been established.**
+
+**Brevo connector limitations:** `branding_update_brand`, `branding_update_brand_website`, `templates_update_smtp_template`, create contact attribute, automation workflow management, campaign update/archive and transactional send-event inspection are unavailable. The old account Brand Kit remains unchanged (old website, no logo), so *do not claim the global Brand Kit was repaired*. Manual action in Brevo is needed for brand identity, sender name and GDPR/consent-based automations. Gmail send-as and DKIM/domain testing are separate.
+
+**SMS deferred until DANINI earns revenue** per explicit owner decision; no credits, setup, campaign, sender registration or paid feature.
+

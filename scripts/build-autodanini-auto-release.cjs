@@ -82,7 +82,10 @@ for(const page of indexablePages){
  const alternates=page==='index'?
   '<link rel="alternate" hreflang="sr" href="https://daninihub.com/">'+
   '<link rel="alternate" hreflang="de" href="https://daninihub.com/de/">'+
-  '<link rel="alternate" hreflang="x-default" href="https://daninihub.com/">':'';
+  '<link rel="alternate" hreflang="x-default" href="https://daninihub.com/">':
+  (page==='selbstimport'||page==='uvoz-vodic'?
+    '<link rel="alternate" hreflang="sr" href="https://daninihub.com/uvoz-vodic.html">'+
+    '<link rel="alternate" hreflang="de" href="https://daninihub.com/selbstimport.html">':'');
  html=html.replace('</head>','<link rel="canonical" href="'+canonical+'">'+alternates+'</head>');
  // The import calculator is only indicative. Its title must NOT promise
  // registration-ready all-in costs, because several charges are unknown.
@@ -100,23 +103,23 @@ for(const page of indexablePages){
 // Match legacy URLs to equivalent new content; never redirect everything home.
 const legacyRedirects=[
   "# DANINI SEO legacy routes identified in Search Console export",
-  "/de/wissen/deutschland-selbstimport /selbstimport 301",
-  "/de/autoimport /selbstimport 301",
-  "/de/wissen/uvoz-zoll-eur1-i-dovoz /selbstimport 301",
-  "/sr/vodic/uvoz-zoll-eur1-i-dovoz /uvoz-vodic 301",
-  "/sr/uvoz-auta /uvoz-vodic 301",
-  "/sr/kalkulator /import 301",
-  "/de/rechner /import 301",
-  "/de/wissen/landed-cost-kalkulation /import 301",
-  "/de/fahrzeugpruefung /inspection 301",
-  "/de/b2b-fahrzeugsuche /dealers 301",
-  "/sr/b2b-pretraga-vozila /dealers 301",
-  "/de/ratgeber /guides 301",
-  "/sr/vodici /guides 301",
-  "/de/impressum /impressum 301",
-  "/de/datenschutz /privacy 301",
-  "/de/bedingungen /terms 301",
-  "/de/wissen/provera-oglasa-pre-kapare /prepurchase 301"
+  "/de/wissen/deutschland-selbstimport /selbstimport.html 301",
+  "/de/autoimport /selbstimport.html 301",
+  "/de/wissen/uvoz-zoll-eur1-i-dovoz /selbstimport.html 301",
+  "/sr/vodic/uvoz-zoll-eur1-i-dovoz /uvoz-vodic.html 301",
+  "/sr/uvoz-auta /uvoz-vodic.html 301",
+  "/sr/kalkulator /import.html 301",
+  "/de/rechner /import.html 301",
+  "/de/wissen/landed-cost-kalkulation /import.html 301",
+  "/de/fahrzeugpruefung /inspection.html 301",
+  "/de/b2b-fahrzeugsuche /dealers.html 301",
+  "/sr/b2b-pretraga-vozila /dealers.html 301",
+  "/de/ratgeber /guides.html 301",
+  "/sr/vodici /guides.html 301",
+  "/de/impressum /impressum.html 301",
+  "/de/datenschutz /privacy.html 301",
+  "/de/bedingungen /terms.html 301",
+  "/de/wissen/provera-oglasa-pre-kapare /prepurchase.html 301"
 ];
 fs.writeFileSync(path.join(out,'_redirects'),legacyRedirects.join('\n')+'\n');
 // A real indexable sitemap. Do not include account, admin, incomplete AI,

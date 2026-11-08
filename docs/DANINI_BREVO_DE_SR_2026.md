@@ -74,3 +74,7 @@ No SMS campaign was created, no SMS was sent, no SMS credits were purchased. Aft
 - Existing Cloudflare Worker has an opt-in template feature flag and still needs QA of delivered notifications, Reply-To and the 4 DE/SR paths. The branch has not been merged.
 - `LANGUAGE` custom contact attribute for future subscription segmentation is absent; `_DETECTED_LANGUAGE` is not equivalent to explicit customer preference.
 - Gmail Send-as SMTP and DE/SR signatures require separate Gmail settings verification. Brevo sender setup alone does not make Gmail Send-as work.
+
+## Business decision: SMS deferred until revenue (2026-11-08)
+
+Owner explicitly decided: **do not pursue SMS now**. No SMS marketing, transactional SMS, Sender ID registration, SMS credit purchases, paid SMS subscription or retrying SMS setup. Resume only after DANINI starts generating revenue and the owner explicitly authorizes it. For now concentrate on the existing no-extra-cost Brevo email / Cloudflare routes, German and Serbian acknowledgments, and first customers. This overrides the earlier SMS activation checklist as a present priority.

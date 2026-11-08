@@ -40,7 +40,7 @@
 
   function mount(form) {
     const kind = form.dataset.daniniLeadKind;
-    if (!['general','business','support'].includes(kind)) return;
+    if (!['general','business','support','info','invoice','partner','privacy'].includes(kind)) return;
     const status = document.getElementById(form.id + '-status');
     const button = form.querySelector('button[type="submit"]');
     const challenge = form.querySelector('.danini-lead-turnstile');

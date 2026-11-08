@@ -25,7 +25,6 @@ const section=inner=>'<section class="section danini-eco">'+inner+'</section>';
 const card=(title,text)=>'<article class="card"><h3>'+title+'</h3><p>'+text+'</p></article>';
 const button=(link,title)=>'<a class="btn secondary" href="'+link+'">'+title+' →</a>';
 const order=(service)=>'<div class="danini-order-slot" data-service="'+service+'"></div>';
-const wa='https://wa.me/4915730916621';
 const DISCLAIMER={
 sr:'Sve navedene servisne i transportne cene predstavljaju ilustrativne raspone u € (EUR), ne obavezujuću ponudu ili potvrđenu uštedu. Kvarovi, vrsta vozila, poreklo, osiguranje i uvozne dažbine proveravaju se pojedinačno. DANINI ne prodaje osiguranje, ne izdaje EUR.1 i ne donosi carinska rešenja.',
 de:'Alle genannten Service- und Transportpreise sind unverbindliche Beispielspannen in € (EUR), keine Garantie für Ersparnisse. Fahrzeug, Ursprung, Versicherung und Zollabgaben müssen im Einzelfall geprüft werden. DANINI verkauft keine Versicherungen, stellt kein EUR.1 aus und trifft keine Zollentscheidungen.'
@@ -129,7 +128,7 @@ function place(lang){
  '<div class="grid">'+card('345 m²',sr?'Prva lokacija, kapacitet orijentaciono do 12 vozila; cena i uslovi na upit.':'Erste Fläche, vorläufig bis zu 12 Fahrzeuge; Mietpreis und Bedingungen auf Anfrage.')+
  card('648 m²',sr?'Druga lokacija, kapacitet orijentaciono do 25 vozila; cena i uslovi na upit.':'Zweite Fläche, vorläufig bis zu 25 Fahrzeuge; Preis und Bedingungen auf Anfrage.')+
  card('993 m²',sr?'Zbir dve odvojene radne površine: procena do 37 vozila uz odgovarajući raspored. Nisu jedinstvena katastarska parcela; namena i dozvole proveravaju se.':'Zusammen zwei getrennte Flächen: vorläufig bis zu 37 Fahrzeuge bei geeigneter Belegung. Keine einheitliche Katasterparzelle; Nutzung und Genehmigungen prüfen.')+'</div>'+
- '<p class="muted">'+(sr?'Ne tvrdimo da postoje građevinske dozvole, odobren showroom ili aktivni zakupci. Zakup i dozvoljenu namenu potrebno je pravno proveriti.':'Keine Behauptung über Baugenehmigungen, genehmigten Showroom oder bestehende Mieter. Nutzung und Mietvertrag sind rechtlich zu prüfen.')+'</p><p>'+button(wa,sr?'WhatsApp — zakup':'WhatsApp — Gewerbemiete')+'</p>');
+ '<p class="muted">'+(sr?'Ne tvrdimo da postoje građevinske dozvole, odobren showroom ili aktivni zakupci. Zakup i dozvoljenu namenu potrebno je pravno proveriti.':'Keine Behauptung über Baugenehmigungen, genehmigten Showroom oder bestehende Mieter. Nutzung und Mietvertrag sind rechtlich zu prüfen.')+'</p><p>'+button('mailto:info@daninihub.com',sr?'Pošaljite upit za zakup e-mailom':'Gewerbemiete per E-Mail anfragen')+'</p>');
 }
 const CHAPTERS={
 sr:{

@@ -110,7 +110,7 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
   form.id==='danini-general-inquiry-form'?'general':
   form.dataset.dealer==='true'?'business':'vehicle';
  makeLabel(form,'email','E-mail za odgovor (obavezno)','E-Mail für die Antwort (erforderlich)',true);
- if(kind==='general'){
+ if(kind==='general'||kind==='support'){
   const name=form.querySelector<HTMLInputElement>('input[name="name"]');
   if(name)name.required=true;
  }
@@ -128,6 +128,7 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
   widget=ts.render(verification,{sitekey:config.turnstileSiteKey,theme:'auto'});
  }catch{makeFallback(form);return;}
  status.textContent=translate('Formular je spreman. Podaci idu samo radi odgovora na upit.','Formular bereit. Daten werden nur zur Bearbeitung Ihrer Anfrage übermittelt.');
+ if(button)button.disabled=false;
  form.addEventListener('submit',async event=>{
   event.preventDefault();
   if(!form.reportValidity())return;
@@ -165,6 +166,14 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
 async function initialize(){
  const forms=Array.from(document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer], #autodanini-support-form, #danini-general-inquiry-form'));
  if(!forms.length)return;
+ // Prevent browser-native submissions or false positive UI before readiness.
+ for(const form of forms){
+  form.action='/api/lead';form.method='post';
+  const btn=form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  if(btn)btn.disabled=true;
+  const status=statusNode(form);
+  status.textContent=translate('Provera e-mail kanala…','E-Mail-Kanal wird geprüft…');
+ }
  let config:IntakeConfig={enabled:false};
  try{
   const r=await fetch('/api/lead/status',{credentials:'same-origin',cache:'no-store'});

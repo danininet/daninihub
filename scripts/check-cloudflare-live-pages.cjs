@@ -98,6 +98,7 @@ async function main(){
       return {path:oldPath,pass:false,error:error.message};
     }
   }));
+  const apiFailures=[];
   // Only check the new Cloudflare API after main deployment, not against an
   // older production release during pull-request review.
   if(!isPullRequest){
@@ -113,7 +114,7 @@ async function main(){
         console.log('PASS /api/lead/status',res.status,data.enabled?'ready':'awaiting secure Brevo/Turnstile setup');
         apiVerified=true;
       }catch(err){
-        if(attempt===2){failed.push({path:'/api/lead/status',pass:false,error:err.message});
+        if(attempt===2){apiFailures.push({path:'/api/lead/status',pass:false,error:err.message});
           console.error('FAIL /api/lead/status',err.message);}
         else await sleep(12000);
       }
@@ -126,9 +127,9 @@ async function main(){
     if (!r.ok && r.status !== 301 && r.status !== 302)
       console.warn('WARNING: www is not serving the Cloudflare site. Correct DNS/custom-domain separately.');
   } catch(error) {console.warn('WARNING: www check:',error.message);}
-  const failed=results.filter(x=>!x.pass);
+  const failed=results.filter(x=>!x.pass).concat(apiFailures);
   const failedRedirects=redirects.filter(x=>!x.pass);
-  const summary = 'Cloudflare live pages: '+(results.length-failed.length)+'/'+results.length+' passed';
+  const summary = 'Cloudflare live pages: '+(results.length-results.filter(x=>!x.pass).length)+'/'+results.length+' passed';
   const redirectSummary='Cloudflare SEO redirects: '+(redirects.length-failedRedirects.length)+'/'+redirects.length+' passed';
   console.log(summary);
   console.log(redirectSummary);

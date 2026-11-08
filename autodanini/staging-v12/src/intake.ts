@@ -93,13 +93,96 @@ function collect(form:HTMLFormElement,kind:IntakeKind){
  return {kind,name,email,company,topic,message,language:isGerman()?'de':'sr',details:safeDetails(form),consent:f.get('consent')==='on'};
 }
 function makeFallback(form:HTMLFormElement){
+ // No Brevo credentials are present. Offer a deliberate, local mailto handoff,
+ // not a fake API success and not an automatic submission.
  const button=form.querySelector<HTMLButtonElement>('button[type="submit"]');
- if(button){button.disabled=true;button.title=translate('E-mail prijem nije aktiviran','E-Mail-Empfang noch nicht aktiviert');}
  const status=statusNode(form);
+ if(button){
+  button.disabled=false;
+  button.title=translate('Otvori u sopstvenoj e-mail aplikaciji','In eigener E-Mail-App öffnen');
+  const label=button.querySelector<HTMLElement>('[data-sr][data-de]');
+  if(label){
+   label.dataset.sr='Pripremi e-mail poruku';
+   label.dataset.de='E-Mail-Entwurf öffnen';
+   label.textContent=translate(label.dataset.sr,label.dataset.de);
+  } else button.textContent=translate('Pripremi e-mail poruku','E-Mail-Entwurf öffnen');
+ }
  status.textContent=translate(
-  'E-mail obrazac još nije aktiviran. Nijedan upit se ovde ne šalje. Za direktan kontakt koristite WhatsApp link (bez obavezne telefonske tarife).',
-  'Das E-Mail-Formular ist noch nicht aktiviert. Es werden keine Angaben versendet. Für direkten Kontakt können Sie den WhatsApp-Link nutzen.'
+  'Automatski Brevo prijem još nije aktiviran. Ovde se priprema poruka za vašu e-mail aplikaciju; morate sami potvrditi slanje.',
+  'Automatischer Brevo-Empfang noch nicht aktiv. Hier wird eine E-Mail in Ihrer eigenen App vorbereitet; Sie müssen das Senden selbst bestätigen.'
  );
+ const aside=document.createElement('p');
+ aside.className='danini-manual-email-notice';
+ aside.textContent=translate(
+  'Ako nemate podešenu e-mail aplikaciju, kopirajte tekst i pošaljite na prikazanu adresu. Ne unosite poverljiva dokumenta.',
+  'Falls keine E-Mail-App eingerichtet ist, kopieren Sie den Text und senden Sie ihn an die angezeigte Adresse. Keine vertraulichen Dokumente.'
+ );
+ const address=document.createElement('code');
+ // Verified as a receiving Gmail alias using one internal inbox test.
+ // Replace with a tested domain mailbox as soon as Cloudflare Email Routing works.
+ const recipient=['dragangaganet','+daninihub','@gmail.com'].join('');
+ address.textContent=recipient;
+ aside.append(document.createTextNode(' '),address);
+ form.append(aside);
+ form.addEventListener('submit',event=>{
+  event.preventDefault();
+  if(!form.reportValidity())return;
+  const kind:IntakeKind=form.id==='autodanini-support-form'?'support':
+   form.id==='danini-general-inquiry-form'?'general':
+   form.dataset.dealer==='true'?'business':'vehicle';
+  const data=collect(form,kind);
+  if(!data.consent)return;
+  const subject='DaniniHub | DANINI '+data.kind.toUpperCase()+' | '+data.topic.slice(0,60);
+  const detailLines=Object.entries(data.details).slice(0,20).map(([k,v])=>k+': '+v);
+  const body=[
+   'DANINI / unverbindliche Anfrage / informativni upit',
+   'Kontakt: '+data.name,
+   'E-Mail: '+data.email,
+   ...(data.company?['Unternehmen: '+data.company]:[]),
+   'Thema: '+data.topic,
+   ...detailLines,
+   '',
+   data.message,
+   '',
+   'Keine Bestellung oder Zahlung / Nije narudžbina niti plaćanje.'
+  ].join('\n');
+  if(body.length>1700){
+   status.textContent=translate(
+    'Tekst je predugačak za otvaranje e-mail aplikacije. Skratite napomene ili oglase i pokušajte ponovo.',
+    'Der Entwurf ist zu lang für eine E-Mail-App. Bitte kürzen Sie Notizen und Links.'
+   );
+   return;
+  }
+  const target='mailto:'+recipient+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  let preview=form.querySelector<HTMLTextAreaElement>('.danini-manual-draft');
+  if(!preview){
+   const wrapper=document.createElement('div');
+   wrapper.className='danini-manual-preview';
+   preview=document.createElement('textarea');
+   preview.className='danini-manual-draft';
+   preview.readOnly=true;preview.rows=6;
+   preview.setAttribute('aria-label',translate('Nacrt poruke za kopiranje','E-Mail-Entwurf zum Kopieren'));
+   const copy=document.createElement('button');
+   copy.type='button';copy.className='btn outline';
+   copy.textContent=translate('Kopiraj poruku','Nachricht kopieren');
+   copy.addEventListener('click',async()=>{
+    try{
+     if(!preview)return;
+     await navigator.clipboard.writeText(preview.value);
+     status.textContent=translate('Kopirano. Pošaljite tekst preko svoje e-mail aplikacije.','Kopiert. Bitte senden Sie den Text über Ihre E-Mail-App.');
+    }catch{preview?.focus();preview?.select();
+     status.textContent=translate('Označen tekst: ručno kopirajte.','Text markiert: bitte manuell kopieren.');}
+   });
+   wrapper.append(preview,copy);
+   form.append(wrapper);
+  }
+  preview.value='To: '+recipient+'\nSubject: '+subject+'\n\n'+body;
+  status.textContent=translate(
+   'Otvara se vaša e-mail aplikacija. Poruka NIJE poslata dok sami ne kliknete Pošalji. Nacrt možete i kopirati ispod.',
+   'Ihre E-Mail-App wird geöffnet. Die Nachricht wurde NICHT versendet, bis Sie selbst auf Senden klicken. Der Entwurf ist unten kopierbar.'
+  );
+  window.location.href=target;
+ });
 }
 async function setup(form:HTMLFormElement,config:IntakeConfig){
  if(form.dataset.intakeReady)return;

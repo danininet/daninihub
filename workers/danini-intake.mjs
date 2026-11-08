@@ -69,6 +69,38 @@ async function brevoSend(env,message){
  return data.messageId;
 }
 const sender=env=>({name:'DANINI',email:env.DANINI_BREVO_SENDER});
+// Brevo templates created for DANINI: four existing form kinds, two explicit languages.
+// Templates for Info, Rechnungen, Partner and Datenschutz are available in Brevo
+// but are intentionally not triggered because there are no matching intake forms yet.
+const ACK_TEMPLATE_IDS=Object.freeze({
+ general:Object.freeze({de:18,sr:19}),
+ vehicle:Object.freeze({de:20,sr:21}),
+ support:Object.freeze({de:22,sr:23}),
+ business:Object.freeze({de:28,sr:29})
+});
+function acknowledgementFor(data,ref,env){
+ const replyTo=env.DANINI_BREVO_REPLYTO||env.DANINI_BREVO_SENDER;
+ if(env.DANINI_BREVO_TEMPLATES_ACTIVE==='true'){
+  const templateId=ACK_TEMPLATE_IDS[data.kind]?.[data.language];
+  if(!Number.isSafeInteger(templateId))throw Error('UNKNOWN_BREVO_TEMPLATE');
+  return {
+   to:[{email:data.email,name:data.name}],
+   templateId,params:{REFERENCE:ref},
+   replyTo:{email:replyTo}
+  };
+ }
+ return {
+  sender:sender(env),to:[{email:data.email,name:data.name}],
+  replyTo:{email:replyTo},
+  subject:(data.language==='de'?'DANINI – Ihre Anfrage':'DANINI – Potvrda prijema upita')+' / '+ref,
+  textContent:data.language==='de'?
+    'Vielen Dank. Ihre Anfrage wurde vom E-Mail-Dienst zur Zustellung angenommen. Referenz: '+ref+
+    '\\nDies ist keine Auftrags-, Reservierungs- oder Zahlungsbestätigung. Eine persönliche Rückmeldung erfolgt nach Prüfung.':
+    'Hvala. E-mail servis je prihvatio vaš upit za isporuku. Oznaka: '+ref+
+    '\\nOvo nije potvrda porudžbine, rezervacije ili plaćanja. Odgovorićemo nakon pregleda upita.'
+ };
+}
+
 function bodyText(d,ref){
  const details=Object.entries(d.details).map(([k,v])=>k+': '+v).join('\n');
  return [
@@ -122,16 +154,7 @@ export async function handleApi(request,env={}){
  try{await brevoSend(env,alert);}catch{return response({error:'mail_provider_unavailable'},502);}
  // A confirmation is secondary; the operator notification is the authoritative step.
  // Never include customer-supplied text in confirmation (spam/backscatter mitigation).
- const acknowledgment={
-  sender:sender(env),to:[{email:data.email,name:data.name}],
-  replyTo:{email:env.DANINI_BREVO_REPLYTO||env.DANINI_BREVO_SENDER},
-  subject:(data.language==='de'?'DANINI – Ihre Anfrage':'DANINI – Potvrda prijema upita')+' / '+ref,
-  textContent:data.language==='de'?
-    'Vielen Dank. Ihre Anfrage wurde vom E-Mail-Dienst zur Zustellung angenommen. Referenz: '+ref+
-    '\nDies ist keine Auftrags-, Reservierungs- oder Zahlungsbestätigung. Eine persönliche Rückmeldung erfolgt nach Prüfung.':
-    'Hvala. E-mail servis je prihvatio vaš upit za isporuku. Oznaka: '+ref+
-    '\nOvo nije potvrda porudžbine, rezervacije ili plaćanja. Odgovorićemo nakon pregleda upita.'
- };
+ const acknowledgment=acknowledgementFor(data,ref,env);
  let receiptAccepted=false;
  try{await brevoSend(env,acknowledgment);receiptAccepted=true;}catch{}
  return response({accepted:true,reference:ref,receiptAccepted},202);

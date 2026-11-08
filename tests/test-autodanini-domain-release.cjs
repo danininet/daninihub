@@ -151,7 +151,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  ]);
  const auto=await request(port,'daninihub.com','/');
  assert.equal(auto.status,200);
- assert.match(auto.body,/AUTO\s*<span>\s*DANINI/i);
+ assert.match(auto.body,/<strong>DANINI<\/strong>/i);
  assert.match(auto.headers['x-robots-tag'],/noindex/);
  const adm=await request(port,'daninihub.com','/admin.html');
  assert.equal(adm.status,200);
@@ -226,7 +226,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.doesNotMatch(german.body,/2\s*[–-]\s*4\s*Arbeitsstunden|2\s*bis\s*4\s*Arbeitsstunden/i);
  assert.match(original.body,/ukupne troškove|ukupnih troškova/i);
  assert.match(german.body,/Gesamtkosten|Importkosten/i);
- assert.match(auto.body,/procena ukupnih troškova uvoza/i);
+ assert.match(auto.body,/podrška pri izboru vozila/i);
  assert.doesNotMatch(auto.body,/Kontaktiranje prodavca i priprema upita za rezervaciju/);
  const robotsLegacy=await request(port,'daninihub.com','/robots.txt');
  assert.match(robotsLegacy.body,/Allow: \/|Sitemap:/);

@@ -60,10 +60,12 @@ for(const page of pages){
  if(!replaced && page!=='admin')throw Error('AUTODANINI_MARK_MISSING '+page);
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
  if(page==='index'){
-  const hero='<div class="heroactions">';
-  if(!html.includes(hero))throw Error('AUTODANINI_HERO_ACTIONS_MISSING');
-  html=html.replace(hero,hero+
-   '<a class="btn gold" href="/prepurchase.html"><span data-sr="Provera pre kapare" data-de="Check vor Anzahlung">Provera pre kapare</span></a>');
+  // Maintain the chosen self-service dossier as the first action.
+  // Keep the existing pre-purchase tool reachable but secondary.
+  const close='</div><div class="agent-ribbon">';
+  if(!html.includes('<div class="heroactions">')||!html.includes(close))throw Error('AUTODANINI_HERO_ACTIONS_MISSING');
+  html=html.replace(close,
+   '<a class="btn ghost" href="/prepurchase.html"><span data-sr="Provera pre kapare" data-de="Check vor Anzahlung">Provera pre kapare</span></a>'+close);
  }
  fs.writeFileSync(dest,html);
 }

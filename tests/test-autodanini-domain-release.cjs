@@ -131,7 +131,12 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
   assert.ok(html.includes('src="/autodanini-mark.svg"'),'Branded navigation missing: '+name);
  }
  const homepage=fs.readFileSync(path.join(root,'autodanini-auto-dist','index.html'),'utf8');
- assert.ok(homepage.includes('href="/prepurchase.html"'),'New lead magnet must be linked on homepage');
+ assert.ok(homepage.includes('href="/prepurchase.html"'),'Pre-purchase guide must stay linked');
+  const primaryHeroAction=homepage.split('<div class="heroactions">')[1]?.split('</div>')[0]||'';
+  assert.match(primaryHeroAction,/^<a class="btn gold" href="ai-advisor.html"/,
+    'Primary homepage CTA must be the self-service dossier');
+  assert.ok(primaryHeroAction.indexOf('href="/prepurchase.html"')>primaryHeroAction.indexOf('href="ai-advisor.html"'),
+    'Pre-purchase action must follow self-service dossier');
  const sitemapForLead=fs.readFileSync(path.join(root,'autodanini-auto-dist','sitemap.xml'),'utf8');
  assert.ok(sitemapForLead.includes('<loc>https://daninihub.com/prepurchase.html</loc>'));
  // SEO publication must not inherit staging's site-wide noindex.

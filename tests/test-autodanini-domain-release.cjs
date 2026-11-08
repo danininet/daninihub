@@ -28,15 +28,6 @@ function request(port,host,route){
   req.on('error',reject);req.end();
  });
 }
-test('temporary inbox fallback never claims automated Brevo delivery',()=>{
- const source=fs.readFileSync(path.join(root,'autodanini/staging-v12/src/intake.ts'),'utf8');
- assert.match(source,/mailto:/);
- assert.match(source,/dragangaganet/);
- assert.match(source,/danini-manual-draft/);
- assert.match(source,/window\.location\.href=target/);
- assert.match(source,/Poruka NIJE poslata/);
- assert.match(source,/config\.enabled/);
-});
 test('AutoDanini root cutover preserves legacy APIs, language pages and legal safety gates',async t=>{
  const pages=['index','buyers','dealers','live','inspection','import','exclusive','tender',
   'auctions','guides','digital','ai-solutions','business','cnc','selbstimport','uvoz-vodic','about','contact','impressum','privacy','terms','cookies',

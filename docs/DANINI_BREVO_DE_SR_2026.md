@@ -48,3 +48,29 @@ New code uses the template IDs for the four form kinds ONLY when `DANINI_BREVO_T
 - These templates do NOT establish reply automation for arbitrary incoming emails, purchases or payments, and do not automatically detect email language from mailbox contents.
 - Do not use one generic autoresponder for privacy requests or invoice/payment events without matching validated triggers.
 - Full logo in template and brand kit awaits approved original asset.
+
+
+## Marketing campaign drafts created in Brevo (NO SEND / NO RECIPIENTS)
+
+| Purpose | Language | Brevo campaign ID | Status |
+| --- | --- | ---: | --- |
+| DANINI general | DE | 34 | draft, no recipients |
+| DANINI general | SR | 35 | draft, no recipients |
+| DANINI Auto | DE | 36 | draft, no recipients |
+| DANINI Auto | SR | 37 | draft, no recipients |
+
+These drafts include `{{ unsubscribe }}` and should not be sent until language-specific unsubscribe pages, verified opt-in recipients, complete/imprint footer details and display sender name are checked. No existing contacts were subscribed or contacted. Account has two legacy contacts and four older lists; do not repurpose those lists for DANINI without valid consent. Brevo 300 email/day free-plan send limit was observed.
+
+## SMS activation obstacle (2026-11-08)
+
+Brevo refused creation of both intended DE/SR SMS campaign drafts with `402 account_under_validation`, message: `Your account is under validation. You can not create another campaign.`
+No SMS campaign was created, no SMS was sent, no SMS credits were purchased. After Brevo account approval, verify country-specific Sender ID registration, SMS credits, explicit SMS opt-in and a legal opt-out path before sending. This integration currently has no tool to configure transactional SMS workflows or create contact attributes.
+
+## Outbound and branding still pending
+
+- All eight verified Cloudflare aliases forward inbound to business Gmail according to user, but only `kontakt@` and `auto@` were individually delivery-tested.
+- Brevo sender display names exist for all eight senders. Four draft marketing campaigns returned `[DEFAULT_FROM_NAME]` in their sender record: inspect display name before sending.
+- Existing Brevo Brand Kit references an old website; do not overwrite before verifying the real DANINI logo, colour palette, and social account links.
+- Existing Cloudflare Worker has an opt-in template feature flag and still needs QA of delivered notifications, Reply-To and the 4 DE/SR paths. The branch has not been merged.
+- `LANGUAGE` custom contact attribute for future subscription segmentation is absent; `_DETECTED_LANGUAGE` is not equivalent to explicit customer preference.
+- Gmail Send-as SMTP and DE/SR signatures require separate Gmail settings verification. Brevo sender setup alone does not make Gmail Send-as work.

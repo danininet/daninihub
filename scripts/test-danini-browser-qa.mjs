@@ -68,6 +68,8 @@ try{
  await page.goto(base+'/de/',{waitUntil:'domcontentloaded'});
  assert.match(await page.locator('.hero h1').innerText(),/Autokauf selbst vorbereiten/i);
  console.log('PASS DE: localized homepage works with JavaScript');
+ // /de/ intentionally persists DE. Reset to SR before asserting Serbian dossier.
+ await page.evaluate(()=>localStorage.setItem('autodanini-language','sr'));
  await page.goto(base+'/ai-advisor.html',{waitUntil:'networkidle'});
  const question='Mercedes C280 2007, 215000 km, Automatik, unvollständige Servicehistorie – welche Unterlagen sind offen?';
  await page.locator('#ai-question').fill(question);

@@ -115,7 +115,7 @@ export async function handleApi(request,env={}){
  const alert={
   sender:sender(env),to:[{email:env.DANINI_NOTIFY_TO}],
   replyTo:{email:data.email,name:data.name},
-  subject:'DANINI ['+data.kind.toUpperCase()+'] '+data.topic.slice(0,55)+' / '+ref,
+  subject:'DaniniHub | DANINI ['+data.kind.toUpperCase()+'] '+data.topic.slice(0,55)+' / '+ref,
   textContent:bodyText(data,ref),
   tags:['danini','service-enquiry']
  };

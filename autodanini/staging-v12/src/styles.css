@@ -300,3 +300,16 @@
 .danini-captcha{min-height:65px;max-width:100%;margin:12px 0;overflow:hidden}
 @media(max-width:900px){.danini-intake-layout{grid-template-columns:1fr;gap:28px}}
 @media(max-width:530px){.danini-intake-section{padding:46px 0}.danini-general-form{padding:23px 17px}.danini-intake-flow{gap:8px}}
+
+
+/* Existing advisor – local evidence dossier. No new page or remote dependency. */
+.danini-evidence-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 15px;padding:15px 17px;margin:17px 0;border:1px solid #d9e4ed;border-radius:12px;background:#f7fafc}
+.advisor-panel .danini-evidence-fields label{margin:8px 0;line-height:1.55}
+.advisor-panel .danini-evidence-fields input,
+.advisor-panel .danini-evidence-fields select{width:100%;min-width:0;padding:11px 12px;border:1px solid #aebfcd;border-radius:8px;background:#fff;color:#172d40;margin:8px 0 0;font:inherit}
+.advisor-panel .danini-evidence-fields input:focus-visible,
+.advisor-panel .danini-evidence-fields select:focus-visible{outline:3px solid #3a86b9;outline-offset:2px}
+.danini-case-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:25px 0 0}
+.danini-case-actions .btn{min-height:45px}
+.danini-case-actions button[hidden]{display:none}
+@media(max-width:690px){.danini-evidence-fields{grid-template-columns:1fr;padding:13px}.danini-case-actions .btn{width:100%;justify-content:center}}

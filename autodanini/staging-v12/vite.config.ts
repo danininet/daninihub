@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve, join } from 'node:path';
 import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync, mkdirSync, rmSync } from 'node:fs';
 
-const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin","support"];
+const pages = ["index","buyers","dealers","live","inspection","import","exclusive","tender","auctions","guides","digital","ai-solutions","about","contact","impressum","privacy","terms","cookies","ai-advisor","disclaimer","cenovnik","ai-primer","faq","nalog","admin","support"];
 const hostinger=process.env.AUTODANINI_BUILD_TARGET === 'hostinger';
 
 function prepareOwnedImages(){

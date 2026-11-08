@@ -164,6 +164,21 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
  });
 }
 async function initialize(){
+ // Carry the pre-purchase vehicle description only through this tab's
+ // sessionStorage. No query strings, network transmission or persistent lead DB.
+ const general=document.querySelector<HTMLFormElement>('#danini-general-inquiry-form');
+ if(general){
+  try{
+   const draft=sessionStorage.getItem('danini-prepurchase-draft');
+   if(draft&&draft.length<3000){
+    const text=general.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+    const topic=general.querySelector<HTMLSelectElement>('select[name="topic"]');
+    if(text&&!text.value)text.value=draft;
+    if(topic)topic.value='AutoDanini – Fahrzeugkauf / Fahrzeugprüfung';
+   }
+   sessionStorage.removeItem('danini-prepurchase-draft');
+  }catch{}
+ }
  const forms=Array.from(document.querySelectorAll<HTMLFormElement>('.rfq[data-dealer], #autodanini-support-form, #danini-general-inquiry-form'));
  if(!forms.length)return;
  // Prevent browser-native submissions or false positive UI before readiness.

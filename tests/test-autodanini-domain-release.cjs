@@ -107,9 +107,11 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.ok(fs.existsSync(prepurchaseFile),'Pre-purchase landing missing in Cloudflare output');
  assert.ok(fs.existsSync(brandedMark),'New brandmark missing in Cloudflare output');
  const prepurchase=fs.readFileSync(prepurchaseFile,'utf8');
- assert.ok(prepurchase.includes('https://wa.me/4915730916621'),'Prelaunch lead form missing known WhatsApp');
+ assert.ok(prepurchase.includes("sessionStorage.setItem('danini-prepurchase-draft'"),'Pre-purchase draft must remain in this browser tab');
  assert.ok(prepurchase.includes('Naplata još nije omogućena'),'Prelaunch must not sell before business registration');
- assert.ok(prepurchase.includes('Pripremi WhatsApp upit'),'Prelaunch needs working enquiry CTA');
+ assert.ok(prepurchase.includes('Nastavi do e-mail obrasca'),'Pre-purchase funnel should lead to secure contact form');
+ assert.ok(prepurchase.includes("/contact.html#danini-intake"),'Pre-purchase must point to central contact section');
+ assert.doesNotMatch(prepurchase,/window\\.location\\.assign\\(target\\)/,'Do not redirect pre-purchase form to WhatsApp');
  assert.ok(!prepurchase.includes('sk_test_')&&!prepurchase.includes('sk_live_'),'No Stripe secret in browser');
  for(const name of pages.filter(page=>page!=='admin')){
   const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',name+'.html'),'utf8');

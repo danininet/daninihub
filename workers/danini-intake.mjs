@@ -73,10 +73,10 @@ const sender=env=>({name:'DANINI',email:env.DANINI_BREVO_SENDER});
 // Templates for Info, Rechnungen, Partner and Datenschutz are available in Brevo
 // but are intentionally not triggered because there are no matching intake forms yet.
 const ACK_TEMPLATE_IDS=Object.freeze({
- general:Object.freeze({de:18,sr:19}),
- vehicle:Object.freeze({de:20,sr:21}),
- support:Object.freeze({de:22,sr:23}),
- business:Object.freeze({de:28,sr:29})
+ general:Object.freeze({de:38,sr:39}),
+ vehicle:Object.freeze({de:40,sr:41}),
+ support:Object.freeze({de:42,sr:43}),
+ business:Object.freeze({de:48,sr:49})
 });
 function acknowledgementFor(data,ref,env){
  const replyTo=env.DANINI_BREVO_REPLYTO||env.DANINI_BREVO_SENDER;

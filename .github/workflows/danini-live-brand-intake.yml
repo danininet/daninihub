@@ -17,6 +17,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify DANINI Cloudflare brand Worker module syntax
         run: node --check workers/danini-brand-overlay.mjs
+      - name: Audit all key public site pages and favicon
+        run: node scripts/audit-danini-live.mjs
       - name: Check live master brand, existing AutoDanini and protected intake
         run: |
           node --input-type=module <<'JS'

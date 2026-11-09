@@ -361,3 +361,15 @@ img{max-width:100%}
 @media(max-width:900px){.section{padding:72px 0}.hero{min-height:560px}.hero>.wrap{padding:84px 0 44px}.hero h1{font-size:clamp(37px,7vw,60px)}.heroactions{margin:28px 0 44px}.tile{height:390px}}
 @media(max-width:650px){.section{padding:54px 0}.hero{min-height:0}.hero>.wrap{padding:64px 0 42px}.hero h1{font-size:clamp(35px,9vw,51px)}.heroactions{gap:10px}.heroactions .btn{width:100%;text-align:center;justify-content:center}.tiles{grid-template-columns:1fr;gap:18px}.tile{height:345px}.facts{gap:12px;flex-wrap:wrap}.legalhero{padding:48px 0}.legaltext h2{margin-top:25px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* Related routes are human-useful navigational links, not an automated SEO link farm. */
+.dn-related{background:linear-gradient(150deg,#f9fafb,#eef2f3);border-top:1px solid #dce4e8}
+.dn-related-eyebrow{color:#687780;font:800 11px/1.6 'DM Sans',Arial,sans-serif;letter-spacing:.16em}
+.dn-related h2{margin:10px 0 25px;color:#14202a}
+.dn-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.dn-related-grid a{display:flex;justify-content:space-between;align-items:center;gap:13px;min-height:94px;padding:22px 23px;background:#fff;border:1px solid #dbe3e9;border-radius:14px;color:#162735;text-decoration:none;font-weight:800;box-shadow:0 8px 22px #0f172a0b;transition:transform .18s ease,box-shadow .18s ease}
+.dn-related-grid a:hover{transform:translateY(-3px);box-shadow:0 15px 30px #0f172a1c}
+.dn-related-grid a span:last-child{font-size:23px;color:#a27e3b}
+.dn-related-grid a:focus-visible{outline:3px solid #facc15;outline-offset:3px}
+@media(max-width:720px){.dn-related-grid{grid-template-columns:1fr}.dn-related-grid a{min-height:70px}}

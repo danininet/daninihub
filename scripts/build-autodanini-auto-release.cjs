@@ -124,9 +124,44 @@ const legacyRedirects=[
   "/de/wissen/provera-oglasa-pre-kapare /prepurchase.html 301"
 ];
 fs.writeFileSync(path.join(out,'_redirects'),legacyRedirects.join('\n')+'\n');
+// Publish the already-reviewed, separate DANINI umbrella-brand page without
+// replacing the established AutoDanini landing page or touching legal routes.
+// The preview remains in GitHub; publication uses an explicit development-stage
+// disclaimer rather than pretending all planned services are already available.
+const umbrellaSource=path.resolve(__dirname,'../docs/brand-preview/danini-master-preview.html');
+if(!fs.existsSync(umbrellaSource))throw Error('DANINI_MASTER_BRAND_PREVIEW_MISSING');
+let umbrella=fs.readFileSync(umbrellaSource,'utf8');
+for(const [before,after] of [
+  ['<meta name="robots" content="noindex,nofollow">','<meta name="robots" content="index,follow">'],
+  [' | Designentwurf</title>',' | DANINI</title>'],
+  ['DANINI befindet sich in der Entwicklungs- und Prüfphase. Diese Seite ist ein Entwurf, kein öffentliches Beta-Angebot und keine Buchungsmöglichkeit.',
+   'DANINI befindet sich in der Entwicklungs- und Prüfphase. Angebote und Termine werden nur nach individueller Prüfung bestätigt.'],
+  ['DANINI je u razvojnoj i testnoj fazi. Ova stranica je nacrt, nije javna ponuda za besplatan pilot ili naručivanje usluge.',
+   'DANINI je u razvojnoj i testnoj fazi. Ponude i termini važe tek posle pojedinačne provere i potvrde.'],
+  ['© DANINI · Design preview only / samo nacrt · Bez plaćanja, prikupljanja podataka ili aktivne forme.',
+   '© DANINI · Razvojna faza / Entwicklungsphase · Bez online naplate ili obrasca / Keine Online-Zahlung oder Formular.'],
+  ["'DANINI — Über uns und Methode | Entwurf'","'DANINI — Dachmarke und Methode'"],
+  ["'DANINI — O nama i metoda | Nacrt'","'DANINI — Krovni brend i metoda'"]
+]){
+ if(!umbrella.includes(before))throw Error('DANINI_MASTER_COPY_MARKER_MISSING '+before.slice(0,55));
+ umbrella=umbrella.replace(before,after);
+}
+umbrella=umbrella.replace('</head>',
+  '<link rel="canonical" href="https://daninihub.com/danini.html">'+
+  '<link rel="alternate" hreflang="de" href="https://daninihub.com/danini.html">'+
+  '<link rel="alternate" hreflang="sr" href="https://daninihub.com/danini.html">'+
+  '</head>');
+umbrella=umbrella.replace('<div class="switch" role="group"',
+  '<a href="/index.html" style="color:#fff;text-decoration:underline;font-size:13px;margin-left:auto;margin-right:16px">AutoDanini ↗</a><div class="switch" role="group"');
+umbrella=umbrella.replace('<div class="note">DANINI befindet sich',
+  '<div class="actions"><a class="btn btn-secondary" href="/buyers.html">AutoDanini — Fahrzeuge ↗</a><a class="btn btn-secondary" href="/business.html">DANINI Business ↗</a></div><div class="note">DANINI befindet sich');
+umbrella=umbrella.replace('<div class="note">DANINI je u razvojnoj',
+  '<div class="actions"><a class="btn btn-secondary" href="/buyers.html">AutoDanini — vozila ↗</a><a class="btn btn-secondary" href="/business.html">DANINI Business ↗</a></div><div class="note">DANINI je u razvojnoj');
+fs.writeFileSync(path.join(out,'danini.html'),umbrella);
+if(!umbrella.includes('href="/index.html"')||!umbrella.includes('rel="canonical"')||!umbrella.includes('Pitaj AI — AI pita tebe'))throw Error('DANINI_MASTER_OUTPUT_FAILED');
 // A real indexable sitemap. Do not include account, admin, incomplete AI,
 // empty auctions, legal holding pages or any pretend inventory.
-const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/prepurchase.html',
+const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/danini.html','https://daninihub.com/prepurchase.html',
  ...indexablePages.filter(p=>p!=='index').map(p=>'https://daninihub.com/'+p+'.html')];
 const sitemap='<?xml version="1.0" encoding="UTF-8"?>\n'+
  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+

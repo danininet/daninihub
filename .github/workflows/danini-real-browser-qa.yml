@@ -5,6 +5,7 @@ on:
     paths:
       - 'autodanini/staging-v12/**'
       - 'scripts/test-danini-browser-qa.mjs'
+      - 'scripts/test-danini-public-mobile.mjs'
       - '.github/workflows/danini-real-browser-qa.yml'
   push:
     branches: [main]
@@ -34,3 +35,5 @@ jobs:
         run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright-core
       - name: Verify SR/DE self-service journey in real Chromium
         run: node scripts/test-danini-browser-qa.mjs
+      - name: Verify real Cloudflare site on 360, 390, 768 and 1440 pixel screens
+        run: node scripts/test-danini-public-mobile.mjs

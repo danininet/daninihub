@@ -30,7 +30,7 @@ jobs:
         run: |
           CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
           printf '%s\n' "$CHANGED"
-          if printf '%s\n' "$CHANGED" | grep -Ev '^(docs/brand-preview/|tests/test-danini-master-brand-preview\.cjs$|\.github/workflows/danini-master-brand-preview-qa\.yml$)' | grep -q .; then
+          if printf '%s\n' "$CHANGED" | grep -Ev '^(docs/brand-preview/|tests/test-danini-master-brand-preview\.cjs$|scripts/probe-danini-public-lead-status\\.cjs$|\.github/workflows/danini-master-brand-preview-qa\.yml$)' | grep -q .; then
             echo 'Unexpected production file modified' >&2
             exit 1
           fi

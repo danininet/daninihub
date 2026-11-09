@@ -78,6 +78,21 @@ for(const page of pages){
 // Worker release may index ONLY useful public service/guide pages.
 const indexablePages=['index','buyers','dealers','live','inspection','import',
  'exclusive','tender','guides','selbstimport','uvoz-vodic','about','contact','cenovnik','faq'];
+const seoLabels={
+ index:'AutoDanini',buyers:'Privatni kupci',dealers:'Za auto-kuće',live:'Live video pregled',
+ inspection:'Nezavisna provera vozila',import:'Kalkulator uvoza',exclusive:'Klasična i posebna vozila',
+ tender:'Ponude i tenderi',guides:'Vodiči',selbstimport:'Autoimport aus Deutschland',
+ 'uvoz-vodic':'Vodič za uvoz vozila',about:'O nama',contact:'Kontakt',cenovnik:'Cenovnik',faq:'Česta pitanja'
+};
+const relatedPages={
+ buyers:['inspection','guides','contact'],dealers:['business','guides','contact'],
+ live:['inspection','buyers','contact'],inspection:['guides','buyers','contact'],
+ import:['selbstimport','uvoz-vodic','contact'],exclusive:['inspection','buyers','contact'],
+ tender:['dealers','buyers','contact'],guides:['inspection','import','contact'],
+ selbstimport:['import','uvoz-vodic','contact'],'uvoz-vodic':['import','selbstimport','contact'],
+ about:['buyers','dealers','contact'],cenovnik:['buyers','inspection','contact'],
+ faq:['guides','buyers','contact']
+};
 for(const page of indexablePages){
  const dest=path.join(out,page+'.html');
  let html=fs.readFileSync(dest,'utf8');
@@ -104,6 +119,23 @@ for(const page of indexablePages){
    '$1'+seoTitle+'$2');
   html=html.replace(/(<meta name="description" content=")[^"]*(")/,
    '$1Orijentacioni kalkulator uvoza vozila iz Nemačke u Srbiju: scenariji carine i PDV-a. Konačna osnovica i dodatni troškovi zahtevaju potvrdu.$2');
+ }
+ if(page!=='index'&&page!=='contact'){
+  // Plain descriptive internal links improve visitor discovery without promising unavailable services.
+  const related=(relatedPages[page]||['buyers','guides','contact']);
+  const cards=related.map(link=>'<a href="/'+link+'.html"><span>'+(
+   seoLabels[link]||link)+'</span><span aria-hidden="true">↗</span></a>').join('');
+  const section='<section class="dn-related section" aria-label="Povezane stranice / Weiterführende Links"><div class="wrap"><span class="dn-related-eyebrow">AUTODANINI · SAZNAJTE VIŠE / MEHR ERFAHREN</span><h2 data-sr="Sledeći korak" data-de="Ihr nächster Schritt">Sledeći korak</h2><div class="dn-related-grid">'+cards+'</div></div></section>';
+  if(!html.includes('</main>'))throw Error('Missing semantic main: '+page);
+  html=html.replace('</main>',section+'</main>');
+ }
+ const breadcrumb=page==='index'?[]:[
+  {'@type':'ListItem',position:1,name:'DANINI / AutoDanini',item:'https://daninihub.com/'},
+  {'@type':'ListItem',position:2,name:seoLabels[page]||page,item:canonical}
+ ];
+ if(breadcrumb.length){
+  const schema={'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:breadcrumb};
+  html=html.replace('</head>','<script type="application/ld+json">'+JSON.stringify(schema)+'</script></head>');
  }
  fs.writeFileSync(dest,html);
 }

@@ -4,11 +4,34 @@ if(!executablePath)throw Error('Chromium required');
 const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox','--disable-dev-shm-usage']});
 const pages=['/','/de/','/sr/','/danini.html','/danini-sr.html','/buyers.html','/dealers.html','/live.html','/inspection.html','/about.html','/contact.html','/guides.html','/prepurchase.html','/impressum.html','/privacy.html','/tender.html','/import.html','/exclusive.html','/auctions.html','/digital.html','/ai-solutions.html','/business.html','/cnc.html','/selbstimport.html','/uvoz-vodic.html','/faq.html','/support.html','/terms.html','/cookies.html'];
 const errors=[];let checked=0,images=0,broken=0,external=0;const hrefs=new Set();
+const approved=['DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg','DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg','DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg','DANINI_Kartica_04_Zoll_Tablice_Dovoz_Na_Tockovima.jpg','DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg','DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg'];
+for(const file of approved){
+ const resp=await fetch('https://daninihub.com/images/'+file,{signal:AbortSignal.timeout(16000)});
+ const content=new Uint8Array(await resp.arrayBuffer());
+ if(resp.status!==200||!String(resp.headers.get('content-type')).includes('image/jpeg')||content.length<100000||content[0]!==0xff||content[1]!==0xd8)errors.push('APPROVED PHOTO ROUTE FAILED '+file+' '+resp.status+' '+content.length);
+}
+console.log('DANINI OWNED PHOTO ROUTES '+JSON.stringify({checked:approved.length,failed:errors.filter(x=>x.startsWith('APPROVED PHOTO')).length}));
+
 const suspect=await fetch('https://daninihub.com/danini-auto-uvoz.webp',{signal:AbortSignal.timeout(18000)});
 const sample=Buffer.from(await suspect.arrayBuffer());
 console.log('DANINI HERO IMAGE DIAGNOSTIC '+JSON.stringify({status:suspect.status,contentType:suspect.headers.get('content-type'),size:sample.length,prefix:sample.subarray(0,24).toString('hex'),cache:suspect.headers.get('cf-cache-status')}));
 
-try{const page=await browser.newPage({viewport:{width:1280,height:900}});for(const p of pages){
+try{const page=await browser.newPage({viewport:{width:1280,height:900}});
+ for(const homeRoute of ['/','/de/','/sr/']){
+   await page.goto('https://daninihub.com'+homeRoute,{waitUntil:'domcontentloaded',timeout:25000});
+   const count=await page.locator('#usluge-vozila').count();
+   if(count!==1)errors.push('Home gallery should appear once '+homeRoute+' count='+count);
+   const images=page.locator('#usluge-vozila img');
+   if(await images.count()!==6)errors.push('Six service cards required '+homeRoute);
+   for(let i=0;i<await images.count();i++){
+    const img=images.nth(i);
+    const state=await img.evaluate(async el=>{el.loading='eager';try{await el.decode()}catch{};return {w:el.naturalWidth,alt:el.alt,src:el.src}});
+    if(state.w<300)errors.push('Invalid home gallery image '+homeRoute+' '+state.src);
+    if(state.alt.length<16)errors.push('Missing meaningful gallery ALT '+homeRoute+' '+state.src);
+   }
+   console.log('DANINI SERVICE GALLERY '+homeRoute+' count='+await images.count());
+ }
+ for(const p of pages){
  const res=await page.goto('https://daninihub.com'+p,{waitUntil:'domcontentloaded',timeout:25000});
  if(res?.status()!==200){errors.push(p+' HTTP '+res?.status());continue}
  await page.waitForTimeout(300);

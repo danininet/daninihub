@@ -8,7 +8,24 @@ const suspect=await fetch('https://daninihub.com/danini-auto-uvoz.webp',{signal:
 const sample=Buffer.from(await suspect.arrayBuffer());
 console.log('DANINI HERO IMAGE DIAGNOSTIC '+JSON.stringify({status:suspect.status,contentType:suspect.headers.get('content-type'),size:sample.length,prefix:sample.subarray(0,24).toString('hex'),cache:suspect.headers.get('cf-cache-status')}));
 
-try{const page=await browser.newPage({viewport:{width:1280,height:900}});for(const p of pages){
+try{const page=await browser.newPage({viewport:{width:1280,height:900}});
+ const home=await page.goto('https://daninihub.com/',{waitUntil:'domcontentloaded',timeout:25000});
+ if(home?.status()!==200)errors.push('Gallery home not 200');
+ const directory=page.locator('#usluge-vozila');
+ const directories=await directory.count();
+ if(directories!==1)errors.push('Expected one service image directory; got '+directories);
+ const photos=directory.locator('img');
+ if(await photos.count()!==6)errors.push('Expected 6 approved gallery photos; got '+await photos.count());
+ for(let i=0;i<await photos.count();i++){
+  const img=photos.nth(i);
+  const checkedImg=await img.evaluate(async el=>{el.loading='eager';try{await el.decode()}catch{};return {width:el.naturalWidth,src:el.currentSrc,alt:el.alt}});
+  if(checkedImg.width<300)errors.push('Gallery image failed to load '+checkedImg.src);
+  if(checkedImg.alt.trim().length<14)errors.push('Gallery image missing useful ALT '+checkedImg.src);
+  const link=await img.locator('xpath=ancestor::a').first().getAttribute('href');
+  if(!link||!link.endsWith('.html'))errors.push('Gallery image lacks linked service '+checkedImg.src);
+ }
+ console.log('DANINI LIVE GALLERY CHECK '+JSON.stringify({cards:await photos.count(),duplicateDirectory:directories!==1,verifiedImages:await photos.count()-errors.filter(x=>x.startsWith('Gallery image')).length}));
+ for(const p of pages){
  const res=await page.goto('https://daninihub.com'+p,{waitUntil:'domcontentloaded',timeout:25000});
  if(res?.status()!==200){errors.push(p+' HTTP '+res?.status());continue}
  await page.waitForTimeout(300);

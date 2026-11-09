@@ -31,6 +31,10 @@ async function audit(){
    if(!/class=["']brandlinks["']/.test(s))note('ERROR',p,'Master brand navigation missing');
    if(!/hreflang=["']sr["']/.test(s)||!/hreflang=["']de["']/.test(s))note('ERROR',p,'DE/SR alternate links missing');
   }
+  if(['/buyers.html','/inspection.html','/guides.html','/import.html'].includes(p)){
+   if(!s.includes('dn-related-grid'))note('ERROR',p,'Contextual service navigation missing on live site');
+   if(!s.includes('href="/contact.html"'))note('ERROR',p,'Contact CTA missing in contextual navigation');
+  }
   if(p==='/buyers.html'||p==='/business.html'||p==='/contact.html'){
    if(!s.includes('dn-service-header'))note('ERROR',p,'Shared logo/menu not in rendered HTML');
   }

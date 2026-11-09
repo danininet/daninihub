@@ -209,7 +209,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  for (const legalPage of ['/impressum.html','/privacy.html']) {
    const legal=await request(port,'daninihub.com',legalPage);
    assert.equal(legal.status,200,legalPage);
-   assert.match(legal.body,/mailto:kontakt@daninihub\.com/,legalPage);
+   assert.match(legal.body,legalPage==='/impressum.html'?/mailto:kontakt@daninihub\.com/:/mailto:datenschutz@daninihub\.com/,legalPage);
    assert.match(legal.body,/Dragan Zdravković/,'Owner must be identified');
    assert.match(legal.body,/Fischerstr\. 54/,'Verified operator address must be present');
    assert.match(legal.body,/47055 Duisburg/,'Operator city must be stated');

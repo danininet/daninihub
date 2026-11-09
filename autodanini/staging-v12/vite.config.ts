@@ -15,6 +15,24 @@ function prepareOwnedImages(){
   for(const old of ['dragan-original-portrait.jpg','dragan-business-grid-ai.png']){
     rmSync(join(publicDir,old),{force:true});
   }
+  // Keep the six approved DANINI service photographs on our own domain.
+  // They are already in the repository: no new hosting, CDN or licensing.
+  const approvedDir=resolve(process.cwd(),'../../public/images');
+  const localImageDir=join(publicDir,'images');
+  mkdirSync(localImageDir,{recursive:true});
+  const approvedImages=[
+    'DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg',
+    'DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg',
+    'DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg',
+    'DANINI_Kartica_04_Zoll_Tablice_Dovoz_Na_Tockovima.jpg',
+    'DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg',
+    'DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg'
+  ];
+  for(const name of approvedImages){
+    const source=join(approvedDir,name);
+    if(!existsSync(source))throw Error('Missing approved image '+source);
+    copyFileSync(source,join(localImageDir,name));
+  }
   const entries=[
     ['dragan-business-phone.jpg.base64','dragan-business-phone.jpg'],
     ['dragan-business-portrait.jpg.base64','dragan-business-portrait.jpg']

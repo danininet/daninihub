@@ -373,3 +373,25 @@ img{max-width:100%}
 .dn-related-grid a span:last-child{font-size:23px;color:#a27e3b}
 .dn-related-grid a:focus-visible{outline:3px solid #facc15;outline-offset:3px}
 @media(max-width:720px){.dn-related-grid{grid-template-columns:1fr}.dn-related-grid a{min-height:70px}}
+
+
+/* DANINI: first-party editorial service cards. Responsive, keyboard accessible. */
+.dn-photo-directory{background:linear-gradient(145deg,#f9fafb 0%,#edf2f5 100%);border-top:1px solid #dfe6ec;border-bottom:1px solid #dfe6ec}
+.dn-photo-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:32px}
+.dn-photo-heading h2{max-width:780px;font-size:clamp(30px,4vw,50px);letter-spacing:-.045em;line-height:1.12;margin:9px 0 16px;color:#0f172a}
+.dn-photo-heading .lead{max-width:850px;color:#465a6a}
+.dn-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.dn-photo-card{min-width:0;background:#fff;border:1px solid #dce4eb;border-radius:16px;overflow:hidden;box-shadow:0 10px 26px rgba(15,23,42,.07);transition:transform .2s ease,box-shadow .2s ease}
+.dn-photo-card:hover,.dn-photo-card:focus-within{transform:translateY(-4px);box-shadow:0 22px 48px rgba(15,23,42,.14)}
+.dn-photo-card a{color:inherit;text-decoration:none;display:block;height:100%}
+.dn-photo-card a:focus-visible{outline:3px solid #eab308;outline-offset:-3px}
+.dn-photo-card figure{margin:0;height:100%;display:flex;flex-direction:column}
+.dn-photo-card img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;background:#e3e9ef}
+.dn-photo-card figcaption{padding:22px 23px 24px;display:flex;flex-direction:column;flex:1;gap:10px}
+.dn-photo-number{font:800 11px/1.5 'DM Sans',Arial,sans-serif;letter-spacing:.15em;color:#8f702e}
+.dn-photo-card h3{margin:0;font-size:clamp(20px,2vw,24px);line-height:1.22;color:#102132;letter-spacing:-.025em}
+.dn-photo-card p{margin:0 0 15px;font-size:14px;line-height:1.65;color:#506276}
+.dn-photo-more{margin-top:auto;border-top:1px solid #e8edf1;padding-top:12px;display:flex;justify-content:space-between;color:#17394e;font-weight:800;font-size:13px}
+@media(max-width:1000px){.dn-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.dn-photo-heading{align-items:stretch;flex-direction:column}.dn-photo-grid{grid-template-columns:1fr;gap:18px}.dn-photo-card figcaption{padding:20px}.dn-photo-card img{aspect-ratio:16/10}}
+@media(prefers-reduced-motion:reduce){.dn-photo-card{transition:none}}

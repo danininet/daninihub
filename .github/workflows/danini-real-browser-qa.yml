@@ -6,6 +6,7 @@ on:
       - 'autodanini/staging-v12/**'
       - 'scripts/test-danini-browser-qa.mjs'
       - 'scripts/test-danini-public-mobile.mjs'
+      - 'scripts/test-danini-public-images.mjs'
       - '.github/workflows/danini-real-browser-qa.yml'
   push:
     branches: [main]
@@ -37,3 +38,5 @@ jobs:
         run: node scripts/test-danini-browser-qa.mjs
       - name: Verify real Cloudflare site on 360, 390, 768 and 1440 pixel screens
         run: node scripts/test-danini-public-mobile.mjs
+      - name: Check actual image loading and internal links on Cloudflare
+        run: node scripts/test-danini-public-images.mjs

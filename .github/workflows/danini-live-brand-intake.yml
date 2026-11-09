@@ -1,5 +1,7 @@
 name: DANINI live brand and safe intake smoke
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
     paths:

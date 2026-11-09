@@ -12,7 +12,7 @@
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:16px/1.65 Arial,Helvetica,sans-serif;color:var(--navy);background:white}
 a{color:inherit}.shell{width:min(1140px,calc(100% - 36px));margin:auto}
 .top{background:var(--navy);color:white}.head{min-height:82px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.logo{font-weight:900;font-size:27px;letter-spacing:.11em;text-decoration:none}.logo i{color:var(--yellow);font-style:normal}
+.logo{font-weight:900;font-size:27px;letter-spacing:.08em;text-decoration:none;display:flex;align-items:center;gap:12px;white-space:nowrap}.logo svg{flex:none}.brandlinks{display:flex;align-items:center;gap:clamp(12px,2vw,24px);margin-left:auto}.brandlinks a{font:700 13px Arial,sans-serif;text-decoration:none;color:#f9fafb}.brandlinks a:hover,.brandlinks a:focus-visible{color:var(--yellow)}
 .switch{display:flex;gap:6px}.switch button{font:700 13px Arial;cursor:pointer;border:1px solid #64748b;color:white;background:transparent;border-radius:7px;padding:9px 14px}
 .switch button[aria-pressed="true"]{background:var(--yellow);border-color:var(--yellow);color:var(--navy)}
 .eyebrow{text-transform:uppercase;letter-spacing:.17em;font-weight:700;font-size:12px;color:#d7b924}
@@ -33,11 +33,11 @@ h2{font-size:clamp(27px,3.5vw,43px);line-height:1.18;margin:10px 0 22px;letter-s
 .contact{background:#f3f5f7;border-top:1px solid #d8e0e8;padding:48px 0}
 footer{padding:26px 0;background:var(--navy);color:#cbd5e1;font-size:12px}
 [hidden]{display:none!important}
-@media(max-width:750px){.steps{grid-template-columns:1fr}.split{grid-template-columns:1fr}.hero{padding:64px 0}.head{padding:14px 0}.logo{font-size:24px}.statement{padding:24px}section.content{padding:56px 0}}
+@media(max-width:950px){.brandlinks{width:100%;order:3;justify-content:flex-start;flex-wrap:wrap}.head{padding:12px 0}}@media(max-width:750px){.steps{grid-template-columns:1fr}.split{grid-template-columns:1fr}.hero{padding:64px 0}.head{padding:14px 0}.logo{font-size:24px}.statement{padding:24px}section.content{padding:56px 0}}
 </style>
 </head>
 <body>
-<header class="top"><div class="shell head"><a class="logo" href="#top" aria-label="DANINI">DANINI<i>.</i></a><div class="switch" role="group" aria-label="Sprache / Jezik"><button type="button" id="de" aria-pressed="true">DE</button><button type="button" id="sr" aria-pressed="false">SR</button></div></div></header>
+<header class="top"><div class="shell head"><a class="logo" href="#top" aria-label="DANINI"><svg viewBox="0 0 54 54" width="46" height="46" role="img" aria-label="DANINI znak"><rect x="1" y="1" width="52" height="52" rx="11" fill="#0f172a" stroke="#facc15" stroke-width="2"/><path d="M15 12h13c15 0 20 7 20 15 0 11-8 16-20 16H15zm11 9v13h4c6 0 9-2 9-7 0-4-3-6-9-6z" fill="#fff"/><path d="M16 45h29" stroke="#facc15" stroke-width="4"/></svg><span>DANINI</span></a><nav class="brandlinks" aria-label="DANINI sections"><a href="/buyers.html">AutoDanini</a><a href="/business.html" data-sr="Za firme" data-de="Für Unternehmen">Für Unternehmen</a><a href="/contact.html">Kontakt</a></nav><div class="switch" role="group" aria-label="Sprache / Jezik"><button type="button" id="de" aria-pressed="true">DE</button><button type="button" id="sr" aria-pressed="false">SR</button></div></div></header>
 <main id="top">
 <div lang="de" data-locale="de">
 <section class="hero"><div class="shell"><span class="eyebrow">DANINI · Methode · Verantwortung</span><h1>Weniger leere Antworten.<br><em>Bessere Entscheidungen.</em></h1><p>Frag KI – KI fragt zurück. Wir entwickeln eine Arbeitsweise, die Menschen und kleinen Unternehmen hilft, das eigentliche Problem zu erkennen, Informationen zu prüfen und den nächsten Schritt klar zu bestimmen.</p><div class="actions"><a class="btn btn-primary" href="#methode-de">Unsere Methode</a><a class="btn btn-secondary" href="#kontakt-de">Kontakt</a></div><div class="note">DANINI befindet sich in der Entwicklungs- und Prüfphase. Diese Seite ist ein Entwurf, kein öffentliches Beta-Angebot und keine Buchungsmöglichkeit.</div></div></section>

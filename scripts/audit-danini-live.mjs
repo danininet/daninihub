@@ -35,6 +35,14 @@ async function audit(){
    if(!s.includes('dn-service-header'))note('ERROR',p,'Shared logo/menu not in rendered HTML');
   }
   if(p==='/contact.html'&&!s.includes('mailto:kontakt@daninihub.com'))note('ERROR',p,'Direct email absent');
+  if(p==='/impressum.html'){
+   if(!s.includes('Fischerstr. 54')||!s.includes('47055 Duisburg')||!s.includes('Dragan Zdravković'))note('ERROR',p,'Public operator identity/address not published');
+   if(s.includes('radni tekst koji zahteva pravnu i poslovnu potvrdu'))note('ERROR',p,'Old placeholder Impressum is live');
+  }
+  if(p==='/privacy.html'){
+   if(!s.includes('datenschutz@daninihub.com')||!s.includes('Fischerstr. 54'))note('ERROR',p,'Public privacy controller/contact not published');
+  }
+
   if(p==='/'){if(!s.includes('dn-header'))note('ERROR',p,'DANINI masthead absent');}
   const local=anchors(s).filter(h=>h.startsWith('/')).map(h=>h.split('#')[0].split('?')[0]).filter(Boolean);
   const dead=[...new Set(local.filter(h=>/^(?:\/danini.*\.html|\/contact\.html|\/buyers\.html|\/business\.html)$/.test(h)))].filter(h=>!pages.includes(h));

@@ -9,6 +9,8 @@ on:
       - 'docs/brand-preview/**'
       - 'scripts/build-autodanini-auto-release.cjs'
       - 'workers/danini-intake.mjs'
+      - 'workers/danini-brand-overlay.mjs'
+      - 'scripts/audit-danini-live.mjs'
   workflow_dispatch:
 jobs:
   smoke:

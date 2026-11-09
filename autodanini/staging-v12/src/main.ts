@@ -12,13 +12,12 @@ function addCommerceNavigation(): void {
     a.textContent = lang === 'de' ? de : sr;
     return a;
   }
+  // Prioritise active visitor journeys; planned services remain accessible below.
   const navItems: [string,string,string][] = [
-    ['danini','DANINI · Krovni brend','DANINI · Dachmarke'],
-    ['business','DANINI Business','DANINI Business'],
+    ['danini','DANINI · Brend','DANINI · Marke'],
     ['buyers','AutoDanini','AutoDanini'],
-    ['auctions','Aukcije (uskoro)','Auktionen (geplant)'],
-    ['digital','Digitalni proizvodi','Digitale Produkte'],
-    ['ai-solutions','AI i automatizacija','KI & Automatisierung'],
+    ['business','Za firme','Für Unternehmen'],
+    ['guides','Vodiči','Ratgeber'],
     ['contact','Kontakt','Kontakt']
   ];
   const desktop = document.querySelector<HTMLElement>('.desktop');
@@ -31,8 +30,9 @@ function addCommerceNavigation(): void {
     const mobileItems: [string,string,string][] = [
       ...navItems,
       ['dealers','Auto B2B','Auto B2B'],
+      ['ai-solutions','AI i automatizacija','KI & Automatisierung'],
+      ['digital','Digitalni proizvodi','Digitale Produkte'],
       ['cenovnik','Pilot cenovnik','Pilotpreise'],
-      ['guides','Vodiči','Ratgeber'],
       ['support','Podrška','Support'],
       ['about','O nama','Über uns']
     ];

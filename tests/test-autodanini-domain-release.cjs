@@ -192,7 +192,8 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  ]);
  const auto=await request(port,'daninihub.com','/');
  assert.equal(auto.status,200);
- assert.match(auto.body,/<strong>DANINI<\/strong>/i);
+ assert.match(auto.body,/<strong>AutoDanini<\/strong>/i,'AutoDanini endorsed brand logo must be visible');
+ assert.match(auto.body,/by DANINI/,'DANINI umbrella endorsement must remain visible');
  assert.match(auto.headers['x-robots-tag'],/noindex/);
  const adm=await request(port,'daninihub.com','/admin.html');
  assert.equal(adm.status,200);

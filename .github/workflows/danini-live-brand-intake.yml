@@ -1,0 +1,45 @@
+name: DANINI live brand and safe intake smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/danini-live-brand-intake.yml'
+      - 'docs/brand-preview/**'
+      - 'scripts/build-autodanini-auto-release.cjs'
+      - 'workers/danini-intake.mjs'
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live master brand, existing AutoDanini and protected intake
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const origin='https://daninihub.com';
+          async function load(path,opts={}){
+            const r=await fetch(origin+path,{redirect:'follow',signal:AbortSignal.timeout(15000),...opts});
+            const body=await r.text();return {status:r.status,body,headers:r.headers};
+          }
+          const [brand,auto,contact,status]=await Promise.all([
+            load('/danini.html'),load('/'),load('/contact.html'),load('/api/lead/status')
+          ]);
+          assert.equal(brand.status,200,'DANINI brand page must be live');
+          assert.match(brand.body,/Pitaj AI — AI pita tebe/);
+          assert.match(brand.body,/AutoDanini/);
+          assert.equal(auto.status,200,'Existing AutoDanini root preserved');
+          assert.equal(contact.status,200,'Contact page must exist');
+          assert.equal(status.status,200,'Worker status API must exist');
+          const data=JSON.parse(status.body);
+          assert.equal(typeof data.enabled,'boolean','Intake status must declare readiness');
+          assert.equal(status.headers.get('cache-control'),'no-store');
+          if(data.enabled){
+            assert.ok(data.turnstileSiteKey,'Missing public Turnstile sitekey');
+          }
+          const rejected=await load('/api/lead',{
+            method:'POST',headers:{'content-type':'application/json','Origin':'https://not-danini.invalid'},
+            body:JSON.stringify({kind:'general',name:'Internal Test',email:'test@example.invalid',topic:'QA only',message:'Automated negative test, should never be sent',language:'de',consent:true,turnstileToken:'not-a-real-token'})
+          });
+          assert.ok([403,503].includes(rejected.status),'Wrong-origin input must be rejected before any e-mail');
+          console.log('PASS: brand live + AutoDanini safe + contact + intake status:',{brand:brand.status,auto:auto.status,contact:contact.status,enabled:data.enabled,rejected:rejected.status});
+          JS

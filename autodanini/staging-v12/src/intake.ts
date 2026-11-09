@@ -94,13 +94,22 @@ function collect(form:HTMLFormElement,kind:IntakeKind){
 }
 function makeFallback(form:HTMLFormElement){
  const button=form.querySelector<HTMLButtonElement>('button[type="submit"]');
- if(button){button.disabled=true;button.title=translate('E-mail prijem nije aktiviran','E-Mail-Empfang noch nicht aktiviert');}
+ if(button){button.disabled=true;button.title=translate('Automatsko e-mail slanje još nije aktivirano','Automatischer E-Mail-Versand noch nicht aktiviert');}
  const status=statusNode(form);
+ const address=form.id==='autodanini-support-form'?'support@daninihub.com':
+  form.dataset.dealer==='true'?'business@daninihub.com':
+  form.classList.contains('rfq')?'auto@daninihub.com':'kontakt@daninihub.com';
  status.textContent=translate(
-  'E-mail obrazac još nije aktiviran. Nijedan upit se ovde ne šalje. Za direktan kontakt koristite WhatsApp link (bez obavezne telefonske tarife).',
-  'Das E-Mail-Formular ist noch nicht aktiviert. Es werden keine Angaben versendet. Für direkten Kontakt können Sie den WhatsApp-Link nutzen.'
- );
+  'Automatski obrazac trenutno nije aktivan. Upit možete poslati direktno na poslovnu e-mail adresu:',
+  'Das automatische Formular ist derzeit noch nicht aktiv. Bitte senden Sie Ihre Anfrage direkt an die geschäftliche E-Mail-Adresse:'
+ )+' ';
+ const link=document.createElement('a');
+ link.href='mailto:'+address;
+ link.textContent=address;
+ link.rel='nofollow';
+ status.append(link);
 }
+
 async function setup(form:HTMLFormElement,config:IntakeConfig){
  if(form.dataset.intakeReady)return;
  form.dataset.intakeReady='true';

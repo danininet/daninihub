@@ -27,6 +27,13 @@ async function main() {
       '/sr/dovoz-auta', '/de/ueberfuehrung',
       '/sr/kalkulator', '/de/rechner',
       '/sr/upit', '/de/anfrage',
+      '/sr/kontakt', '/de/kontakt',
+      '/sr/poslovni-upit', '/de/geschaeftsanfrage',
+      '/sr/podrska', '/de/support',
+      '/sr/informacije', '/de/informationen',
+      '/sr/racuni', '/de/rechnungen',
+      '/sr/partnerstva', '/de/partnerschaft',
+      '/sr/zastita-podataka', '/de/datenschutz-anfrage',
       '/sr/vodici', '/sr/kako-radimo',
       '/sr/vodic/safebuy-vor-kaution', '/de/wissen/safebuy-vor-kaution',
       '/sr/vodic/transport-entscheidung', '/de/wissen/transport-entscheidung',
@@ -103,6 +110,24 @@ async function main() {
         assert.match(html, /danini-order-slot/);
         assert.match(html, /danini-order-request/);
         assert.doesNotMatch(html, /id="service-form"/);
+      }
+      if ([
+        '/sr/kontakt', '/de/kontakt',
+        '/sr/poslovni-upit', '/de/geschaeftsanfrage',
+        '/sr/podrska', '/de/support',
+        '/sr/informacije', '/de/informationen',
+        '/sr/racuni', '/de/rechnungen',
+        '/sr/partnerstva', '/de/partnerschaft',
+        '/sr/zastita-podataka', '/de/datenschutz-anfrage'
+      ].includes(route)) {
+        assert.match(html,/data-danini-lead-kind="/,route);
+        assert.match(html,/danini-lead-forms\.js/,route);
+        assert.match(html,/name="consent" required/,route);
+        assert.match(html,/name="website"/,route);
+        assert.match(html,/danini-lead-turnstile/,route);
+        assert.match(html,/<form[^>]+hidden>/,route);
+        assert.match(html,/\.danini-lead-form\[hidden\]\{display:none!important\}/,route);
+        assert.doesNotMatch(html,/newsletter\s+checkbox/i,route);
       }
       if (route === '/sr/kalkulator' || route === '/de/rechner') {
         assert.match(html, /id="quickcheck"/);

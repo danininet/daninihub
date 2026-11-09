@@ -4,9 +4,24 @@
 // No customer data is stored on the server; the buyer chooses to open WhatsApp.
 (() => {
   const PHONE = '4915730916621';
-  const CONTACT_EMAIL = 'info@daninihub.com';
+  const CONTACT_EMAIL = 'auto@daninihub.com';
   const de = document.documentElement.lang === 'de';
   const t = (sr, german) => de ? german : sr;
+
+  let turnstileLoader;
+  function loadTurnstile() {
+    if (window.turnstile) return Promise.resolve(window.turnstile);
+    if (!turnstileLoader) turnstileLoader = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.onload = () => window.turnstile ? resolve(window.turnstile) : reject(new Error('captcha_missing'));
+      script.onerror = () => reject(new Error('captcha_unavailable'));
+      document.head.appendChild(script);
+    });
+    return turnstileLoader;
+  }
+
   const services = {
     field: t('Pregled vozila pre kupovine — obilazak na upit','Fahrzeugbesichtigung vor dem Kauf — auf Anfrage'),
     transport: t('Organizacija dovoza automobila / motocikla','Fahrzeug- oder Motorradtransport organisieren'),
@@ -113,6 +128,10 @@
     const onlineContainer = host.querySelector('.danini-order-online');
     const onlineSubmit = host.querySelector('.danini-order-online-submit');
     let onlineIntakeReady = false;
+    let onlineProvider = 'legacy';
+    let captchaToken = '';
+    let captchaWidget;
+    const nameLabel = host.querySelector('label[for="' + formId + '-name"]');
     const whatsapp = host.querySelector('.danini-order-wa');
     const email = host.querySelector('.danini-order-email');
     const urlStatus = host.querySelector('.danini-url-status');
@@ -144,7 +163,7 @@
       };
       const content=message(linkOk?raw:'',select.value,note,buyer);
       const wa='https://wa.me/' + PHONE + '?text=' + encodeURIComponent(content);
-      const mail='mailto:' + CONTACT_EMAIL + '?subject=' +
+      const mail='mailto:' + (select.value === 'b2b' ? 'business@daninihub.com' : CONTACT_EMAIL) + '?subject=' +
         encodeURIComponent(t('AutoDanini — upit za ponudu','AutoDanini — Anfrage')) +
         '&body=' + encodeURIComponent(content);
       const safeLength=wa.length <= 4700;
@@ -178,60 +197,126 @@
     }
     whatsapp.addEventListener('click',validateOpen);
     email.addEventListener('click',validateOpen);
-    async function submitOnline(){
-      if(!onlineIntakeReady)return;
+    async function submitOnline() {
+      if (!onlineIntakeReady || onlineSubmit.disabled) return;
       update();
-      const raw=input.value.trim(),note=details.value.trim(),mail=contactEmail.value.trim();
-      if(!consent.checked || !(validLink(raw)||(!raw&&note.length>=15))){
-        help.textContent=t('Popunite oglas ili opis i potvrdite obaveštenje o privatnosti.',
-          'Bitte Inserat oder Beschreibung eingeben und Datenschutzhinweis bestätigen.');return;
+      const raw = input.value.trim();
+      const note = details.value.trim();
+      const mail = contactEmail.value.trim();
+      const fullname = name.value.trim();
+      if (!consent.checked || !(validLink(raw) || (!raw && note.length >= 15))) {
+        help.textContent = t('Popunite oglas ili opis i potvrdite obaveštenje o privatnosti.',
+          'Bitte Inserat oder Beschreibung eingeben und Datenschutzhinweis bestätigen.');
+        return;
       }
-      if(!mail||!contactEmail.checkValidity()){
-        help.textContent=t('Za zahtev preko sajta obavezan je ispravan e-mail.',
-          'Für die Anfrage über die Website benötigen wir eine gültige E-Mail-Adresse.');
-        contactEmail.focus();return;
+      if (!mail || !contactEmail.checkValidity()) {
+        help.textContent = t('Za upit preko sajta neophodan je ispravan e-mail.',
+          'Für die Website-Anfrage benötigen wir eine gültige E-Mail-Adresse.');
+        contactEmail.focus();
+        return;
       }
-      const body={
+      if (onlineProvider === 'worker' && !fullname) {
+        help.textContent = t('Unesite ime za elektronski upit.', 'Bitte geben Sie Ihren Namen ein.');
+        name.focus();
+        return;
+      }
+      if (onlineProvider === 'worker' && !captchaToken) {
+        help.textContent = t('Dovršite Cloudflare zaštitnu proveru.',
+          'Bitte schließen Sie die Cloudflare-Sicherheitsprüfung ab.');
+        return;
+      }
+      const body = {
         language:de?'de':'sr',source:'autodanini-web',
         serviceType:serviceTypes[select.value]||'AD_REVIEW',
-        email:mail,name:name.value.trim(),privacyAcknowledged:true,
+        email:mail,name:fullname,privacyAcknowledged:true,
         vehicle:raw||note.slice(0,180),listingUrl:raw,
         pickupLocation:location.value.trim(),budgetEur:budget.value.trim(),
         message:(raw?t('Oglas: ','Inserat: ')+raw+'\n':'')+note,
         website:''
       };
+      const endpoint=onlineProvider==='worker'?'/api/lead':'/api/importos/service-request';
+      const payload=onlineProvider==='worker'?{
+        kind:select.value==='b2b'?'business':'vehicle',
+        language:body.language,name:fullname,email:mail,
+        topic:services[select.value]||services.passport,message:body.message,
+        consent:true,turnstileToken:captchaToken,
+        details:{
+          listingUrl:raw.slice(0,350),
+          serviceType:body.serviceType,
+          pickupLocation:body.pickupLocation.slice(0,350),
+          budgetEur:body.budgetEur
+        }
+      }:body;
       onlineSubmit.disabled=true;
       help.textContent=t('Proveravam prijem zahteva…','Anfrage wird übermittelt…');
-      try{
-        const response=await fetch('/api/importos/service-request',{
+      try {
+        const response=await fetch(endpoint,{
           method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(body),signal:AbortSignal.timeout(15000)
+          credentials:'same-origin',body:JSON.stringify(payload),
+          signal:AbortSignal.timeout(15000)
         });
         const result=await response.json();
-        if(!response.ok || !result.ok)throw new Error(result.error||'REQUEST_FAILED');
+        const accepted=onlineProvider==='worker'
+          ? response.status===202 && result.accepted===true && !!result.reference
+          : response.ok && result.ok===true && !!result.reference;
+        if(!accepted)throw new Error('NOT_ACCEPTED');
         help.replaceChildren();
         const paragraph=document.createElement('p');
-        paragraph.textContent=t('Zahtev je evidentiran pod brojem ','Anfrage erfasst unter ')+result.reference+
-          (result.delivered?t('. Potvrda je upućena mejlom.','. Bestätigung per E-Mail verschickt.')
-          :t('. E-mail nije potvrđen; sačuvajte broj i kontaktirajte nas na WhatsApp.','. E-Mail nicht bestätigt; Nummer notieren und per WhatsApp nachfragen.'));
+        const mailAccepted=onlineProvider==='worker'?result.receiptAccepted===true:result.delivered===true;
+        paragraph.textContent=t('Zahtev je prihvaćen pod brojem ','Anfrage angenommen unter ')+result.reference+
+          (mailAccepted?t('. E-mail potvrda je prihvaćena za slanje.','. E-Mail-Bestätigung zur Zustellung angenommen.')
+          :t('. Potvrda e-mailom nije potvrđena; sačuvajte broj i po potrebi nam pišite.','. E-Mail-Bestätigung unbestätigt; bitte die Nummer notieren.'));
         help.appendChild(paragraph);
-        if(result.trackingUrl && result.trackingUrl.startsWith('https://daninihub.com/')){
+        if(onlineProvider==='legacy' && result.trackingUrl && result.trackingUrl.startsWith('https://daninihub.com/')){
           const link=document.createElement('a');link.href=result.trackingUrl;
           link.textContent=t('Otvori svoj privatni dosije','Privates Dossier öffnen');
           link.rel='nofollow';help.appendChild(link);
         }
         if(typeof window.daniniTrack==='function')window.daniniTrack('service_request_started',body.serviceType);
-      }catch(error){
-        help.textContent=t('Zahtev nije potvrđen kroz sajt. Pošaljite ga preko WhatsApp-a ili mejla. Detalj: ',
-          'Website-Eingang nicht bestätigt. Bitte per WhatsApp oder E-Mail senden. Hinweis: ')+error.message;
-      }finally{onlineSubmit.disabled=false;}
+      }catch {
+        help.textContent=t('Zahtev nije potvrđen preko sajta. Pošaljite ga putem WhatsApp-a ili mejla.',
+          'Website-Eingang nicht bestätigt. Bitte senden Sie per WhatsApp oder E-Mail.');
+      }finally{
+        onlineSubmit.disabled=false;
+        if(onlineProvider==='worker'){
+          captchaToken='';
+          if(window.turnstile && captchaWidget!==undefined)window.turnstile.reset(captchaWidget);
+        }
+      }
     }
     onlineSubmit.addEventListener('click',submitOnline);
-    fetch('/api/importos/lead-readiness',{cache:'no-store',signal:AbortSignal.timeout(9000)})
-      .then(r=>r.ok?r.json():null).then(data=>{
+    async function checkLegacyReadiness(){
+      try{
+        const result=await fetch('/api/importos/lead-readiness',{
+          cache:'no-store',credentials:'same-origin',signal:AbortSignal.timeout(9000)
+        });
+        const data=result.ok?await result.json():null;
+        onlineProvider='legacy';
         onlineIntakeReady=data?.onlineIntakeReady===true;
         onlineContainer.hidden=!onlineIntakeReady;
-      }).catch(()=>{onlineContainer.hidden=true;});
+      }catch{onlineContainer.hidden=true;}
+    }
+    fetch('/api/lead/status',{cache:'no-store',credentials:'same-origin',signal:AbortSignal.timeout(8000)})
+      .then(async response=>{
+        if(!response.ok)throw new Error('worker_unavailable');
+        const data=await response.json();
+        if(data.enabled!==true||!data.turnstileSiteKey)throw new Error('worker_disabled');
+        const turnstile=await loadTurnstile();
+        const captchaElement=document.createElement('div');
+        captchaElement.className='danini-order-turnstile';
+        onlineContainer.insertBefore(captchaElement,onlineSubmit);
+        captchaWidget=turnstile.render(captchaElement,{
+          sitekey:data.turnstileSiteKey,
+          callback:token=>{captchaToken=token;},
+          'expired-callback':()=>{captchaToken='';},
+          'error-callback':()=>{captchaToken='';}
+        });
+        onlineProvider='worker';
+        onlineIntakeReady=true;
+        onlineContainer.hidden=false;
+        if(nameLabel)nameLabel.textContent=t('Ime (obavezno za upit preko sajta)', 'Name (Pflichtangabe für Website-Anfrage)');
+      })
+      .catch(checkLegacyReadiness);
     update();
   }
 

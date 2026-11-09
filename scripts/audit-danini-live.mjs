@@ -1,7 +1,7 @@
 // DANINI / Non-invasive public production audit. No form submissions or payments.
 import {writeFileSync} from 'node:fs';
 const origin='https://daninihub.com';
-const pages=['/','/de/','/sr/','/danini.html','/danini-sr.html','/contact.html','/buyers.html','/dealers.html','/business.html','/guides.html','/about.html','/privacy.html','/impressum.html','/support.html','/ai-advisor.html','/digital.html','/auctions.html','/cenovnik.html','/faq.html'];
+const pages=['/','/de/','/sr/','/danini.html','/danini-sr.html',...['index','buyers','dealers','live','inspection','import','exclusive','tender','auctions','guides','digital','ai-solutions','business','cnc','selbstimport','uvoz-vodic','about','contact','impressum','privacy','terms','cookies','ai-advisor','disclaimer','cenovnik','ai-primer','faq','nalog','admin','support','prepurchase'].map(p=>'/'+p+'.html')];
 const problems=[], findings=[];
 async function get(path){try{const r=await fetch(origin+path,{redirect:'follow',signal:AbortSignal.timeout(16000),headers:{'user-agent':'DANINI-technical-QA/2026','accept':'text/html,application/xml,image/svg+xml,*/*'}});const body=await r.text();return {status:r.status,body,headers:r.headers,final:r.url}}catch(e){return {status:0,body:'',error:String(e)}}}
 function title(s){return (s.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]?.trim()||''}
@@ -18,9 +18,13 @@ async function audit(){
   if(!/data-page=|<main\b|<section\b/i.test(s))note('WARN',p,'No recognizable page body');
   if(!meta(s,'description').length)note('WARN',p,'Meta description absent');
   const canonical=[...s.matchAll(/<link\b[^>]*rel=["']canonical["'][^>]*>/gi)];
-  if(canonical.length!==1 && !['/sr/'].includes(p))note('WARN',p,'Canonical count '+canonical.length);
+  const noindex=/<meta\\b[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(s)||(x.headers?.get('x-robots-tag')||'').includes('noindex');
+  if(!noindex && canonical.length!==1 && !['/sr/'].includes(p))note('WARN',p,'Indexable page should have exactly one canonical, found '+canonical.length);
+  if(noindex && !['/sr/'].includes(p) && canonical.length===0)note('INFO',p,'Intentionally noindex; canonical optional');
   if(canonical.length>1)note('ERROR',p,'Duplicate canonical declarations');
   if(count(s,/<h1\b/gi)===0)note('WARN',p,'No H1');
+  if(!/<meta\s+name=["']viewport["']/.test(s))note('WARN',p,'Mobile viewport meta missing');
+  if(!noindex && !meta(s,'og:title').length)note('INFO',p,'Open Graph title not declared explicitly');
   if(p==='/danini.html'||p==='/danini-sr.html'){
    if(!/href=["']\/danini-favicon\.svg["']/.test(s))note('ERROR',p,'Missing DANINI favicon');
    if(!/class=["']brandlinks["']/.test(s))note('ERROR',p,'Master brand navigation missing');

@@ -57,6 +57,7 @@ jobs:
           assert.equal(buyers.status,200,'AutoDanini buyer page reachable');
           assert.match(buyers.body,/dn-service-header/,'AutoDanini page must display shared DANINI menu');
           assert.match(buyers.body,/DANINI znak/,'AutoDanini header must show DANINI logo');
+          assert.match(buyers.body,/AutoDanini znak/,'AutoDanini business logo must also be visible');
           const business=await load('/business.html');
           assert.equal(business.status,200,'DANINI Business page reachable');
           assert.match(business.body,/dn-service-nav/,'B2B page must display shared navigation');

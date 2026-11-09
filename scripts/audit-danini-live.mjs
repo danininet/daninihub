@@ -24,7 +24,8 @@ async function audit(){
   if(canonical.length>1)note('ERROR',p,'Duplicate canonical declarations');
   if(count(s,/<h1\b/gi)===0)note('WARN',p,'No H1');
   if(!/<meta\s+name=["']viewport["']/.test(s))note('WARN',p,'Mobile viewport meta missing');
-  if(!noindex && !meta(s,'og:title').length)note('INFO',p,'Open Graph title not declared explicitly');
+  if((p==='/danini.html'||p==='/danini-sr.html')&&!meta(s,'og:title').length)note('ERROR',p,'DANINI share title missing');
+  if(!noindex && !meta(s,'og:title').length && p!=='/danini.html' && p!=='/danini-sr.html')note('INFO',p,'Open Graph title not declared explicitly');
   if(p==='/danini.html'||p==='/danini-sr.html'){
    if(!/href=["']\/danini-favicon\.svg["']/.test(s))note('ERROR',p,'Missing DANINI favicon');
    if(!/class=["']brandlinks["']/.test(s))note('ERROR',p,'Master brand navigation missing');

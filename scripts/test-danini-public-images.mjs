@@ -16,7 +16,22 @@ const suspect=await fetch('https://daninihub.com/danini-auto-uvoz.webp',{signal:
 const sample=Buffer.from(await suspect.arrayBuffer());
 console.log('DANINI HERO IMAGE DIAGNOSTIC '+JSON.stringify({status:suspect.status,contentType:suspect.headers.get('content-type'),size:sample.length,prefix:sample.subarray(0,24).toString('hex'),cache:suspect.headers.get('cf-cache-status')}));
 
-try{const page=await browser.newPage({viewport:{width:1280,height:900}});for(const p of pages){
+try{const page=await browser.newPage({viewport:{width:1280,height:900}});
+ for(const homeRoute of ['/','/de/','/sr/']){
+   await page.goto('https://daninihub.com'+homeRoute,{waitUntil:'domcontentloaded',timeout:25000});
+   const count=await page.locator('#usluge-vozila').count();
+   if(count!==1)errors.push('Home gallery should appear once '+homeRoute+' count='+count);
+   const images=page.locator('#usluge-vozila img');
+   if(await images.count()!==6)errors.push('Six service cards required '+homeRoute);
+   for(let i=0;i<await images.count();i++){
+    const img=images.nth(i);
+    const state=await img.evaluate(async el=>{el.loading='eager';try{await el.decode()}catch{};return {w:el.naturalWidth,alt:el.alt,src:el.src}});
+    if(state.w<300)errors.push('Invalid home gallery image '+homeRoute+' '+state.src);
+    if(state.alt.length<16)errors.push('Missing meaningful gallery ALT '+homeRoute+' '+state.src);
+   }
+   console.log('DANINI SERVICE GALLERY '+homeRoute+' count='+await images.count());
+ }
+ for(const p of pages){
  const res=await page.goto('https://daninihub.com'+p,{waitUntil:'domcontentloaded',timeout:25000});
  if(res?.status()!==200){errors.push(p+' HTTP '+res?.status());continue}
  await page.waitForTimeout(300);

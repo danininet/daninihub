@@ -18,7 +18,7 @@ async function audit(){
   if(!/data-page=|<main\b|<section\b/i.test(s))note('WARN',p,'No recognizable page body');
   if(!meta(s,'description').length)note('WARN',p,'Meta description absent');
   const canonical=[...s.matchAll(/<link\b[^>]*rel=["']canonical["'][^>]*>/gi)];
-  const noindex=/<meta\\b[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(s)||(x.headers?.get('x-robots-tag')||'').includes('noindex');
+  const noindex=/<meta\b[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(s)||(x.headers?.get('x-robots-tag')||'').includes('noindex');
   if(!noindex && canonical.length!==1 && !['/sr/'].includes(p))note('WARN',p,'Indexable page should have exactly one canonical, found '+canonical.length);
   if(noindex && !['/sr/'].includes(p) && canonical.length===0)note('INFO',p,'Intentionally noindex; canonical optional');
   if(canonical.length>1)note('ERROR',p,'Duplicate canonical declarations');

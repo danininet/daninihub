@@ -36,7 +36,10 @@ async function audit(){
   }
   if(p==='/contact.html'&&!s.includes('mailto:kontakt@daninihub.com'))note('ERROR',p,'Direct email absent');
   if(p==='/impressum.html'){
-   if(!s.includes('Fischerstr. 54')||!s.includes('47055 Duisburg')||!s.includes('Dragan Zdravković'))note('ERROR',p,'Public operator identity/address not published');
+   if(!s.includes('Fischerstr. 54')||!s.includes('47055 Duisburg')||!s.includes('Dragan Zdravković')){
+    console.log('LEGAL DELIVERY DIAGNOSTIC '+JSON.stringify({path:p,workerHeader:x.headers?.get('x-danini-legal-published'),mainIndex:s.indexOf('<main'),mainTag:s.match(/<main[^>]*>/)?.[0],bodyLength:s.length,final:x.final}));
+    note('ERROR',p,'Public operator identity/address not published');
+   }
    if(s.includes('radni tekst koji zahteva pravnu i poslovnu potvrdu'))note('ERROR',p,'Old placeholder Impressum is live');
   }
   if(p==='/privacy.html'){

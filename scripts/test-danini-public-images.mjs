@@ -19,7 +19,7 @@ try{const page=await browser.newPage({viewport:{width:1280,height:900}});for(con
  });
  checked++;for(const img of v.entries){images++;if(!img.ok){broken++;errors.push('BROKEN '+p+' '+img.src)}if(!img.alt.trim())errors.push('ALT MISSING '+p+' '+img.src);if(new URL(img.src).origin!=='https://daninihub.com')external++;}
  for(const href of v.links)hrefs.add(href);
- for(const css of v.bg){for(const m of css.matchAll(/url\\(["']?([^)"']+)/gi)){const u=m[1];if(u.startsWith('http')&&!u.startsWith('https://daninihub.com'))external++;}}
+ for(const css of v.bg){for(const m of css.matchAll(/url\(["']?([^)"']+)/gi)){const u=m[1];if(u.startsWith('http')&&!u.startsWith('https://daninihub.com'))external++;}}
 }
 const keyLinks=[...hrefs].filter(s=>/\\.(?:html)$/.test(s)).slice(0,80);
 const codes=await Promise.all(keyLinks.map(async x=>{try{const r=await fetch(x,{method:'HEAD',signal:AbortSignal.timeout(7000)});return {url:x,code:r.status}}catch(e){return {url:x,code:0}}}));

@@ -31,6 +31,7 @@ jobs:
           assert.match(brand.body,/AutoDanini/);
           assert.equal(auto.status,200,'Existing AutoDanini root preserved');
           assert.equal(contact.status,200,'Contact page must exist');
+          assert.match(contact.body,/mailto:kontakt@daninihub.com/,'Direct business email contact must be visible');
           assert.equal(status.status,200,'Worker status API must exist');
           const data=JSON.parse(status.body);
           assert.equal(typeof data.enabled,'boolean','Intake status must declare readiness');

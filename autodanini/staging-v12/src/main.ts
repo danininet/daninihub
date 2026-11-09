@@ -13,6 +13,7 @@ function addCommerceNavigation(): void {
     return a;
   }
   const navItems: [string,string,string][] = [
+    ['danini','DANINI · Krovni brend','DANINI · Dachmarke'],
     ['business','DANINI Business','DANINI Business'],
     ['buyers','AutoDanini','AutoDanini'],
     ['auctions','Aukcije (uskoro)','Auktionen (geplant)'],
@@ -40,6 +41,7 @@ function addCommerceNavigation(): void {
   const footerCols = document.querySelectorAll<HTMLElement>('footer .foot > div');
   if (footerCols.length > 1) {
     footerCols[1].append(
+      makeAnchor('danini','DANINI · Krovni brend','DANINI · Dachmarke'),
       makeAnchor('business','DANINI Business','DANINI Business'),
       makeAnchor('digital','Digitalni proizvodi','Digitale Produkte'),
       makeAnchor('ai-solutions','AI i automatizacija','KI & Automatisierung'),

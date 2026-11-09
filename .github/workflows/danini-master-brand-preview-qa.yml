@@ -1,0 +1,32 @@
+name: DANINI master brand preview QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/brand-preview/**'
+      - 'tests/test-danini-master-brand-preview.cjs'
+      - '.github/workflows/danini-master-brand-preview-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate DANINI German/Serbian brand preview
+        run: node --test tests/test-danini-master-brand-preview.cjs
+      - name: Verify no production files changed in this PR
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+          printf '%s\n' "$CHANGED"
+          if printf '%s\n' "$CHANGED" | grep -Ev '^(docs/brand-preview/|tests/test-danini-master-brand-preview\.cjs$|\.github/workflows/danini-master-brand-preview-qa\.yml$)' | grep -q .; then
+            echo 'Unexpected production file modified' >&2
+            exit 1
+          fi

@@ -4,6 +4,10 @@ if(!executablePath)throw Error('Chromium required');
 const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox','--disable-dev-shm-usage']});
 const pages=['/','/de/','/sr/','/danini.html','/danini-sr.html','/buyers.html','/dealers.html','/live.html','/inspection.html','/about.html','/contact.html','/guides.html','/prepurchase.html','/impressum.html','/privacy.html','/tender.html','/import.html','/exclusive.html','/auctions.html','/digital.html','/ai-solutions.html','/business.html','/cnc.html','/selbstimport.html','/uvoz-vodic.html','/faq.html','/support.html','/terms.html','/cookies.html'];
 const errors=[];let checked=0,images=0,broken=0,external=0;const hrefs=new Set();
+const suspect=await fetch('https://daninihub.com/danini-auto-uvoz.webp',{signal:AbortSignal.timeout(18000)});
+const sample=Buffer.from(await suspect.arrayBuffer());
+console.log('DANINI HERO IMAGE DIAGNOSTIC '+JSON.stringify({status:suspect.status,contentType:suspect.headers.get('content-type'),size:sample.length,prefix:sample.subarray(0,24).toString('hex'),cache:suspect.headers.get('cf-cache-status')}));
+
 try{const page=await browser.newPage({viewport:{width:1280,height:900}});for(const p of pages){
  const res=await page.goto('https://daninihub.com'+p,{waitUntil:'domcontentloaded',timeout:25000});
  if(res?.status()!==200){errors.push(p+' HTTP '+res?.status());continue}

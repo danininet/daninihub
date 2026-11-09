@@ -6,7 +6,7 @@
  * the core `autodanini` Worker with ASSETS/Brevo.
  */
 function daniniRelatedSection(path){
- const key=path.replace(/^\\//,'').replace(/\\.html$/,'').replace(/\\/$/,'');
+ let key=path.startsWith('/')?path.slice(1):path;if(key.endsWith('/'))key=key.slice(0,-1);if(key.endsWith('.html'))key=key.slice(0,-5);
  const pages={
   buyers:['inspection','guides','contact'],dealers:['business','guides','contact'],
   inspection:['buyers','guides','contact'],live:['inspection','buyers','contact'],

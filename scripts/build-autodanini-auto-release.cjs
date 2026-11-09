@@ -124,9 +124,40 @@ const legacyRedirects=[
   "/de/wissen/provera-oglasa-pre-kapare /prepurchase.html 301"
 ];
 fs.writeFileSync(path.join(out,'_redirects'),legacyRedirects.join('\n')+'\n');
+// Publish the previously approved DANINI umbrella design as a separate
+// first-class public brand page. Keep the established AutoDanini SEO home
+// intact until a separately reviewed canonical migration is justified.
+const brandSource=path.join(__dirname,'..','docs','brand-preview','danini-master-preview.html');
+let brand=fs.readFileSync(brandSource,'utf8');
+if(!brand.includes('data-locale="de"')||!brand.includes('data-locale="sr"'))
+ throw Error('DANINI_MASTER_BRAND_LOCALES_MISSING');
+brand=brand.replace('<meta name="robots" content="noindex,nofollow">',
+ '<meta name="robots" content="index,follow"><link rel="canonical" href="https://daninihub.com/danini.html">');
+brand=brand.replace(' | Designentwurf</title>','</title>');
+brand=brand.replace('Diese Seite ist ein Entwurf, kein öffentliches Beta-Angebot und keine Buchungsmöglichkeit.',
+ 'Die Inhalte dienen der Orientierung. Konkrete Leistungen und Konditionen werden vor einer Beauftragung individuell bestätigt.');
+brand=brand.replace('Ova stranica je nacrt, nije javna ponuda za besplatan pilot ili naručivanje usluge.',
+ 'Ova stranica je informativna; konkretna usluga i uslovi potvrđuju se pre bilo kakvog angažovanja.');
+brand=brand.replace('© DANINI · Design preview only / samo nacrt · Bez plaćanja, prikupljanja podataka ili aktivne forme.',
+ '© DANINI · Krovni brend · DE / SR · Bez online naplate na ovoj stranici. <a href="/impressum.html">Impressum</a> · <a href="/privacy.html">Datenschutz</a>');
+brand=brand.replace('<a class="logo" href="#top" aria-label="DANINI">',
+ '<a class="logo" href="/danini.html" aria-label="DANINI">');
+brand=brand.replace('<div class="switch" role="group"',
+ '<a href="/index.html" style="color:#facc15;font-weight:700;text-decoration:none" aria-label="AutoDanini">AutoDanini ↗</a><div class="switch" role="group"');
+brand=brand.replace('<section class="content"><div class="shell"><span class="section-label">Über DANINI</span>',
+ '<section class="content"><div class="shell"><span class="section-label">Über DANINI</span>');
+brand=brand.replace('href="#kontakt-de">Kontakt</a>',
+ 'href="/contact.html">Kontakt / Anfrage</a>');
+brand=brand.replace('href="#kontakt-sr">Kontakt</a>',
+ 'href="/contact.html">Kontakt / Upit</a>');
+brand=brand.replace('</main>',
+ '<section class="content soft"><div class="shell"><span class="section-label">DANINI Auto · DE ↔ Balkan</span><h2>AutoDanini — praktična prva oblast / erster Geschäftsbereich</h2><p class="lead">Digitalni dosije vozila, provera dostupnih dokaza i okvirni obračun uvoza. Fahrzeugdossier, Nachweis-Check und grobe Importkalkulation. Bez garancije stanja vozila; keine verbindliche Kaufzusage.</p><div class="actions"><a class="btn btn-primary" href="/buyers.html">AutoDanini / Privatkunden</a><a class="btn" style="border:1px solid #64748b" href="/contact.html">Kontakt / Anfrage</a></div></div></section></main>');
+if(!brand.includes('href="/buyers.html"')||!brand.includes('href="/privacy.html"'))
+ throw Error('DANINI_MASTER_BRAND_LINKS_MISSING');
+fs.writeFileSync(path.join(out,'danini.html'),brand);
 // A real indexable sitemap. Do not include account, admin, incomplete AI,
 // empty auctions, legal holding pages or any pretend inventory.
-const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/prepurchase.html',
+const sitemapEntries=['https://daninihub.com/danini.html','https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/prepurchase.html',
  ...indexablePages.filter(p=>p!=='index').map(p=>'https://daninihub.com/'+p+'.html')];
 const sitemap='<?xml version="1.0" encoding="UTF-8"?>\n'+
  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+

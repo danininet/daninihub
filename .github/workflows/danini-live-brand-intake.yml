@@ -61,7 +61,7 @@ jobs:
           assert.match(business.body,/dn-service-nav/,'B2B page must display shared navigation');
           const robots=await load('/robots.txt');
           assert.equal(robots.status,200,'robots.txt must be public');
-          assert.match(robots.body,/Sitemap:\\s*https:\/\/daninihub.com\/sitemap.xml/,'Robots must reference canonical sitemap');
+          assert.match(robots.body,/Sitemap:\s*https:\/\/daninihub.com\/sitemap.xml/,'Robots must reference canonical sitemap');
           assert.match(contact.body,/mailto:kontakt@daninihub.com/,'Direct business email contact must be visible');
           assert.equal(status.status,200,'Worker status API must exist');
           const data=JSON.parse(status.body);

@@ -169,7 +169,22 @@ umbrella=umbrella.replace(/<link rel="alternate" hreflang="sr" href="https:\/\/d
 umbrella=umbrella.replace('</head>', '<link rel="alternate" hreflang="x-default" href="https://daninihub.com/danini.html"></head>');
 umbrella=umbrella.replace("document.getElementById('sr').addEventListener('click',()=>setLocale('sr'));",
  "document.getElementById('sr').addEventListener('click',()=>{location.href='/danini-sr.html'});");
-fs.writeFileSync(path.join(out,'danini.html'),umbrella);
+function addBrandSocialMeta(html,language){
+ const de=language==='de';
+ const title=de?'DANINI — Klar entscheiden mit KI':'DANINI — Pitaj AI, AI pita tebe';
+ const description=de?
+  'DANINI verbindet nachvollziehbare Analysen und digitale Geschäftskommunikation zwischen Deutschland und dem Balkan.':
+  'DANINI povezuje proverljive analize i digitalnu poslovnu komunikaciju između Nemačke i Balkana.';
+ const url=de?'https://daninihub.com/danini.html':'https://daninihub.com/danini-sr.html';
+ const tags=[
+  ['og:type','website'],['og:site_name','DANINI'],
+  ['og:title',title],['og:description',description],['og:url',url],
+  ['og:locale',de?'de_DE':'sr_RS']
+ ].map(([property,value])=>'<meta property="'+property+'" content="'+value+'">').join('');
+ if(!html.includes('</head>'))throw Error('DANINI_SOCIAL_HEAD_MISSING_'+language);
+ return html.replace('</head>',tags+'<meta name="twitter:card" content="summary"></head>');
+}
+fs.writeFileSync(path.join(out,'danini.html'),addBrandSocialMeta(umbrella,'de'));
 let umbrellaSr=umbrella
  .replace('<html lang="de">','<html lang="sr">')
  .replace('DANINI — Von der richtigen Frage zur nachvollziehbaren Entscheidung | DANINI','DANINI — Pitaj AI, AI pita tebe | Brend DANINI')
@@ -185,7 +200,7 @@ let umbrellaSr=umbrella
 if(!umbrellaSr.includes('content="DANINI: Pitaj AI')||
  !umbrellaSr.includes('href="https://daninihub.com/danini-sr.html"')||
  !umbrellaSr.includes("setLocale('sr');"))throw Error('DANINI_SR_LOCALE_BUILD_INVALID');
-fs.writeFileSync(path.join(out,'danini-sr.html'),umbrellaSr);
+fs.writeFileSync(path.join(out,'danini-sr.html'),addBrandSocialMeta(umbrellaSr,'sr'));
 
 if(!umbrella.includes('href="/index.html"')||!umbrella.includes('rel="canonical"')||!umbrella.includes('Pitaj AI — AI pita tebe'))throw Error('DANINI_MASTER_OUTPUT_FAILED');
 // A real indexable sitemap. Do not include account, admin, incomplete AI,

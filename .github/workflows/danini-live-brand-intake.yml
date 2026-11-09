@@ -14,6 +14,8 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
+      - name: Verify DANINI Cloudflare brand Worker module syntax
+        run: node --check workers/danini-brand-overlay.mjs
       - name: Check live master brand, existing AutoDanini and protected intake
         run: |
           node --input-type=module <<'JS'
@@ -49,6 +51,17 @@ jobs:
           assert.match(sitemap.body,/https:\/\/daninihub.com\/danini-sr.html/,'Sitemap includes Serbian DANINI page');
           assert.match(sitemap.body,/<urlset/,'Sitemap must be valid XML-like sitemap');
           assert.equal(contact.status,200,'Contact page must exist');
+          assert.match(contact.body,/dn-service-header/,'Contact page must show the same DANINI menu');
+          const buyers=await load('/buyers.html');
+          assert.equal(buyers.status,200,'AutoDanini buyer page reachable');
+          assert.match(buyers.body,/dn-service-header/,'AutoDanini page must display shared DANINI menu');
+          assert.match(buyers.body,/DANINI znak/,'AutoDanini header must show DANINI logo');
+          const business=await load('/business.html');
+          assert.equal(business.status,200,'DANINI Business page reachable');
+          assert.match(business.body,/dn-service-nav/,'B2B page must display shared navigation');
+          const robots=await load('/robots.txt');
+          assert.equal(robots.status,200,'robots.txt must be public');
+          assert.match(robots.body,/Sitemap:\\s*https:\/\/daninihub.com\/sitemap.xml/,'Robots must reference canonical sitemap');
           assert.match(contact.body,/mailto:kontakt@daninihub.com/,'Direct business email contact must be visible');
           assert.equal(status.status,200,'Worker status API must exist');
           const data=JSON.parse(status.body);

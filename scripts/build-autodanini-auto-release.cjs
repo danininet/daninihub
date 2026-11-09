@@ -216,7 +216,11 @@ function addBrandSocialMeta(html,language){
  if(!html.includes('</head>'))throw Error('DANINI_SOCIAL_HEAD_MISSING_'+language);
  return html.replace('</head>',tags+'<meta name="twitter:card" content="summary"></head>');
 }
-fs.writeFileSync(path.join(out,'danini.html'),addBrandSocialMeta(umbrella,'de'));
+const daniniSiteSchema={'@context':'https://schema.org','@type':'WebSite',name:'DANINI',url:'https://daninihub.com/',inLanguage:['de-DE','sr-RS'],publisher:{'@type':'Person',name:'Dragan Zdravković',url:'https://daninihub.com/danini.html'}};
+function withBrandSchema(html){
+ return html.replace('</head>','<script type="application/ld+json">'+JSON.stringify(daniniSiteSchema)+'</script></head>');
+}
+fs.writeFileSync(path.join(out,'danini.html'),withBrandSchema(addBrandSocialMeta(umbrella,'de')));
 let umbrellaSr=umbrella
  .replace('<html lang="de">','<html lang="sr">')
  .replace('DANINI — Von der richtigen Frage zur nachvollziehbaren Entscheidung | DANINI','DANINI — Pitaj AI, AI pita tebe | Brend DANINI')
@@ -232,7 +236,7 @@ let umbrellaSr=umbrella
 if(!umbrellaSr.includes('content="DANINI: Pitaj AI')||
  !umbrellaSr.includes('href="https://daninihub.com/danini-sr.html"')||
  !umbrellaSr.includes("setLocale('sr');"))throw Error('DANINI_SR_LOCALE_BUILD_INVALID');
-fs.writeFileSync(path.join(out,'danini-sr.html'),addBrandSocialMeta(umbrellaSr,'sr'));
+fs.writeFileSync(path.join(out,'danini-sr.html'),withBrandSchema(addBrandSocialMeta(umbrellaSr,'sr')));
 
 if(!umbrella.includes('href="/index.html"')||!umbrella.includes('rel="canonical"')||!umbrella.includes('Pitaj AI — AI pita tebe'))throw Error('DANINI_MASTER_OUTPUT_FAILED');
 // A real indexable sitemap. Do not include account, admin, incomplete AI,

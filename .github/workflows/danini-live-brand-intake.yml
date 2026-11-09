@@ -30,6 +30,16 @@ jobs:
           assert.match(brand.body,/Pitaj AI — AI pita tebe/);
           assert.match(brand.body,/AutoDanini/);
           assert.equal(auto.status,200,'Existing AutoDanini root preserved');
+          assert.match(auto.body,/dn-header/,'Master DANINI navigation visible on the root page');
+          assert.match(auto.body,/dn-logo/,'DANINI SVG wordmark visible on the root page');
+          assert.match(auto.body,/AutoDanini/,'AutoDanini remains visible');
+          const de=await load('/de/');
+          assert.equal(de.status,200,'German landing page must work');
+          assert.match(de.body,/dn-header/,'German page needs master navigation');
+          const sitemap=await load('/sitemap.xml');
+          assert.equal(sitemap.status,200,'Sitemap must load');
+          assert.match(sitemap.body,/https:\/\/daninihub.com\/danini.html/,'Sitemap includes the new DANINI master page');
+          assert.match(sitemap.body,/<urlset/,'Sitemap must be valid XML-like sitemap');
           assert.equal(contact.status,200,'Contact page must exist');
           assert.match(contact.body,/mailto:kontakt@daninihub.com/,'Direct business email contact must be visible');
           assert.equal(status.status,200,'Worker status API must exist');

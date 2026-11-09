@@ -58,6 +58,11 @@ for(const page of pages){
   return '<img class="ad-monogram" src="/autodanini-mark.svg" width="50" height="50" alt="AutoDanini znak">';
  });
  if(!replaced && page!=='admin')throw Error('AUTODANINI_MARK_MISSING '+page);
+ // AutoDanini is a distinct endorsed business line, not the DANINI master.
+ // Reuse the existing, locally packaged SVG, don't generate a second icon.
+ const brandPattern=/<span class="brand-lockup"><strong>[\\s\\S]*?<\\/strong><small>[\\s\\S]*?<\\/small><\\/span>/;
+ if(!brandPattern.test(html)&&page!=='admin')throw Error('AUTODANINI_HEADER_LOCKUP_MISSING '+page);
+ html=html.replace(brandPattern,'<span class="brand-lockup"><strong>AutoDanini</strong><small>by DANINI · DE ↔ BALKAN</small></span>');
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
  if(page==='index'){
   // Maintain the chosen self-service dossier as the first action.

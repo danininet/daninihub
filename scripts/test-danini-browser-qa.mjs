@@ -64,6 +64,16 @@ try{
  assert.match(await page.locator('.hero h1').innerText(),/Pripremite kupovinu auta sami/i);
  const primary=page.locator('.heroactions a').first();
  assert.match(await primary.getAttribute('href'),/ai-advisor\.html/);
+ const cards=page.locator('.dn-photo-card');
+ assert.equal(await cards.count(),6,'Six approved service photos should appear on homepage');
+ for(let i=0;i<6;i++){
+  const photo=cards.nth(i).locator('img');
+  assert.ok((await photo.getAttribute('alt')||'').length>25,'Service image needs descriptive alt');
+  const ok=await photo.evaluate(async img=>{img.loading='eager';await img.decode();return img.naturalWidth>300});
+  assert.equal(ok,true,'Approved service photo must decode '+i);
+  assert.ok((await cards.nth(i).locator('a').getAttribute('href')||'').endsWith('.html'),'Service page must be linked');
+ }
+ console.log('PASS Home photography: six first-party cards decode with alt text and crawlable links');
  console.log('PASS Home: self-service first, primary CTA leads to existing dossier');
  await page.goto(base+'/de/',{waitUntil:'domcontentloaded'});
  assert.match(await page.locator('.hero h1').innerText(),/Autokauf selbst vorbereiten/i);

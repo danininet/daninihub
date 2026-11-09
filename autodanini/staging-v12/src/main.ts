@@ -72,6 +72,7 @@ function currency(v: number): string {return new Intl.NumberFormat(lang === 'de'
 function setLang(l: Lang): void {
  lang=l; document.documentElement.lang=l; localStorage.setItem('autodanini-language',l);
  document.querySelectorAll<HTMLElement>('[data-sr][data-de]').forEach(el=>{el.textContent=el.dataset[l]||'';});
+ document.querySelectorAll<HTMLImageElement>('img[data-sr-alt][data-de-alt]').forEach(img=>{img.alt=l==='de'?(img.dataset.deAlt||''):(img.dataset.srAlt||'');});
  if(e('language')) e('language')!.textContent=l==='sr'?'DE':'SR';
  const menuButton=e('toggle');
  if(menuButton)menuButton.setAttribute('aria-label',l==='de'?

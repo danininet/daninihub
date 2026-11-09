@@ -162,11 +162,35 @@ umbrella=umbrella.replace('<div class="note">DANINI befindet sich',
   '<div class="actions"><a class="btn btn-secondary" href="/buyers.html">AutoDanini — Fahrzeuge ↗</a><a class="btn btn-secondary" href="/business.html">DANINI Business ↗</a></div><div class="note">DANINI befindet sich');
 umbrella=umbrella.replace('<div class="note">DANINI je u razvojnoj',
   '<div class="actions"><a class="btn btn-secondary" href="/buyers.html">AutoDanini — vozila ↗</a><a class="btn btn-secondary" href="/business.html">DANINI Business ↗</a></div><div class="note">DANINI je u razvojnoj');
+// Separate language URLs for Google and visitors. Don't place two hreflang
+// languages on the same canonical URL.
+umbrella=umbrella.replace(/<link rel="alternate" hreflang="sr" href="https:\/\/daninihub.com\/danini.html">/,
+ '<link rel="alternate" hreflang="sr" href="https://daninihub.com/danini-sr.html">');
+umbrella=umbrella.replace('</head>', '<link rel="alternate" hreflang="x-default" href="https://daninihub.com/danini.html"></head>');
+umbrella=umbrella.replace("document.getElementById('sr').addEventListener('click',()=>setLocale('sr'));",
+ "document.getElementById('sr').addEventListener('click',()=>{location.href='/danini-sr.html'});");
 fs.writeFileSync(path.join(out,'danini.html'),umbrella);
+let umbrellaSr=umbrella
+ .replace('<html lang="de">','<html lang="sr">')
+ .replace('DANINI — Von der richtigen Frage zur nachvollziehbaren Entscheidung | DANINI','DANINI — Pitaj AI, AI pita tebe | Brend DANINI')
+ .replace('DANINI: Menschen fragen, KI fragt zurück. Eine verantwortungsvolle Methode für klare Entscheidungen und konkrete nächste Schritte.',
+ 'DANINI: Pitaj AI — AI pita tebe. Odgovorna metoda za jasne odluke, proveru informacija i konkretne sledeće korake.')
+ .replace('<link rel="canonical" href="https://daninihub.com/danini.html">',
+ '<link rel="canonical" href="https://daninihub.com/danini-sr.html">')
+ .replace("document.getElementById('de').addEventListener('click',()=>setLocale('de'));",
+ "document.getElementById('de').addEventListener('click',()=>{location.href='/danini.html'});")
+ .replace("setLocale('de');","setLocale('sr');")
+ .replace('<div lang="sr" data-locale="sr" hidden>','<div lang="sr" data-locale="sr">')
+ .replace('<div lang="de" data-locale="de">','<div lang="de" data-locale="de" hidden>');
+if(!umbrellaSr.includes('content="DANINI: Pitaj AI')||
+ !umbrellaSr.includes('href="https://daninihub.com/danini-sr.html"')||
+ !umbrellaSr.includes("setLocale('sr');"))throw Error('DANINI_SR_LOCALE_BUILD_INVALID');
+fs.writeFileSync(path.join(out,'danini-sr.html'),umbrellaSr);
+
 if(!umbrella.includes('href="/index.html"')||!umbrella.includes('rel="canonical"')||!umbrella.includes('Pitaj AI — AI pita tebe'))throw Error('DANINI_MASTER_OUTPUT_FAILED');
 // A real indexable sitemap. Do not include account, admin, incomplete AI,
 // empty auctions, legal holding pages or any pretend inventory.
-const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/danini.html','https://daninihub.com/prepurchase.html',
+const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/danini.html','https://daninihub.com/danini-sr.html','https://daninihub.com/prepurchase.html',
  ...indexablePages.filter(p=>p!=='index').map(p=>'https://daninihub.com/'+p+'.html')];
 const sitemap='<?xml version="1.0" encoding="UTF-8"?>\n'+
  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+

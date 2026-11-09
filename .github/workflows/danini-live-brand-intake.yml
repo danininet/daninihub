@@ -29,6 +29,13 @@ jobs:
           assert.equal(brand.status,200,'DANINI brand page must be live');
           assert.match(brand.body,/Pitaj AI — AI pita tebe/);
           assert.match(brand.body,/AutoDanini/);
+          assert.match(brand.body,/DANINI znak/,'Master brand SVG logo must render');
+          assert.match(brand.body,/class="brandlinks"/,'Master brand should have main navigation');
+          assert.match(brand.body,/hreflang="sr" href="https:\/\/daninihub.com\/danini-sr.html"/,'SR alternate URL must differ from DE');
+          const brandSr=await load('/danini-sr.html');
+          assert.equal(brandSr.status,200,'Serbian master-brand landing page');
+          assert.match(brandSr.body,/<html lang="sr">/,'Serbian page language');
+          assert.match(brandSr.body,/rel="canonical" href="https:\/\/daninihub.com\/danini-sr.html"/,'Unique Serbian canonical');
           assert.equal(auto.status,200,'Existing AutoDanini root preserved');
           assert.match(auto.body,/dn-header/,'Master DANINI navigation visible on the root page');
           assert.match(auto.body,/dn-logo/,'DANINI SVG wordmark visible on the root page');
@@ -39,6 +46,7 @@ jobs:
           const sitemap=await load('/sitemap.xml');
           assert.equal(sitemap.status,200,'Sitemap must load');
           assert.match(sitemap.body,/https:\/\/daninihub.com\/danini.html/,'Sitemap includes the new DANINI master page');
+          assert.match(sitemap.body,/https:\/\/daninihub.com\/danini-sr.html/,'Sitemap includes Serbian DANINI page');
           assert.match(sitemap.body,/<urlset/,'Sitemap must be valid XML-like sitemap');
           assert.equal(contact.status,200,'Contact page must exist');
           assert.match(contact.body,/mailto:kontakt@daninihub.com/,'Direct business email contact must be visible');

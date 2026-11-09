@@ -2,7 +2,7 @@ import fs from 'node:fs';import {chromium} from 'playwright-core';
 const executablePath=[process.env.CHROME_PATH,'/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium','/usr/bin/chromium-browser'].find(p=>p&&fs.existsSync(p));
 if(!executablePath)throw Error('Chromium required');
 const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox','--disable-dev-shm-usage']});
-const pages=['/','/de/','/sr/','/danini.html','/danini-sr.html','/buyers.html','/dealers.html','/live.html','/inspection.html','/about.html','/contact.html','/guides.html','/prepurchase.html','/impressum.html','/privacy.html'];
+const pages=['/','/de/','/sr/','/danini.html','/danini-sr.html','/buyers.html','/dealers.html','/live.html','/inspection.html','/about.html','/contact.html','/guides.html','/prepurchase.html','/impressum.html','/privacy.html','/tender.html','/import.html','/exclusive.html','/auctions.html','/digital.html','/ai-solutions.html','/business.html','/cnc.html','/selbstimport.html','/uvoz-vodic.html','/faq.html','/support.html','/terms.html','/cookies.html'];
 const errors=[];let checked=0,images=0,broken=0,external=0;const hrefs=new Set();
 try{const page=await browser.newPage({viewport:{width:1280,height:900}});for(const p of pages){
  const res=await page.goto('https://daninihub.com'+p,{waitUntil:'domcontentloaded',timeout:25000});
@@ -21,7 +21,7 @@ try{const page=await browser.newPage({viewport:{width:1280,height:900}});for(con
  for(const href of v.links)hrefs.add(href);
  for(const css of v.bg){for(const m of css.matchAll(/url\(["']?([^)"']+)/gi)){const u=m[1];if(u.startsWith('http')&&!u.startsWith('https://daninihub.com'))external++;}}
 }
-const keyLinks=[...hrefs].filter(s=>/\\.(?:html)$/.test(s)).slice(0,80);
+const keyLinks=[...hrefs].filter(s=>/\.(?:html)$/.test(s)).slice(0,80);
 const codes=await Promise.all(keyLinks.map(async x=>{try{const r=await fetch(x,{method:'HEAD',signal:AbortSignal.timeout(7000)});return {url:x,code:r.status}}catch(e){return {url:x,code:0}}}));
 for(const x of codes)if(x.code>=400||x.code===0)errors.push('BROKEN LINK '+x.code+' '+x.url);
 console.log('DANINI LIVE ASSET AUDIT '+JSON.stringify({pagesChecked:checked,images,broken,externalMediaReferences:external,linksChecked:codes.length,issues:errors.length}));

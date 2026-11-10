@@ -438,3 +438,26 @@ img{max-width:100%}
 
 /* No fixed WhatsApp button: business leads use the protected email forms. */
 a.wa{display:none!important}
+
+/* DANINI production journey: transparent status, accessible receipts and real guides. */
+.danini-proof-strip{display:flex;flex-wrap:wrap;gap:10px 14px;margin:-40px 0 22px}
+.danini-proof-strip a{display:inline-flex;align-items:center;gap:7px;border:1px solid #c6d9e480;background:#102a39b9;color:#f3f9fd;text-decoration:none;padding:10px 13px;border-radius:99px;font-size:12px;font-weight:750;line-height:1.35}
+.danini-proof-strip a:hover,.danini-proof-strip a:focus-visible{background:#24435a;border-color:#facc15;color:#fff}
+.danini-proof-strip a span:first-child{color:#facc15;font-size:16px}
+.danini-guide-promo{background:#eaf1f5;padding:48px 0;border-bottom:1px solid #d8e0e7}
+.danini-guide-promo>.wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.danini-guide-promo h2{font-size:clamp(27px,3vw,40px);color:#122c40;margin:8px 0 12px;max-width:760px}
+.danini-guide-promo p{max-width:850px;margin:0;color:#455e70;font-size:15px;line-height:1.65}
+.danini-guide-promo .btn{white-space:nowrap}
+.danini-contact-badges{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:22px 0}
+.danini-contact-badges span{display:inline-flex;align-items:center;gap:6px;border:1px solid #cadce9;background:#fff;color:#294a5d;font-size:12px;font-weight:750;line-height:1.3;border-radius:999px;padding:9px 12px}
+.danini-contact-badges span::before{content:"✓";font-weight:900;color:#13795b}
+.dn-guide-facts{margin:16px 0 24px}
+.danini-general-form[data-intake-state="success"],.rfq[data-intake-state="success"],#autodanini-support-form[data-intake-state="success"]{border-color:#9ccdb5;box-shadow:0 9px 30px #1b7a5515}
+.danini-intake-status,[role="status"].danini-intake-status,.rfq [role="status"],#autodanini-support-form [role="status"]{overflow-wrap:anywhere;line-height:1.65}
+.danini-general-form [role="status"][data-state="success"],.rfq [role="status"][data-state="success"],#autodanini-support-form [role="status"][data-state="success"]{border-left:4px solid #13795b;background:#e8f6ee;color:#16563b;padding:13px 15px;border-radius:7px;font-weight:750}
+.danini-general-form [role="status"][data-state="error"],.rfq [role="status"][data-state="error"],#autodanini-support-form [role="status"][data-state="error"]{border-left:4px solid #b94742;background:#fff0ec;color:#7a2928;padding:13px 15px;border-radius:7px;font-weight:750}
+.danini-general-form [role="status"][data-state="sending"],.rfq [role="status"][data-state="sending"],#autodanini-support-form [role="status"][data-state="sending"]{border-left:4px solid #ba883e;background:#fff8e8;color:#79510f;padding:12px 14px;border-radius:7px}
+.danini-email-fallback{display:inline-block;padding:8px 2px;color:inherit;text-decoration:underline;text-underline-offset:4px;font-weight:900}
+.danini-reference-reminder{grid-column:1/-1;padding:13px 16px;border-left:4px solid #13795b;background:#eaf5ec;color:#174e36;font-weight:800;border-radius:8px;margin:0}
+@media(max-width:760px){.danini-guide-promo>.wrap{grid-template-columns:1fr}.danini-guide-promo{padding:34px 0}.danini-guide-promo .btn{justify-self:start;white-space:normal}.danini-proof-strip{margin:-24px 0 22px;gap:7px}.danini-proof-strip a{font-size:11px;padding:9px 10px}.danini-contact-badges{margin:14px 0}}

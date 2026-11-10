@@ -117,7 +117,7 @@ try{
   page.waitForEvent('download',{timeout:15000}),
   page.locator('#danini-guides-download').click()
  ]);
- assert.match(guidesDe.suggestedFilename(),/7-Ratgeber-DE\\.txt/);
+ assert.ok(guidesDe.suggestedFilename().endsWith('7-Ratgeber-DE.txt'));
  const guideTxtDe=fs.readFileSync(await guidesDe.path(),'utf8');
  assert.match(guideTxtDe,/Fahrzeugsuche und Inserate vergleichen/);
  assert.match(guideTxtDe,/Überführung auf eigener Achse/);
@@ -126,7 +126,7 @@ try{
   page.waitForEvent('download',{timeout:15000}),
   page.locator('#danini-guides-download').click()
  ]);
- assert.match(guidesSr.suggestedFilename(),/7-Vodica-SR\\.txt/);
+ assert.ok(guidesSr.suggestedFilename().endsWith('7-Vodica-SR.txt'));
  const guideTxtSr=fs.readFileSync(await guidesSr.path(),'utf8');
  assert.match(guideTxtSr,/Samostalna pretraga i poređenje oglasa/);
  assert.match(guideTxtSr,/Prevoz vozila šleperom ili prikolicom/);
@@ -140,7 +140,7 @@ try{
  assert.match(inquiry,/Nezavisan stručni pregled/);
  assert.match(inquiry,/Transport šleperom ili prikolicom/);
  assert.match(inquiry,/Duisburg/); assert.match(inquiry,/Niš/);
- assert.match(await page.locator('#danini-journey-mail').getAttribute('href'),/^mailto:auto@daninihub\\.com\\?/);
+ assert.ok((await page.locator('#danini-journey-mail').getAttribute('href')||'').startsWith('mailto:auto@daninihub.com?'));
  console.log('PASS buyer handoff: expert inspection + transport choice produces local email draft; no message sent');
  await page.goto(base+'/import.html',{waitUntil:'domcontentloaded'});
  await page.locator('#price').fill('10000');

@@ -73,6 +73,8 @@ try{
   assert.equal(ok,true,'Approved service photo must decode '+i);
   assert.ok((await cards.nth(i).locator('a').getAttribute('href')||'').endsWith('.html'),'Service page must be linked');
  }
+ assert.equal(await page.locator('.danini-proof-strip a').count(),3,'Three truthful homepage offer markers required');
+ assert.equal(await page.locator('.danini-guide-promo a[href="guides.html"]').count(),1,'Seven free guides must have prominent homepage link');
  console.log('PASS Home photography: six first-party cards decode with alt text and crawlable links');
  console.log('PASS Home: self-service first, primary CTA leads to existing dossier');
  await page.goto(base+'/de/',{waitUntil:'domcontentloaded'});
@@ -256,8 +258,16 @@ try{
  await page.waitForFunction(()=>document.querySelector('#danini-general-inquiry-form [role="status"]')?.textContent?.includes('Brevo 401'));
  const failedText=await activeForm.locator('[role="status"]').innerText();
  assert.match(failedText,/HTTP 502 \/ mail_provider_unavailable \/ Brevo 401/);
+ assert.equal(await activeForm.locator('a.danini-email-fallback').count(),1,'Failed automatic sending must offer email fallback');
+ assert.match(await activeForm.locator('a.danini-email-fallback').getAttribute('href'),/^mailto:kontakt@daninihub\.com\?/);
+ assert.equal(await activeForm.locator('textarea[name="message"]').inputValue(),'Second mock sends nothing and returns a safe provider error code.','Form contents must not be discarded on failure');
+
  assert.doesNotMatch(failedText,/DN-20261110-1234ABCD/);
  console.log('PASS contact: provider rejection displays HTTP 502 + Brevo status, never fake DN confirmation');
+ await page.reload({waitUntil:'domcontentloaded'});
+ assert.match(await page.locator('.danini-reference-reminder').innerText(),/DN-20261110-1234ABCD/);
+ console.log('PASS accepted reference remains visible after reload, without storing personal data');
+
 
  await page.setViewportSize({width:390,height:844});
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});

@@ -47,6 +47,14 @@ async function main(){
         payments:{captures:[{status:'COMPLETED',amount:{currency_code:'EUR',value:'49.00'},id:'CAPTURE1'}]}}]
     };
     assert.equal(verified(paid,record),true);
+    // A completed capture cannot authorize a second purchase unit or a second
+    // incomplete/failed capture: the paid PDF must match exactly one order.
+    assert.equal(verified({...paid,purchase_units:[...paid.purchase_units,paid.purchase_units[0]]},record),false);
+    assert.equal(verified({...paid,purchase_units:[{...paid.purchase_units[0],
+      payments:{captures:[...paid.purchase_units[0].payments.captures,
+        {status:'PENDING',amount:{currency_code:'EUR',value:'49.00'},id:'CAPTURE2'}]}}]},record),false);
+    assert.equal(verified({...paid,purchase_units:[{...paid.purchase_units[0],
+      payments:{captures:[{status:'REFUNDED',amount:{currency_code:'EUR',value:'49.00'},id:'CAPTURE1'}]}}]},record),false);
     assert.equal(verified({...paid,status:'APPROVED'},record),false);
     assert.equal(verified({...paid,purchase_units:[{...paid.purchase_units[0],custom_id:'FORGED'}]},record),false);
     assert.equal(verified({...paid,purchase_units:[{...paid.purchase_units[0],payee:{email_address:'wrong@example.com'}}]},record),false);

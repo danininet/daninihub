@@ -279,7 +279,7 @@ async function initialize(){
    const reminder=document.createElement('p');
    reminder.className='danini-reference-reminder';
    reminder.textContent=translate('Prethodno prihvaćen upit: '+last+' (nije potvrda isporuke).','Zuletzt angenommene Anfrage: '+last+' (keine Zustellbestätigung).');
-   general.insertAdjacentElement('beforebegin',reminder);
+   general.prepend(reminder);
   }
  }catch{}
 }

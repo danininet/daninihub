@@ -64,6 +64,12 @@ for(const page of pages){
  if(!brandPattern.test(html)&&page!=='admin')throw Error('AUTODANINI_HEADER_LOCKUP_MISSING '+page);
  html=html.replace(brandPattern,'<span class="brand-lockup"><strong>AutoDanini</strong><small>by DANINI · DE ↔ BALKAN</small></span>');
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
+ // Static footer/floating WhatsApp links must never be rebuilt into the public release.
+ // Service-specific personal live-video contact remains a separate, user-initiated option.
+ html=html.replace(/<a href="https:\/\/wa\.me\/4915730916621" target="_blank" rel="noopener">WhatsApp \+49 1573 0916621<\/a>/g,'');
+ html=html.replace(/<a class="wa" href="https:\/\/wa\.me\/4915730916621" target="_blank" rel="noopener" aria-label="WhatsApp">WA<\/a>/g,'');
+ if(/<a class="wa"\b/.test(html))throw Error('DANINI_FLOATING_WHATSAPP_REINTRODUCED '+page);
+
  if(page==='index'){
   // Maintain the chosen self-service dossier as the first action.
   // Keep the existing pre-purchase tool reachable but secondary.

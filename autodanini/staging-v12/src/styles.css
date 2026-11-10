@@ -395,3 +395,36 @@ img{max-width:100%}
 @media(max-width:1000px){.dn-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.dn-photo-heading{align-items:stretch;flex-direction:column}.dn-photo-grid{grid-template-columns:1fr;gap:18px}.dn-photo-card figcaption{padding:20px}.dn-photo-card img{aspect-ratio:16/10}}
 @media(prefers-reduced-motion:reduce){.dn-photo-card{transition:none}}
+
+
+/* DANINI public knowledge base and buyer-led inquiry journey */
+.dn-guides-main{background:linear-gradient(145deg,#f9fafb,#edf3f6)}
+.dn-guides-main h2,.dn-journey h2{font-size:clamp(29px,4vw,46px);color:#102132;line-height:1.14;letter-spacing:-.035em;margin:13px 0}
+.dn-guides-toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:30px 0 36px}
+.dn-guides-toc a{display:block;padding:15px 18px;color:#133044;background:#fff;border:1px solid #dbe3ec;border-radius:11px;text-decoration:none;font-weight:750;line-height:1.4}
+.dn-guides-toc a:hover{border-color:#b18a3b;background:#fffdf7}
+.dn-guides-stack{display:grid;gap:25px}
+.dn-guide{background:white;padding:clamp(23px,3.5vw,38px);border:1px solid #dce4ec;border-left:5px solid #c7a15b;border-radius:15px;box-shadow:0 8px 26px #0f172a0b;scroll-margin-top:32px}
+.dn-guide h3{font-size:clamp(21px,2.4vw,28px);letter-spacing:-.02em;color:#14293a;margin:0 0 11px;line-height:1.2}
+.dn-guide-head p{font-size:16px;color:#506172;line-height:1.6}
+.dn-guide ol{margin:20px 0;padding-left:22px;display:grid;gap:14px;color:#263d4e;line-height:1.7}
+.dn-guide li{padding-left:7px}
+.dn-guide-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.dn-guide-links a{font-weight:750;color:#173e58;border:1px solid #cad5df;background:#f8fbfc;border-radius:9px;padding:11px 14px;text-decoration:none;font-size:14px}
+.dn-guide-links a:hover{color:#7b5821;border-color:#ad8750}
+.dn-next-step{margin-top:35px;border-radius:18px;background:#0f172a;color:#fff;padding:clamp(24px,4vw,44px)}
+.dn-next-step h2{color:#fff}.dn-next-step p{color:#dce5ef;line-height:1.8}
+.dn-next-step .btn{margin:8px 8px 0 0}
+.dn-journey{background:#fff}
+.dn-journey-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:27px 0}
+.dn-journey-form label,.dn-journey-result label{display:flex;flex-direction:column;gap:8px;font-weight:750;color:#223447;font-size:15px}
+.dn-journey-form input,.dn-journey-form select,.dn-journey-form textarea,.dn-journey-result textarea{width:100%;max-width:100%;border:1px solid #b8c7d3;background:white;color:#102132;border-radius:10px;padding:13px 14px;font:500 15px/1.5 Arial,sans-serif;min-height:47px}
+.dn-journey-form input:focus-visible,.dn-journey-form select:focus-visible,.dn-journey-form textarea:focus-visible,.dn-journey-result textarea:focus-visible{outline:3px solid #facc15;outline-offset:2px}
+.dn-wide{grid-column:1/-1}
+.dn-journey-result{padding:24px;background:#f3f7fa;border:1px solid #dce5ed;border-radius:15px}
+.dn-journey-result textarea{min-height:220px;margin-top:12px;resize:vertical}
+.dn-journey-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.dn-journey-actions [hidden]{display:none!important}
+.dn-journey-result [role=status]{min-height:1.5em;font-size:14px;font-weight:700}
+.dn-journey-result .dn-small{font-size:13px;line-height:1.7;color:#44556a}
+@media(max-width:750px){.dn-guides-toc,.dn-journey-form{grid-template-columns:1fr}.dn-wide{grid-column:auto}.dn-guide-links{flex-direction:column}.dn-next-step .btn{display:block;text-align:center;margin:12px 0}.dn-journey-actions{flex-direction:column}.dn-journey-actions .btn{width:100%;text-align:center}}

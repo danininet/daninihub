@@ -103,6 +103,26 @@ function bodyText(d,ref){
 }
 export async function handleApi(request,env={}){
  const url=new URL(request.url);
+ // Temporary internal diagnostic: secret header, fixed verified operator recipient.
+ // Never forwards visitor input, never emails a customer, and must be removed after QA.
+ if(url.pathname==='/api/internal/brevo-probe'){
+  const key=request.headers.get('x-danini-internal-probe');
+  if(request.method!=='POST'||!env.DANINI_PROBE_KEY||key!==env.DANINI_PROBE_KEY)
+   return response({error:'not_found'},404);
+  try{
+   const id=await brevoSend(env,{
+    sender:sender(env),to:[{email:env.DANINI_NOTIFY_TO}],
+    subject:'DANINI WORKER BREVO INTERNAL DELIVERY TEST 2026-11-10',
+    textContent:'DANINI / Worker production-to-Brevo isolated test. Not a customer inquiry.',
+    tags:['danini','internal-probe']
+   });
+   return response({probe:'accepted',providerMessageIdPresent:!!id});
+  }catch(e){
+   const message=e instanceof Error?e.message:'unexpected';
+   const http=message.match(/^BREVO_REJECTED_(\\d{3})$/)?.[1]||null;
+   return response({probe:'rejected',providerHttpStatus:http?Number(http):null,category:http?'provider_rejected':message==='BREVO_MISSING_MESSAGE_ID'?'invalid_provider_response':'request_failed'},502);
+  }
+ }
  if(url.pathname==='/api/lead/status' && request.method==='GET'){
   return response({enabled:isReady(env),channel:isReady(env)?'brevo':'setup_required',
    turnstileSiteKey:isReady(env)?env.DANINI_TURNSTILE_SITEKEY:null});

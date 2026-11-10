@@ -3,7 +3,7 @@
  * Local-only; never saves, tracks, sends, books, buys or processes payment.
  * Mailto opens the visitor's own email composer for explicit approval.
  */
-type JourneyField='kind'|'delivery'|'listing'|'location'|'destination'|'date'|'notes';
+type JourneyField='kind'|'delivery'|'listing'|'location'|'destination'|'date'|'notes'|'driveable'|'plates'|'papers'|'seller';
 const widget=document.querySelector<HTMLFormElement>('#danini-journey-form');
 if(widget){
  const output=document.querySelector<HTMLTextAreaElement>('#danini-journey-draft');
@@ -29,6 +29,25 @@ if(widget){
   'compare':'Upoređivanje oglasa',
   'unknown':'Još nisam odlučio',
  };
+ const qualifier=(field:'driveable'|'plates'|'papers'|'seller')=>{
+  const vals:Record<string,[string,string]>={
+    'driveable:unknown':['Ne znam / vozno stanje nije provereno','Unbekannt / Fahrbereitschaft ungeprüft'],
+    'driveable:yes':['Prodavac tvrdi da može da se vozi; nije potvrđeno','Laut Verkäufer fahrbereit; nicht geprüft'],
+    'driveable:no':['Ne može da se vozi / posebna logistika','Nicht fahrbereit / Sondertransport nötig'],
+    'plates:unknown':['Tablice nisu proverene','Kennzeichenstatus ungeprüft'],
+    'plates:registered':['Prodavac tvrdi da je registrovano','Laut Verkäufer zugelassen'],
+    'plates:unregistered':['Odjavljeno / bez tablica','Abgemeldet / ohne Kennzeichen'],
+    'plates:export':['Izvozne tablice tek treba proveriti','Ausfuhrkennzeichen noch zu prüfen'],
+    'papers:unknown':['Dokumenti i HU/TÜV nisu provereni','Unterlagen und HU/TÜV ungeprüft'],
+    'papers:claimed':['Prodavac tvrdi da ima dokumenta','Laut Verkäufer Unterlagen vorhanden'],
+    'papers:missing':['Dokumenta nepotpuna / dodatna provera','Unterlagen unvollständig / weitere Prüfung'],
+    'seller:unknown':['Termin sa prodavcem nije potvrđen','Abholtermin nicht bestätigt'],
+    'seller:claimed':['Prodavac usmeno potvrdio termin','Verkäufer hat mündlich zugesagt'],
+    'seller:written':['Prodavac pismeno potvrdio termin','Verkäufer hat schriftlich bestätigt']
+  };
+  const choice=String(new FormData(widget).get(field)||'unknown');
+  return vals[field+':'+choice]?.[isDe()?1:0]||'-';
+ };
  const read=(name:JourneyField,max:number)=>String(new FormData(widget).get(name)||'').trim().slice(0,max).replace(/[\u0000-\u001f]/g,' ');
  const generate=()=>{
    const kind=read('kind',40),delivery=read('delivery',40);
@@ -41,9 +60,14 @@ if(widget){
      (isDe()?'Inserat (optional): ':'Link oglasa (opciono): ')+(read('listing',350)||'-'),
      (isDe()?'Fahrzeugstandort: ':'Lokacija automobila: ')+(read('location',120)||'-'),
      (isDe()?'Zielort/Land: ':'Odredište/država: ')+(read('destination',120)||'-'),
+     (isDe()?'Fahrbereit: ':'U voznom stanju: ')+qualifier('driveable'),
+     (isDe()?'Kennzeichen: ':'Tablice / registracija: ')+qualifier('plates'),
+     (isDe()?'HU und Unterlagen: ':'HU/TÜV i dokumenta: ')+qualifier('papers'),
+     (isDe()?'Verkäufertermin: ':'Termin prodavca: ')+qualifier('seller'),
      (isDe()?'Wunschdatum: ':'Željeni termin: ')+(read('date',60)||'-'),
      (isDe()?'Anmerkungen: ':'Napomene: ')+(read('notes',700)||'-'),
      '',
+     isDe()?'Kennzeichen, gültiger Versicherungsschutz, Genehmigungen, Transporteur und endgültiger Preis sind vor Durchführung gesondert zu prüfen.':'Tablice, osiguranje, dozvole, prevoznik i konačna cena proveravaju se posebno pre realizacije.',
      isDe()?'Nur Anfrage zur Prüfung der Machbarkeit; keine Buchung, Bestellung oder Zahlung.':
        'Samo upit za proveru izvodljivosti; nije rezervacija, narudžbina niti plaćanje.'
    ].join('\n');

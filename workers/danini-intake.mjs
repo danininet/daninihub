@@ -73,6 +73,14 @@ async function brevoSend(env,message){
  return data.messageId;
 }
 const sender=env=>({name:'DANINI',email:env.DANINI_BREVO_SENDER});
+// Explicitly override legacy account-wide sender labels on template sends.
+// All addresses correspond to the verified active DANINI senders in Brevo.
+const receiptSender={
+ general:{name:'DANINI',email:'kontakt@daninihub.com'},
+ vehicle:{name:'DANINI Auto',email:'auto@daninihub.com'},
+ support:{name:'DANINI Support',email:'support@daninihub.com'},
+ business:{name:'DANINI Business',email:'business@daninihub.com'}
+};
 function bodyText(d,ref){
  const details=Object.entries(d.details).map(([k,v])=>k+': '+v).join('\n');
  return [
@@ -127,6 +135,7 @@ export async function handleApi(request,env={}){
  // A confirmation is secondary; the operator notification is the authoritative step.
  // Never include customer-supplied text in confirmation (spam/backscatter mitigation).
  const acknowledgment={
+  sender:receiptSender[data.kind],
   templateId:BREVO_TEMPLATE_ID[data.kind][data.language],
   to:[{email:data.email,name:data.name}],
   replyTo:{email:env.DANINI_BREVO_REPLYTO||env.DANINI_BREVO_SENDER},

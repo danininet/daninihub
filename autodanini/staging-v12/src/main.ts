@@ -1,6 +1,7 @@
 import './styles.css';
 import './intake';
 import './buyer-journey';
+import './guides-download';
 
 /* DANINI navigation is kept consistent across the existing public pages.
    Sections planned for later are explicitly described as not yet selling. */

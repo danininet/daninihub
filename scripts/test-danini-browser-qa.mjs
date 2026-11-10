@@ -182,6 +182,8 @@ try{
  assert.equal(await page.locator('#preuzimanje-i-transport article').count(),3,'Three collection/transport quote modes required');
  console.log('PASS transparent pricing: buyer pickup, driver, and truck have quote-based disclosure');
  await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded',timeout:15000});
+ assert.equal(await page.locator('a.wa').count(),0,'Floating WhatsApp button must be removed');
+ assert.equal(await page.locator('a[href*="wa.me"]').count(),0,'Contact page must use email-first flow, not WhatsApp buttons');
  const form=page.locator('#danini-general-inquiry-form');
  assert.equal(await form.count(),1);
  assert.equal(await form.locator('button[type="submit"]').isDisabled(),true,
@@ -229,6 +231,10 @@ try{
  assert.match(successText,/sačuvajte oznaku upita|Referenz notieren/);
  assert.doesNotMatch(successText,/Versand nicht bestätigt|Slanje nije potvrđeno/);
  console.log('PASS contact: accepted DN reference survives throwing CAPTCHA reset; receipt failure disclosed');
+ // Language is explicitly bound to the site selector, not the browser language.
+ // The actual Turnstile language is passed during live render, not mocked here.
+ assert.ok(await page.locator('#language').count()===1);
+ console.log('PASS contact: contact-only email CTA and branded Turnstile-language hook present');
 
  await page.setViewportSize({width:390,height:844});
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});

@@ -116,6 +116,7 @@ try{
  await page.locator('#recalc').click();
  assert.notEqual((await page.locator('#total').innerText()).trim(),'—');
  console.log('PASS import: calculator changes result for valid example');
+ await page.evaluate(()=>localStorage.setItem('autodanini-language','sr'));
  await page.goto(base+'/guides.html',{waitUntil:'domcontentloaded'});
  assert.equal(await page.locator('.dn-guide').count(),7,'Seven published full guides are required');
  const guideForm=page.locator('#danini-journey-form');

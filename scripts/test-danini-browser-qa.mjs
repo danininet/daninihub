@@ -216,6 +216,7 @@ try{
    remove:()=>{}
   };
  });
+ await page.evaluate(()=>localStorage.setItem('autodanini-language','sr'));
  await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded'});
  const activeForm=page.locator('#danini-general-inquiry-form');
  await activeForm.locator('button[type="submit"]').waitFor({state:'visible'});

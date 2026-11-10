@@ -169,11 +169,13 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
   // Resetting the form or a third-party CAPTCHA widget MUST NOT overwrite a
   // server-accepted reference with a misleading "not sent" message.
   let accepted=false;
+  let diagnostic='';
   try {
    const res=await fetch('/api/lead',{method:'POST',credentials:'same-origin',
     headers:{'content-type':'application/json'},cache:'no-store',
     body:JSON.stringify({...payload,turnstileToken:token})});
-   const result=await res.json() as {accepted?:boolean;reference?:string;error?:string;receiptAccepted?:boolean};
+   const result=await res.json() as {accepted?:boolean;reference?:string;error?:string;receiptAccepted?:boolean;providerStatus?:number|null};
+   diagnostic='HTTP '+res.status+' / '+(typeof result.error==='string'?result.error:'unexpected_response')+(typeof result.providerStatus==='number'?' / Brevo '+result.providerStatus:'');
    if(res.status!==202||result.accepted!==true||!/^DN-[0-9]{8}-[A-F0-9]{8}$/.test(result.reference||'')){
     const errorCode=typeof result.error==='string'?result.error:'unknown_error';
     // No sensitive payloads, email addresses or CAPTCHA tokens in diagnostics.
@@ -190,6 +192,7 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
   }catch(error){
    if(!accepted){
     const code=error instanceof Error?error.message:'unknown_error';
+    const referenceCode=diagnostic||'connection_or_invalid_response';
     const humanCheck=code==='human_verification_failed';
     const providerError=code==='mail_provider_unavailable';
     status.textContent=humanCheck?translate(
@@ -202,6 +205,9 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
      'Slanje nije potvrđeno. Pokušajte ponovo ili koristite direktni kontakt. Nemojte pretpostaviti da smo dobili upit.',
      'Versand nicht bestätigt. Bitte erneut versuchen oder direkten Kontakt nutzen. Nicht von einer erfolgreichen Zustellung ausgehen.'
     );
+    // Surface a bounded, non-sensitive diagnostic code instead of a silent generic failure.
+    // Makes failed public requests distinguishable without exposing customer content or secrets.
+    status.textContent+=' ['+referenceCode.slice(0,100)+']';
    }
   }finally{
    try{tsApi()?.reset(widget);}catch{}

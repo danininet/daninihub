@@ -73,7 +73,10 @@ try{
   assert.equal(ok,true,'Approved service photo must decode '+i);
   assert.ok((await cards.nth(i).locator('a').getAttribute('href')||'').endsWith('.html'),'Service page must be linked');
  }
- assert.equal(await page.locator('.danini-proof-strip a').count(),3,'Three truthful homepage offer markers required');
+ assert.ok(await page.locator('.danini-proof-strip a').count()>=3,'At least three truthful homepage offer markers required');
+ for(const href of ['guides.html','ai-advisor.html','contact.html']){
+  assert.ok(await page.locator('.danini-proof-strip a[href="'+href+'"]').count()>=1,'Missing visible trust/link marker: '+href);
+ }
  assert.equal(await page.locator('.danini-guide-promo a[href="guides.html"]').count(),1,'Seven free guides must have prominent homepage link');
  console.log('PASS Home photography: six first-party cards decode with alt text and crawlable links');
  console.log('PASS Home: self-service first, primary CTA leads to existing dossier');

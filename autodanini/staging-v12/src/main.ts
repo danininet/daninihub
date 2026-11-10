@@ -3,6 +3,10 @@ import './intake';
 import './buyer-journey';
 import './guides-download';
 
+// Contact requests use the Brevo email forms; no persistent floating WhatsApp
+// CTA on any public page. Optional personal contact remains separate.
+document.querySelectorAll('a.wa').forEach(link=>link.remove());
+
 /* DANINI navigation is kept consistent across the existing public pages.
    Sections planned for later are explicitly described as not yet selling. */
 function addCommerceNavigation(): void {
@@ -81,6 +85,7 @@ function setLang(l: Lang): void {
    (e('mobile')?.hidden?'Menü öffnen':'Menü schließen'):
    (e('mobile')?.hidden?'Otvori meni':'Zatvori meni'));
  updateImport(); updateLive();
+ document.dispatchEvent(new CustomEvent('danini:language-changed',{detail:{language:l}}));
 }
 e('language')?.addEventListener('click',()=>setLang(lang==='sr'?'de':'sr'));
 const menuButton=e('toggle') as HTMLButtonElement|null;

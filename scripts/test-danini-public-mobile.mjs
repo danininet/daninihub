@@ -16,7 +16,7 @@ try {
  for(const width of [360,390,768,1440]){
   const context=await browser.newContext({viewport:{width,height:850},deviceScaleFactor:1});
   const page=await context.newPage();
-  for(const path of ['/','/danini.html','/danini-sr.html','/buyers.html','/business.html','/contact.html']){
+  for(const path of ['/','/danini.html','/danini-sr.html','/buyers.html','/business.html','/contact.html','/guides.html']){
    const errors=[];
    page.on('pageerror',err=>errors.push(err.message));
    try {
@@ -45,6 +45,19 @@ try {
       assert.ok(await page.locator('.dn-service-nav a[href="/contact.html"]').count()===1,'Contact not in service nav');
     }
     if(path==='/contact.html')assert.ok(await page.locator('a[href^="mailto:kontakt@daninihub.com"]').count()>=1,'Direct contact email missing');
+    if(path==='/guides.html'){
+      assert.equal(await page.locator('.dn-guide').count(),7,'Live Cloudflare guide page must contain all seven articles');
+      assert.equal(await page.locator('#danini-journey-form').count(),1,'Live customer choice form missing');
+      if(width===390){
+        const form=page.locator('#danini-journey-form');
+        await form.locator('select[name="kind"]').selectOption('expert');
+        await form.locator('select[name="delivery"]').selectOption('driver');
+        await form.locator('input[name="location"]').fill('Köln');
+        await form.locator('button[type="submit"]').click();
+        assert.match(await page.locator('#danini-journey-draft').inputValue(),/Köln/);
+        assert.ok((await page.locator('#danini-journey-mail').getAttribute('href')||'').startsWith('mailto:auto@daninihub.com?'),'Mailer must point to DANINI Auto');
+      }
+    }
     assert.deepEqual(errors,[],'JavaScript runtime errors on '+path+' '+width+': '+errors.join('; '));
     results.push({path,width,status:'PASS',title:dimensions.title});
    }catch(e){failures++;console.log('FAIL '+width+'px '+path+': '+String(e?.message||e).slice(0,550));results.push({path,width,status:'FAIL',error:String(e?.message||e).slice(0,300)});}

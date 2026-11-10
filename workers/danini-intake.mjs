@@ -5,6 +5,10 @@
  * Email provider acceptance is NOT a delivery guarantee.
  */
 const BREVO_URL='https://api.brevo.com/v3/smtp/email';
+const BREVO_TEMPLATE_ID={general:{de:38,sr:39},vehicle:{de:40,sr:41},support:{de:42,sr:43},business:{de:48,sr:49}};
+// Verified active 2026 DANINI final-logo transactional Brevo templates.
+// Customer receives one neutral receipt only after the operator notification is accepted.
+
 const TURNSTILE_URL='https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const MAX_BYTES=12000;
 const MAX_ROWS=25;
@@ -123,14 +127,11 @@ export async function handleApi(request,env={}){
  // A confirmation is secondary; the operator notification is the authoritative step.
  // Never include customer-supplied text in confirmation (spam/backscatter mitigation).
  const acknowledgment={
-  sender:sender(env),to:[{email:data.email,name:data.name}],
+  templateId:BREVO_TEMPLATE_ID[data.kind][data.language],
+  to:[{email:data.email,name:data.name}],
   replyTo:{email:env.DANINI_BREVO_REPLYTO||env.DANINI_BREVO_SENDER},
-  subject:(data.language==='de'?'DANINI – Ihre Anfrage':'DANINI – Potvrda prijema upita')+' / '+ref,
-  textContent:data.language==='de'?
-    'Vielen Dank. Ihre Anfrage wurde vom E-Mail-Dienst zur Zustellung angenommen. Referenz: '+ref+
-    '\nDies ist keine Auftrags-, Reservierungs- oder Zahlungsbestätigung. Eine persönliche Rückmeldung erfolgt nach Prüfung.':
-    'Hvala. E-mail servis je prihvatio vaš upit za isporuku. Oznaka: '+ref+
-    '\nOvo nije potvrda porudžbine, rezervacije ili plaćanja. Odgovorićemo nakon pregleda upita.'
+  params:{REFERENCE:ref},
+  tags:['danini','transactional-receipt']
  };
  let receiptAccepted=false;
  try{await brevoSend(env,acknowledgment);receiptAccepted=true;}catch{}

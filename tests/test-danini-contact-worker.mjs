@@ -140,3 +140,16 @@ test('unrelated API endpoints remain forbidden and static assets still routed vi
  assert.equal(r.status,200);
  assert.match(await r.text(),/Existing DANINI/);
 });
+
+test('temporary health endpoint is read-only and never sends customer mail',async()=>{
+ const previous=globalThis.fetch;const requests=[];
+ globalThis.fetch=async(url,opts={})=>{requests.push({url:String(url),method:opts.method});return Response.json({email:'redacted'},{status:200});};
+ try{
+  const r=await handleApi(new Request('https://daninihub.com/api/lead/health'),ready);
+  assert.equal(r.status,200);
+  assert.deepEqual(await r.json(),{provider:'authenticated',httpStatus:200});
+  assert.equal(requests.length,1);
+  assert.equal(requests[0].method,'GET');
+  assert.equal(requests[0].url,'https://api.brevo.com/v3/account');
+ }finally{globalThis.fetch=previous;}
+});

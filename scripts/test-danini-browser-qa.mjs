@@ -110,6 +110,38 @@ try{
  await page.locator('#ai-go').click();
  assert.match(await page.locator('#ai-output').innerText(),/FAHRZEUGDOSSIER/i);
  console.log('PASS DE dossier: language switch generates German-language case');
+ await page.goto(base+'/guides.html',{waitUntil:'domcontentloaded'});
+ assert.equal(await page.locator('.dn-guides-stack article.dn-guide').count(),7);
+ assert.equal(await page.locator('.dn-guides-toc a').count(),7);
+ const [guidesDe]=await Promise.all([
+  page.waitForEvent('download',{timeout:15000}),
+  page.locator('#danini-guides-download').click()
+ ]);
+ assert.ok(guidesDe.suggestedFilename().endsWith('7-Ratgeber-DE.txt'));
+ const guideTxtDe=fs.readFileSync(await guidesDe.path(),'utf8');
+ assert.match(guideTxtDe,/Fahrzeugsuche und Inserate vergleichen/);
+ assert.match(guideTxtDe,/Überführung auf eigener Achse/);
+ await page.locator('#language').click();
+ const [guidesSr]=await Promise.all([
+  page.waitForEvent('download',{timeout:15000}),
+  page.locator('#danini-guides-download').click()
+ ]);
+ assert.ok(guidesSr.suggestedFilename().endsWith('7-Vodica-SR.txt'));
+ const guideTxtSr=fs.readFileSync(await guidesSr.path(),'utf8');
+ assert.match(guideTxtSr,/Samostalna pretraga i poređenje oglasa/);
+ assert.match(guideTxtSr,/Prevoz vozila šleperom ili prikolicom/);
+ console.log('PASS seven guides: downloadable SR/DE, current language, original seven articles and links');
+ await page.locator('#danini-journey-form select[name="kind"]').selectOption('expert');
+ await page.locator('#danini-journey-form select[name="delivery"]').selectOption('carrier');
+ await page.locator('#danini-journey-form input[name="location"]').fill('Duisburg');
+ await page.locator('#danini-journey-form input[name="destination"]').fill('Niš');
+ await page.locator('#danini-journey-form button[type="submit"]').click();
+ const inquiry=await page.locator('#danini-journey-draft').inputValue();
+ assert.match(inquiry,/Nezavisan stručni pregled/);
+ assert.match(inquiry,/Transport šleperom ili prikolicom/);
+ assert.match(inquiry,/Duisburg/); assert.match(inquiry,/Niš/);
+ assert.ok((await page.locator('#danini-journey-mail').getAttribute('href')||'').startsWith('mailto:auto@daninihub.com?'));
+ console.log('PASS buyer handoff: expert inspection + transport choice produces local email draft; no message sent');
  await page.goto(base+'/import.html',{waitUntil:'domcontentloaded'});
  await page.locator('#price').fill('10000');
  await page.locator('#extra').fill('1000');

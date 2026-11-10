@@ -428,3 +428,10 @@ img{max-width:100%}
 .dn-journey-result [role=status]{min-height:1.5em;font-size:14px;font-weight:700}
 .dn-journey-result .dn-small{font-size:13px;line-height:1.7;color:#44556a}
 @media(max-width:750px){.dn-guides-toc,.dn-journey-form{grid-template-columns:1fr}.dn-wide{grid-column:auto}.dn-guide-links{flex-direction:column}.dn-next-step .btn{display:block;text-align:center;margin:12px 0}.dn-journey-actions{flex-direction:column}.dn-journey-actions .btn{width:100%;text-align:center}}
+
+/* Free seven-guide save action; no paywall or tracking. */
+.dn-guides-export{background:linear-gradient(135deg,#152331,#263e50);color:#f8fafc;padding:23px 26px;margin:20px 0 34px;border-left:4px solid #facc15;border-radius:13px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between}
+.dn-guides-export p{margin:0;line-height:1.65;flex:1 1 340px}
+.dn-guides-export button{flex:0 0 auto}
+.dn-guides-export [role=status]{width:100%;flex:1 1 100%;font-size:14px;color:#f8e6a6}
+@media(max-width:650px){.dn-guides-export{padding:20px}.dn-guides-export button{width:100%;justify-content:center}}

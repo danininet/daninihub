@@ -134,7 +134,7 @@ export async function handleApi(request,env={}){
  try{await brevoSend(env,alert);}catch(e){
   // Safe operational diagnostics: never expose API keys, customer content or raw Brevo errors.
   const msg=e instanceof Error?e.message:'unknown';
-  const match=msg.match(/^BREVO_REJECTED_(\\d{3})$/);
+  const match=msg.match(/^BREVO_REJECTED_(\d{3})$/);
   const providerStatus=match?Number(match[1]):null;
   return response({error:'mail_provider_unavailable',providerStatus},502);
  }

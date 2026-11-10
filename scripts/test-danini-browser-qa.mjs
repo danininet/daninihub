@@ -189,6 +189,47 @@ try{
  assert.equal(await page.locator('a[href*="+daninihub"]').count(),0,
    'Never restore unapproved plus-alias on public contact page');
  console.log('PASS contact: disabled until Brevo/Turnstile configured; no unapproved plus alias');
+
+ // Regression for the real report: a successful 202 with DN reference must not
+ // turn into a false "Versand nicht bestätigt" if Turnstile.reset throws.
+ // No live Brevo requests, CAPTCHA bypass or customer emails in this test.
+ await page.route('**/api/lead/status',route=>route.fulfill({
+  status:200,contentType:'application/json',
+  body:JSON.stringify({enabled:true,channel:'brevo',turnstileSiteKey:'0x4AAAAATESTONLY'})
+ }));
+ await page.route('**/api/lead',async route=>{
+  const d=JSON.parse(route.request().postData()||'{}');
+  assert.equal(d.email,'internal-qa@example.invalid');
+  assert.equal(d.consent,true);
+  assert.equal(d.turnstileToken,'simulated-only-local-qa-token');
+  await route.fulfill({status:202,contentType:'application/json',
+    body:JSON.stringify({accepted:true,reference:'DN-20261110-1234ABCD',receiptAccepted:false})});
+ });
+ await page.addInitScript(()=>{
+  window.turnstile={
+   render:()=> 'test-only-widget',
+   getResponse:()=> 'simulated-only-local-qa-token',
+   reset:()=>{throw new Error('simulated third-party reset failure');}
+  };
+ });
+ await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded'});
+ const activeForm=page.locator('#danini-general-inquiry-form');
+ await activeForm.locator('button[type="submit"]').waitFor({state:'visible'});
+ await assert.doesNotReject(async()=>{
+  await page.waitForFunction(()=>!document.querySelector('#danini-general-inquiry-form button[type="submit"]')?.disabled,{timeout:15000});
+ });
+ await activeForm.locator('input[name="name"]').fill('DANINI Internal QA');
+ await activeForm.locator('input[name="email"]').fill('internal-qa@example.invalid');
+ await activeForm.locator('textarea[name="message"]').fill('This is a local mocked test for the accepted-reference and CAPTCHA reset regression.');
+ await activeForm.locator('input[name="consent"]').check();
+ await activeForm.locator('button[type="submit"]').click();
+ await assert.doesNotReject(async()=>await page.waitForFunction(()=>document.querySelector('#danini-general-inquiry-form [role="status"]')?.textContent?.includes('DN-20261110-1234ABCD')));
+ const successText=await activeForm.locator('[role="status"]').innerText();
+ assert.match(successText,/DN-20261110-1234ABCD/);
+ assert.match(successText,/sačuvajte oznaku upita|Referenz notieren/);
+ assert.doesNotMatch(successText,/Versand nicht bestätigt|Slanje nije potvrđeno/);
+ console.log('PASS contact: accepted DN reference survives throwing CAPTCHA reset; receipt failure disclosed');
+
  await page.setViewportSize({width:390,height:844});
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});
  const width=await page.evaluate(()=>({viewport:window.innerWidth,document:document.documentElement.scrollWidth}));

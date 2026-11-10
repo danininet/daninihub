@@ -151,25 +151,47 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
   const btn=form.querySelector<HTMLButtonElement>('button[type="submit"]');
   if(btn)btn.disabled=true;
   status.textContent=translate('Šaljemo upit e-mail servisu…','Anfrage wird an den E-Mail-Dienst übermittelt…');
+  // Resetting the form or a third-party CAPTCHA widget MUST NOT overwrite a
+  // server-accepted reference with a misleading "not sent" message.
+  let accepted=false;
   try {
    const res=await fetch('/api/lead',{method:'POST',credentials:'same-origin',
     headers:{'content-type':'application/json'},cache:'no-store',
     body:JSON.stringify({...payload,turnstileToken:token})});
    const result=await res.json() as {accepted?:boolean;reference?:string;error?:string;receiptAccepted?:boolean};
-   if(res.status===202 && result.accepted){
-    status.textContent=translate(
-     'E-mail servis je prihvatio upit. Oznaka: '+result.reference+'. Ovo nije potvrda rezervacije ili narudžbine.',
-     'Der E-Mail-Dienst hat die Anfrage angenommen. Referenz: '+result.reference+'. Keine Reservierung oder Bestellung.'
-    );
-    form.reset();tsApi()?.reset(widget);
-   }else throw Error(result.error||'unknown_error');
-  }catch{
+   if(res.status!==202||result.accepted!==true||!/^DN-[0-9]{8}-[A-F0-9]{8}$/.test(result.reference||'')){
+    const errorCode=typeof result.error==='string'?result.error:'unknown_error';
+    // No sensitive payloads, email addresses or CAPTCHA tokens in diagnostics.
+    throw Error(errorCode);
+   }
+   accepted=true;
+   const reference=result.reference as string;
    status.textContent=translate(
-    'Slanje nije potvrđeno. Pokušajte ponovo ili koristite direktni kontakt. Nemojte pretpostaviti da smo dobili upit.',
-    'Versand nicht bestätigt. Bitte erneut versuchen oder direkten Kontakt nutzen. Nicht von einer erfolgreichen Zustellung ausgehen.'
+    'E-mail servis je prihvatio upit. Oznaka: '+reference+'. '+(result.receiptAccepted?'Potvrda je poslata e-mail servisu. ':'Potvrda za pošiljaoca nije prihvaćena; sačuvajte oznaku upita. ')+'Ovo nije potvrda rezervacije ili narudžbine.',
+    'Der E-Mail-Dienst hat die Anfrage angenommen. Referenz: '+reference+'. '+(result.receiptAccepted?'Eingangsbestätigung an den E-Mail-Dienst übergeben. ':'Die Eingangsbestätigung wurde nicht angenommen; bitte Referenz notieren. ')+'Keine Reservierung oder Bestellung.'
    );
-   tsApi()?.reset(widget);
-  }finally{if(btn)btn.disabled=false;}
+   // DOM cleanup is secondary; a failed reset cannot retract Brevo acceptance.
+   try{form.reset();}catch{}
+  }catch(error){
+   if(!accepted){
+    const code=error instanceof Error?error.message:'unknown_error';
+    const humanCheck=code==='human_verification_failed';
+    const providerError=code==='mail_provider_unavailable';
+    status.textContent=humanCheck?translate(
+     'Bezbednosna provera nije prihvaćena. Osvežite CAPTCHA i pokušajte ponovo.',
+     'Sicherheitsprüfung nicht akzeptiert. Bitte CAPTCHA erneuern und erneut versuchen.'
+    ):providerError?translate(
+     'E-mail servis trenutno nije prihvatio upit. Nemojte ponavljati plaćanje ni pretpostaviti da je upit primljen.',
+     'Der E-Mail-Dienst hat die Anfrage derzeit nicht angenommen. Bitte nicht von einem erfolgreichen Versand ausgehen.'
+    ):translate(
+     'Slanje nije potvrđeno. Pokušajte ponovo ili koristite direktni kontakt. Nemojte pretpostaviti da smo dobili upit.',
+     'Versand nicht bestätigt. Bitte erneut versuchen oder direkten Kontakt nutzen. Nicht von einer erfolgreichen Zustellung ausgehen.'
+    );
+   }
+  }finally{
+   try{tsApi()?.reset(widget);}catch{}
+   if(btn)btn.disabled=false;
+  }
  });
 }
 async function initialize(){

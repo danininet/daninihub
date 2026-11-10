@@ -68,6 +68,23 @@ function setFormWording(form:HTMLFormElement){
   status.textContent=translate('Proveravamo dostupnost zaštićenog e-mail obrasca…','Verfügbarkeit des geschützten E-Mail-Formulars wird geprüft…');
  }
 }
+function statusState(form:HTMLFormElement,state:'ready'|'sending'|'success'|'error'|'offline'){
+ form.dataset.intakeState=state;
+ const status=statusNode(form);
+ status.setAttribute('data-state',state);
+}
+function manualEmailFallback(form:HTMLFormElement,kind:IntakeKind,payload:ReturnType<typeof collect>){
+ const status=statusNode(form);
+ const destination=kind==='support'?'support@daninihub.com':kind==='business'?'business@daninihub.com':kind==='vehicle'?'auto@daninihub.com':'kontakt@daninihub.com';
+ const subject='DANINI '+kind.toUpperCase()+' / '+payload.topic;
+ const message=['Name: '+payload.name,'Email: '+payload.email,payload.company?'Company: '+payload.company:'','Topic: '+payload.topic,'','Message:',payload.message].filter(Boolean).join('\n').slice(0,1600);
+ const a=document.createElement('a');
+ a.className='danini-email-fallback';
+ a.href='mailto:'+destination+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(message);
+ a.textContent=translate('Pošaljite isti upit preko e-maila ↗','Gleiche Anfrage per E-Mail senden ↗');
+ a.rel='nofollow';
+ status.append(document.createTextNode(' '),a);
+}
 function statusNode(form:HTMLFormElement){
  let el=form.querySelector<HTMLElement>('[role="status"]');
  if(!el){el=document.createElement('p');el.setAttribute('role','status');el.setAttribute('aria-live','polite');form.append(el);}
@@ -99,6 +116,7 @@ function makeFallback(form:HTMLFormElement){
  const address=form.id==='autodanini-support-form'?'support@daninihub.com':
   form.dataset.dealer==='true'?'business@daninihub.com':
   form.classList.contains('rfq')?'auto@daninihub.com':'kontakt@daninihub.com';
+ statusState(form,'offline');
  status.textContent=translate(
   'Automatski obrazac trenutno nije aktivan. Upit možete poslati direktno na poslovnu e-mail adresu:',
   'Das automatische Formular ist derzeit noch nicht aktiv. Bitte senden Sie Ihre Anfrage direkt an die geschäftliche E-Mail-Adresse:'
@@ -151,6 +169,7 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
    }
   });
  }catch{makeFallback(form);return;}
+ statusState(form,'ready');
  status.textContent=translate('Formular je spreman. Podaci idu samo radi odgovora na upit.','Formular bereit. Daten werden nur zur Bearbeitung Ihrer Anfrage übermittelt.');
  if(button)button.disabled=false;
  form.addEventListener('submit',async event=>{
@@ -165,6 +184,7 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
   }
   const btn=form.querySelector<HTMLButtonElement>('button[type="submit"]');
   if(btn)btn.disabled=true;
+  statusState(form,'sending');
   status.textContent=translate('Šaljemo upit e-mail servisu…','Anfrage wird an den E-Mail-Dienst übermittelt…');
   // Resetting the form or a third-party CAPTCHA widget MUST NOT overwrite a
   // server-accepted reference with a misleading "not sent" message.
@@ -182,7 +202,9 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
     throw Error(errorCode);
    }
    accepted=true;
+   statusState(form,'success');
    const reference=result.reference as string;
+   try{sessionStorage.setItem('danini-last-accepted-reference',reference);}catch{}
    status.textContent=translate(
     'E-mail servis je prihvatio upit. Oznaka: '+reference+'. '+(result.receiptAccepted?'Potvrda je poslata e-mail servisu. ':'Potvrda za pošiljaoca nije prihvaćena; sačuvajte oznaku upita. ')+'Ovo nije potvrda rezervacije ili narudžbine.',
     'Der E-Mail-Dienst hat die Anfrage angenommen. Referenz: '+reference+'. '+(result.receiptAccepted?'Eingangsbestätigung an den E-Mail-Dienst übergeben. ':'Die Eingangsbestätigung wurde nicht angenommen; bitte Referenz notieren. ')+'Keine Reservierung oder Bestellung.'
@@ -191,6 +213,7 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
    try{form.reset();}catch{}
   }catch(error){
    if(!accepted){
+    statusState(form,'error');
     const code=error instanceof Error?error.message:'unknown_error';
     const referenceCode=diagnostic||'connection_or_invalid_response';
     const humanCheck=code==='human_verification_failed';
@@ -208,6 +231,7 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
     // Surface a bounded, non-sensitive diagnostic code instead of a silent generic failure.
     // Makes failed public requests distinguishable without exposing customer content or secrets.
     status.textContent+=' ['+referenceCode.slice(0,100)+']';
+    manualEmailFallback(form,kind,payload);
    }
   }finally{
    try{tsApi()?.reset(widget);}catch{}
@@ -247,5 +271,16 @@ async function initialize(){
   if(r.ok)config=(await r.json()) as IntakeConfig;
  }catch{}
  for(const form of forms)await setup(form,config);
+ // A successful DN acceptance belongs to this tab, not to the recipient's email inbox.
+ // Show it again after a reload so users can reference it without copying sensitive data.
+ try{
+  const last=sessionStorage.getItem('danini-last-accepted-reference');
+  if(last && /^DN-[0-9]{8}-[A-F0-9]{8}$/.test(last) && general){
+   const reminder=document.createElement('p');
+   reminder.className='danini-reference-reminder';
+   reminder.textContent=translate('Prethodno prihvaćen upit: '+last+' (nije potvrda isporuke).','Zuletzt angenommene Anfrage: '+last+' (keine Zustellbestätigung).');
+   general.prepend(reminder);
+  }
+ }catch{}
 }
 void initialize();

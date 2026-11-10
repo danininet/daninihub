@@ -140,3 +140,15 @@ test('unrelated API endpoints remain forbidden and static assets still routed vi
  assert.equal(r.status,200);
  assert.match(await r.text(),/Existing DANINI/);
 });
+
+test('internal diagnostic rejects unauthenticated and malformed requests without Brevo send',async()=>{
+ const old=globalThis.fetch;let called=false;
+ globalThis.fetch=async()=>{called=true;throw Error('should not send');};
+ try{
+  const url='https://daninihub.com/api/internal/brevo-probe';
+  assert.equal((await handleApi(new Request(url,{method:'POST'}),{...ready,DANINI_PROBE_KEY:'private-only'})).status,404);
+  assert.equal((await handleApi(new Request(url,{method:'POST',headers:{'x-danini-internal-probe':'wrong'}}),{...ready,DANINI_PROBE_KEY:'private-only'})).status,404);
+  assert.equal((await handleApi(new Request(url,{method:'GET',headers:{'x-danini-internal-probe':'private-only'}}),{...ready,DANINI_PROBE_KEY:'private-only'})).status,404);
+  assert.equal(called,false);
+ }finally{globalThis.fetch=old;}
+});

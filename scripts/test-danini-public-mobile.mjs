@@ -55,7 +55,7 @@ try {
         await form.locator('input[name="location"]').fill('Köln');
         await form.locator('button[type="submit"]').click();
         assert.match(await page.locator('#danini-journey-draft').inputValue(),/Köln/);
-        assert.match(await page.locator('#danini-journey-mail').getAttribute('href'),/^mailto:auto@daninihub\\.com\?/);
+        assert.ok((await page.locator('#danini-journey-mail').getAttribute('href')||'').startsWith('mailto:auto@daninihub.com?'),'Mailer must point to DANINI Auto');
       }
     }
     assert.deepEqual(errors,[],'JavaScript runtime errors on '+path+' '+width+': '+errors.join('; '));

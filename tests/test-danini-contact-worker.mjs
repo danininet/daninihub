@@ -89,10 +89,32 @@ test('Brevo operator alert and neutral customer receipt only after captcha passe
   assert.equal(records[0].to[0].email,ready.DANINI_NOTIFY_TO);
   assert.equal(records[0].replyTo.email,payload().email);
   assert.equal(records[1].to[0].email,payload().email);
-  assert.ok(!records[1].textContent.includes(payload().message),'receipt must never echo untrusted input');
+  assert.equal(records[1].templateId,38,'German general inquiry must use verified DANINI Kontakt DE branded template');
+  assert.ok(records[1].params.REFERENCE.startsWith('DN-'));
+  assert.ok(!JSON.stringify(records[1]).includes(payload().message),'receipt must never echo untrusted input');
   assert.equal(records[0].to.length,1);
   assert.ok(!JSON.stringify(records).includes(ready.BREVO_API_KEY));
  }finally{globalThis.fetch=old;}
+});
+test('vehicle, support and B2B requests route to distinct verified logo templates without newsletter consent',async()=>{
+ const cases=[['vehicle','sr',41],['vehicle','de',40],['support','sr',43],['support','de',42],['business','sr',49],['business','de',48],['general','sr',39]];
+ const prior=globalThis.fetch;
+ try{
+  for(const [kind,language,templateId] of cases){
+   const sent=[];
+   globalThis.fetch=async(url,options)=>{
+    if(String(url).includes('siteverify'))return Response.json({success:true,hostname:'daninihub.com'});
+    sent.push(JSON.parse(options.body));
+    return Response.json({messageId:'<accepted@example.test>'},{status:201});
+   };
+   const result=await handleApi(req({...payload(),kind,language}),ready);
+   assert.equal(result.status,202);
+   assert.equal(sent.length,2);
+   assert.equal(sent[1].templateId,templateId);
+   assert.equal(sent[1].params.REFERENCE, (await result.json()).reference);
+   assert.ok(!JSON.stringify(sent[1]).includes(payload().message));
+  }
+ }finally{globalThis.fetch=prior}
 });
 test('Brevo failure never returns a fake success',async()=>{
  const old=globalThis.fetch;

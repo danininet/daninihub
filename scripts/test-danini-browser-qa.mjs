@@ -244,6 +244,20 @@ try{
  const afterLocale=await page.evaluate(()=>window.__daniniTurnstileLanguages);
  assert.equal(afterLocale.at(-1),'de','Turnstile must rerender in German after language switch');
  console.log('PASS contact: Turnstile explicitly renders in SR then DE when selector is clicked');
+ // A rejected provider response must show an actionable sanitized diagnostic.
+ await page.unroute('**/api/lead');
+ await page.route('**/api/lead',route=>route.fulfill({status:502,contentType:'application/json',
+  body:JSON.stringify({error:'mail_provider_unavailable',providerStatus:401})}));
+ await activeForm.locator('input[name="name"]').fill('DANINI Internal QA');
+ await activeForm.locator('input[name="email"]').fill('internal-qa@example.invalid');
+ await activeForm.locator('textarea[name="message"]').fill('Second mock sends nothing and returns a safe provider error code.');
+ await activeForm.locator('input[name="consent"]').check();
+ await activeForm.locator('button[type="submit"]').click();
+ await page.waitForFunction(()=>document.querySelector('#danini-general-inquiry-form [role="status"]')?.textContent?.includes('Brevo 401'));
+ const failedText=await activeForm.locator('[role="status"]').innerText();
+ assert.match(failedText,/HTTP 502 \/ mail_provider_unavailable \/ Brevo 401/);
+ assert.doesNotMatch(failedText,/DN-20261110-1234ABCD/);
+ console.log('PASS contact: provider rejection displays HTTP 502 + Brevo status, never fake DN confirmation');
 
  await page.setViewportSize({width:390,height:844});
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});

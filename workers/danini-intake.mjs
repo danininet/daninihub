@@ -103,6 +103,19 @@ function bodyText(d,ref){
 }
 export async function handleApi(request,env={}){
  const url=new URL(request.url);
+ // Time-limited, read-only API credential diagnostic. Never sends email.
+ // Auto-expires after 2026-11-11 UTC; remove from source after verification.
+ if(url.pathname==='/api/lead/health' && request.method==='GET'){
+  if(Date.now()>=Date.parse('2026-11-11T00:00:00Z'))return response({error:'not_found'},404);
+  if(!env.BREVO_API_KEY)return response({provider:'not_configured'},503);
+  try{
+   const upstream=await fetch('https://api.brevo.com/v3/account',{
+    method:'GET',headers:{'api-key':env.BREVO_API_KEY,'accept':'application/json'},
+    signal:AbortSignal.timeout(7000)
+   });
+   return response({provider:upstream.ok?'authenticated':'rejected',httpStatus:upstream.status},upstream.ok?200:502);
+  }catch{return response({provider:'upstream_unreachable'},502);}
+ }
  if(url.pathname==='/api/lead/status' && request.method==='GET'){
   return response({enabled:isReady(env),channel:isReady(env)?'brevo':'setup_required',
    turnstileSiteKey:isReady(env)?env.DANINI_TURNSTILE_SITEKEY:null});

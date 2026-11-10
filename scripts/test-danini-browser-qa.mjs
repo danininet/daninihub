@@ -208,10 +208,12 @@ try{
     body:JSON.stringify({accepted:true,reference:'DN-20261110-1234ABCD',receiptAccepted:false})});
  });
  await page.addInitScript(()=>{
+  window.__daniniTurnstileLanguages=[];
   window.turnstile={
-   render:()=> 'test-only-widget',
+   render:(_el,options)=>{window.__daniniTurnstileLanguages.push(options.language);return 'test-only-widget';},
    getResponse:()=> 'simulated-only-local-qa-token',
-   reset:()=>{throw new Error('simulated third-party reset failure');}
+   reset:()=>{throw new Error('simulated third-party reset failure');},
+   remove:()=>{}
   };
  });
  await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded'});
@@ -234,7 +236,13 @@ try{
  // Language is explicitly bound to the site selector, not the browser language.
  // The actual Turnstile language is passed during live render, not mocked here.
  assert.ok(await page.locator('#language').count()===1);
- console.log('PASS contact: contact-only email CTA and branded Turnstile-language hook present');
+ const beforeLocale=await page.evaluate(()=>window.__daniniTurnstileLanguages);
+ assert.ok(beforeLocale.includes('sr'),'Initial Turnstile must be in Serbian for SR site');
+ await page.locator('#language').click();
+ await page.waitForFunction(()=>window.__daniniTurnstileLanguages.includes('de'));
+ const afterLocale=await page.evaluate(()=>window.__daniniTurnstileLanguages);
+ assert.equal(afterLocale.at(-1),'de','Turnstile must rerender in German after language switch');
+ console.log('PASS contact: Turnstile explicitly renders in SR then DE when selector is clicked');
 
  await page.setViewportSize({width:390,height:844});
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});

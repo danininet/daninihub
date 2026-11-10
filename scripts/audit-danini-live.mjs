@@ -35,6 +35,25 @@ async function audit(){
    if(!s.includes('dn-service-header'))note('ERROR',p,'Shared logo/menu not in rendered HTML');
   }
   if(p==='/contact.html'&&!s.includes('mailto:kontakt@daninihub.com'))note('ERROR',p,'Direct email absent');
+  // Live customer readiness: guides, visible pilot prices and qualified handoff.
+  // Explicitly do not require payment, active Brevo or any paid AI/booking integration.
+  if(p==='/guides.html'){
+   const ids=['pretraga','prodavac','obilazak','licno','vozac','sleper','uvoz'];
+   for(const id of ids)if(!s.includes('id="'+id+'"'))note('ERROR',p,'Free buyer guide missing: '+id);
+   if(!s.includes('id="danini-journey-form"'))note('ERROR',p,'Customer choice and inquiry draft missing');
+   for(const option of ['value="video"','value="expert"','value="buyer-trip"','value="driver"','value="carrier"'])
+    if(!s.includes(option))note('ERROR',p,'Buyer handoff choice missing '+option);
+   if(!s.includes('href="cenovnik.html"'))note('ERROR',p,'Price link missing from free guides');
+  }
+  if(p==='/cenovnik.html'){
+   for(const euro of ['39 €','99 €','119 €','49 €'])
+    if(!s.includes(euro))note('ERROR',p,'Expected pilot service price missing '+euro);
+   if(!s.includes('href="guides.html"'))note('ERROR',p,'Free guides link missing from prices');
+   if(!s.includes('href="contact.html"'))note('ERROR',p,'Contact route missing from prices');
+  }
+  if(p==='/ai-advisor.html'&&!s.includes('id="ai-download-case"'))
+   note('WARN',p,'Self-service dossier download link not visible in HTML');
+
   if(p==='/impressum.html'){
    if(!s.includes('Fischerstr. 54')||!s.includes('47055 Duisburg')||!s.includes('Dragan Zdravković')){
     console.log('LEGAL DELIVERY DIAGNOSTIC '+JSON.stringify({path:p,workerHeader:x.headers?.get('x-danini-legal-published'),mainIndex:s.indexOf('<main'),mainTag:s.match(/<main[^>]*>/)?.[0],bodyLength:s.length,final:x.final}));

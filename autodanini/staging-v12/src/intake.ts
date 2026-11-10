@@ -4,7 +4,7 @@
  * Turnstile is rendered ONLY after the server advertises a ready sender.
  */
 type IntakeKind='general'|'vehicle'|'business'|'support';
-type TurnstileWidget={render:(el:HTMLElement,options:{sitekey:string,theme:string})=>string|number;getResponse:(id:string|number)=>string;reset:(id:string|number)=>void};
+type TurnstileWidget={render:(el:HTMLElement,options:{sitekey:string,theme:string,language:string})=>string|number;getResponse:(id:string|number)=>string;reset:(id:string|number)=>void;remove?:(id:string|number)=>void};
 type IntakeConfig={enabled:boolean;turnstileSiteKey?:string|null};
 const isGerman=()=>document.documentElement.lang==='de'||localStorage.getItem('autodanini-language')==='de';
 const translate=(sr:string,de:string)=>isGerman()?de:sr;
@@ -134,7 +134,22 @@ async function setup(form:HTMLFormElement,config:IntakeConfig){
  try{
   await loadTurnstile();
   const ts=tsApi();if(!ts)throw Error('missing_turnstile');
-  widget=ts.render(verification,{sitekey:config.turnstileSiteKey,theme:'auto'});
+  const render=()=>ts.render(verification,{sitekey:config.turnstileSiteKey!,theme:'auto',language:isGerman()?'de':'sr'});
+  widget=render();
+  // The user can toggle SR/DE without reloading. Recreate the challenge on
+  // that change so its text follows the chosen site language, not browser UI.
+  document.addEventListener('danini:language-changed',()=>{
+   const current=tsApi();
+   if(!current?.remove)return;
+   try{
+    current.remove(widget);
+    widget=render();
+    status.textContent=translate('Formular je spreman. Podaci idu samo radi odgovora na upit.','Formular bereit. Daten werden nur zur Bearbeitung Ihrer Anfrage übermittelt.');
+   }catch{
+    if(button)button.disabled=true;
+    status.textContent=translate('Bezbednosna provera trenutno nije dostupna. Kontaktirajte nas e-mailom.','Sicherheitsprüfung derzeit nicht verfügbar. Kontaktieren Sie uns bitte per E-Mail.');
+   }
+  });
  }catch{makeFallback(form);return;}
  status.textContent=translate('Formular je spreman. Podaci idu samo radi odgovora na upit.','Formular bereit. Daten werden nur zur Bearbeitung Ihrer Anfrage übermittelt.');
  if(button)button.disabled=false;

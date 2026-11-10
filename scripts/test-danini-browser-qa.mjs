@@ -182,6 +182,8 @@ try{
  assert.equal(await page.locator('#preuzimanje-i-transport article').count(),3,'Three collection/transport quote modes required');
  console.log('PASS transparent pricing: buyer pickup, driver, and truck have quote-based disclosure');
  await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded',timeout:15000});
+ assert.equal(await page.locator('a.wa').count(),0,'Floating WhatsApp button must be removed');
+ assert.equal(await page.locator('a[href*="wa.me"]').count(),0,'Contact page must use email-first flow, not WhatsApp buttons');
  const form=page.locator('#danini-general-inquiry-form');
  assert.equal(await form.count(),1);
  assert.equal(await form.locator('button[type="submit"]').isDisabled(),true,
@@ -206,12 +208,15 @@ try{
     body:JSON.stringify({accepted:true,reference:'DN-20261110-1234ABCD',receiptAccepted:false})});
  });
  await page.addInitScript(()=>{
+  window.__daniniTurnstileLanguages=[];
   window.turnstile={
-   render:()=> 'test-only-widget',
+   render:(_el,options)=>{window.__daniniTurnstileLanguages.push(options.language);return 'test-only-widget';},
    getResponse:()=> 'simulated-only-local-qa-token',
-   reset:()=>{throw new Error('simulated third-party reset failure');}
+   reset:()=>{throw new Error('simulated third-party reset failure');},
+   remove:()=>{}
   };
  });
+ await page.evaluate(()=>localStorage.setItem('autodanini-language','sr'));
  await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded'});
  const activeForm=page.locator('#danini-general-inquiry-form');
  await activeForm.locator('button[type="submit"]').waitFor({state:'visible'});
@@ -229,6 +234,16 @@ try{
  assert.match(successText,/sačuvajte oznaku upita|Referenz notieren/);
  assert.doesNotMatch(successText,/Versand nicht bestätigt|Slanje nije potvrđeno/);
  console.log('PASS contact: accepted DN reference survives throwing CAPTCHA reset; receipt failure disclosed');
+ // Language is explicitly bound to the site selector, not the browser language.
+ // The actual Turnstile language is passed during live render, not mocked here.
+ assert.ok(await page.locator('#language').count()===1);
+ const beforeLocale=await page.evaluate(()=>window.__daniniTurnstileLanguages);
+ assert.ok(beforeLocale.includes('sr'),'Initial Turnstile must be in Serbian for SR site');
+ await page.locator('#language').click();
+ await page.waitForFunction(()=>window.__daniniTurnstileLanguages.includes('de'));
+ const afterLocale=await page.evaluate(()=>window.__daniniTurnstileLanguages);
+ assert.equal(afterLocale.at(-1),'de','Turnstile must rerender in German after language switch');
+ console.log('PASS contact: Turnstile explicitly renders in SR then DE when selector is clicked');
 
  await page.setViewportSize({width:390,height:844});
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});

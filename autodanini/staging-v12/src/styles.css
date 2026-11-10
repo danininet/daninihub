@@ -435,3 +435,6 @@ img{max-width:100%}
 .dn-guides-export button{flex:0 0 auto}
 .dn-guides-export [role=status]{width:100%;flex:1 1 100%;font-size:14px;color:#f8e6a6}
 @media(max-width:650px){.dn-guides-export{padding:20px}.dn-guides-export button{width:100%;justify-content:center}}
+
+/* No fixed WhatsApp button: business leads use the protected email forms. */
+a.wa{display:none!important}

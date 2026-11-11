@@ -3,6 +3,13 @@ on:
   pull_request:
     paths:
       - 'digital-commerce.js'
+      - 'workers/danini-digital-commerce.mjs'
+      - 'workers/danini-intake.mjs'
+      - 'autodanini/staging-v12/digital.html'
+      - 'autodanini/staging-v12/src/digital-checkout.ts'
+      - 'migrations/2026-11-11-danini-digital-d1.sql'
+      - 'scripts/prepare-danini-pdf-d1.cjs'
+      - 'tests/test-danini-cloudflare-commerce.mjs'
       - 'scripts/test-digital-delivery.js'
       - '.github/workflows/danini-digital-payment-safety.yml'
   push:
@@ -26,3 +33,5 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Validate PayPal order verification and private PDF access (offline test)
         run: npm run test:digital
+      - name: Verify Cloudflare commerce is fail-closed and handles PayPal lifecycle offline
+        run: node --test tests/test-danini-cloudflare-commerce.mjs

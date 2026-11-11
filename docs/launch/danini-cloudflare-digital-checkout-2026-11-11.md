@@ -14,17 +14,17 @@ Podaci o kupovini idu u postojeću Cloudflare D1 bazu `danini-commerce`. Postoje
 ## Stanje na 11.11.2026.
 
 - Cloudflare D1 tabele: `danini_digital_orders`, `danini_digital_files`, `danini_digital_pdf_chunks` — **KREIRANE**.
-- PDF original: postoji u privatnom DANINI Google Drive-u: `DANINI_Auto_Biznis_Master_Vodic_2026_FINAL_CLEAN_UTF8.pdf` (3.24 MB). **NIJE UVEZEN u D1**.
+- PDF original: `DANINI_Auto_Biznis_Master_Vodic_2026_FINAL_CLEAN_UTF8.pdf` **UVEZEN JE U PRIVATNU CLOUDFARE D1 BAZU I VERIFIKOVAN** 11.11.2026. Stanje: `ready=1`, 99/99 blokova, 3.241.961 bajt, SHA-256 `b74e1f21d19ac60a38bc79c185d26fae79e490b2bafc4cff10e2f7665e6164db`. Original ostaje i u Google Drive-u.
 - Aktivni Cloudflare Worker ranije je imao Brevo i Turnstile tajne, ali **NEMA verifikovane PayPal tajne**, a R2 nije aktiviran. Zbog toga checkout ostaje namerno disabled.
 - 149 € softverski paket ne otključavati dok nije spremna stvarna automatska isporuka softvera; korisnik dobija samo opis proizvoda.
 
 ## Jedine preostale tehničke operacije za produkcionu prodaju
 
-1. **Privatni PDF import u D1**: preuzeti već postojeći FINAL_CLEAN_UTF8.pdf sa povezanog Drive-a u lokalni privatni folder. Bez objavljivanja PDF-a u GitHub. Lokalno: `node scripts/prepare-danini-pdf-d1.cjs /private/FINAL.pdf /private/danini-private-import.sql`. Zatim kroz postojeći Wrangler pristup: `npx wrangler d1 execute danini-commerce --remote --file=/private/danini-private-import.sql`. Proveriti `SELECT byte_length,chunk_count,ready FROM danini_digital_files WHERE sku='guide'` i SHA256. Bez ovog koraka nema checkout-a.
+1. **Privatni PDF import u D1 — ZAVRŠENO I VERIFIKOVANO**: 99 segmenata uspešno upisano kroz Cloudflare D1 API. Nakon ponovnog čitanja kompletne baze, nezavisno izračunati SHA-256 identičan je originalu. D1 `danini_digital_files.ready=1`. Nije korišćen javni URL ni dodatni hosting.
 2. **PayPal kredencijali u postojećem Cloudflare Worker-u** (unose se isključivo kao secrets, ne u GitHub ni u chat): `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_WEBHOOK_ID`, `DANINI_PAYPAL_RECEIVER_EMAIL`, `DANINI_DIGITAL_SIGNING_SECRET` (min. 32 znakova), `PAYPAL_ENV` (`sandbox` ili `live`). Prijaviti PayPal webhook URL `https://daninihub.com/api/danini/digital/paypal/webhook`. Sačuvati Brevo i Turnstile tajne.
 3. **Sandbox test** s realnim PayPal sandbox nalogom: zasebna uplata samo testnim novcem → proveriti D1 `PAID`, PayPal capture, e-mail, preuzimanje, odbijanje nevalidnog tokena, duplicirani webhook. Isključivo nakon odobrenja poslovnog i pravnog statusa može `PAYPAL_ENV=live`, `DANINI_DIGITAL_LIVE_APPROVED=true`, `DANINI_DIGITAL_CHECKOUT_ENABLED=true`.
 
-Sva podešavanja prodaje ostaju **isključena po zadatku** dok izvorni privatni PDF i kredencijali nisu bezbedno instalirani i testirani; implementacija ne izmišlja uspešnu naplatu.
+Privatni PDF i D1 sloj su završeni. Produkciona prodaja ostaje **isključena** jer PayPal API kredencijali i pravo na live aktivaciju još nisu verifikovani; potrebno je sprovesti stvarni PayPal sandbox test. Implementacija ne izmišlja uspešnu naplatu.
 
 ## Nezavisna provera
 

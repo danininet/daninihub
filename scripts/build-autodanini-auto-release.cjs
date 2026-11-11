@@ -83,12 +83,14 @@ for(const page of pages){
  html=html.replace(/<a\s+href="https:\/\/wa\.me\/4915730916621"[^>]*>WhatsApp[^<]*<\/a>/gi,'');
  html=html.replace(/<a\s+class="wa"[^>]*>WA<\/a>/gi,'');
  if(page==='index'){
-  // Maintain the chosen self-service dossier as the first action.
-  // Keep the existing pre-purchase tool reachable but secondary.
+  // Preserve the free calculator as the leading CTA and prevent a duplicate
+  // gold CTA when the source homepage already includes it.
   const close='</div><div class="agent-ribbon">';
   if(!html.includes('<div class="heroactions">')||!html.includes(close))throw Error('AUTODANINI_HERO_ACTIONS_MISSING');
-  html=html.replace(close,
-   '<a class="btn ghost" href="/prepurchase.html"><span data-sr="Provera pre kapare" data-de="Check vor Anzahlung">Provera pre kapare</span></a>'+close);
+  const calculatorIsPrimary=html.includes('<div class="heroactions"><a class="btn gold" href="import.html">');
+  const calculatorCTA='<a class="btn gold" href="/import.html"><span data-sr="Besplatan kalkulator uvoza" data-de="Kostenloser Importrechner">Besplatan kalkulator uvoza</span></a>';
+  const prePurchaseCTA='<a class="btn ghost" href="/prepurchase.html"><span data-sr="Provera pre kapare" data-de="Check vor Anzahlung">Provera pre kapare</span></a>';
+  html=html.replace(close,(calculatorIsPrimary?'':calculatorCTA)+prePurchaseCTA+close);
  }
  fs.writeFileSync(dest,html);
 }

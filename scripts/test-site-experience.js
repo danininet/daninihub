@@ -144,15 +144,15 @@ async function main() {
       assert.match(response.headers.get('content-type'), /javascript/, asset);
     }
     const float = await (await fetch(base+'/danini-sales.js')).text();
-    assert.match(float, /#25d366/);
-    assert.match(float, /Pošalji oglas \/ WhatsApp/);
-    assert.match(float, /encodeURIComponent/);
+    assert.match(float, /#d5a866/);
+    assert.match(float, /Pošalji e-mail upit/);
+    assert.match(float, /\/sr\/upit/);
     const order = await (await fetch(base+'/danini-order.js')).text();
     assert.match(order, /danini-order-slot/);
     assert.doesNotMatch(order, /paypal\.me|payment\.hidden|danini-order-pay/);
     assert.match(order, /danini-order-consent-check/);
     assert.match(order, /mailto:/);
-    assert.match(order, /wa\.me/);
+    assert.match(order, /danini-order-wa[^\n]*hidden/);
     assert.match(order, /Kaufbudget in €|Budžet za kupovinu vozila/);
     assert.match(order, /Poruka se šalje tek kada je potvrdite/);
     assert.match(order, /AUTODANINI · ZAHTEV ZA KONKRETNU PONUDU/);

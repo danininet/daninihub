@@ -46,8 +46,10 @@ async function audit(){
    if(!s.includes('href="cenovnik.html"'))note('ERROR',p,'Price link missing from free guides');
   }
   if(p==='/cenovnik.html'){
-   for(const euro of ['39 €','99 €','119 €','49 €'])
-    if(!s.includes(euro))note('ERROR',p,'Expected pilot service price missing '+euro);
+   // Guard the current five indicative offers; a stale live deployment still fails.
+   for(const euro of ['30–50 €','80–120 €','150–220 €','100–150 €'])
+    if(!s.includes(euro))note('ERROR',p,'Current service price range missing '+euro);
+   if(!s.includes('B2B za auto-kuće'))note('ERROR',p,'Current B2B quotation service missing');
    if(!s.includes('href="guides.html"'))note('ERROR',p,'Free guides link missing from prices');
    if(!s.includes('href="contact.html"'))note('ERROR',p,'Contact route missing from prices');
   }

@@ -199,7 +199,7 @@ try{
  const contactHtml=fs.readFileSync(path.join(root,'contact.html'),'utf8');
  const supportHtml=fs.readFileSync(path.join(root,'support.html'),'utf8');
  assert.match(contactHtml,/Pošaljite neobavezujući upit kroz zaštićeni e-mail obrazac\./);
- assert.match(contactHtml,/mailto:kontakt@daninihub\\.com/,'Direct business email fallback must be present without JavaScript');
+ assert.ok(contactHtml.includes('mailto:kontakt@daninihub.com'),'Direct business email fallback must be present without JavaScript');
  assert.doesNotMatch(contactHtml,/Predviđen je bezbedan e-mail obrazac kao glavni kanal/);
  assert.doesNotMatch(contactHtml,/WhatsApp ostaje opcioni direktni kontakt/);
  assert.match(supportHtml,/koristite zaštićeni e-mail obrazac/);

@@ -124,6 +124,16 @@ try{
  await page.locator('#ai-go').click();
  assert.match(await page.locator('#ai-output').innerText(),/FAHRZEUGDOSSIER/i);
  console.log('PASS DE dossier: language switch generates German-language case');
+ await page.locator('#dn-ad-text').fill('Verkauf Im Kundenauftrag. Bastlerfahrzeug, nur Export, unfallfrei, scheckheftgepflegt.');
+ await page.locator('#dn-ad-analyze').click();
+ const flags=await page.locator('#dn-ad-flags').innerText();
+ assert.match(flags,/Im Kundenauftrag/);
+ assert.match(flags,/Bastlerfahrzeug/);
+ assert.match(flags,/Scheckheftgepflegt/);
+ await page.locator('#dn-message-type').selectOption('video');
+ assert.match(await page.locator('#dn-message-output').inputValue(),/Video-Besichtigung/);
+ console.log('PASS listing: private German phrase checker and seller-message composer');
+
  await page.goto(base+'/guides.html',{waitUntil:'domcontentloaded'});
  assert.equal(await page.locator('.dn-guides-stack article.dn-guide').count(),7);
  assert.equal(await page.locator('.dn-guides-toc a').count(),7);

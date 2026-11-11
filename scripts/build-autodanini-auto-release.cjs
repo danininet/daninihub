@@ -64,6 +64,12 @@ for(const page of pages){
  if(!brandPattern.test(html)&&page!=='admin')throw Error('AUTODANINI_HEADER_LOCKUP_MISSING '+page);
  html=html.replace(brandPattern,'<span class="brand-lockup"><strong>AutoDanini</strong><small>by DANINI · DE ↔ BALKAN</small></span>');
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
+ if(page==='ai-advisor'){
+  // Privacy-safe listing phrase explainer: static JS, no external AI/API costs.
+  if(!fs.existsSync(path.join(out,'listing-phrases.js')))throw Error('AUTODANINI_LISTING_PHRASES_MISSING');
+  if(html.includes('listing-phrases.js'))throw Error('AUTODANINI_LISTING_PHRASES_DUPLICATE');
+  html=html.replace('</body>','<script defer src="/listing-phrases.js"></script></body>');
+ }
  if(page==='import'){
   // Inject AFTER Vite compilation, which may rewrite ordinary script tags.
   // Local browser-only calculator: no API cost or personal data transmission.
@@ -82,6 +88,7 @@ for(const page of pages){
   const close='</div><div class="agent-ribbon">';
   if(!html.includes('<div class="heroactions">')||!html.includes(close))throw Error('AUTODANINI_HERO_ACTIONS_MISSING');
   html=html.replace(close,
+   '<a class="btn gold" href="/import.html"><span data-sr="Besplatan kalkulator uvoza" data-de="Kostenloser Importrechner">Besplatan kalkulator uvoza</span></a>'+ 
    '<a class="btn ghost" href="/prepurchase.html"><span data-sr="Provera pre kapare" data-de="Check vor Anzahlung">Provera pre kapare</span></a>'+close);
  }
  fs.writeFileSync(dest,html);

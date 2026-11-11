@@ -1,0 +1,28 @@
+# DANINI — AutoDanini
+
+> DANINI is the umbrella brand. AutoDanini is its automotive information and buyer-support area focused on Germany and the Balkans. This file provides supplementary links for readers and crawlers; it is not a certification or a live capability guarantee.
+
+## Public pages
+- [AutoDanini overview](https://daninihub.com/): independent vehicle-purchase preparation and help on request.
+- [Vehicle import cost calculator](https://daninihub.com/import): indicative cost scenarios for Serbia, Bosnia and Herzegovina and Croatia.
+- [Seven free buyer guides](https://daninihub.com/guides): practical checks for listings, ownership, documents, origin, inspection, export and transport; available as an on-device text download.
+- [Listing preparation assistant](https://daninihub.com/ai-advisor): local wording and document checklist, not a live lookup of mobile.de or AutoScout24 listings.
+- [Pre-purchase checklist](https://daninihub.com/prepurchase): steps to verify before sending a deposit.
+- [Inspections](https://daninihub.com/inspection): how independent specialist inspections may be arranged on request.
+- [Live video visit](https://daninihub.com/live): video walk-through by prior agreement with the seller and provider.
+- [Service price information](https://daninihub.com/cenovnik): indicative price bands, subject to an individual written offer.
+- [Contact](https://daninihub.com/contact): primary business inquiry channel via protected form or email.
+- [DANINI brand information](https://daninihub.com/danini): umbrella brand and methodology.
+
+## Reading and safety notes
+- Main languages: Serbian (sr) and German (de). Coverage focuses on Germany ↔ Serbia/Balkan.
+- An ad/listing's claims about accident history, ownership, mileage, origin or condition are not independently verified merely by pasting a URL or text.
+- All customs, VAT, PPMV, homologation and transport outputs are estimates and require current official confirmation for each vehicle and country.
+- AutoDanini does not claim to operate as a licensed technical inspection station or seller of every listed vehicle. Specific services, equipment, availability, price, and terms require prior confirmation.
+- The main customer contact channel is email/protected form; personal WhatsApp is supplementary and not used as a public primary CTA.
+- No automatic payment or booking should be assumed unless the site explicitly confirms its availability for the specific service.
+
+## Editorial update approach
+- Label facts, user-provided information, estimates and unverified claims separately.
+- Prefer direct official government sources for import regulations and tax data.
+- Prefer individual written quotations over unsupported guaranteed savings or fixed travel totals.

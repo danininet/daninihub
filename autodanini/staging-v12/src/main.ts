@@ -1,5 +1,6 @@
 import './styles.css';
 import './intake';
+import './digital-checkout';
 import './buyer-journey';
 import './guides-download';
 

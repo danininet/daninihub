@@ -88,6 +88,7 @@ for(const page of pages){
   const close='</div><div class="agent-ribbon">';
   if(!html.includes('<div class="heroactions">')||!html.includes(close))throw Error('AUTODANINI_HERO_ACTIONS_MISSING');
   html=html.replace(close,
+   '<a class="btn gold" href="/import.html"><span data-sr="Besplatan kalkulator uvoza" data-de="Kostenloser Importrechner">Besplatan kalkulator uvoza</span></a>'+ 
    '<a class="btn ghost" href="/prepurchase.html"><span data-sr="Provera pre kapare" data-de="Check vor Anzahlung">Provera pre kapare</span></a>'+close);
  }
  fs.writeFileSync(dest,html);

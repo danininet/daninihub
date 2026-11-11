@@ -63,6 +63,12 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
    assert.ok(advisorHtml.includes('id="'+id+'"'),'Missing self-service evidence field: '+id);
  }
  assert.ok(advisorHtml.includes('bez naloga ili slanja podataka'),'Explain local privacy');
+ assert.ok(advisorHtml.includes('src="/listing-helper.js"'),'Local listing helper must load');
+ const listingHelper=fs.readFileSync(path.join(root,'autodanini-auto-dist','listing-helper.js'),'utf8');
+ assert.ok(listingHelper.includes('im\\s+kundenauftrag') && listingHelper.includes('bastlerfahrzeug'),'Known seller risk terms must be recognized');
+ assert.ok(listingHelper.includes('Fahrzeug-Identifizierungsnummer'),'German seller question must exist');
+ assert.ok(!listingHelper.includes('fetch('),'Listing helper must not transmit listing texts to third parties');
+ new (require('node:vm').Script)(listingHelper,{filename:'listing-helper.js'});
  const advisorSource=fs.readFileSync(path.join(root,'autodanini/staging-v12/src/main.ts'),'utf8');
  assert.ok(advisorSource.includes('buildLocalVehicleDossier('),'Local case generation must exist');
  assert.ok(advisorSource.includes('new Blob([lastDossier]'),'Local text download must exist');

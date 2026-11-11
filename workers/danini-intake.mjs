@@ -1,3 +1,4 @@
+import {digitalRoute} from './danini-digital-commerce.mjs';
 /**
  * DANINI / Cloudflare Workers lead intake.
  * Fail closed until Brevo sender + recipient + Turnstile + manual enablement are set.
@@ -154,7 +155,9 @@ export async function handleApi(request,env={}){
 }
 export default {
  async fetch(request,env){
-  if(new URL(request.url).pathname.startsWith('/api/'))return handleApi(request,env);
+  const pathname=new URL(request.url).pathname;
+  if(pathname.startsWith('/api/danini/digital/'))return digitalRoute(request,env);
+  if(pathname.startsWith('/api/'))return handleApi(request,env);
   return env.ASSETS.fetch(request);
  }
 };

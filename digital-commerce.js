@@ -38,7 +38,7 @@ function enabled(app){
     process.env.PAYPAL_CLIENT_SECRET &&
     process.env.PAYPAL_WEBHOOK_ID &&
     ['live','sandbox'].includes(process.env.PAYPAL_ENV) &&
-    (process.env.PAYPAL_ENV==='live'?(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'').toLowerCase()==='draganganet@gmail.com':RE.test(process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'')) &&
+    RE.test((process.env.DANINI_PAYPAL_RECEIVER_EMAIL||'').trim().toLowerCase()) &&
     (process.env.DANINI_DIGITAL_SIGNING_SECRET||'').length>=32 &&
     process.env.DANINI_PUBLIC_URL===fixedOrigin &&
     store&&store.mode==='mysql' && privateFile());

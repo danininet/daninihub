@@ -101,7 +101,8 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  // Cloudflare Git Builds used to lack an explicit assets directory. That can
  // publish an incomplete or legacy dist while only the homepage appears live.
  const wrangler=JSON.parse(fs.readFileSync(path.join(root,'wrangler.jsonc'),'utf8'));
- assert.equal(wrangler.name,'daninihub');
+ assert.equal(wrangler.name,'autodanini', 'Deploy the existing production Worker, not a conflicting new one');
+  assert.deepEqual(wrangler.previews,{}, 'Cloudflare PR builds require Wrangler preview configuration');
  assert.equal(wrangler.assets.directory,'./autodanini-auto-dist');
  assert.equal(wrangler.assets.html_handling,'auto-trailing-slash');
  assert.deepEqual(wrangler.routes,[

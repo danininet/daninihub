@@ -61,9 +61,9 @@ try{
  await page.route('https://**/*',route=>route.abort());
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});
  await assert.doesNotReject(async()=>await page.locator('.hero h1').waitFor());
- assert.match(await page.locator('.hero h1').innerText(),/Pripremite kupovinu auta sami/i);
+ assert.match(await page.locator('.hero h1').innerText(),/Kupujete auto u Nemačkoj/i);
  const primary=page.locator('.heroactions a').first();
- assert.match(await primary.getAttribute('href'),/ai-advisor\.html/);
+ assert.match(await primary.getAttribute('href'),/import\.html/);
  const cards=page.locator('.dn-photo-card');
  assert.equal(await cards.count(),6,'Six approved service photos should appear on homepage');
  for(let i=0;i<6;i++){
@@ -84,9 +84,9 @@ try{
  assert.equal(await page.locator('a.wa').count(),0,
    'Floating WhatsApp shortcut must not be shipped in the public HTML');
  console.log('PASS Home: public WhatsApp CTAs removed, email-first design');
- console.log('PASS Home: self-service first, primary CTA leads to existing dossier');
+ console.log('PASS Home: free import calculator first, dossier and enquiry remain reachable');
  await page.goto(base+'/de/',{waitUntil:'domcontentloaded'});
- assert.match(await page.locator('.hero h1').innerText(),/Autokauf selbst vorbereiten/i);
+ assert.match(await page.locator('.hero h1').innerText(),/Importkosten zuerst berechnen/i);
  console.log('PASS DE: localized homepage works with JavaScript');
  await page.goto(base+'/buyers.html',{waitUntil:'domcontentloaded'});
  assert.match(await page.locator('.dn-related-grid a').first().innerText(),/Unabhängige Fahrzeugprüfung/i,

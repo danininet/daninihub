@@ -64,6 +64,12 @@ for(const page of pages){
  if(!brandPattern.test(html)&&page!=='admin')throw Error('AUTODANINI_HEADER_LOCKUP_MISSING '+page);
  html=html.replace(brandPattern,'<span class="brand-lockup"><strong>AutoDanini</strong><small>by DANINI · DE ↔ BALKAN</small></span>');
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
+ if(page==='ai-advisor'){
+  // A privacy-preserving local wording check, not a paid or generative AI API.
+  if(!fs.existsSync(path.join(out,'listing-helper.js')))throw Error('AUTODANINI_LISTING_HELPER_MISSING');
+  if(html.includes('listing-helper.js'))throw Error('AUTODANINI_LISTING_HELPER_DUPLICATE');
+  html=html.replace('</body>','<script defer src="/listing-helper.js"></script></body>');
+ }
  if(page==='import'){
   // Inject AFTER Vite compilation, which may rewrite ordinary script tags.
   // Local browser-only calculator: no API cost or personal data transmission.

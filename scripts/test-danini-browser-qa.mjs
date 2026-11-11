@@ -195,6 +195,15 @@ try{
  await page.goto(base+'/cenovnik.html',{waitUntil:'domcontentloaded'});
  assert.equal(await page.locator('#preuzimanje-i-transport article').count(),3,'Three collection/transport quote modes required');
  console.log('PASS transparent pricing: buyer pickup, driver, and truck have quote-based disclosure');
+ // Prevent confusing prelaunch text from resurfacing after the real email intake went live.
+ const contactHtml=fs.readFileSync(path.join(root,'contact.html'),'utf8');
+ const supportHtml=fs.readFileSync(path.join(root,'support.html'),'utf8');
+ assert.match(contactHtml,/Pošaljite neobavezujući upit kroz zaštićeni e-mail obrazac\./);
+ assert.doesNotMatch(contactHtml,/Predviđen je bezbedan e-mail obrazac kao glavni kanal/);
+ assert.doesNotMatch(contactHtml,/WhatsApp ostaje opcioni direktni kontakt/);
+ assert.match(supportHtml,/koristite zaštićeni e-mail obrazac/);
+ assert.doesNotMatch(supportHtml,/pripremamo e-mail podršku|E-Mail-Unterstützung[^<]*wird vorbereitet/);
+ console.log('PASS contact/support: current email-first copy, no outdated under-construction claim');
  await page.goto(base+'/contact.html',{waitUntil:'domcontentloaded',timeout:15000});
  assert.equal(await page.locator('a.wa').count(),0,'Floating WhatsApp button must be removed');
  assert.equal(await page.locator('a[href*="wa.me"]').count(),0,'Contact page must use email-first flow, not WhatsApp buttons');

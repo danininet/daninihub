@@ -21,5 +21,12 @@
       "custom_domain": true
     }
   ],
-  "main": "workers/danini-intake.mjs"
+  "main": "workers/danini-intake.mjs",
+  "d1_databases": [
+    {
+      "binding": "DANINI_DB",
+      "database_name": "danini-commerce",
+      "database_id": "9c3fc741-5cb0-432f-82ca-c75e8220c435"
+    }
+  ]
 }

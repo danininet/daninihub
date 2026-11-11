@@ -16,7 +16,7 @@ try {
  for(const width of [360,390,768,1440]){
   const context=await browser.newContext({viewport:{width,height:850},deviceScaleFactor:1});
   const page=await context.newPage();
-  for(const path of ['/','/danini.html','/danini-sr.html','/buyers.html','/business.html','/contact.html','/guides.html']){
+  for(const path of ['/','/danini.html','/danini-sr.html','/buyers.html','/business.html','/contact.html','/guides.html','/cenovnik.html']){
    const errors=[];
    page.on('pageerror',err=>errors.push(err.message));
    try {
@@ -45,6 +45,7 @@ try {
       assert.ok(await page.locator('.dn-service-nav a[href="/contact.html"]').count()===1,'Contact not in service nav');
     }
     if(path==='/contact.html')assert.ok(await page.locator('a[href^="mailto:kontakt@daninihub.com"]').count()>=1,'Direct contact email missing');
+    if(path==='/cenovnik.html')assert.equal(await page.locator('#preuzimanje-i-transport article').count(),3,'Published tariff must cover personal pickup, driver and carrier');
     if(path==='/guides.html'){
       assert.equal(await page.locator('.dn-guide').count(),7,'Live Cloudflare guide page must contain all seven articles');
       assert.equal(await page.locator('#danini-journey-form').count(),1,'Live customer choice form missing');

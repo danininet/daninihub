@@ -124,13 +124,13 @@ for(const page of indexablePages){
  // The import calculator is only indicative. Its title must NOT promise
  // registration-ready all-in costs, because several charges are unknown.
  if(page==='import'){
-  const seoTitle='Kalkulator uvoza auta iz Nemačke (carina i PDV) | AutoDanini';
+  const seoTitle='Kalkulator uvoza auta – Srbija, BiH i Hrvatska';
   html=html.replace(/<title>[^<]*<\/title>/,
    '<title>'+seoTitle+'</title>');
   html=html.replace(/(<meta property="og:title" content=")[^"]*(")/,
    '$1'+seoTitle+'$2');
   html=html.replace(/(<meta name="description" content=")[^"]*(")/,
-   '$1Orijentacioni kalkulator uvoza vozila iz Nemačke u Srbiju: scenariji carine i PDV-a. Konačna osnovica i dodatni troškovi zahtevaju potvrdu.$2');
+   '$1Besplatan kalkulator uvoza iz Nemačke u Srbiju, BiH i Hrvatsku. Procenite carinu, PDV, PPMV, transport i dodatne troškove.$2');
  }
  if(page!=='index'&&page!=='contact'){
   // Plain descriptive internal links improve visitor discovery without promising unavailable services.

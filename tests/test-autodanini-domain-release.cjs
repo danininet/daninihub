@@ -74,7 +74,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.ok(advisorSource.includes('new Blob([lastDossier]'),'Local text download must exist');
  assert.ok(!advisorSource.includes("api.post('/api/advice'"),'Do not transmit visitor notes during local case building');
  const germanHome=fs.readFileSync(path.join(root,'autodanini-auto-dist','de','index.html'),'utf8');
- assert.match(germanHome,/Autokauf selbst vorbereiten\. Hilfe nur bei Bedarf\./,
+ assert.match(germanHome,/Autokauf in Deutschland\? Importkosten zuerst berechnen\./,
    'German homepage HTML must be localized without requiring JavaScript');
  for(const newPage of ['digital','ai-solutions','business','cnc']){
    const page=fs.readFileSync(path.join(root,'autodanini-auto-dist',newPage+'.html'),'utf8');

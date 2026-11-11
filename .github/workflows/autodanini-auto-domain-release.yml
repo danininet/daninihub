@@ -87,7 +87,7 @@ jobs:
             if(fs.existsSync('autodanini-auto-dist/'+old))throw new Error('Forbidden owner source/collage published: '+old);
           }
           const support=fs.readFileSync('autodanini-auto-dist/support.html','utf8');
-          if(!support.includes('autodanini-support-form') || !support.includes('WhatsApp'))throw Error('Support Desk not built');
+          if(!support.includes('autodanini-support-form') || !support.includes('zaštićeni e-mail obrazac'))throw Error('Protected email Support Desk not built');
           if(!about.includes('danini-pregled-auta.webp'))throw Error('Service visual not shown on About');
           console.log('Two approved single business photos, no original portrait/collage, Support, legacy and AutoDanini root: OK');
           console.log('Both site builds and original imagery verified');

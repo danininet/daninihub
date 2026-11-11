@@ -84,7 +84,7 @@
     const hr=c==='hr',weight=amount('dn-weight'),ppmv=amount('dn-ppmv');
     const invalid=[p,t,fees,other].some(n=>!Number.isFinite(n)||n<0)||p<=0||(!hr&&(!Number.isFinite(cv)||cv<=0||!Number.isFinite(add)||add<0))||(hr&&(!Number.isFinite(weight)||weight<0||weight>10000||!Number.isFinite(ppmv)||ppmv<0));
     const err=find('dn-error');
-    if(invalid){err.hidden=false;err.textContent=hr&&!Number.isFinite(ppmv)?(document.documentElement.lang==='de'?'Bitte zuerst PPMV aus der amtlichen Berechnung eingeben. Ohne PPMV ist die Gesamtsumme unvollständig.':'Unesite PPMV iz službenog obračuna. Bez PPMV nije moguće prikazati ukupnu cenu.'):(document.documentElement.lang==='de'?'Bitte gültige Beträge eingeben.':'Unesite ispravne nenegativne iznose i cenu vozila.');find('dn-total').textContent='—';find('dn-breakdown').replaceChildren();latest='';return;}
+    if(invalid){find('dn-warning').textContent=hr?(document.documentElement.lang==='de'?'PPMV muss vor einer Gesamtsumme eingegeben werden.':'PPMV je obavezan za prikaz ukupne procene.'):'';err.hidden=false;err.textContent=hr&&!Number.isFinite(ppmv)?(document.documentElement.lang==='de'?'Bitte zuerst PPMV aus der amtlichen Berechnung eingeben. Ohne PPMV ist die Gesamtsumme unvollständig.':'Unesite PPMV iz službenog obračuna. Bez PPMV nije moguće prikazati ukupnu cenu.'):(document.documentElement.lang==='de'?'Bitte gültige Beträge eingeben.':'Unesite ispravne nenegativne iznose i cenu vozila.');find('dn-total').textContent='—';find('dn-breakdown').replaceChildren();latest='';return;}
     err.hidden=true;
     const preferential=find('dn-origin').value==='yes';
     const rate=hr?0:preferential?0:c==='rs'?.125:.15;

@@ -10,21 +10,21 @@
         <p class="dn-kicker" data-sr="BESPLATNO · BEZ NALOGA" data-de="KOSTENLOS · OHNE KONTO">BESPLATNO · BEZ NALOGA</p>
         <h2 data-sr="Koliko stvarno košta uvoz auta?" data-de="Was kostet der Fahrzeugimport?">Koliko stvarno košta uvoz auta?</h2>
         <p data-sr="Uporedite carinu, porez i ostale procenjene troškove pre nego što krenete u kupovinu." data-de="Vergleichen Sie Zoll, Steuern und Nebenkosten, bevor Sie ein Fahrzeug kaufen.">Uporedite carinu, porez i ostale procenjene troškove pre nego što krenete u kupovinu.</p>
-        <label data-sr="Država odredišta" data-de="Zielland">Država odredišta</label>
+        <label for="dn-country" data-sr="Država odredišta" data-de="Zielland">Država odredišta</label>
         <select id="dn-country"><option value="rs">Srbija</option><option value="ba">Bosna i Hercegovina</option><option value="hr">Hrvatska</option></select>
         <div class="dn-cols"><div><label for="dn-price" data-sr="Cena vozila (€)" data-de="Fahrzeugpreis (€)">Cena vozila (€)</label><input type="number" id="dn-price" min="1" max="1000000" step=".01" value="10000"></div>
           <div><label for="dn-freight" data-sr="Prevoz i izvoz (€)" data-de="Transport und Export (€)">Prevoz i izvoz (€)</label><input type="number" id="dn-freight" min="0" max="100000" step=".01" value="700"></div></div>
-        <label for="dn-customs" data-sr="Carinska vrednost, uključujući pripadajući prevoz (€)" data-de="Zollwert inkl. anrechenbarem Transport (€)">Carinska vrednost, uključujući pripadajući prevoz (€)</label>
+        <div id="dn-customs-wrap"><label for="dn-customs" data-sr="Carinska vrednost, uključujući pripadajući prevoz (€)" data-de="Zollwert inkl. anrechenbarem Transport (€)">Carinska vrednost, uključujući pripadajući prevoz (€)</label>
         <input type="number" id="dn-customs" min="1" max="1000000" step=".01" value="10700">
-        <p class="dn-note" data-sr="Carinska vrednost nije nužno jednaka ceni iz oglasa. Uneta vrednost koristi se kao poreska osnovica; ne dodaje se ponovo ukupnom trošku." data-de="Der Zollwert kann vom Inseratpreis abweichen. Er ist nur die Steuerbasis, kein zusätzlicher Kaufpreis.">Carinska vrednost nije nužno jednaka ceni iz oglasa. Uneta vrednost koristi se kao poreska osnovica; ne dodaje se ponovo ukupnom trošku.</p>
+        <p class="dn-note" data-sr="Carinska vrednost nije nužno jednaka ceni iz oglasa. Uneta vrednost koristi se kao poreska osnovica; ne dodaje se ponovo ukupnom trošku." data-de="Der Zollwert kann vom Inseratpreis abweichen. Er ist nur die Steuerbasis, kein zusätzlicher Kaufpreis.">Carinska vrednost nije nužno jednaka ceni iz oglasa. Uneta vrednost koristi se kao poreska osnovica; ne dodaje se ponovo ukupnom trošku.</p></div>
         <div id="dn-origin-wrap"><label for="dn-origin" data-sr="Dokaz o preferencijalnom poreklu" data-de="Nachweis des präferenziellen Ursprungs">Dokaz o preferencijalnom poreklu</label>
         <select id="dn-origin"><option value="unknown">Nije potvrđen (oprezniji scenario)</option><option value="yes">Postoji odgovarajući prihvaćen dokaz (0%)</option><option value="no">Bez prihvaćenog dokaza</option></select></div>
         <div id="dn-hr-wrap" hidden><label for="dn-ppmv" data-sr="PPMV prema zvaničnom obračunu (€)" data-de="PPMV laut amtlicher Berechnung (€)">PPMV prema zvaničnom obračunu (€)</label>
-        <input type="number" id="dn-ppmv" min="0" max="200000" step=".01" placeholder="Obavezan unos kada je poznat">
+        <input type="number" id="dn-ppmv" min="0" max="200000" step=".01" placeholder="Obavezan unos prema službenom obračunu"><p class="dn-note"><a href="https://carina.gov.hr/propisi-i-sporazumi/trosarinsko-postupanje/dodatne-informacije-o-trosarinama-i-posebnim-porezima/posebni-porez-na-motorna-vozila-3650/informativni-kalkulator-za-izracun-ppmv-a/4838" target="_blank" rel="noopener noreferrer" data-sr="Otvori zvanični hrvatski PPMV kalkulator ↗" data-de="Amtlichen kroatischen PPMV-Rechner öffnen ↗">Otvori zvanični hrvatski PPMV kalkulator ↗</a></p>
         <label for="dn-weight" data-sr="Odgovarajuća masa za naknadu (kg)" data-de="Anrechenbare Masse (kg)">Odgovarajuća masa za naknadu (kg)</label>
         <input type="number" id="dn-weight" min="0" max="10000" step="1" value="1500"></div>
         <div class="dn-cols"><div><label for="dn-fees" data-sr="Lokalne takse i usluge (€)" data-de="Lokale Gebühren und Dienste (€)">Lokalne takse i usluge (€)</label><input type="number" id="dn-fees" min="0" max="100000" step=".01" value="230"></div>
-        <div><label for="dn-vat-base-extra" data-sr="Drugi troškovi u PDV osnovici (€)" data-de="Weitere Kosten in MwSt.-Basis (€)">Drugi troškovi u PDV osnovici (€)</label><input type="number" id="dn-vat-base-extra" min="0" max="100000" step=".01" value="0"></div></div>
+        <div id="dn-vat-extra-wrap"><label for="dn-vat-base-extra" data-sr="Drugi troškovi u PDV osnovici (€)" data-de="Weitere Kosten in MwSt.-Basis (€)">Drugi troškovi u PDV osnovici (€)</label><input type="number" id="dn-vat-base-extra" min="0" max="100000" step=".01" value="0"></div></div>
         <div><label for="dn-other" data-sr="Ostali troškovi (€)" data-de="Sonstige Kosten (€)">Ostali troškovi (€)</label><input type="number" id="dn-other" min="0" max="100000" step=".01" value="0"></div>
         <p id="dn-error" role="alert" class="dn-error" hidden></p>
         <button class="btn primary" id="dn-calculate" type="button" data-sr="Izračunaj ukupno" data-de="Gesamtkosten berechnen">Izračunaj ukupno</button>
@@ -76,20 +76,22 @@
   const calc=()=>{
     const c=find('dn-country').value;
     find('dn-origin-wrap').hidden=c==='hr';
+    find('dn-customs-wrap').hidden=c==='hr';
+    find('dn-vat-extra-wrap').hidden=c==='hr';
     find('dn-hr-wrap').hidden=c!=='hr';
     if(c!==lastCountry){find('dn-fees').value=c==='hr'?'85':'230';lastCountry=c;}
     const p=amount('dn-price'),t=amount('dn-freight'),cv=amount('dn-customs'),fees=amount('dn-fees'),other=amount('dn-other'),add=amount('dn-vat-base-extra');
     const hr=c==='hr',weight=amount('dn-weight'),ppmv=amount('dn-ppmv');
-    const invalid=[p,t,cv,fees,other,add].some(n=>!Number.isFinite(n)||n<0)||p<=0||cv<=0||(hr&&(!Number.isFinite(weight)||weight<0||weight>10000));
+    const invalid=[p,t,fees,other].some(n=>!Number.isFinite(n)||n<0)||p<=0||(!hr&&(!Number.isFinite(cv)||cv<=0||!Number.isFinite(add)||add<0))||(hr&&(!Number.isFinite(weight)||weight<0||weight>10000||!Number.isFinite(ppmv)||ppmv<0));
     const err=find('dn-error');
-    if(invalid){err.hidden=false;err.textContent='Unesite ispravne nenegativne iznose i cenu vozila.';find('dn-total').textContent='—';find('dn-breakdown').replaceChildren();latest='';return;}
+    if(invalid){find('dn-warning').textContent=hr?(document.documentElement.lang==='de'?'PPMV muss vor einer Gesamtsumme eingegeben werden.':'PPMV je obavezan za prikaz ukupne procene.'):'';err.hidden=false;err.textContent=hr&&!Number.isFinite(ppmv)?(document.documentElement.lang==='de'?'Bitte zuerst PPMV aus der amtlichen Berechnung eingeben. Ohne PPMV ist die Gesamtsumme unvollständig.':'Unesite PPMV iz službenog obračuna. Bez PPMV nije moguće prikazati ukupnu cenu.'):(document.documentElement.lang==='de'?'Bitte gültige Beträge eingeben.':'Unesite ispravne nenegativne iznose i cenu vozila.');find('dn-total').textContent='—';find('dn-breakdown').replaceChildren();latest='';return;}
     err.hidden=true;
     const preferential=find('dn-origin').value==='yes';
     const rate=hr?0:preferential?0:c==='rs'?.125:.15;
     const duty=cv*rate;
     const vat=hr?0:(cv+duty+add)*(c==='rs'?.2:.17);
     const waste=hr?weight*.08:0;
-    const pp=hr?(Number.isFinite(ppmv)&&ppmv>=0?ppmv:0):0;
+    const pp=hr?ppmv:0;
     const total=p+t+duty+vat+fees+other+waste+pp;
     const raw=[p,t,duty,vat,pp,waste,fees,other];
     const language=document.documentElement.lang==='de'?'de':'sr';
@@ -98,12 +100,15 @@
     const lines=[];
     labels[language].forEach((label,i)=>{if(raw[i]===0&&i!==2)return;const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=euro(raw[i]);row.append(dt,dd);breakdown.append(row);lines.push(label+': '+euro(raw[i]));});
     find('dn-total').textContent=euro(total);
-    const warning=hr&&!Number.isFinite(ppmv)?'PPMV nije unet: ukupna procena je nepotpuna. Proverite službeni PPMV kalkulator.':!hr&&!preferential?'Bez potvrđenog dokaza o preferencijalnom poreklu prikazana je puna orijentaciona stopa carine.':'Procena ne potvrđuje pravo na carinsku olakšicu.';
+    const warning=hr?(language==='de'?'PPMV und anrechenbare Masse anhand amtlicher Quellen prüfen. EU-Neufahrzeugfälle können zusätzliche Umsatzsteuerpflichten auslösen.':'PPMV i obračunsku masu proverite prema zvaničnim pravilima. Za novo prevozno sredstvo iz EU mogu važiti posebna PDV pravila.'):!preferential?(language==='de'?'Ohne anerkannten Präferenzursprung gilt die konservative Zollschätzung.':'Bez potvrđenog dokaza o preferencijalnom poreklu prikazana je konzervativna carinska procena.'):(language==='de'?'0 % Zoll nur bei anerkanntem Nachweis.':'Carina 0% važi samo uz prihvaćen dokaz o preferencijalnom poreklu.');
     find('dn-warning').textContent=warning;
     latest=['AutoDanini — informativni uvozni troškovi',c==='rs'?'Srbija':c==='ba'?'BiH':'Hrvatska',...lines,'UKUPNO: '+euro(total),warning,'https://daninihub.com/import.html'].join('\n');
   };
   find('dn-calculate').addEventListener('click',calc);
-  host.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',calc));
+  host.querySelectorAll('input,select').forEach(el=>{
+    el.addEventListener('input',calc);
+    el.addEventListener('change',calc);
+  });
   find('dn-copy').addEventListener('click',async()=>{if(!latest)return;try{await navigator.clipboard.writeText(latest);find('dn-copy').textContent='Kopirano ✓';}catch{const a=document.createElement('textarea');a.value=latest;document.body.append(a);a.select();document.execCommand('copy');a.remove();}});
   document.addEventListener('danini:language-changed',calc);
   calc();

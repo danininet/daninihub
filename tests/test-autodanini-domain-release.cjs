@@ -152,7 +152,7 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  for(const page of publicSeo){
   const html=fs.readFileSync(path.join(root,'autodanini-auto-dist',page+'.html'),'utf8');
   assert.match(html,/<meta name="robots" content="index,follow">/,'Public SEO blocked: '+page);
-  const canonical=page==='index'?'https://daninihub.com/':'https://daninihub.com/'+page+'.html';
+  const canonical=page==='index'?'https://daninihub.com/':'https://daninihub.com/'+page+(['import','contact','cenovnik'].includes(page)?'':'.html');
   assert.ok(html.includes('<link rel="canonical" href="'+canonical+'">'),'Missing canonical: '+page);
  }
  for(const page of ['auctions','ai-advisor','ai-primer','nalog','admin','support']){
@@ -163,7 +163,8 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  assert.ok(seoGerman.includes('<link rel="canonical" href="https://daninihub.com/de/">'));
  assert.ok(seoGerman.includes('<meta name="robots" content="index,follow">'));
  const seoSitemap=fs.readFileSync(path.join(root,'autodanini-auto-dist','sitemap.xml'),'utf8');
- assert.ok(seoSitemap.includes('<loc>https://daninihub.com/import.html</loc>'));
+ assert.ok(seoSitemap.includes('<loc>https://daninihub.com/import</loc>'));
+ assert.ok(!seoSitemap.includes('<loc>https://daninihub.com/import.html</loc>'),'Sitemap should not use redirecting URL');
  assert.ok(seoSitemap.includes('<loc>https://daninihub.com/de/</loc>'));
  assert.ok(!seoSitemap.includes('admin.html')&&!seoSitemap.includes('auctions.html'));
  const seoRobots=fs.readFileSync(path.join(root,'autodanini-auto-dist','robots.txt'),'utf8');
@@ -171,6 +172,10 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  const importPage=fs.readFileSync(path.join(root,'autodanini-auto-dist','import.html'),'utf8');
  assert.ok(importPage.includes('<title>Kalkulator uvoza auta – Srbija, BiH i Hrvatska</title>'));
  assert.ok(importPage.includes('src="/import-v2.js"'),'Three-country calculator must be loaded');
+ assert.ok(importPage.includes('"@type":"WebApplication"'),'Calculator must expose factual software schema');
+ const llms=fs.readFileSync(path.join(root,'autodanini-auto-dist','llms.txt'),'utf8');
+ assert.match(llms,/AutoDanini/);
+ assert.match(llms,/\/import/);
  const calculatorScript=fs.readFileSync(path.join(root,'autodanini-auto-dist','import-v2.js'),'utf8');
  assert.ok(calculatorScript.includes('id="dn-country"')&&calculatorScript.includes('value="ba"')&&calculatorScript.includes('value="hr"'),'SR/BiH/HR scenarios required');
  assert.ok(calculatorScript.includes("clipboard.writeText"),'Copyable calculation must exist');

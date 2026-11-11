@@ -4,10 +4,11 @@ const fs=require('node:fs');
 const os=require('node:os');
 const path=require('node:path');
 const express=require('express');
-// Regression guard: WhatsApp click does not unlock a premature payment.
+// Regression guard: calculator lead handoff never unlocks premature payment.
 const calcClient=fs.readFileSync(path.join(__dirname,'..','public','danini-quickcheck.js'),'utf8');
 assert.doesNotMatch(calcClient,/paypal\.me|paymentUnlocked|danini-calc-pay/);
-assert.match(calcClient,/pre bilo kakve uplate/);
+assert.match(calcClient,/sr\/upit|de\/anfrage/);
+assert.doesNotMatch(calcClient,/wa\.me\//,'Calculator should use protected inquiry');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'danini-funnel-'));
 process.env.DANINI_IMPORTOS_STORAGE_FILE=path.join(tmp,'records.json');
 process.env.DANINI_ADMIN_SECRET='test-only-owner-secret';

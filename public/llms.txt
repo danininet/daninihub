@@ -1,0 +1,33 @@
+# AutoDanini — DANINI
+
+> AutoDanini is the automotive purchase, vehicle inspection and import-planning area of DANINI. This file describes repository content and does not certify that every route or service is currently live.
+
+## Languages and audiences
+- Serbian: customers considering used-vehicle purchases in Germany and import to Serbia.
+- German: vehicle owners, buyers and partners seeking information about checks, import estimates and transfer options.
+
+## Main intended pages (verify production availability before linking externally)
+- /sr/ — Serbian overview.
+- /de/ — German overview.
+- /sr/kalkulator — indicative import-cost calculator for cars purchased in Germany.
+- /de/rechner — German calculator.
+- /sr/pregled-auta — pre-purchase vehicle inspection information.
+- /de/fahrzeugpruefung — German inspection information.
+- /sr/dovoz-auta — transport options and quote requests.
+- /de/ueberfuehrung — German vehicle transfer information.
+- /sr/vodici — Serbian guides.
+- /de/ratgeber — German guides.
+- /sr/upit — Serbian inquiry form.
+- /de/anfrage — German inquiry form.
+
+## Important limitations
+- Import calculations are estimates, not binding customs, tax or registration decisions.
+- Viewing a vehicle or checking an advertisement cannot guarantee the absence of hidden defects.
+- Any on-site service, transport availability, prices, timeframes, and payment terms must be confirmed in an individual offer before commitment.
+- Vehicle purchase decisions and legal responsibility remain with the customer and relevant professionals.
+- The primary business inquiry channel is the protected website form and email, not WhatsApp.
+
+## Editorial guidelines
+- Preserve the distinction between verified facts, estimates, published information and individual quotations.
+- Check current government rules and fees before relying on customs, tax or registration guidance.
+- Do not infer that a proposed or repository-defined service is currently operational without a live check.

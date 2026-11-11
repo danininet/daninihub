@@ -1,7 +1,7 @@
 'use strict';
 
 // Single source of truth for DANINI lead capture, across SR/DE pages.
-// No customer data is stored on the server; the buyer chooses to open WhatsApp.
+// The protected website form is primary; email fallback remains available while intake is offline.
 (() => {
   const PHONE = '4915730916621';
   const CONTACT_EMAIL = 'info@daninihub.com';
@@ -79,11 +79,11 @@
       '</ol><p><a target="_self" href="/' + (de ? 'de/wissen/' : 'sr/vodic/') + 'uvoz-zoll-eur1-i-dovoz">' + t('Otvori vodič i zvanične izvore', 'Ratgeber und amtliche Quellen öffnen') + ' →</a></p></details>',
 
       '<p class="danini-url-status" role="status" aria-live="polite"></p>',
-      '<a class="danini-order-wa" href="#" target="_blank" rel="noopener noreferrer">',
+      '<a class="danini-order-wa" href="#" target="_blank" rel="noopener noreferrer" hidden>',
       '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.8 8.4 8.5 8.5 0 0 1-3.8-1L3 21l2.1-5.2a8.4 8.4 0 1 1 15.9-4.3Z"/><path d="M9 9c.4 2.5 2 4 4.6 5.5l1.3-1.1 2.1 1-1 2c-3.5.7-8.2-3.9-8.5-7.3L9 9Z"/></svg>',
-      '<span>' + t('1. Pošalji oglas Draganu na WhatsApp',
-        '1. Inserat per WhatsApp an Dragan senden') + '</span></a>',
-      '<label for="' + formId + '-email">' + t('E-mail za potvrdu preko sajta (opciono za WhatsApp)', 'E-Mail für eine Anfrage über die Website (optional für WhatsApp)') + '</label>',
+      '<span>' + t('Opcioni lični WhatsApp kontakt',
+        'Optionaler persönlicher WhatsApp-Kontakt') + '</span></a>',
+      '<label for="' + formId + '-email">' + t('E-mail za odgovor preko sajta', 'E-Mail für die Antwort auf eine Website-Anfrage') + '</label>',
       '<input class="danini-order-contact-email" id="' + formId + '-email" type="email" maxlength="190" autocomplete="email" placeholder="ime@primer.com">',
       '<label class="danini-order-consent"><input type="checkbox" class="danini-order-consent-check"><span>' + t(
         'Razumem da se upit šalje preko izabrane aplikacije ili, kada je omogućeno, kroz AutoDanini sistem radi obrade ponude i potvrde e-mejlom. Ne šaljem lozinke ni lična dokumenta. <a href="/sr/privatnost">Privatnost</a>.',
@@ -94,7 +94,7 @@
        t('Dostupno samo kada su baza i potvrda mejlom aktivne. Upit se ne naplaćuje.', 'Nur verfügbar, wenn Datenbank und E-Mail-Bestätigung aktiv sind. Anfrage kostenlos.') + '</p></div>',
       '<p class="danini-order-help" role="status" aria-live="polite"></p>',
       '<a class="danini-order-email" href="#" aria-disabled="true">' +
-        t('Nemate WhatsApp? Pošaljite upit mejlom →', 'Kein WhatsApp? Anfrage per E-Mail senden →') + '</a>',
+        t('Pošalji upit putem e-maila →', 'Anfrage per E-Mail senden →') + '</a>',
       '<p class="danini-order-note">' + t(
         'Nema automatske rezervacije niti online uplate preko ovog obrasca. Dobijate odgovor sa ponudom za dostupnu uslugu, obimom i ukupnom cenom.',
         'Dieses Formular nimmt weder Buchungen noch Online-Zahlungen vor. Sie erhalten ein Angebot mit verfügbarer Leistung, Umfang und Gesamtpreis.') +
@@ -137,7 +137,7 @@
         ? t('Link nije ispravan. Unesite punu HTTP(S) adresu oglasa.', 'Ungültiger Link. Bitte eine vollständige HTTP(S)-Adresse eingeben.')
         : !hasRequest ? t('Unesite link oglasa ili najmanje 15 znakova opisa zahteva.', 'Bitte Inserat-Link oder mindestens 15 Zeichen Ihrer Anfrage eingeben.')
         : recognized ? t('✓ Oglas prepoznat. Proverite podatke pre slanja.', '✓ Inserat erkannt. Bitte Angaben vor dem Senden prüfen.')
-        : t('✓ Upit spreman. Potvrdite slanje putem WhatsApp-a ili mejla.', '✓ Anfrage bereit. Versand über WhatsApp oder E-Mail bestätigen.');
+        : t('✓ Upit je spreman. Pošaljite ga preko formulara ili e-maila.', '✓ Anfrage bereit. Über Formular oder E-Mail senden.');
       const buyer={
         name:name.value.trim(),location:location.value.trim(),
         budget:budget.value.trim()
@@ -213,7 +213,7 @@
         const paragraph=document.createElement('p');
         paragraph.textContent=t('Zahtev je evidentiran pod brojem ','Anfrage erfasst unter ')+result.reference+
           (result.delivered?t('. Potvrda je upućena mejlom.','. Bestätigung per E-Mail verschickt.')
-          :t('. E-mail nije potvrđen; sačuvajte broj i kontaktirajte nas na WhatsApp.','. E-Mail nicht bestätigt; Nummer notieren und per WhatsApp nachfragen.'));
+          :t('. Potvrda mejlom nije dokazana; sačuvajte broj i pišite na info@daninihub.com.','. E-Mail-Bestätigung nicht verifiziert; Nummer speichern und info@daninihub.com kontaktieren.'));
         help.appendChild(paragraph);
         if(result.trackingUrl && result.trackingUrl.startsWith('https://daninihub.com/')){
           const link=document.createElement('a');link.href=result.trackingUrl;
@@ -222,8 +222,8 @@
         }
         if(typeof window.daniniTrack==='function')window.daniniTrack('service_request_started',body.serviceType);
       }catch(error){
-        help.textContent=t('Zahtev nije potvrđen kroz sajt. Pošaljite ga preko WhatsApp-a ili mejla. Detalj: ',
-          'Website-Eingang nicht bestätigt. Bitte per WhatsApp oder E-Mail senden. Hinweis: ')+error.message;
+        help.textContent=t('Zahtev nije potvrđen kroz sajt. Pošaljite ga mejlom na info@daninihub.com. Detalj: ',
+          'Website-Eingang nicht bestätigt. Bitte an info@daninihub.com schreiben. Hinweis: ')+error.message;
       }finally{onlineSubmit.disabled=false;}
     }
     onlineSubmit.addEventListener('click',submitOnline);
@@ -232,6 +232,10 @@
         onlineIntakeReady=data?.onlineIntakeReady===true;
         onlineContainer.hidden=!onlineIntakeReady;
       }).catch(()=>{onlineContainer.hidden=true;});
+    // Pre-fill only a public HTTP(S) listing URL passed from the calculator.
+    try { const ad = new URLSearchParams(window.location.search).get('adLink');
+      if (ad && ad.length <= 2000 && validLink(ad) && !input.value) input.value = ad;
+    } catch {}
     update();
   }
 
@@ -250,11 +254,11 @@
       '.danini-order-wa{display:flex;gap:9px;align-items:center;justify-content:center;text-align:center;border-radius:9px;padding:16px 14px;min-height:54px;text-decoration:none;font-weight:850;margin:20px 0 8px;line-height:1.35}',
       '.danini-order-wa{background:#25d366;color:#072a18!important}',
       '.danini-order-wa:hover{background:#65e99b}',
-      '.danini-order-email{display:inline-block;margin:12px 0;color:#d7edff;text-decoration:underline;font-size:15px;font-weight:750}.danini-order-email[aria-disabled="true"]{opacity:.5;cursor:not-allowed}',
+      '.danini-order-email{display:block;width:100%;text-align:center;margin:14px 0;padding:15px;border-radius:9px;background:#d5a866;color:#131b20!important;text-decoration:none;font-size:16px;font-weight:850;min-height:52px}.danini-order-email[aria-disabled="true"]{opacity:.5;cursor:not-allowed}',
       '.danini-order-note{font-size:13px;color:#c3d5ca;margin-top:12px}',
       '.danini-order-checklist{margin:16px 0;background:#0f1d22;border:1px solid #48645a;border-radius:9px;padding:12px 15px;color:#e2edea}.danini-order-checklist summary{cursor:pointer;font-weight:800}.danini-order-checklist li{padding:4px 0;line-height:1.45}.danini-order-checklist a{color:#abf3c8}',
       '.danini-url-status{font-size:14px;color:#a7b8b1;margin:12px 0 0}.danini-url-status.recognized{color:#8df6b0;font-weight:850}',
-      '.danini-order-wa[aria-disabled="true"]{opacity:.55;cursor:not-allowed;filter:grayscale(.5)}',
+      '.danini-order-wa[hidden]{display:none!important}.danini-order-wa[aria-disabled="true"]{opacity:.55;cursor:not-allowed;filter:grayscale(.5)}',
       '.danini-order-online[hidden]{display:none!important}.danini-order-online-submit{display:block;width:100%;margin:17px 0 6px;border-radius:10px;border:0;background:#d5a866;color:#131b20;padding:15px;font-size:16px;font-weight:850;cursor:pointer}.danini-order-online-submit:disabled{opacity:.6}.danini-order-online-note{font-size:13px;color:#e2d2bf}.danini-order-consent{display:flex!important;gap:12px;align-items:flex-start;line-height:1.45;font-size:13px!important}.danini-order-consent input{width:20px!important;min-height:20px!important;flex:0 0 20px;margin-top:2px}.danini-order-consent a{color:#adedd0}.danini-order-help{color:#f1d19f;font-size:13px}',
       '@media(max-width:600px){.danini-order-card{border-radius:12px;padding:18px}.danini-order-wa{font-size:15px}}'
     ].join('');

@@ -187,7 +187,10 @@ try{
  assert.notEqual((await page.locator('#dn-total').innerText()).trim(),'—');
  await page.locator('#dn-country').selectOption('hr');
  assert.equal(await page.locator('#dn-hr-wrap').isVisible(),true);
+ assert.equal((await page.locator('#dn-total').innerText()).trim(),'—','Croatian total must not assume missing PPMV is zero');
  assert.match(await page.locator('#dn-warning').innerText(),/PPMV/);
+ await page.locator('#dn-ppmv').fill('450');
+ assert.notEqual((await page.locator('#dn-total').innerText()).trim(),'—','Croatian total should appear after PPMV is supplied');
  console.log('PASS import: SR/BiH/HR interactive calculator, origin scenario and PPMV warning');
  await page.evaluate(()=>localStorage.setItem('autodanini-language','sr'));
  await page.goto(base+'/guides.html',{waitUntil:'domcontentloaded'});

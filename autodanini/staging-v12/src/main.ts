@@ -38,7 +38,7 @@ function addCommerceNavigation(): void {
       ['dealers','Auto B2B','Auto B2B'],
       ['ai-solutions','AI i automatizacija','KI & Automatisierung'],
       ['digital','Digitalni proizvodi','Digitale Produkte'],
-      ['cenovnik','Pilot cenovnik','Pilotpreise'],
+      ['cenovnik','Cenovnik','Preise'],
       ['support','Podrška','Support'],
       ['about','O nama','Über uns']
     ];
@@ -51,7 +51,7 @@ function addCommerceNavigation(): void {
       makeAnchor('business','DANINI Business','DANINI Business'),
       makeAnchor('digital','Digitalni proizvodi','Digitale Produkte'),
       makeAnchor('ai-solutions','AI i automatizacija','KI & Automatisierung'),
-      makeAnchor('cenovnik','Pilot cenovnik','Pilotpreise')
+      makeAnchor('cenovnik','Cenovnik','Preise')
     );
   }
   if (footerCols.length > 2) {
@@ -125,8 +125,8 @@ function updateLive():void {
  const km=e('km') as HTMLInputElement|null,out=e('liveout'),wa=e('livewa') as HTMLAnchorElement|null;
  if(!km||!out||!wa)return;
  const n=Number(km.value),ok=km.value.trim()!==''&&km.validity.valid&&Number.isFinite(n);
- out.textContent=!ok?'—':n>200?(lang==='sr'?'Na upit':'Auf Anfrage'):currency(119+1.2*Math.max(0,n-25));
- wa.href='https://wa.me/4915730916621?text='+encodeURIComponent('AutoDanini: Live-Video-Besichtigung. Entfernung von Duisburg: '+(ok?n+' km':'unbekannt')+'. Bitte um Termin, Verkäuferzustimmung und Preisbestätigung.');
+ out.textContent=!ok?'—':n>200?(lang==='sr'?'Po ponudi':'Auf Anfrage'):(lang==='sr'?'80–120 € + putni troškovi po ponudi':'80–120 € + Fahrtkosten nach Angebot');
+ wa.href='/contact.html?service=vehicle'+(ok?'&distanceKm='+encodeURIComponent(String(n)):'');
 }
 e('km')?.addEventListener('input',updateLive);
 document.querySelectorAll<HTMLButtonElement>('[data-km]').forEach(b=>b.addEventListener('click',()=>{const x=e('km') as HTMLInputElement;if(x)x.value=b.dataset.km||'';updateLive();}));

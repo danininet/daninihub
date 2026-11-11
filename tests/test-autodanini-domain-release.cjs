@@ -55,8 +55,8 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
     'localized Vite assets must load from the site root');
  }
  const home=fs.readFileSync(path.join(root,'autodanini-auto-dist','index.html'),'utf8');
- assert.ok(home.includes('Pripremite kupovinu auta sami. Pomoć kada zatreba.'));
- assert.ok(home.includes('href="ai-advisor.html"'),'Self-service primary CTA leads to existing advisor');
+ assert.ok(home.includes('Kupujete auto u Nemačkoj? Prvo izračunajte troškove uvoza.'));
+ assert.ok(home.includes('href="import.html"'),'Free import calculator is reachable from homepage');
  assert.ok(home.includes('Pomoć na zahtev'),'Human service stays secondary');
  const advisorHtml=fs.readFileSync(path.join(root,'autodanini-auto-dist','ai-advisor.html'),'utf8');
  for(const id of ['ai-listing-url','ai-evidence-seller','ai-evidence-service','ai-evidence-inspection','ai-download-case']){
@@ -140,10 +140,10 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  const homepage=fs.readFileSync(path.join(root,'autodanini-auto-dist','index.html'),'utf8');
  assert.ok(homepage.includes('href="/prepurchase.html"'),'Pre-purchase guide must stay linked');
   const primaryHeroAction=homepage.split('<div class="heroactions">')[1]?.split('</div>')[0]||'';
-  assert.match(primaryHeroAction,/^<a class="btn gold" href="ai-advisor.html"/,
-    'Primary homepage CTA must be the self-service dossier');
+  assert.match(primaryHeroAction,/^<a class="btn gold" href="import.html"/,
+    'Primary homepage CTA must lead to the free import calculator');
   assert.ok(primaryHeroAction.indexOf('href="/prepurchase.html"')>primaryHeroAction.indexOf('href="ai-advisor.html"'),
-    'Pre-purchase action must follow self-service dossier');
+    'Pre-purchase action must follow self-service listing check');
  const sitemapForLead=fs.readFileSync(path.join(root,'autodanini-auto-dist','sitemap.xml'),'utf8');
  assert.ok(sitemapForLead.includes('<loc>https://daninihub.com/prepurchase.html</loc>'));
  // SEO publication must not inherit staging's site-wide noindex.

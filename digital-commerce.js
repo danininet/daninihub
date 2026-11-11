@@ -84,8 +84,13 @@ async function api(route,options={}){
 }
 function verified(order,record){
   if(!order||order.id!==record.payload.paypalOrderId||order.status!=='COMPLETED')return false;
-  const unit=order.purchase_units?.[0]||{};
-  const capture=unit.payments?.captures?.find(c=>c.status==='COMPLETED')||null;
+  // Accept only one complete capture for exactly one purchase unit.
+  // Additional units or captures cannot unlock the private paid file.
+  if(!Array.isArray(order.purchase_units)||order.purchase_units.length!==1)return false;
+  const unit=order.purchase_units[0];
+  const captures=unit.payments?.captures;
+  if(!Array.isArray(captures)||captures.length!==1)return false;
+  const capture=captures[0]?.status==='COMPLETED'?captures[0]:null;
   const expected=SKU[record.payload.sku];
   const actual=capture?.amount;
   if(!expected||unit.custom_id!==record.reference||!capture)return false;

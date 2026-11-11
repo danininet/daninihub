@@ -5,7 +5,7 @@ import {configured,ready,verifiedCapture,downloadToken,tokenValid,digitalRoute} 
 const ref='DGD-'+'A'.repeat(32);
 const sku='guide';
 const fakePaid={reference:ref,sku,email:'buyer@example.test',language:'de',amount_cents:4900,status:'PAID',paid_at:new Date().toISOString(),paypal_order_id:'9TESTORDER99'};
-const baseEnv={DANINI_DIGITAL_CHECKOUT_ENABLED:'true',PAYPAL_ENV:'sandbox',PAYPAL_CLIENT_ID:'sandbox-client',PAYPAL_CLIENT_SECRET:'sandbox-secret',PAYPAL_WEBHOOK_ID:'sandbox-webhook',DANINI_PAYPAL_RECEIVER_EMAIL:'sandbox-merchant@example.test',DANINI_DIGITAL_SIGNING_SECRET:'a-secure-local-test-signing-key-that-is-over-32-chars',BREVO_API_KEY:'mock-brevo',DANINI_BREVO_SENDER:'kontakt@daninihub.com'};
+const baseEnv={DANINI_DIGITAL_CHECKOUT_ENABLED:'true',PAYPAL_ENV:'sandbox',PAYPAL_CLIENT_ID:'sandbox-client',PAYPAL_CLIENT_SECRET:'sandbox-secret',PAYPAL_WEBHOOK_ID:'sandbox-webhook',DANINI_PAYPAL_RECEIVER_EMAIL:'sandbox-merchant@example.test',DANINI_DIGITAL_SIGNING_SECRET:'a-secure-local-test-signing-key-that-is-over-32-chars',BREVO_API_KEY:'mock-brevo',DANINI_BREVO_SENDER:'kontakt@daninihub.com',DANINI_TURNSTILE_SECRET:'mock-turnstile-secret',DANINI_TURNSTILE_SITEKEY:'mock-turnstile-sitekey'};
 function mockDb({withFile=false,paidOrder=null}={}){
  const records=new Map(paidOrder?[[paidOrder.reference,{...paidOrder}]]:[]);
  const bytes=new Uint8Array(120000).fill(65);bytes.set(new TextEncoder().encode('%PDF-1.7\n'),0);
@@ -37,7 +37,7 @@ function mockDb({withFile=false,paidOrder=null}={}){
      r.status='PROCESSING';return {meta:{changes:1}};
     }
     if(sql.includes("status='PAID',capture_id")){
-     const r=records.get(a[1]);if(!r)return {meta:{changes:0}};r.capture_id=a[0];r.status='PAID';r.paid_at=new Date().toISOString();return {meta:{changes:1}};
+     const r=records.get(a[2]);if(!r)return {meta:{changes:0}};r.capture_id=a[0];r.status='PAID';r.paid_at=a[1];return {meta:{changes:1}};
     }
     if(sql.includes("status='CREATED',processing_at")){
      const r=records.get(a[0]);if(r&&r.status==='PROCESSING')r.status='CREATED';return {meta:{changes:1}};

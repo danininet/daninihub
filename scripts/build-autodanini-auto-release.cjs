@@ -64,6 +64,10 @@ for(const page of pages){
  if(!brandPattern.test(html)&&page!=='admin')throw Error('AUTODANINI_HEADER_LOCKUP_MISSING '+page);
  html=html.replace(brandPattern,'<span class="brand-lockup"><strong>AutoDanini</strong><small>by DANINI · DE ↔ BALKAN</small></span>');
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
+ // Email-first: remove public marketing WhatsApp links from footer and floating CTA.
+ // User-initiated optional personal contact elsewhere remains available.
+ html=html.replace(/<a\s+href="https:\/\/wa\.me\/4915730916621"[^>]*>WhatsApp[^<]*<\/a>/gi,'');
+ html=html.replace(/<a\s+class="wa"[^>]*>WA<\/a>/gi,'');
  if(page==='index'){
   // Maintain the chosen self-service dossier as the first action.
   // Keep the existing pre-purchase tool reachable but secondary.
@@ -83,6 +87,14 @@ const seoLabels={
  inspection:'Nezavisna provera vozila',import:'Kalkulator uvoza',exclusive:'Klasična i posebna vozila',
  tender:'Ponude i tenderi',guides:'Vodiči',selbstimport:'Autoimport aus Deutschland',
  'uvoz-vodic':'Vodič za uvoz vozila',about:'O nama',contact:'Kontakt',cenovnik:'Cenovnik',faq:'Česta pitanja'
+};
+const seoLabelsDe={
+ buyers:'Privatkunden',dealers:'Für Autohäuser',live:'Live-Videobesichtigung',
+ inspection:'Unabhängige Fahrzeugprüfung',import:'Importkosten-Rechner',
+ exclusive:'Besondere Fahrzeuge',tender:'Angebote und Ausschreibungen',
+ guides:'Ratgeber',selbstimport:'Autoimport selbst planen',
+ 'uvoz-vodic':'Ratgeber Fahrzeugimport',about:'Über uns',contact:'Kontakt',
+ cenovnik:'Preise',faq:'Häufige Fragen'
 };
 const relatedPages={
  buyers:['inspection','guides','contact'],dealers:['business','guides','contact'],
@@ -123,8 +135,10 @@ for(const page of indexablePages){
  if(page!=='index'&&page!=='contact'){
   // Plain descriptive internal links improve visitor discovery without promising unavailable services.
   const related=(relatedPages[page]||['buyers','guides','contact']);
-  const cards=related.map(link=>'<a href="/'+link+'.html"><span>'+(
-   seoLabels[link]||link)+'</span><span aria-hidden="true">↗</span></a>').join('');
+  const cards=related.map(link=>{
+   const sr=seoLabels[link]||link,de=seoLabelsDe[link]||sr;
+   return '<a href="/'+link+'.html"><span data-sr="'+sr+'" data-de="'+de+'">'+sr+'</span><span aria-hidden="true">↗</span></a>';
+  }).join('');
   const section='<section class="dn-related section" aria-label="Povezane stranice / Weiterführende Links"><div class="wrap"><span class="dn-related-eyebrow">AUTODANINI · SAZNAJTE VIŠE / MEHR ERFAHREN</span><h2 data-sr="Sledeći korak" data-de="Ihr nächster Schritt">Sledeći korak</h2><div class="dn-related-grid">'+cards+'</div></div></section>';
   if(!html.includes('</main>'))throw Error('Missing semantic main: '+page);
   html=html.replace('</main>',section+'</main>');

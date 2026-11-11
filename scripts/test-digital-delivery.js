@@ -64,6 +64,14 @@ async function main(){
     app.locals.importOSStore={mode:'mysql',init:async()=>{},get:async ref=>ref===record.reference?record:null};
     mountDigitalCommerce(app);
     assert.ok(enabled(app));
+    // Live checkout must use the explicitly configured verified merchant, not a hardcoded address.
+    process.env.PAYPAL_ENV='live';
+    process.env.DANINI_PAYPAL_RECEIVER_EMAIL='merchant-live@example.test';
+    assert.equal(enabled(app),true);
+    process.env.DANINI_PAYPAL_RECEIVER_EMAIL='';
+    assert.equal(enabled(app),false);
+    process.env.PAYPAL_ENV='sandbox';
+    process.env.DANINI_PAYPAL_RECEIVER_EMAIL='merchant-sandbox@example.test';
     server=app.listen(0);
     await new Promise(resolve=>server.once('listening',resolve));
     const base='http://127.0.0.1:'+server.address().port;

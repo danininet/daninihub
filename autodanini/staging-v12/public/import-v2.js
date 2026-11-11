@@ -105,7 +105,10 @@
     latest=['AutoDanini — informativni uvozni troškovi',c==='rs'?'Srbija':c==='ba'?'BiH':'Hrvatska',...lines,'UKUPNO: '+euro(total),warning,'https://daninihub.com/import.html'].join('\n');
   };
   find('dn-calculate').addEventListener('click',calc);
-  host.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',calc));
+  host.querySelectorAll('input,select').forEach(el=>{
+    el.addEventListener('input',calc);
+    el.addEventListener('change',calc);
+  });
   find('dn-copy').addEventListener('click',async()=>{if(!latest)return;try{await navigator.clipboard.writeText(latest);find('dn-copy').textContent='Kopirano ✓';}catch{const a=document.createElement('textarea');a.value=latest;document.body.append(a);a.select();document.execCommand('copy');a.remove();}});
   document.addEventListener('danini:language-changed',calc);
   calc();

@@ -11,7 +11,22 @@
 - Ako je Brevo podešen, šalje e-mail sa privatnim linkom. Ako e-mail nije podešen ili isporuka e-maila zakaže, kupac i dalje može da preuzme vodič sa uspešne stranice. Za 100% automatizovanu e-mail isporuku obavezan je ispravno konfigurisan Brevo i funkcionalni test.
 - Datoteka se **nikada** ne stavlja u `public/`, `dist/`, statični Hostinger build, javni GitHub niti u repository root.
 
-## Obavezno produkciono podešavanje — samo na serveru (Hostinger Node.js)
+## STVARNO STANJE — 11.11.2026 (Cloudflare produkcija)
+
+- Javni `daninihub.com` trenutno služi Cloudflare Worker `workers/danini-intake.mjs` sa statičkim asset-ima. On implementira `/api/lead` i `/api/lead/status`, ali **ne izvršava** Node `digital-commerce.js` i **nema** aktivne `/api/danini/digital/*`, `/digital/paypal/return` i `/digital/download/*` rute. Zato nije dozvoljeno uključiti javno PayPal dugme samo na osnovu postojanja ovog modula.
+- Hostinger nije aktivni hosting i **ne koristiti ga** za produkciju. Uputstvo ispod je **arhivski opis Node podešavanja**, a ne nalog za povratak na Hostinger.
+- Jedini vidljivi povezani Stripe račun je TEST `Buymeacoffee` i nije DANINI live merchant. Ne koristiti ga za plaćanje.
+- Postojeći PayPal kod za proveru uplate i PDF link je ponovo pregledan; ne postoje pristupačne PayPal merchant API akreditacije kroz povezane alate. Cloudflare API trenutno prikazuje da nema D1 baza; R2 listanje vraća 403 za dostupne naloge, pa privatna isporuka nije dokazana.
+- Originalni PDF postoji na privatnom Google Drive-u, ID `1uPbL8LIY1zo9FgNUkkGs2Wm14fTThFoC`; nije javni fajl za besplatno preuzimanje.
+
+### Obavezni produkcioni koraci na postojećoj Cloudflare infrastrukturi
+1. Odabrati bez dodatne pretplate odobrenu Cloudflare Worker arhitekturu za PayPal Orders v2 i potvrditi prava na **D1** (privatna evidencija i idempotencija) i **R2** (privatni PDF). Proveriti ograničenja besplatnog plana pre kreiranja resursa.
+2. Konfigurisati PayPal **business** live client ID, tajni ključ, tačnog verifikovanog primaoca i webhook ID kao šifrovane Worker secrets. Ne prepisivati podatke iz testnog Stripe naloga; ne unositi tajne u GitHub.
+3. Napraviti bezbednu rutu za checkout (server kreira PayPal order), povratak i verifikaciju capture-a, webhook potpis, čuvanje statusa i kratkotrajni privatni download URL. Kupac mora da dobije kontrolisan link i transakcioni Brevo e-mail bez otkrivanja PDF-a ili naplate u slučaju greške.
+4. Uraditi celokupan sandbox E2E: kupovina 49 €, neuspešno/otkazano plaćanje, replay i ponovljeni webhook, PDF download, istekao link, DE/SR mejl. Test sa live novcem i javna aktivacija traže posebnu potvrdu.
+5. Dok uslovi nisu zadovoljeni, zadržati pošten status **nema automatske online naplate**. Proizvod od 149 € ostaje zaključan dok zasebna isporuka softvera nije proverena.
+
+## Obavezno produkciono podešavanje — samo na serveru (Hostinger Node.js) — arhivski opis, ne koristiti kao aktivno hosting uputstvo
 
 1. Proveriti da se **Node proces `server.js`** stvarno izvršava iza `https://daninihub.com`. Statički hosting nema PayPal backend i dugmad će ostati bezbedno deaktivirana.
 2. Preuzeti originalni privatni PDF iz Google Drive-a: `DANINI_Auto_Biznis_Master_Vodic_2026_FINAL.pdf` (File ID `1uPbL8LIY1zo9FgNUkkGs2Wm14fTThFoC`); **ne menjati Drive vidljivost na „anyone with link”**.

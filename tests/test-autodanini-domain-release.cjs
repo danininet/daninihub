@@ -264,6 +264,19 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  const indexed=await request(port,'daninihub.com','/index.html');
  assert.equal(indexed.status,200);
  assert.match(indexed.headers['x-robots-tag'],/noindex/);
+ // Business Bridge must retain two protected B2B forms and qualified buyer/supplier roles.
+ const bridge=await request(port,'daninihub.com','/business.html');
+ assert.equal(bridge.status,200,'Business Bridge landing must resolve');
+ for(const id of ['bridge-buyer-rfq','bridge-supplier-rfq']){
+   assert.ok(bridge.body.includes('id="'+id+'"'),'Missing Bridge form '+id);
+ }
+ for(const role of ['DACH_BUYER','BALKAN_SUPPLIER']){
+   assert.ok(bridge.body.includes('value="'+role+'"'),'Missing Bridge role '+role);
+ }
+ assert.equal((bridge.body.match(/class="rfq" data-dealer="true"/g)||[]).length,2,'Business inquiries need protected dealer-class forms');
+ for(const field of ['name="person"','name="company"','name="moq"','name="certificates"','name="notes"','name="consent"']){
+   assert.ok(bridge.body.includes(field),'Missing B2B qualification field '+field);
+ }
  const rootSupport=await request(port,'daninihub.com','/support.html');
  assert.equal(rootSupport.status,200);
  assert.match(rootSupport.body,/autodanini-support-form/);

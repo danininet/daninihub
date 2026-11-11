@@ -177,7 +177,8 @@ async function main() {
     }
     assert.match(calc,/form\.addEventListener\('input', refresh\)/);
     assert.match(calc,/danini-calc-risk-alert/);
-    assert.match(calc,/pre bilo kakve uplate/);
+    assert.match(calc, /sr\/upit|de\/anfrage/);
+    assert.doesNotMatch(calc, /wa\.me\//, 'Quote request must not open WhatsApp');
     assert.match(order,/danini-order-online-submit/);
     assert.match(order,/lead-readiness/);
     assert.match(order,/Oglas prepoznat/);

@@ -159,6 +159,18 @@ class ImportOSStore{
       .sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,count);
   }
 
+  async listByType(type,limit=100){
+    await this.init();
+    if(typeof type!=='string'||!type||type.length>40)throw new Error('INVALID_RECORD_TYPE');
+    const count=Math.min(500,Math.max(1,Number(limit)||100));
+    if(this.mode==='mysql'){
+      const [rows]=await this.pool.query('SELECT * FROM danini_importos_records WHERE type=? ORDER BY created_at DESC LIMIT ?',[type,count]);
+      return rows.map(parseRow);
+    }
+    return Object.values(JSON.parse(fs.readFileSync(this.storageFile,'utf8')))
+      .filter(item=>item.type===type).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,count);
+  }
+
   async listEvents(limit=2000){
     await this.init();
     const count=Math.min(5000,Math.max(1,Number(limit)||2000));

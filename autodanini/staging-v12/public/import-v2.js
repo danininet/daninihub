@@ -43,7 +43,7 @@
   host.innerHTML=layout;
   const css=document.createElement('style');
   css.textContent=`
-   .dn-calc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;width:100%;align-items:start}
+   .calc:has(.dn-calc){display:block;width:100%;max-width:100%}\n   .dn-calc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;width:100%;align-items:start}
    .dn-calc-input,.dn-calc-result{min-width:0;padding:clamp(18px,3vw,32px);border-radius:14px;background:#fff;color:#18232e;box-shadow:0 10px 36px rgba(9,20,35,.08)}
    .dn-calc-result{background:#14202d;color:#fff;position:sticky;top:24px}
    .dn-calc h2{font-size:clamp(1.45rem,3vw,2.2rem);line-height:1.2;margin:9px 0}

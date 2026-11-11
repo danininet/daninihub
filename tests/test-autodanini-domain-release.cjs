@@ -204,7 +204,8 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  const support=await request(port,'daninihub.com','/support.html');
  assert.equal(support.status,200);
  assert.match(support.body,/autodanini-support-form/);
- assert.match(support.body,/WhatsApp/);
+ assert.match(support.body,/zaštićeni e-mail obrazac|geschützte E-Mail-Formular/,'Support must describe the protected email channel');
+ assert.doesNotMatch(support.body,/WhatsApp je opcioni direktni kontakt/,'Outdated public WhatsApp-first text must not return');
  // Owner's existing business contact is available on both draft legal pages,
  // and outdated collage provenance is not presented as current photography.
  for (const legalPage of ['/impressum.html','/privacy.html']) {

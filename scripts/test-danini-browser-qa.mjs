@@ -79,10 +79,19 @@ try{
  }
  assert.equal(await page.locator('.danini-guide-promo a[href="guides.html"]').count(),1,'Seven free guides must have prominent homepage link');
  console.log('PASS Home photography: six first-party cards decode with alt text and crawlable links');
+ assert.equal(await page.locator('footer a[href*="wa.me"]').count(),0,
+   'Public footer must use business email, not prominent WhatsApp');
+ assert.equal(await page.locator('a.wa').count(),0,
+   'Floating WhatsApp shortcut must not be shipped in the public HTML');
+ console.log('PASS Home: public WhatsApp CTAs removed, email-first design');
  console.log('PASS Home: self-service first, primary CTA leads to existing dossier');
  await page.goto(base+'/de/',{waitUntil:'domcontentloaded'});
  assert.match(await page.locator('.hero h1').innerText(),/Autokauf selbst vorbereiten/i);
  console.log('PASS DE: localized homepage works with JavaScript');
+ await page.goto(base+'/buyers.html',{waitUntil:'domcontentloaded'});
+ assert.match(await page.locator('.dn-related-grid a').first().innerText(),/Unabhängige Fahrzeugprüfung/i,
+   'German browsing must not show Serbian-only related service labels');
+ console.log('PASS DE: related service links are translated');
  // /de/ intentionally persists DE. Reset to SR before asserting Serbian dossier.
  await page.evaluate(()=>localStorage.setItem('autodanini-language','sr'));
  await page.goto(base+'/ai-advisor.html',{waitUntil:'networkidle'});

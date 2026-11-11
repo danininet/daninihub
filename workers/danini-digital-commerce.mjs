@@ -23,7 +23,8 @@ export function configured(env){
   env.DANINI_DB&&env.PAYPAL_CLIENT_ID&&env.PAYPAL_CLIENT_SECRET&&env.PAYPAL_WEBHOOK_ID&&
   emailRe.test(env.DANINI_PAYPAL_RECEIVER_EMAIL||'')&&
   typeof env.DANINI_DIGITAL_SIGNING_SECRET==='string'&&env.DANINI_DIGITAL_SIGNING_SECRET.length>=32&&
-  env.BREVO_API_KEY&&env.DANINI_BREVO_SENDER);
+  env.BREVO_API_KEY&&env.DANINI_BREVO_SENDER&&
+  env.DANINI_TURNSTILE_SECRET&&env.DANINI_TURNSTILE_SITEKEY);
 }
 async function readyFile(env,sku){
  try{
@@ -110,7 +111,7 @@ async function finalize(env,ref,paypalOrderId){
   }
   if(!verifiedCapture(p,record,env.DANINI_PAYPAL_RECEIVER_EMAIL))throw Error('PAYMENT_NOT_VERIFIED');
   const capture=p.purchase_units[0].payments.captures[0].id;
-  await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='PAID',capture_id=?,paid_at=datetime('now'),processing_at=NULL WHERE reference=? AND status='PROCESSING'").bind(capture,ref).run();
+  await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='PAID',capture_id=?,paid_at=?,processing_at=NULL WHERE reference=? AND status='PROCESSING'").bind(capture,new Date().toISOString(),ref).run();
   record=await getOrder(env,ref);
   if(record?.status!=='PAID')throw Error('ORDER_NOT_PERSISTED');
   await emailReceipt(env,record);

@@ -80,7 +80,7 @@ export async function tokenValid(env,record,token,now=Date.now()){
  return crypto.subtle.verify('HMAC',await signingKey(env),decoded,encode(record.reference+'.'+deadline));
 }
 async function getOrder(env,ref){return env.DANINI_DB.prepare('SELECT * FROM danini_digital_orders WHERE reference=?').bind(ref).first();}
-async function emailReceipt(env,record){
+async function emailReceipt(env,record,sandbox=false){
  if(record.email_sent_at)return;
  const claim=await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET email_state='SENDING' WHERE reference=? AND status='PAID' AND email_state='PENDING'").bind(record.reference).run();
  if(claim.meta?.changes!==1)return;
@@ -88,8 +88,8 @@ async function emailReceipt(env,record){
   const link=origin+'/api/danini/digital/download/'+encodeURIComponent(record.reference)+'?token='+encodeURIComponent(await downloadToken(env,record));
   const de=record.language==='de';
   const message={sender:{name:'DANINI',email:env.DANINI_BREVO_SENDER},to:[{email:record.email}],
-   subject:de?'DANINI – Ihr PDF nach bestätigter Zahlung':'DANINI – PDF nakon potvrđene uplate',
-   htmlContent:'<p>'+(de?'Ihre Zahlung wurde beim Zahlungsdienst verifiziert.':'Vaša uplata je potvrđena kod pružaoca plaćanja.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF vodič')+'</a></p><p>'+(de?'Link 72 Stunden gültig.':'Link važi 72 sata.')+'</p><p>DANINI · info@daninihub.com</p>'};
+   subject:(sandbox?'[SANDBOX] ':'')+(de?'DANINI – Ihr PDF nach bestätigter Zahlung':'DANINI – PDF nakon potvrđene uplate'),
+   htmlContent:(sandbox?'<p>Stripe Sandbox – testna uplata, bez stvarne naplate.</p>':'')+'<p>'+(de?'Ihre Zahlung wurde beim Zahlungsdienst verifiziert.':'Vaša uplata je potvrđena kod pružaoca plaćanja.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF vodič')+'</a></p><p>'+(de?'Link 72 Stunden gültig.':'Link važi 72 sata.')+'</p><p>DANINI · info@daninihub.com</p>'};
   const r=await fetch('https://api.brevo.com/v3/smtp/email',{method:'POST',headers:{'api-key':env.BREVO_API_KEY,'content-type':'application/json'},body:JSON.stringify(message),signal:AbortSignal.timeout(12000)});
   if(!r.ok)throw Error('MAIL_REJECTED');
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET email_state='SENT',email_sent_at=datetime('now') WHERE reference=?").bind(record.reference).run();
@@ -169,10 +169,11 @@ async function retrievePdf(env,record){
 }
 async function sendDownload(request,env,url){
  if(request.method!=='GET')return err('METHOD_NOT_ALLOWED',405);
- if(!configured(env))return err('NOT_READY',503);
+ if(!configured(env)&&!stripeConfigured(env))return err('NOT_READY',503);
  const ref=url.pathname.split('/').pop();
  if(!refRe.test(ref))return err('NOT_FOUND',404);
  const record=await getOrder(env,ref);
+ if(!record || (record.stripe_session_id ? !stripeConfigured(env) : !configured(env)))return err('NOT_FOUND',404);
  if(!await tokenValid(env,record,url.searchParams.get('token')))return err('NOT_FOUND',404);
  const pdf=await retrievePdf(env,record);if(!pdf)return err('FILE_NOT_READY',503);
  return new Response(pdf,{headers:{'content-type':'application/pdf','content-disposition':'attachment; filename="DANINI_Auto_Biznis_Master_Vodic_2026_FINAL.pdf"','cache-control':'private, no-store, max-age=0','x-robots-tag':'noindex,nofollow','x-content-type-options':'nosniff','referrer-policy':'no-referrer','content-security-policy':"default-src 'none'; frame-ancestors 'none'"}});
@@ -208,6 +209,160 @@ async function webhook(request,env){
   await finalize(env,ref,id);return new Response(null,{status:204});
  }catch{return err('RETRY_LATER',503);}
 }
+
+const stripeSessionId = /^cs_test_[A-Za-z0-9]{16,160}$/;
+const stripePaymentId = /^pi_[A-Za-z0-9]{8,120}$/;
+
+function stripeConfigured(env) {
+  return Boolean(env.DANINI_STRIPE_SANDBOX_ENABLED === 'true' &&
+    /^(sk|rk)_test_[A-Za-z0-9]{16,}$/.test(env.STRIPE_SECRET_KEY || '') &&
+    /^whsec_[A-Za-z0-9]{16,}$/.test(env.STRIPE_WEBHOOK_SECRET || '') &&
+    /^acct_[A-Za-z0-9]{8,}$/.test(env.DANINI_STRIPE_ACCOUNT_ID || '') &&
+    env.DANINI_STRIPE_SANDBOX_ACCESS?.length >= 32 &&
+    emailRe.test(env.DANINI_STRIPE_SANDBOX_EMAIL || '') &&
+    env.DANINI_DB && env.DANINI_DIGITAL_SIGNING_SECRET?.length >= 32 &&
+    env.BREVO_API_KEY && env.DANINI_BREVO_SENDER);
+}
+
+async function sameSecret(expected, supplied) {
+  if (!supplied || supplied.length !== expected.length) return false;
+  const key = await crypto.subtle.importKey('raw', encode(expected), {name:'HMAC',hash:'SHA-256'}, false, ['sign', 'verify']);
+  const signature = await crypto.subtle.sign('HMAC', key, encode(expected));
+  return crypto.subtle.verify('HMAC', key, signature, encode(supplied));
+}
+
+async function stripeApi(env, path, form, idempotencyKey) {
+  const headers = {Authorization: 'Bearer ' + env.STRIPE_SECRET_KEY};
+  if (form) {
+    headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    headers['Idempotency-Key'] = idempotencyKey;
+  }
+  const response = await fetch('https://api.stripe.com/v1' + path, {
+    method: form ? 'POST' : 'GET', headers, body: form, signal: AbortSignal.timeout(12000)
+  });
+  if (!response.ok) throw Error('STRIPE_API_FAILURE');
+  return response.json();
+}
+
+async function stripeCheckout(request, env) {
+  if (!stripeConfigured(env)) return err('CHECKOUT_NOT_READY',503);
+  if (!await sameSecret(env.DANINI_STRIPE_SANDBOX_ACCESS, request.headers.get('X-Danini-Sandbox-Access'))) {
+    return err('NOT_FOUND',404);
+  }
+  if (!await readyFile(env,'guide')) return err('CHECKOUT_NOT_READY',503);
+  try {
+    const account = await stripeApi(env, '/account');
+    if (account.id !== env.DANINI_STRIPE_ACCOUNT_ID) return err('CHECKOUT_ACCOUNT_MISMATCH',503);
+    const ref = 'DGD-' + crypto.randomUUID().replace(/-/g,'').toUpperCase();
+    const email = env.DANINI_STRIPE_SANDBOX_EMAIL.trim().toLowerCase();
+    const guide = PRODUCTS.guide;
+    const form = new URLSearchParams({
+      mode: 'payment',
+      'payment_method_types[0]': 'card',
+      client_reference_id: ref,
+      'metadata[danini_reference]': ref,
+      customer_email: email,
+      success_url: origin + '/api/danini/digital/stripe/return?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: origin + '/digital.html?cancelled=1',
+      'line_items[0][price_data][currency]': 'eur',
+      'line_items[0][price_data][unit_amount]': String(guide.cents),
+      'line_items[0][price_data][product_data][name]': guide.label,
+      'line_items[0][quantity]': '1'
+    });
+    const session = await stripeApi(env, '/checkout/sessions', form, ref);
+    const url = new URL(session.url);
+    if (session.livemode !== false || !stripeSessionId.test(session.id) ||
+        url.origin !== 'https://checkout.stripe.com') return err('CHECKOUT_PROVIDER_FAILED',503);
+    await env.DANINI_DB.prepare(
+      "INSERT INTO danini_digital_orders(reference,sku,email,language,amount_cents,status,email_state,stripe_session_id) VALUES (?,'guide',?,'sr',?,'CREATED','PENDING',?)"
+    ).bind(ref,email,guide.cents,session.id).run();
+    return json({ok:true,reference:ref,checkoutUrl:url.href});
+  } catch {
+    return err('CHECKOUT_PROVIDER_FAILED',503);
+  }
+}
+
+export function verifiedStripeSession(session, order) {
+  return Boolean(session && order && stripeSessionId.test(session.id) &&
+    session.id === order.stripe_session_id && session.livemode === false &&
+    session.mode === 'payment' && session.status === 'complete' &&
+    session.payment_status === 'paid' && session.currency === 'eur' &&
+    session.amount_total === PRODUCTS.guide.cents && session.amount_total === order.amount_cents &&
+    session.client_reference_id === order.reference && session.metadata?.danini_reference === order.reference &&
+    session.customer_email?.toLowerCase() === order.email &&
+    order.sku === 'guide' && stripePaymentId.test(session.payment_intent || ''));
+}
+
+export async function verifiedStripeSignature(raw, header, secret, now = Date.now()) {
+  if (!header || header.length > 2048) return false;
+  const parts = header.split(',');
+  const timestamps = parts.filter(value => value.startsWith('t='));
+  if (timestamps.length !== 1 || !/^t=\d{1,12}$/.test(timestamps[0])) return false;
+  const timestamp = timestamps[0].slice(2);
+  if (Math.abs(now / 1000 - Number(timestamp)) > 300) return false;
+  const key = await crypto.subtle.importKey('raw', encode(secret), {name:'HMAC',hash:'SHA-256'}, false, ['verify']);
+  for (const part of parts) {
+    if (!/^v1=[a-f0-9]{64}$/i.test(part)) continue;
+    const bytes = Uint8Array.from(part.slice(3).match(/../g), hex => parseInt(hex,16));
+    if (await crypto.subtle.verify('HMAC',key,bytes,encode(timestamp + '.' + raw))) return true;
+  }
+  return false;
+}
+
+async function findStripeOrder(env, id) {
+  return env.DANINI_DB.prepare('SELECT * FROM danini_digital_orders WHERE stripe_session_id=?').bind(id).first();
+}
+
+async function finalizeStripe(env, order) {
+  const session = await stripeApi(env, '/checkout/sessions/' + encodeURIComponent(order.stripe_session_id));
+  if (!verifiedStripeSession(session, order)) return null;
+  await env.DANINI_DB.prepare(
+    "UPDATE danini_digital_orders SET status='PAID',capture_id=?,paid_at=? WHERE stripe_session_id=? AND status='CREATED'"
+  ).bind(session.payment_intent,new Date().toISOString(),session.id).run();
+  const record = await findStripeOrder(env,session.id);
+  if (record?.status !== 'PAID' || record.capture_id !== session.payment_intent) return null;
+  await emailReceipt(env,record,true);
+  return record;
+}
+
+async function stripeWebhook(request, env) {
+  if (!stripeConfigured(env)) return err('NOT_READY',503);
+  const raw = await request.text();
+  if (raw.length > 100000) return err('TOO_LARGE',413);
+  if (!await verifiedStripeSignature(raw, request.headers.get('Stripe-Signature'), env.STRIPE_WEBHOOK_SECRET)) {
+    return err('INVALID_SIGNATURE',403);
+  }
+  let event;
+  try { event = JSON.parse(raw); } catch { return err('INVALID_JSON'); }
+  const id = event?.data?.object?.id;
+  if (event?.livemode !== false || event.type !== 'checkout.session.completed' || !stripeSessionId.test(id || '')) {
+    return new Response(null,{status:204});
+  }
+  try {
+    const order = await findStripeOrder(env,id);
+    if (!order) return new Response(null,{status:204});
+    const record = await finalizeStripe(env,order);
+    const latest = record && await findStripeOrder(env,id);
+    return latest?.email_state === 'SENT' ? new Response(null,{status:204}) : err('RETRY_LATER',503);
+  } catch {
+    return err('RETRY_LATER',503);
+  }
+}
+
+async function stripeReturn(env,url) {
+  if (!stripeConfigured(env)) return textPage('Stripe Sandbox nije dostupan / Stripe Sandbox nicht verfügbar',503);
+  const id = url.searchParams.get('session_id') || '';
+  if (!stripeSessionId.test(id)) return textPage('Neispravna potvrda / Ungültige Bestätigung',400);
+  try {
+    const order = await findStripeOrder(env,id);
+    const record = order && await finalizeStripe(env,order);
+    if (!record) return textPage('Stripe Sandbox uplata nije potvrđena',409);
+    return textPage('Stripe Sandbox uplata je potvrđena. Proverite e-mail za link za preuzimanje.');
+  } catch {
+    return textPage('Stripe Sandbox uplata nije potvrđena',409);
+  }
+}
+
 export async function digitalRoute(request,env){
  const url=new URL(request.url),path=url.pathname;
  if(path==='/api/danini/digital/status'){
@@ -217,6 +372,9 @@ export async function digitalRoute(request,env){
  if(path==='/api/danini/digital/checkout'&&request.method==='POST')return checkout(request,env);
  if(path==='/api/danini/digital/paypal/return'&&request.method==='GET')return browserReturn(env,url);
  if(path==='/api/danini/digital/paypal/webhook')return webhook(request,env);
+ if(path==='/api/danini/digital/stripe/checkout'&&request.method==='POST')return stripeCheckout(request,env);
+ if(path==='/api/danini/digital/stripe/webhook'&&request.method==='POST')return stripeWebhook(request,env);
+ if(path==='/api/danini/digital/stripe/return'&&request.method==='GET')return stripeReturn(env,url);
  if(path.startsWith('/api/danini/digital/download/'))return sendDownload(request,env,url);
  return err('NOT_FOUND',404);
 }

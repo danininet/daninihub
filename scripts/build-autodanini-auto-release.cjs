@@ -46,7 +46,7 @@ fs.rmSync(out,{recursive:true,force:true});
 fs.cpSync(compiled,out,{recursive:true});
 // Branded asset from the reviewed design: replace the former inline monogram
 // in the Cloudflare visual release only. Keep layout, photos and static safety.
-for(const name of ['autodanini-mark.svg','prepurchase.html']){
+for(const name of ['autodanini-mark.svg','prepurchase.html','llms.txt']){
  if(!fs.existsSync(path.join(out,name)))throw Error('AUTODANINI_PRELAUNCH_FILE_MISSING '+name);
 }
 for(const page of pages){
@@ -126,8 +126,10 @@ for(const page of indexablePages){
  const noindex='<meta name="robots" content="noindex,follow">';
  if(!html.includes(noindex))throw Error('AUTODANINI_SEO_META_NOT_FOUND '+page);
  html=html.replace(noindex,'<meta name="robots" content="index,follow">');
+ // Cloudflare's static HTML handling serves these three pages at their clean public URLs.
+ const cleanCanonicalPages=new Set(['import','contact','cenovnik']);
  const canonical=page==='index'?'https://daninihub.com/':
-  'https://daninihub.com/'+page+'.html';
+  'https://daninihub.com/'+page+(cleanCanonicalPages.has(page)?'':'.html');
  const alternates=page==='index'?
   '<link rel="alternate" hreflang="sr" href="https://daninihub.com/">'+
   '<link rel="alternate" hreflang="de" href="https://daninihub.com/de/">'+
@@ -146,6 +148,8 @@ for(const page of indexablePages){
    '$1'+seoTitle+'$2');
   html=html.replace(/(<meta name="description" content=")[^"]*(")/,
    '$1Besplatan kalkulator uvoza iz Nemačke u Srbiju, BiH i Hrvatsku. Procenite carinu, PDV, PPMV, transport i dodatne troškove.$2');
+  const calculatorSchema={'@context':'https://schema.org','@type':'WebApplication',name:'AutoDanini – kalkulator uvoza automobila',url:canonical,applicationCategory:'FinanceApplication',operatingSystem:'Web browser',inLanguage:['sr','de'],isAccessibleForFree:true,description:'Informativna procena troškova uvoza vozila iz Nemačke za Srbiju, BiH i Hrvatsku; nije službeni carinski obračun.'};
+  html=html.replace('</head>','<script type="application/ld+json">'+JSON.stringify(calculatorSchema)+'</script></head>');
  }
  if(page!=='index'&&page!=='contact'){
   // Plain descriptive internal links improve visitor discovery without promising unavailable services.
@@ -271,7 +275,7 @@ if(!umbrella.includes('href="/index.html"')||!umbrella.includes('rel="canonical"
 // A real indexable sitemap. Do not include account, admin, incomplete AI,
 // empty auctions, legal holding pages or any pretend inventory.
 const sitemapEntries=['https://daninihub.com/','https://daninihub.com/de/','https://daninihub.com/danini.html','https://daninihub.com/danini-sr.html','https://daninihub.com/prepurchase.html',
- ...indexablePages.filter(p=>p!=='index').map(p=>'https://daninihub.com/'+p+'.html')];
+ ...indexablePages.filter(p=>p!=='index').map(p=>'https://daninihub.com/'+p+(['import','contact','cenovnik'].includes(p)?'':'.html'))];
 const sitemap='<?xml version="1.0" encoding="UTF-8"?>\n'+
  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+
  sitemapEntries.map(url=>'  <url><loc>'+url+'</loc></url>').join('\n')+

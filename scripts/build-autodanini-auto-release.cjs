@@ -64,6 +64,14 @@ for(const page of pages){
  if(!brandPattern.test(html)&&page!=='admin')throw Error('AUTODANINI_HEADER_LOCKUP_MISSING '+page);
  html=html.replace(brandPattern,'<span class="brand-lockup"><strong>AutoDanini</strong><small>by DANINI · DE ↔ BALKAN</small></span>');
  html=html.replace('</head>','<link rel="icon" type="image/svg+xml" href="/autodanini-mark.svg"></head>');
+ if(page==='import'){
+  // Inject AFTER Vite compilation, which may rewrite ordinary script tags.
+  // Local browser-only calculator: no API cost or personal data transmission.
+  if(!fs.existsSync(path.join(out,'import-v2.js')))throw Error('AUTODANINI_IMPORT_CALCULATOR_MISSING');
+  if(html.includes('import-v2.js'))throw Error('AUTODANINI_IMPORT_CALCULATOR_DUPLICATED');
+  html=html.replace('</body>','<script defer src="/import-v2.js"></script></body>');
+ }
+
  // Email-first: remove public marketing WhatsApp links from footer and floating CTA.
  // User-initiated optional personal contact elsewhere remains available.
  html=html.replace(/<a\s+href="https:\/\/wa\.me\/4915730916621"[^>]*>WhatsApp[^<]*<\/a>/gi,'');
@@ -124,13 +132,13 @@ for(const page of indexablePages){
  // The import calculator is only indicative. Its title must NOT promise
  // registration-ready all-in costs, because several charges are unknown.
  if(page==='import'){
-  const seoTitle='Kalkulator uvoza auta iz Nemačke (carina i PDV) | AutoDanini';
+  const seoTitle='Kalkulator uvoza auta – Srbija, BiH i Hrvatska';
   html=html.replace(/<title>[^<]*<\/title>/,
    '<title>'+seoTitle+'</title>');
   html=html.replace(/(<meta property="og:title" content=")[^"]*(")/,
    '$1'+seoTitle+'$2');
   html=html.replace(/(<meta name="description" content=")[^"]*(")/,
-   '$1Orijentacioni kalkulator uvoza vozila iz Nemačke u Srbiju: scenariji carine i PDV-a. Konačna osnovica i dodatni troškovi zahtevaju potvrdu.$2');
+   '$1Besplatan kalkulator uvoza iz Nemačke u Srbiju, BiH i Hrvatsku. Procenite carinu, PDV, PPMV, transport i dodatne troškove.$2');
  }
  if(page!=='index'&&page!=='contact'){
   // Plain descriptive internal links improve visitor discovery without promising unavailable services.

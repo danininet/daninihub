@@ -163,7 +163,12 @@ test('AutoDanini root cutover preserves legacy APIs, language pages and legal sa
  const seoRobots=fs.readFileSync(path.join(root,'autodanini-auto-dist','robots.txt'),'utf8');
  assert.ok(seoRobots.includes('Sitemap: https://daninihub.com/sitemap.xml'));
  const importPage=fs.readFileSync(path.join(root,'autodanini-auto-dist','import.html'),'utf8');
- assert.ok(importPage.includes('<title>Kalkulator uvoza auta iz Nemačke (carina i PDV) | AutoDanini</title>'));
+ assert.ok(importPage.includes('<title>Kalkulator uvoza auta – Srbija, BiH i Hrvatska</title>'));
+ assert.ok(importPage.includes('src="/import-v2.js"'),'Three-country calculator must be loaded');
+ const calculatorScript=fs.readFileSync(path.join(root,'autodanini-auto-dist','import-v2.js'),'utf8');
+ assert.ok(calculatorScript.includes('id="dn-country"')&&calculatorScript.includes('value="ba"')&&calculatorScript.includes('value="hr"'),'SR/BiH/HR scenarios required');
+ assert.ok(calculatorScript.includes("clipboard.writeText"),'Copyable calculation must exist');
+ assert.doesNotMatch(calculatorScript,/fetch\(/,'Calculator must not call external endpoints');
  const frontend=fs.readFileSync(path.join(root,'autodanini','staging-v12','src','main.ts'),'utf8');
  assert.ok(frontend.includes("a.href = '/' + path + '.html';"),
    'Dynamic links must work from both / and /de/');

@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+      - name: Locate screenshot hero text in current site routes
+        run: node scripts/find-danini-clutter.mjs
       - name: Capture production page on desktop and mobile
         shell: bash
         run: |

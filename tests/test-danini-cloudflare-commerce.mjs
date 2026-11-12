@@ -5,7 +5,7 @@ import {configured,ready,verifiedCapture,downloadToken,tokenValid,digitalRoute} 
 const ref='DGD-'+'A'.repeat(32);
 const sku='guide';
 const fakePaid={reference:ref,sku,email:'buyer@example.test',language:'de',amount_cents:4900,status:'PAID',paid_at:new Date().toISOString(),paypal_order_id:'9TESTORDER99'};
-const baseEnv={DANINI_DIGITAL_CHECKOUT_ENABLED:'true',PAYPAL_ENV:'sandbox',PAYPAL_CLIENT_ID:'sandbox-client',PAYPAL_CLIENT_SECRET:'sandbox-secret',PAYPAL_WEBHOOK_ID:'sandbox-webhook',DANINI_PAYPAL_RECEIVER_EMAIL:'sandbox-merchant@example.test',DANINI_DIGITAL_SIGNING_SECRET:'a-secure-local-test-signing-key-that-is-over-32-chars',BREVO_API_KEY:'mock-brevo',DANINI_BREVO_SENDER:'kontakt@daninihub.com',DANINI_TURNSTILE_SECRET:'mock-turnstile-secret',DANINI_TURNSTILE_SITEKEY:'mock-turnstile-sitekey'};
+const baseEnv={DANINI_DIGITAL_CHECKOUT_ENABLED:'true',PAYPAL_ENV:'sandbox',DANINI_PAYPAL_SANDBOX_ACCESS:'a-secure-local-operator-access-key-at-least-32-chars',DANINI_PAYPAL_SANDBOX_EMAIL:'buyer@example.test',PAYPAL_CLIENT_ID:'sandbox-client',PAYPAL_CLIENT_SECRET:'sandbox-secret',PAYPAL_WEBHOOK_ID:'sandbox-webhook',DANINI_PAYPAL_RECEIVER_EMAIL:'sandbox-merchant@example.test',DANINI_DIGITAL_SIGNING_SECRET:'a-secure-local-test-signing-key-that-is-over-32-chars',BREVO_API_KEY:'mock-brevo',DANINI_BREVO_SENDER:'kontakt@daninihub.com',DANINI_TURNSTILE_SECRET:'mock-turnstile-secret',DANINI_TURNSTILE_SITEKEY:'mock-turnstile-sitekey'};
 function mockDb({withFile=false,paidOrder=null}={}){
  const records=new Map(paidOrder?[[paidOrder.reference,{...paidOrder}]]:[]);
  const bytes=new Uint8Array(120000).fill(65);bytes.set(new TextEncoder().encode('%PDF-1.7\n'),0);
@@ -96,7 +96,14 @@ test('offline simulated checkout -> PayPal capture -> D1 -> private PDF -> email
  };
  try{
   assert.equal(await ready(env),true);
-  const post=new Request('https://daninihub.com/api/danini/digital/checkout',{method:'POST',headers:{Origin:'https://daninihub.com','content-type':'application/json'},body:JSON.stringify({sku:'guide',language:'de',email:'buyer@example.test',termsAccepted:true,instantDeliveryConsent:true,turnstileToken:'sandbox-token-valid'})});
+  const publicStatus=await digitalRoute(new Request('https://daninihub.com/api/danini/digital/status'),env);
+  assert.equal((await publicStatus.json()).enabled,false);
+  const publicCheckout=await digitalRoute(new Request('https://daninihub.com/api/danini/digital/checkout',{method:'POST'}),env);
+  assert.equal(publicCheckout.status,503);
+  const sandboxUrl='https://daninihub.com/api/danini/digital/paypal/sandbox/checkout';
+  const unauthorized=await digitalRoute(new Request(sandboxUrl,{method:'POST'}),env);
+  assert.equal(unauthorized.status,404);
+  const post=new Request(sandboxUrl,{method:'POST',headers:{'X-Danini-Sandbox-Access':env.DANINI_PAYPAL_SANDBOX_ACCESS,'content-type':'application/json'},body:JSON.stringify({sku:'guide',language:'de',email:'ignored@example.test',termsAccepted:true,instantDeliveryConsent:true})});
   const res=await digitalRoute(post,env);
   assert.equal(res.status,200);
   const order=await res.json();assert.match(order.reference,/^DGD-[A-F0-9]{32}$/);
@@ -106,6 +113,7 @@ test('offline simulated checkout -> PayPal capture -> D1 -> private PDF -> email
   const callback=await digitalRoute(new Request('https://daninihub.com/api/danini/digital/paypal/return?ref='+order.reference+'&token='+createdId),env);
   assert.equal(callback.status,200);
   assert.equal(db.records.get(order.reference).status,'PAID');
+  assert.equal(db.records.get(order.reference).email,'buyer@example.test');
   assert.equal(mailCount,1);assert.equal(captureCount,1);
   const html=await callback.text();const url=html.match(/href="(https:\/\/daninihub.com\/api\/danini\/digital\/download\/[^"]+)"/)?.[1];
   assert.ok(url);

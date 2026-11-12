@@ -102,7 +102,7 @@ footer{background:#0d1622;color:#d4dfe9;padding:38px 0}.footer-row{display:flex;
 </style>
 </head><body>
 <a class="skip" href="#main">${esc(t.skip)}</a>
-<header class="site-head"><div class="wrap topbar">
+<header class="site-head dn-header"><div class="wrap topbar">
 <a class="brand" href="/"><span>D</span>ANINI</a>
 <nav class="navigation" aria-label="${esc(t.locale)}">
 ${a('/buyers.html',t.services)}${a('/guides.html',t.guides)}${a('/business.html',t.business)}${a('/contact.html',t.contact)}

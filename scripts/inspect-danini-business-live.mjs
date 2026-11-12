@@ -6,3 +6,12 @@ console.log('BUSINESS_HTTP',resp.status,'FINAL',resp.url,'BYTES',html.length);
 for(const q of markers){const i=html.indexOf(q);console.log('MARKER',JSON.stringify(q),i,i>=0?html.slice(Math.max(0,i-350),i+600).replace(/\s+/g,' ').slice(0,950):'');}
 const snippets=[...html.matchAll(/<section\b[^>]*>|<div\b[^>]*class="[^"]*(?:hero|pilot|card)[^"]*"[^>]*>|<a\b[^>]*href="[^"]*"[^>]*>/gi)].map(m=>m[0]).slice(0,120);
 console.log('STRUCTURAL_TAGS',JSON.stringify(snippets));
+
+const required=['id="dn-business-modern"','class="bphoto"','class="bcta"','class="bstages"','DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg'];
+for(const token of required)if(!html.includes(token))throw new Error('Business redesign missing: '+token);
+if(html.includes('class="danini-prelaunch"')||html.includes('class="danini-b2b-hero"'))throw new Error('Old pilot hero still visible');
+if(html.includes('content="noindex,follow"'))throw new Error('Business page still noindex');
+const image=await fetch('https://daninihub.com/images/DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg',{signal:AbortSignal.timeout(15000)});
+const bytes=new Uint8Array(await image.arrayBuffer());
+if(image.status!==200||bytes[0]!==255||bytes[1]!==216)throw new Error('Business JPEG not served: '+image.status);
+console.log('BUSINESS_REDESIGN_PASS',{html:html.length,image:bytes.length,headline:html.includes('Vaš poslovni zahtev.'),heroButtons:(html.match(/class="bcta"/g)||[]).length});

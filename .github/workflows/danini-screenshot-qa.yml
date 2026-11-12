@@ -1,4 +1,5 @@
 name: DANINI screenshot visual QA
+# Root design QA: capture actual routed 2026-11-12 homepage.
 on:
   pull_request:
     paths:

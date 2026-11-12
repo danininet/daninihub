@@ -1,0 +1,18 @@
+name: DANINI remove unfinished pilot public cards
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/danini-unready-routes.yml'
+      - 'scripts/test-danini-unready-routes.mjs'
+      - 'workers/danini-brand-overlay.mjs'
+  workflow_dispatch:
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-danini-unready-routes.mjs

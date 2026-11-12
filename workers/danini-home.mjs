@@ -119,7 +119,7 @@ ${a('/buyers.html',t.services)}${a('/guides.html',t.guides)}${a('/business.html'
 <div class="value-strip"><div class="wrap value-line"><strong>AUTODANINI</strong><span>${esc(t.scroll)} <span aria-hidden="true">↓</span></span></div></div>
 <section class="feature" id="risiko"><div class="wrap">
 <span class="section-kicker">${esc(t.sectionLabel)}</span>
-<h2>${esc(t.sectionTitle)}<em>${esc(t.sectionAccent)}</em></h2>
+<h2>${esc(t.sectionTitle)} <em>${esc(t.sectionAccent)}</em></h2>
 <p class="intro-line">${esc(t.sectionIntro)}</p>
 <div class="story-grid">
 <ol class="proof-list">

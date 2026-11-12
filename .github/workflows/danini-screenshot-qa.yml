@@ -14,6 +14,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Locate screenshot hero text in current site routes
         run: node scripts/find-danini-clutter.mjs
+      - name: Inspect exact Business hero and pilot DOM
+        run: node scripts/inspect-danini-business-live.mjs
       - name: Capture production page on desktop and mobile
         shell: bash
         run: |

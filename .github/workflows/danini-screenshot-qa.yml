@@ -32,6 +32,8 @@ jobs:
           "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=430,900 --virtual-time-budget=4000 --screenshot=screenshots/mobile-contact.png 'https://daninihub.com/contact.html?lang=sr'
           "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=430,2200 --virtual-time-budget=4000 --screenshot=screenshots/mobile-sr-long.png https://daninihub.com/sr/
           "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=1440,3200 --virtual-time-budget=4000 --screenshot=screenshots/desktop-sr-long.png https://daninihub.com/sr/
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=1440,900 --virtual-time-budget=4000 --screenshot=screenshots/desktop-business.png https://daninihub.com/business
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=430,900 --virtual-time-budget=4000 --screenshot=screenshots/mobile-business.png https://daninihub.com/business
           file screenshots/*.png
       - name: Keep screenshots for visual QA
         if: always()

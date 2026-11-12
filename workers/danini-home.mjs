@@ -81,7 +81,7 @@ a{color:inherit}a:focus-visible{outline:3px solid #2675d9;outline-offset:4px}
 .bar,.brand,.menu,.locale,.actions,.footer-links{display:flex;align-items:center;gap:18px}.bar{min-height:76px;justify-content:space-between}
 .brand{gap:10px;text-decoration:none;font-size:21px;font-weight:800;letter-spacing:.05em}.brand img{display:block}
 .menu a,.locale a,.footer-links a{text-decoration:none}.menu a:hover,.footer-links a:hover{text-decoration:underline}.locale{gap:5px}
-.locale a{padding:5px 8px;border-radius:5px}.locale [aria-current]{color:var(--ink);background:var(--gold)}
+.locale a{padding:7px 10px;border:1px solid #64748b;border-radius:6px;font-size:14px;font-weight:700;white-space:nowrap}.locale [aria-current]{color:var(--ink);background:var(--gold);border-color:var(--gold)}
 .skip{position:absolute;top:4px;left:4px;padding:8px;background:#fff;color:var(--ink);transform:translateY(-150%);z-index:2}.skip:focus{transform:none}
 .hero{background:var(--ink);color:#fff;padding:54px 0 62px}.hero-grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:50px}
 .line-brand{display:inline-block;color:var(--gold);font-size:15px;font-weight:800}.hero h1{font-size:clamp(38px,5vw,70px);line-height:1.03;letter-spacing:-.045em;margin:14px 0 18px}
@@ -95,13 +95,13 @@ a{color:inherit}a:focus-visible{outline:3px solid #2675d9;outline-offset:4px}
 .panels{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;padding-bottom:50px}.panel p{margin-bottom:20px}.panel .actions{font-size:14px}
 footer{border-top:1px solid var(--line);padding:24px 0}.footer-links{gap:16px;font-size:14px}
 @media(max-width:800px){.shell{width:min(100% - 36px,1160px)}.bar{padding:12px 0;flex-wrap:wrap;gap:8px}.menu{order:3;width:100%;flex-wrap:wrap;gap:5px 14px;font-size:14px}.menu a{padding:5px 0}.hero-grid{gap:24px}.hero{padding:36px 0}.hero img{aspect-ratio:1}.cards{grid-template-columns:1fr}.panels{grid-template-columns:1fr}.section{padding:36px 0}}
-@media(max-width:570px){.hero-grid{grid-template-columns:1fr}.hero img{aspect-ratio:16/9}.card,.panel{padding:18px}.hero .button{flex:1 1 auto;justify-content:center}}
+@media(max-width:570px){.hero-grid{grid-template-columns:1fr}.hero img{aspect-ratio:16/9}.card,.panel{padding:18px}.hero .button{flex:1 1 auto;justify-content:center}.locale a{padding:6px 8px}.brand{font-size:19px}}
 </style></head><body>
 <a class="skip" href="#content">${c.skip}</a>
 <header class="top"><div class="shell bar">
 <a href="${lang === 'de' ? '/de/' : '/'}" class="brand"><img src="/danini-favicon.svg" width="38" height="38" alt="">DANINI</a>
 <nav class="menu">${nav.map((href,i)=>link(href,c.nav[i])).join('')}</nav>
-<nav class="locale" aria-label="${lang === 'de' ? 'Sprache' : 'Jezik'}"><a href="/de/" lang="de" aria-label="Deutsch"${lang==='de'?' aria-current="page"':''}>DE</a><a href="/" lang="sr" aria-label="Srpski"${lang==='sr'?' aria-current="page"':''}>SR</a></nav>
+<nav class="locale" aria-label="${lang === 'de' ? 'Sprache' : 'Jezik'}"><a href="/sr/" lang="sr" hreflang="sr"${lang==='sr'?' aria-current="page"':''}>Srpski</a><a href="/de/" lang="de" hreflang="de"${lang==='de'?' aria-current="page"':''}>Deutsch</a></nav>
 </div></header>
 <main id="content">
 <section class="hero"><div class="shell hero-grid"><div>

@@ -15,3 +15,7 @@ const image=await fetch('https://daninihub.com/images/DANINI_Kartica_06_B2B_Sour
 const bytes=new Uint8Array(await image.arrayBuffer());
 if(image.status!==200||bytes[0]!==255||bytes[1]!==216)throw new Error('Business JPEG not served: '+image.status);
 console.log('BUSINESS_REDESIGN_PASS',{html:html.length,image:bytes.length,headline:html.includes('Vaš poslovni zahtev.'),heroButtons:(html.match(/class="bcta"/g)||[]).length});
+
+if(!html.includes('dn-service-header')||!html.includes('dn-service-logo'))throw new Error('DANINI shared header not visible');
+if(!html.includes('data-business-lang'))throw new Error('DE/SR language switch missing');
+console.log('BUSINESS_HEADER_PASS');

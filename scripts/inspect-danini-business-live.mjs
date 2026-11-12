@@ -19,3 +19,14 @@ console.log('BUSINESS_REDESIGN_PASS',{html:html.length,image:bytes.length,headli
 if(!html.includes('dn-service-header')||!html.includes('dn-service-logo'))throw new Error('DANINI shared header not visible');
 if(!html.includes('data-business-lang'))throw new Error('DE/SR language switch missing');
 console.log('BUSINESS_HEADER_PASS');
+
+const paths=['/','/buyers','/dealers','/live','/inspection','/import','/exclusive','/tender','/auctions','/guides','/digital','/ai-solutions','/business','/cnc','/selbstimport','/uvoz-vodic','/about','/cenovnik','/faq','/support','/prepurchase'];
+const unfinished=[];
+await Promise.all(paths.map(async path=>{try{
+ const response=await fetch('https://daninihub.com'+path,{signal:AbortSignal.timeout(15000)});
+ const body=await response.text();
+ const content=(body.match(/<main\b[^>]*>[\s\S]*?<\/main>/i)||[])[0]||'';
+ const matches=[...content.matchAll(/u pripremi|informativni pilot|in vorbereitung|informationspilot|uskoro|kommt bald|pilot phase|planirano|geplant/gi)].slice(0,10);
+ if(matches.length)unfinished.push({path,status:response.status,count:matches.length,samples:matches.map(m=>content.slice(Math.max(0,m.index-100),m.index+140).replace(/\s+/g,' '))});
+}catch(e){unfinished.push({path,error:String(e).slice(0,150)})}}));
+console.log('UNFINISHED_PUBLIC_SECTIONS',JSON.stringify(unfinished,null,2));

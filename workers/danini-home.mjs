@@ -6,7 +6,7 @@ const content = {
     hero: 'Proverite automobil pre nego što platite kaparu.',
     intro: 'Pošaljite oglas. Pomažemo vam da prepoznate otvorena pitanja, procenite rizike i po potrebi organizujete nezavisnu proveru pre kupovine. Obim i cenu usluge dogovaramo unapred.',
     actions: ['Zatražite proveru vozila', 'Pogledajte vodiče'],
-    photo: 'Ilustracija pregleda vozila',
+    photo: 'DANINI prikaz salona vozila kao ilustracija postupka kupovine',
     tools: 'Pre odluke: proverite ključne informacije',
     cards: [
       ['Provera oglasa', 'Unesite podatke iz oglasa. Dobijate pitanja za prodavca i spisak dokumenata koje treba proveriti.', '/ai-advisor.html'],
@@ -30,14 +30,14 @@ const content = {
     hero: 'Prüfen Sie Ihr Wunschauto, bevor Sie eine Anzahlung leisten.',
     intro: 'Senden Sie uns das Inserat. Wir helfen Ihnen, offene Fragen und Risiken einzuordnen und bei Bedarf eine unabhängige Fahrzeugprüfung anzufragen. Umfang und Preis stimmen wir vorab ab.',
     actions: ['Fahrzeugprüfung anfragen', 'Ratgeber ansehen'],
-    photo: 'Symbolfoto einer Fahrzeugprüfung',
+    photo: 'Symbolbild eines Autohauses zur Vorbereitung eines Fahrzeugkaufs',
     tools: 'Vor der Entscheidung: wichtige Fakten prüfen',
     cards: [
       ['Inserat prüfen', 'Tragen Sie die Angaben aus dem Inserat ein. Sie erhalten Fragen für den Verkäufer und eine Liste der zu prüfenden Unterlagen.', '/ai-advisor.html'],
       ['Importkosten berechnen', 'Schätzen Sie die Kosten für die Einfuhr nach Serbien, Bosnien und Herzegowina oder Kroatien.', '/import'],
       ['Sieben Ratgeber', 'Von der Inseratsuche und den Unterlagen bis zur Prüfung, Abholung und Einfuhr.', '/guides.html'],
     ],
-    serviceTitle: 'Ihr nächster Schritt zum geprüften Fahrzeug',
+    serviceTitle: 'Ihr nächster Schritt zum informierten Autokauf',
     serviceCopy: 'Senden Sie uns das Inserat und sagen Sie, was Sie prüfen lassen möchten. Machbarkeit, Umfang, Preis und Termin bestätigen wir für jede Anfrage.',
     serviceLinks: ['Videobesichtigung', 'Unabhängige Prüfung', 'Preise', 'Prüfung anfragen'],
     businessTitle: 'Beschaffung und Geschäftsanfragen',
@@ -86,14 +86,14 @@ a{color:inherit}a:focus-visible{outline:3px solid #2675d9;outline-offset:4px}
 .hero{background:var(--ink);color:#fff;padding:54px 0 62px}.hero-grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:50px}
 .line-brand{display:inline-block;color:var(--gold);font-size:15px;font-weight:800}.hero h1{font-size:clamp(38px,5vw,70px);line-height:1.03;letter-spacing:-.045em;margin:14px 0 18px}
 .hero p{max-width:54ch;color:#dbe3ef;font-size:clamp(17px,1.7vw,20px);margin:0 0 26px}
-.hero figure{margin:0}.hero img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px}
+.hero figure{margin:0;position:relative}.hero img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px}.image-caption{position:absolute;bottom:14px;left:14px;right:14px;padding:12px 14px;background:rgba(15,23,42,.86);color:#fff;border:1px solid #66798b;border-radius:8px;font-size:13px;font-weight:700;backdrop-filter:blur(5px)}
 .actions,.footer-links{flex-wrap:wrap;gap:12px}.button{display:inline-flex;align-items:center;min-height:46px;padding:10px 15px;border:1px solid currentColor;border-radius:7px;text-decoration:none;font-weight:750}
 .gold{background:var(--gold);border-color:var(--gold);color:var(--ink)}.button:hover{filter:brightness(.9)}
 .section{padding:50px 0}.section h2,.panel h2{font-size:clamp(25px,3.3vw,39px);line-height:1.14;letter-spacing:-.025em;margin:0 0 18px}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card,.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px}
 .card{display:block;text-decoration:none}.card:hover{border-color:#62769a}.card h3{font-size:19px;margin:0 0 8px}.card p,.panel p{color:var(--muted);margin:0 0 12px}.card span{font-weight:800}
 .panels{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;padding-bottom:50px}.panel p{margin-bottom:20px}.panel .actions{font-size:14px}
-.process-section{background:#17253a;color:white}.process-section h2{margin-top:12px}.process-grid{list-style:none;padding:0;margin:24px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.process-step{padding:23px;border:1px solid #40516a;border-radius:12px}.process-step h3{font-size:18px;margin:10px 0}.process-step p,.process-note{color:#d9e2ee}.step-number{font-weight:800;color:var(--gold);font-size:25px}.process-note{max-width:70ch;margin:0 0 22px}.process-section .gold{color:#0f172a}@media(max-width:800px){.process-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:570px){.process-grid{grid-template-columns:1fr}}footer{border-top:1px solid var(--line);padding:24px 0}.footer-links{gap:16px;font-size:14px}
+.visual-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px;align-items:center}.visual-copy{color:#475569;max-width:53ch;line-height:1.7}.eyebrow{font-size:12px;letter-spacing:.14em;font-weight:850;color:#785c00}.listing-demo{background:white;border:1px solid #cbd5e1;border-radius:16px;overflow:hidden;box-shadow:0 16px 42px rgba(15,23,42,.08)}.listing-header{background:#0f172a;color:#f8fafc;padding:13px 18px;display:flex;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:.04em}.listing-header strong{color:#facc15}.listing-split{display:grid;grid-template-columns:.9fr 1.1fr}.listing-split img{width:100%;height:100%;max-height:320px;object-fit:cover}.risk-list{list-style:none;display:grid;gap:14px;margin:0;padding:22px 20px}.risk-list li{display:flex;gap:12px;align-items:start;font-size:14px;font-weight:650}.risk-number{min-width:25px;height:25px;border-radius:50%;display:inline-grid;place-items:center;color:#842f22;background:#fff0ed;border:1px solid #f9c5ba;font-weight:850}.process-section{background:#17253a;color:white}.process-section h2{margin-top:12px}.process-grid{list-style:none;padding:0;margin:24px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.process-step{padding:23px;border:1px solid #40516a;border-radius:12px}.process-step h3{font-size:18px;margin:10px 0}.process-step p,.process-note{color:#d9e2ee}.step-number{font-weight:800;color:var(--gold);font-size:25px}.process-note{max-width:70ch;margin:0 0 22px}.process-section .gold{color:#0f172a}@media(max-width:800px){.process-grid{grid-template-columns:repeat(2,1fr)}.visual-grid{grid-template-columns:1fr}}@media(max-width:570px){.process-grid{grid-template-columns:1fr}.listing-split{grid-template-columns:1fr}.listing-split img{height:190px}.listing-header{font-size:10px}}footer{border-top:1px solid var(--line);padding:24px 0}.footer-links{gap:16px;font-size:14px}
 @media(max-width:800px){.shell{width:min(100% - 36px,1160px)}.bar{padding:12px 0;flex-wrap:wrap;gap:8px}.menu{order:3;width:100%;flex-wrap:wrap;gap:5px 14px;font-size:14px}.menu a{padding:5px 0}.hero-grid{gap:24px}.hero{padding:36px 0}.hero img{aspect-ratio:1}.cards{grid-template-columns:1fr}.panels{grid-template-columns:1fr}.section{padding:36px 0}}
 @media(max-width:570px){.hero-grid{grid-template-columns:1fr}.hero img{aspect-ratio:16/9}.card,.panel{padding:18px}.hero .button{flex:1 1 auto;justify-content:center}.locale a{padding:6px 8px}.brand{font-size:19px}}
 </style></head><body>
@@ -107,7 +107,7 @@ a{color:inherit}a:focus-visible{outline:3px solid #2675d9;outline-offset:4px}
 <section class="hero"><div class="shell hero-grid"><div>
 ${link('/buyers.html','AutoDanini','line-brand')}<h1>${c.hero}</h1><p>${c.intro}</p>
 <div class="actions">${link('/contact.html',c.actions[0],'button gold')}${link('/guides.html',c.actions[1],'button')}</div>
-</div><figure><img src="/danini-pregled-auta.webp" width="800" height="600" alt="${c.photo}" fetchpriority="high"></figure></div></section>
+</div><figure class="hero-media"><img src="/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg" width="800" height="600" alt="${c.photo}" fetchpriority="high"><figcaption class="image-caption">${lang==='de'?'Kaufentscheidung mit geprüften Informationen vorbereiten':'Priprema odluke na osnovu proverljivih informacija'}</figcaption></figure></div></section>
 <section class="shell section"><h2>${c.tools}</h2><div class="cards">
 ${c.cards.map(([heading,desc,href])=>`<a class="card" href="${href}"><h3>${heading}</h3><p>${desc}</p><span aria-hidden="true">↗</span></a>`).join('')}
 </div></section>
@@ -125,6 +125,26 @@ ${c.cards.map(([heading,desc,href])=>`<a class="card" href="${href}"><h3>${headi
       ['Nepredviđeni troškovi uvoza','Cena oglasa nije konačan trošak. Uračunajte dažbine, registraciju, transport i moguće preglede.'],
       ['Nesporazumi s prodavcem','Dogovorite stanje vozila, dokumentaciju i uslove plaćanja pre bilo kakve kapare.']
     ]).map(([h,p])=>`<article class="card"><h3>${h}</h3><p>${p}</p></article>`).join('')}
+  </div>
+</section>
+
+<section class="shell section" aria-labelledby="example-title">
+  <div class="visual-grid">
+    <div>
+      <span class="eyebrow">${lang==='de'?'INSERAT RICHTIG LESEN':'KAKO ČITATI OGLAS'}</span>
+      <h2 id="example-title">${lang==='de'?'Vier Signale, die Fragen verdienen':'Četiri znaka zbog kojih treba postaviti dodatna pitanja'}</h2>
+      <p class="visual-copy">${lang==='de'?'Ein schönes Foto ersetzt keine Dokumente. Diese Beispiele sind Warnsignale, kein Beweis für Betrug.':'Lepa fotografija ne zamenjuje dokumentaciju. Ovo su primeri signala za proveru, a ne dokaz prevare.'}</p>
+      ${link('/guides.html',lang==='de'?'Mehr im Ratgeber':'Pročitajte vodiče','button')}
+    </div>
+    <div class="listing-demo" role="group" aria-label="${lang==='de'?'Beispiel einer Inseratprüfung':'Ilustrativna provera oglasa'}">
+      <div class="listing-header"><span>${lang==='de'?'BEISPIEL · KEIN ECHTES INSERAT':'PRIMER · NIJE STVARNI OGLAS'}</span><strong>AUTO · CHECK</strong></div>
+      <div class="listing-split">
+        <img src="/images/DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg" width="480" height="320" loading="lazy" alt="${lang==='de'?'Illustration von Fahrzeugunterlagen':'Ilustracija dokumentacije vozila'}">
+        <ol class="risk-list">
+          ${(lang==='de'?['Wartungsnachweise fehlen','FIN und Dokumente abgleichen','Unfallangaben verifizieren','Preis und Nebenkosten prüfen']:['Nedostaje servisna evidencija','Uskladite VIN i dokumenta','Proverite navode o oštećenjima','Proverite cenu i dodatne troškove']).map((v,i)=>`<li><span class="risk-number">${i+1}</span>${v}</li>`).join('')}
+        </ol>
+      </div>
+    </div>
   </div>
 </section>
 <section class="process-section" aria-labelledby="process-title"><div class="shell section">

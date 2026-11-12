@@ -19,7 +19,8 @@ export function configured(env){
  const enabled=env.DANINI_DIGITAL_CHECKOUT_ENABLED==='true';
  const mode=env.PAYPAL_ENV;
  return !!(enabled&&['sandbox','live'].includes(mode)&&
-  (mode!=='live'||env.DANINI_DIGITAL_LIVE_APPROVED==='true')&&
+  (mode==='live'?env.DANINI_DIGITAL_LIVE_APPROVED==='true':
+   env.DANINI_PAYPAL_SANDBOX_ACCESS?.length>=32&&emailRe.test(env.DANINI_PAYPAL_SANDBOX_EMAIL||''))&&
   env.DANINI_DB&&env.PAYPAL_CLIENT_ID&&env.PAYPAL_CLIENT_SECRET&&env.PAYPAL_WEBHOOK_ID&&
   emailRe.test(env.DANINI_PAYPAL_RECEIVER_EMAIL||'')&&
   typeof env.DANINI_DIGITAL_SIGNING_SECRET==='string'&&env.DANINI_DIGITAL_SIGNING_SECRET.length>=32&&
@@ -89,7 +90,7 @@ async function emailReceipt(env,record,sandbox=false){
   const de=record.language==='de';
   const message={sender:{name:'DANINI',email:env.DANINI_BREVO_SENDER},to:[{email:record.email}],
    subject:(sandbox?'[SANDBOX] ':'')+(de?'DANINI – Ihr PDF nach bestätigter Zahlung':'DANINI – PDF nakon potvrđene uplate'),
-   htmlContent:(sandbox?'<p>Stripe Sandbox – testna uplata, bez stvarne naplate.</p>':'')+'<p>'+(de?'Ihre Zahlung wurde beim Zahlungsdienst verifiziert.':'Vaša uplata je potvrđena kod pružaoca plaćanja.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF vodič')+'</a></p><p>'+(de?'Link 72 Stunden gültig.':'Link važi 72 sata.')+'</p><p>DANINI · info@daninihub.com</p>'};
+   htmlContent:(sandbox?'<p>'+(de?'Testzahlung ohne echte Belastung.':'Testna uplata bez stvarne naplate.')+'</p>':'')+'<p>'+(de?'Ihre Zahlung wurde beim Zahlungsdienst verifiziert.':'Vaša uplata je potvrđena kod pružaoca plaćanja.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF vodič')+'</a></p><p>'+(de?'Link 72 Stunden gültig.':'Link važi 72 sata.')+'</p><p>DANINI · info@daninihub.com</p>'};
   const r=await fetch('https://api.brevo.com/v3/smtp/email',{method:'POST',headers:{'api-key':env.BREVO_API_KEY,'content-type':'application/json'},body:JSON.stringify(message),signal:AbortSignal.timeout(12000)});
   if(!r.ok)throw Error('MAIL_REJECTED');
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET email_state='SENT',email_sent_at=datetime('now') WHERE reference=?").bind(record.reference).run();
@@ -100,7 +101,7 @@ async function emailReceipt(env,record,sandbox=false){
 async function finalize(env,ref,paypalOrderId){
  let record=await getOrder(env,ref);
  if(!record||record.paypal_order_id!==paypalOrderId)throw Error('ORDER_MISMATCH');
- if(record.status==='PAID'){await emailReceipt(env,record);return record;}
+ if(record.status==='PAID'){await emailReceipt(env,record,env.PAYPAL_ENV==='sandbox');return record;}
  const claim=await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='PROCESSING',processing_at=datetime('now') WHERE reference=? AND (status='CREATED' OR (status='PROCESSING' AND processing_at < datetime('now','-2 minutes')))").bind(ref).run();
  if(claim.meta?.changes!==1)throw Error('ORDER_BUSY');
  try{
@@ -114,7 +115,7 @@ async function finalize(env,ref,paypalOrderId){
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='PAID',capture_id=?,paid_at=?,processing_at=NULL WHERE reference=? AND status='PROCESSING'").bind(capture,new Date().toISOString(),ref).run();
   record=await getOrder(env,ref);
   if(record?.status!=='PAID')throw Error('ORDER_NOT_PERSISTED');
-  await emailReceipt(env,record);
+  await emailReceipt(env,record,env.PAYPAL_ENV==='sandbox');
   return record;
  }catch(e){
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='CREATED',processing_at=NULL WHERE reference=? AND status='PROCESSING'").bind(ref).run();
@@ -128,22 +129,29 @@ async function verifyHuman(token,env,request){
  if(!r.ok)return false;
  const d=await r.json();return d.success===true&&['daninihub.com','www.daninihub.com'].includes(d.hostname);
 }
-async function checkout(request,env){
- if(!await ready(env))return err('CHECKOUT_NOT_READY',503);
- if(!['https://daninihub.com','https://www.daninihub.com'].includes(request.headers.get('Origin')))return err('INVALID_ORIGIN',403);
+async function checkout(request,env,sandbox=false){
+ if(!await ready(env)||sandbox!==(env.PAYPAL_ENV==='sandbox'))return err('CHECKOUT_NOT_READY',503);
+ if(sandbox){
+  if(!await sameSecret(env.DANINI_PAYPAL_SANDBOX_ACCESS,request.headers.get('X-Danini-Sandbox-Access')))return err('NOT_FOUND',404);
+ }else if(!['https://daninihub.com','https://www.daninihub.com'].includes(request.headers.get('Origin'))){
+  return err('INVALID_ORIGIN',403);
+ }
  if(!/^application\/json(?:;|$)/i.test(request.headers.get('content-type')||''))return err('UNSUPPORTED_MEDIA',415);
  const raw=await request.text();if(raw.length>12000)return err('TOO_LARGE',413);
  let d;try{d=JSON.parse(raw)}catch{return err('INVALID_JSON');}
- const email=typeof d.email==='string'?d.email.trim().toLowerCase():'';
+ const address=sandbox?env.DANINI_PAYPAL_SANDBOX_EMAIL:d?.email;
+ const email=typeof address==='string'?address.trim().toLowerCase():'';
+ if(!d||typeof d!=='object'||Array.isArray(d))return err('INVALID_ORDER');
  if(d.sku!=='guide'||!emailRe.test(email)||email.length>191||d.termsAccepted!==true||d.instantDeliveryConsent!==true)return err('INVALID_ORDER');
- if(!await verifyHuman(d.turnstileToken,env,request))return err('HUMAN_VERIFICATION_FAILED',403);
+ if(!sandbox&&!await verifyHuman(d.turnstileToken,env,request))return err('HUMAN_VERIFICATION_FAILED',403);
  const ref='DGD-'+crypto.randomUUID().replace(/-/g,'').toUpperCase();
  const language=d.language==='de'?'de':'sr';
  await env.DANINI_DB.prepare("INSERT INTO danini_digital_orders(reference,sku,email,language,amount_cents,status,email_state) VALUES (?,?,?,?,?,'PENDING','PENDING')").bind(ref,'guide',email,language,4900).run();
  try{
   const p=await paypal(env,'/v2/checkout/orders',{method:'POST',requestId:'DANINI-'+ref,body:{intent:'CAPTURE',purchase_units:[{reference_id:ref,custom_id:ref,description:PRODUCTS.guide.label,amount:{currency_code:'EUR',value:'49.00'}}],payment_source:{paypal:{experience_context:{brand_name:'DANINI',user_action:'PAY_NOW',shipping_preference:'NO_SHIPPING',return_url:origin+'/api/danini/digital/paypal/return?ref='+ref,cancel_url:origin+'/digital.html?cancelled=1'}}}}});
   const link=p.links?.find(x=>x.rel==='approve'||x.rel==='payer-action')?.href;
-  if(!link||!/^https:\/\/(www\.)?(sandbox\.)?paypal\.com\//.test(link)||!paypalIdRe.test(p.id))throw Error('INVALID_CHECKOUT_LINK');
+  const approvalOrigin=sandbox?'https://www.sandbox.paypal.com':'https://www.paypal.com';
+  if(!link||new URL(link).origin!==approvalOrigin||!paypalIdRe.test(p.id))throw Error('INVALID_CHECKOUT_LINK');
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='CREATED',paypal_order_id=? WHERE reference=? AND status='PENDING'").bind(p.id,ref).run();
   return json({ok:true,reference:ref,checkoutUrl:link});
  }catch{return err('CHECKOUT_PROVIDER_FAILED',503);}
@@ -169,11 +177,10 @@ async function retrievePdf(env,record){
 }
 async function sendDownload(request,env,url){
  if(request.method!=='GET')return err('METHOD_NOT_ALLOWED',405);
- if(!configured(env)&&!stripeConfigured(env))return err('NOT_READY',503);
+ if(!env.DANINI_DB||typeof env.DANINI_DIGITAL_SIGNING_SECRET!=='string'||env.DANINI_DIGITAL_SIGNING_SECRET.length<32)return err('NOT_READY',503);
  const ref=url.pathname.split('/').pop();
  if(!refRe.test(ref))return err('NOT_FOUND',404);
  const record=await getOrder(env,ref);
- if(!record || (record.stripe_session_id ? !stripeConfigured(env) : !configured(env)))return err('NOT_FOUND',404);
  if(!await tokenValid(env,record,url.searchParams.get('token')))return err('NOT_FOUND',404);
  const pdf=await retrievePdf(env,record);if(!pdf)return err('FILE_NOT_READY',503);
  return new Response(pdf,{headers:{'content-type':'application/pdf','content-disposition':'attachment; filename="DANINI_Auto_Biznis_Master_Vodic_2026_FINAL.pdf"','cache-control':'private, no-store, max-age=0','x-robots-tag':'noindex,nofollow','x-content-type-options':'nosniff','referrer-policy':'no-referrer','content-security-policy':"default-src 'none'; frame-ancestors 'none'"}});
@@ -206,7 +213,9 @@ async function webhook(request,env){
   const p=await paypal(env,'/v2/checkout/orders/'+encodeURIComponent(id));
   const ref=p.purchase_units?.[0]?.custom_id;
   if(!refRe.test(ref))return new Response(null,{status:204});
-  await finalize(env,ref,id);return new Response(null,{status:204});
+  await finalize(env,ref,id);
+  const latest=await getOrder(env,ref);
+  return latest?.email_state==='SENT'?new Response(null,{status:204}):err('RETRY_LATER',503);
  }catch{return err('RETRY_LATER',503);}
 }
 
@@ -366,10 +375,11 @@ async function stripeReturn(env,url) {
 export async function digitalRoute(request,env){
  const url=new URL(request.url),path=url.pathname;
  if(path==='/api/danini/digital/status'){
-  const on=await ready(env);
+  const on=env.PAYPAL_ENV==='live'&&await ready(env);
   return json({ok:true,enabled:on,mode:configured(env)?env.PAYPAL_ENV:'disabled',guidePriceEur:49,softwareEnabled:false,delivery:'private-d1-pdf'});
  }
  if(path==='/api/danini/digital/checkout'&&request.method==='POST')return checkout(request,env);
+ if(path==='/api/danini/digital/paypal/sandbox/checkout'&&request.method==='POST')return checkout(request,env,true);
  if(path==='/api/danini/digital/paypal/return'&&request.method==='GET')return browserReturn(env,url);
  if(path==='/api/danini/digital/paypal/webhook')return webhook(request,env);
  if(path==='/api/danini/digital/stripe/checkout'&&request.method==='POST')return stripeCheckout(request,env);

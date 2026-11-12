@@ -80,6 +80,10 @@ const download=await digitalRoute(new Request(link),env);
 assert.equal(download.status,200);
 assert.equal(download.headers.get('content-type'),'application/pdf');
 assert.deepEqual(Buffer.from(await download.arrayBuffer()),pdf);
+const disabledCheckoutDownload=await digitalRoute(new Request(link),{
+ DANINI_DB:env.DANINI_DB,DANINI_DIGITAL_SIGNING_SECRET:env.DANINI_DIGITAL_SIGNING_SECRET
+});
+assert.equal(disabledCheckoutDownload.status,200);
 assert.equal((await call('download/'+order.reference+'?token=invalid')).status,404);
 assert.equal((await call('status')).status,200);
 assert.equal((await (await call('status')).json()).enabled,false);

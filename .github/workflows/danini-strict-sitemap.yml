@@ -1,0 +1,19 @@
+name: DANINI strict sitemap SEO
+# Recheck after normalized production sitemap (PR #194).
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/danini-strict-sitemap.yml'
+      - 'scripts/check-danini-public-seo.mjs'
+  workflow_dispatch:
+jobs:
+  sitemap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check sitemap URLs canonical and alternate language URLs
+        run: node scripts/check-danini-public-seo.mjs

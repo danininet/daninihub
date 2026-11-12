@@ -20,5 +20,9 @@ const sitemap=await fetch(base+'/sitemap.xml',{signal:AbortSignal.timeout(14000)
 if(sitemap.status!==200)throw new Error('Sitemap not available');
 const listed=xml.split('<loc>').slice(1).map(x=>x.split('</loc>')[0].trim());
 for(const page of Object.keys(redirected)){if(listed.includes(base+page)||listed.includes(base+page+'.html'))throw new Error('Sitemap contains unfinished route '+page)}
+const price=await fetch(base+'/cenovnik',{signal:AbortSignal.timeout(14000)});
+const priceHTML=await price.text();
+if(price.status!==200||priceHTML.includes('AI savetnik je informativni pilot alat.')||!priceHTML.includes('Digitalni alati služe za pripremu upita'))throw new Error('Pricing page retains misleading AI pilot marketing');
+console.log('PRICING_CLARITY_PASS');
 console.log('ACTIVE_SITEMAP_ENTRIES',listed.length);
 console.log('UNREADY_ROUTE_TEST_PASS',JSON.stringify({redirects:results.length,business:business.status,photoBytes:bytes.length},null,2));

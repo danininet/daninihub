@@ -67,18 +67,18 @@ export function daniniHome(request, url) {
  const checkPhoto=assets+'DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg';
  const headers={'content-type':'text/html; charset=utf-8','cache-control':'public,max-age=300','x-content-type-options':'nosniff'};
  if(request.method==='HEAD')return new Response(null,{headers});
- return new Response(\`<!doctype html>
-<html lang="\${lang}">
+ return new Response(`<!doctype html>
+<html lang="${lang}">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>\${esc(t.title)}</title>
-<meta name="description" content="\${esc(t.description)}">
-<link rel="canonical" href="\${canon}">
+<title>${esc(t.title)}</title>
+<meta name="description" content="${esc(t.description)}">
+<link rel="canonical" href="${canon}">
 <link rel="alternate" hreflang="sr" href="https://daninihub.com/sr/">
 <link rel="alternate" hreflang="de" href="https://daninihub.com/de/">
 <link rel="alternate" hreflang="x-default" href="https://daninihub.com/">
-<meta property="og:type" content="website"><meta property="og:title" content="\${esc(t.title)}"><meta property="og:description" content="\${esc(t.description)}"><meta property="og:url" content="\${canon}">
-<meta property="og:image" content="https://daninihub.com\${hero}">
+<meta property="og:type" content="website"><meta property="og:title" content="${esc(t.title)}"><meta property="og:description" content="${esc(t.description)}"><meta property="og:url" content="${canon}">
+<meta property="og:image" content="https://daninihub.com${hero}">
 <link rel="icon" href="/danini-favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101a28">
 <style>
@@ -101,42 +101,42 @@ footer{background:#0d1622;color:#d4dfe9;padding:38px 0}.footer-row{display:flex;
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.cta{transition:none}}
 </style>
 </head><body>
-<a class="skip" href="#main">\${esc(t.skip)}</a>
+<a class="skip" href="#main">${esc(t.skip)}</a>
 <header class="site-head"><div class="wrap topbar">
 <a class="brand" href="/"><span>D</span>ANINI</a>
-<nav class="navigation" aria-label="\${esc(t.locale)}">
-\${a('/buyers.html',t.services)}\${a('/guides.html',t.guides)}\${a('/business.html',t.business)}\${a('/contact.html',t.contact)}
+<nav class="navigation" aria-label="${esc(t.locale)}">
+${a('/buyers.html',t.services)}${a('/guides.html',t.guides)}${a('/business.html',t.business)}${a('/contact.html',t.contact)}
 </nav>
-<div class="languages"><a lang="sr" hreflang="sr" href="/sr/"\${lang==='sr'?' aria-current="page"':''}>Srpski</a><a lang="de" hreflang="de" href="/de/"\${lang==='de'?' aria-current="page"':''}>Deutsch</a></div>
+<div class="languages"><a lang="sr" hreflang="sr" href="/sr/"${lang==='sr'?' aria-current="page"':''}>Srpski</a><a lang="de" hreflang="de" href="/de/"${lang==='de'?' aria-current="page"':''}>Deutsch</a></div>
 </div></header>
 <main id="main">
 <section class="hero"><div class="hero-grid"><div class="hero-copy">
-<span class="eyebrow on-dark">\${esc(t.eyebrow)}</span>
-<h1>\${esc(t.heroA)}<em>\${esc(t.heroB)}</em></h1>
-<p>\${esc(t.heroText)}</p>
-<div class="actions">\${a('/contact.html',''+t.primary,'cta cta-primary')}\${a('#prozess',t.secondary,'cta cta-secondary')}</div>
-</div><div class="hero-visual"><img src="\${hero}" alt="\${esc(t.photo)}" width="1000" height="900" fetchpriority="high"><div class="visual-caption"><small>\${esc(t.signalA)}</small>\${esc(t.signalB)}</div></div></div></section>
-<div class="value-strip"><div class="wrap value-line"><strong>AUTODANINI</strong><span>\${esc(t.scroll)} <span aria-hidden="true">↓</span></span></div></div>
+<span class="eyebrow on-dark">${esc(t.eyebrow)}</span>
+<h1>${esc(t.heroA)}<em>${esc(t.heroB)}</em></h1>
+<p>${esc(t.heroText)}</p>
+<div class="actions">${a('/contact.html',''+t.primary,'cta cta-primary')}${a('#prozess',t.secondary,'cta cta-secondary')}</div>
+</div><div class="hero-visual"><img src="${hero}" alt="${esc(t.photo)}" width="1000" height="900" fetchpriority="high"><div class="visual-caption"><small>${esc(t.signalA)}</small>${esc(t.signalB)}</div></div></div></section>
+<div class="value-strip"><div class="wrap value-line"><strong>AUTODANINI</strong><span>${esc(t.scroll)} <span aria-hidden="true">↓</span></span></div></div>
 <section class="feature" id="risiko"><div class="wrap">
-<span class="section-kicker">\${esc(t.sectionLabel)}</span>
-<h2>\${esc(t.sectionTitle)}<em>\${esc(t.sectionAccent)}</em></h2>
-<p class="intro-line">\${esc(t.sectionIntro)}</p>
+<span class="section-kicker">${esc(t.sectionLabel)}</span>
+<h2>${esc(t.sectionTitle)}<em>${esc(t.sectionAccent)}</em></h2>
+<p class="intro-line">${esc(t.sectionIntro)}</p>
 <div class="story-grid">
 <ol class="proof-list">
-\${t.risks.map((x,i)=>\`<li><span class="proof-index">0\${i+1}</span><div><strong>\${esc(x)}</strong><p>\${esc(t.riskNotes[i])}</p></div></li>\`).join('')}
+${t.risks.map((x,i)=>`<li><span class="proof-index">0${i+1}</span><div><strong>${esc(x)}</strong><p>${esc(t.riskNotes[i])}</p></div></li>`).join('')}
 </ol>
-<figure class="document-visual"><img src="\${documentPhoto}" alt="\${esc(t.riskPhoto)}" width="900" height="610" loading="lazy"><figcaption>\${esc(t.visualTag)}</figcaption></figure>
+<figure class="document-visual"><img src="${documentPhoto}" alt="${esc(t.riskPhoto)}" width="900" height="610" loading="lazy"><figcaption>${esc(t.visualTag)}</figcaption></figure>
 </div></div></section>
 <section class="workflow" id="prozess"><div class="wrap">
-<span class="eyebrow on-dark">\${esc(t.diagramLabel)}</span>
-<h2>\${esc(t.diagramTitle)}</h2><ol class="flow-line">
-\${t.stages.map(stage=>\`<li class="flow-stage" style="list-style:none"><b>\${esc(stage[0])}</b><h3>\${esc(stage[1])}</h3><p>\${esc(stage[2])}</p></li>\`).join('')}
-</ol><p class="workflow-note">\${esc(t.disclaimer)}</p></div></section>
-<section class="split" id="leistungen"><img class="split-image" src="\${checkPhoto}" width="1050" height="950" loading="lazy" alt="\${esc(t.servicePhoto)}"><div class="split-copy">
-<span class="section-kicker">\${esc(t.serviceLabel)}</span><h2>\${esc(t.serviceTitle)}</h2><p>\${esc(t.serviceDesc)}</p><div class="actions">\${a('/buyers.html',t.serviceAction,'cta cta-primary')}\${a('/inspection.html',t.inspectionAction,'cta cta-secondary')}</div></div></section>
-<section class="reading"><div class="wrap reading-row"><div><span class="section-kicker">\${esc(t.guideLabel)}</span><h2>\${esc(t.guideTitle)}</h2><p>\${esc(t.guideText)}</p><div class="reading-links">\${a('/guides.html',t.guideLink,'text-link')}\${a('/import',t.calculator,'text-link')}</div></div><img class="reading-image" width="850" height="510" loading="lazy" src="\${documentPhoto}" alt="\${esc(t.guideImage)}"></div></section>
-<section class="business-rail"><div class="wrap business-inner"><strong>\${esc(t.businessTitle)}</strong><p>\${esc(t.businessText)}</p>\${a('/business.html',t.businessLink,'text-link')}</div></section>
-<section class="closing" id="anfrage"><div class="wrap"><span class="eyebrow on-dark">\${esc(t.closeEyebrow)}</span><h2>\${esc(t.closeTitle)}</h2><p>\${esc(t.closeText)}</p>\${a('/contact.html',t.closeCta,'cta cta-primary')}</div></section>
-</main><footer><div class="wrap"><div class="footer-row"><strong>DANINI · AutoDanini</strong><nav class="footer-links">\${a('/impressum.html','Impressum')}\${a('/privacy.html',t.privacy)}\${a('/terms.html',t.terms)}\${a('/cookies.html',t.cookies)}\${a(lang==='de'?'/danini.html':'/danini-sr.html',t.about)}</nav></div><small>\${esc(t.disclaimer)}</small></div></footer>
-</body></html>\`,{headers});
+<span class="eyebrow on-dark">${esc(t.diagramLabel)}</span>
+<h2>${esc(t.diagramTitle)}</h2><ol class="flow-line">
+${t.stages.map(stage=>`<li class="flow-stage" style="list-style:none"><b>${esc(stage[0])}</b><h3>${esc(stage[1])}</h3><p>${esc(stage[2])}</p></li>`).join('')}
+</ol><p class="workflow-note">${esc(t.disclaimer)}</p></div></section>
+<section class="split" id="leistungen"><img class="split-image" src="${checkPhoto}" width="1050" height="950" loading="lazy" alt="${esc(t.servicePhoto)}"><div class="split-copy">
+<span class="section-kicker">${esc(t.serviceLabel)}</span><h2>${esc(t.serviceTitle)}</h2><p>${esc(t.serviceDesc)}</p><div class="actions">${a('/buyers.html',t.serviceAction,'cta cta-primary')}${a('/inspection.html',t.inspectionAction,'cta cta-secondary')}</div></div></section>
+<section class="reading"><div class="wrap reading-row"><div><span class="section-kicker">${esc(t.guideLabel)}</span><h2>${esc(t.guideTitle)}</h2><p>${esc(t.guideText)}</p><div class="reading-links">${a('/guides.html',t.guideLink,'text-link')}${a('/import',t.calculator,'text-link')}</div></div><img class="reading-image" width="850" height="510" loading="lazy" src="${documentPhoto}" alt="${esc(t.guideImage)}"></div></section>
+<section class="business-rail"><div class="wrap business-inner"><strong>${esc(t.businessTitle)}</strong><p>${esc(t.businessText)}</p>${a('/business.html',t.businessLink,'text-link')}</div></section>
+<section class="closing" id="anfrage"><div class="wrap"><span class="eyebrow on-dark">${esc(t.closeEyebrow)}</span><h2>${esc(t.closeTitle)}</h2><p>${esc(t.closeText)}</p>${a('/contact.html',t.closeCta,'cta cta-primary')}</div></section>
+</main><footer><div class="wrap"><div class="footer-row"><strong>DANINI · AutoDanini</strong><nav class="footer-links">${a('/impressum.html','Impressum')}${a('/privacy.html',t.privacy)}${a('/terms.html',t.terms)}${a('/cookies.html',t.cookies)}${a(lang==='de'?'/danini.html':'/danini-sr.html',t.about)}</nav></div><small>${esc(t.disclaimer)}</small></div></footer>
+</body></html>`,{headers});
 }

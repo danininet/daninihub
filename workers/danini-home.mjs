@@ -60,7 +60,7 @@ export function daniniHome(request, url) {
  const t=copy[lang];
  const canon='https://daninihub.com/'+lang+'/';
  const esc=(v)=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
- const a=(href,label,klass='')=>'<a href="'+href+'" class="'+klass+'">'+esc(label)+'</a>';
+ const a=(href,label,klass='')=>'<a href="'+(href==='/contact.html'?href+'?lang='+lang:href)+'" class="'+klass+'">'+esc(label)+'</a>';
  const assets='/images/';
  const hero=assets+'DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg';
  const documentPhoto=assets+'DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg';

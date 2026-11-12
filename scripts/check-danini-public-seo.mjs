@@ -19,7 +19,13 @@ try {
   if(sitemap.response.status!==200)fail.push('sitemap status '+sitemap.response.status);
   const links=[...sitemap.body.matchAll(/<loc>\s*(https?:\/\/[^<]+)\s*<\/loc>/g)].map(m=>m[1].trim());
   for(const path of ['/sr/','/de/'])if(!links.includes(base+path))fail.push('missing sitemap '+path);
-  if(links.length<19)fail.push('sitemap has fewer than expected 19 URLs: '+links.length);
+  if(links.length<19)fail.push('sitemap has fewer than expected 19 active URLs: '+links.length);
+  for(const bad of ['/prepurchase','/digital','/ai-solutions','/cnc','/auctions']){
+    if(links.includes(base+bad)||links.includes(base+bad+'.html'))fail.push('inactive pilot in sitemap: '+bad);
+  }
+  for(const required of ['/sr/','/de/','/business','/guides']){
+    if(!links.includes(base+required))fail.push('missing active landing: '+required);
+  }
   for(const link of [...new Set(links)]){
     if(!link.startsWith(base+'/')){fail.push('unexpected sitemap domain '+link);continue}
     try{

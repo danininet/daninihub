@@ -27,7 +27,7 @@ test('SR and DE homepage: editorial conversion layout, not card grid', async () 
     assert.equal((html.match(/class="card"/g) || []).length, 0);
     assert.ok(html.includes('DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg'));
     assert.ok(html.includes('DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg'));
-    assert.ok(html.includes('DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg'));
+    assert.ok(html.includes('DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg'));
     assert.ok(!html.includes('${'));
     assert.ok(!html.includes('Gumroad'));
     assert.ok(!html.includes('16%'));

@@ -1,176 +1,142 @@
-const content = {
-  sr: {
-    title: 'DANINI | Kupovina auta u Nemačkoj i saradnja sa Balkanom',
-    description: 'Proverite oglas, procenite troškove uvoza i zatražite pregled vozila u Nemačkoj. DANINI Business pomaže firmama pri upitima i nabavci između Nemačke i Balkana.',
-    nav: ['Za kupce', 'Za firme', 'Vodiči', 'Kontakt'],
-    hero: 'Proverite automobil pre nego što platite kaparu.',
-    intro: 'Pošaljite oglas. Pomažemo vam da prepoznate otvorena pitanja, procenite rizike i po potrebi organizujete nezavisnu proveru pre kupovine. Obim i cenu usluge dogovaramo unapred.',
-    actions: ['Zatražite proveru vozila', 'Pogledajte vodiče'],
-    photo: 'DANINI prikaz salona vozila kao ilustracija postupka kupovine',
-    tools: 'Pre odluke: proverite ključne informacije',
-    cards: [
-      ['Provera oglasa', 'Unesite podatke iz oglasa. Dobijate pitanja za prodavca i spisak dokumenata koje treba proveriti.', '/ai-advisor.html'],
-      ['Kalkulator uvoza', 'Napravite okvirnu procenu troškova za Srbiju, BiH ili Hrvatsku.', '/import'],
-      ['Sedam vodiča', 'Od izbora oglasa i dokumentacije do pregleda, preuzimanja i uvoza.', '/guides.html'],
-    ],
-    serviceTitle: 'Pripremite kupovinu uz jasne sledeće korake',
-    serviceCopy: 'Pošaljite oglas i recite šta želite da proverite. Izvodljivost, obim, cenu i termin potvrđujemo za svaki zahtev.',
-    serviceLinks: ['Video-obilazak', 'Nezavisan pregled', 'Cenovnik', 'Zatražite proveru'],
-    businessTitle: 'Nabavka i poslovni upiti',
-    businessCopy: 'Nemačke firme mogu poslati zahtev za pronalazak dobavljača. Firmama sa Balkana pomažemo da pripreme upit za nemačko tržište.',
-    businessAction: 'Otvori poslovni upit',
-    brand: 'O brendu DANINI',
-    legal: ['Impressum', 'Privatnost', 'Uslovi', 'Kolačići'],
-    skip: 'Preskoči na sadržaj',
-  },
-  de: {
-    title: 'DANINI | Autokauf in Deutschland und Geschäftskontakte zum Balkan',
-    description: 'Inserate prüfen, Importkosten schätzen und Fahrzeugbesichtigungen in Deutschland anfragen. DANINI Business unterstützt Anfragen und Beschaffung zwischen Deutschland und dem Balkan.',
-    nav: ['Für Autokäufer', 'Für Unternehmen', 'Ratgeber', 'Kontakt'],
-    hero: 'Prüfen Sie Ihr Wunschauto, bevor Sie eine Anzahlung leisten.',
-    intro: 'Senden Sie uns das Inserat. Wir helfen Ihnen, offene Fragen und Risiken einzuordnen und bei Bedarf eine unabhängige Fahrzeugprüfung anzufragen. Umfang und Preis stimmen wir vorab ab.',
-    actions: ['Fahrzeugprüfung anfragen', 'Ratgeber ansehen'],
-    photo: 'Symbolbild eines Autohauses zur Vorbereitung eines Fahrzeugkaufs',
-    tools: 'Vor der Entscheidung: wichtige Fakten prüfen',
-    cards: [
-      ['Inserat prüfen', 'Tragen Sie die Angaben aus dem Inserat ein. Sie erhalten Fragen für den Verkäufer und eine Liste der zu prüfenden Unterlagen.', '/ai-advisor.html'],
-      ['Importkosten berechnen', 'Schätzen Sie die Kosten für die Einfuhr nach Serbien, Bosnien und Herzegowina oder Kroatien.', '/import'],
-      ['Sieben Ratgeber', 'Von der Inseratsuche und den Unterlagen bis zur Prüfung, Abholung und Einfuhr.', '/guides.html'],
-    ],
-    serviceTitle: 'Ihr nächster Schritt zum informierten Autokauf',
-    serviceCopy: 'Senden Sie uns das Inserat und sagen Sie, was Sie prüfen lassen möchten. Machbarkeit, Umfang, Preis und Termin bestätigen wir für jede Anfrage.',
-    serviceLinks: ['Videobesichtigung', 'Unabhängige Prüfung', 'Preise', 'Prüfung anfragen'],
-    businessTitle: 'Beschaffung und Geschäftsanfragen',
-    businessCopy: 'Deutsche Unternehmen können eine Lieferantensuche anfragen. Unternehmen aus dem Balkan unterstützen wir bei der Vorbereitung ihrer Anfrage für den deutschen Markt.',
-    businessAction: 'Geschäftsanfrage öffnen',
-    brand: 'Über DANINI',
-    legal: ['Impressum', 'Datenschutz', 'AGB', 'Cookies'],
-    skip: 'Zum Inhalt springen',
-  },
+const copy = {
+sr: {
+ title:'Provera automobila u Nemačkoj | AutoDanini by DANINI',
+ description:'Pošaljite oglas pre kapare. AutoDanini pomaže pri proceni rizika, razjašnjenju dokumentacije i organizaciji nezavisnog pregleda u Nemačkoj.',
+ home:'Početna',services:'Usluge',guides:'Vodiči',business:'Za firme',contact:'Kontakt', locale:'Jezik',
+ eyebrow:'AUTODANINI / PODRŠKA PRI KUPOVINI VOZILA',
+ heroA:'Automobil iz Nemačke.', heroB:'Odluka bez nagađanja.',
+ heroText:'Našli ste automobil? Pre kapare proverite šta oglas ne govori. Pomažemo vam da postavite prava pitanja, razumete troškove i po potrebi organizujete nezavisni pregled.',
+ primary:'Pošaljite oglas na proveru',secondary:'Kako funkcioniše',photo:'Ilustracija automobila u prodajnom salonu',
+ signalA:'Pre kapare',signalB:'Prvo informacije, zatim odluka.',
+ scroll:'Istražite postupak',
+ sectionLabel:'01 / PROVERA RIZIKA',sectionTitle:'Oglas pokazuje automobil.',sectionAccent:'Ne i celu priču.',
+ sectionIntro:'Fotografije i kratak opis nisu dokaz istorije vozila. Sledeće stavke treba razjasniti pre bilo kakve uplate.',
+ risks:['Servisna istorija','VIN i dokumenta','Ranija oštećenja','Stvarni ukupni trošak'],
+ riskNotes:['Da li postoje proverljivi računi i evidencija održavanja?','Da li se identifikacioni podaci poklapaju sa dokumentima?','Šta je navedeno, a šta tek treba stručno proveriti?','Kupoprodajna cena nije isto što i cena do registracije.'],
+ visualTag:'ILUSTRATIVNA KONTROLNA LISTA — NE STVARNI OGLAS',riskPhoto:'Dokumentacija koja se proverava pre uvoza',
+ diagramLabel:'02 / JASAN POSTUPAK',diagramTitle:'Od linka oglasa do vaše odluke.',
+ stages:[['01','Pošaljite link','Navedite automobil i šta vas zanima.'],['02','Razjasnimo rizike','Proveravamo navode, dokumenta i otvorena pitanja.'],['03','Dogovorimo proveru','Po potrebi tražimo video-obilazak ili nezavisnog stručnjaka.'],['04','Vi odlučujete','Dobijate dostupne nalaze i odlučujete o kupovini.']],
+ serviceLabel:'03 / KONKRETNA PODRŠKA',serviceTitle:'Niste sami sa oglasom i prodavcem.',
+ serviceDesc:'Možemo pomoći oko pitanja prodavcu, provere dokumentacije, procene ukupnog troška i organizacije pregleda. Obim, raspoloživost i cenu potvrđujemo pre angažovanja.',
+ serviceAction:'Usluge provere vozila',inspectionAction:'Nezavisni pregled',servicePhoto:'Ilustrativan prikaz provere vozila',
+ guideLabel:'04 / ZNANJE PRE KUPOVINE',guideTitle:'Besplatni vodiči. Korisni pre prve kapare.',guideText:'Kako proveriti dokumentaciju, proceniti uvoz i prepoznati informacije koje nedostaju.',
+ guideLink:'Otvorite vodiče',calculator:'Procena troškova uvoza',guideImage:'Fotografija prateće dokumentacije za vozila',
+ businessTitle:'DANINI Business',businessText:'Poslovni upiti i nabavka između nemačkog tržišta i Balkana.',businessLink:'Za poslovne klijente',
+ closeEyebrow:'VAŠ SLEDEĆI KORAK',closeTitle:'Imate konkretan automobil na umu?',closeText:'Pošaljite link i opišite šta želite da proverite. Pre daljih koraka dobićete informacije o mogućnostima i obimu usluge.',closeCta:'Zatražite proveru',
+ disclaimer:'AutoDanini ne prodaje automobile niti garantuje stanje vozila. Nezavisni pregledi zavise od dostupnosti stručnjaka. Plaćanje vozila dogovarate direktno s prodavcem.',
+ privacy:'Privatnost',terms:'Uslovi',cookies:'Kolačići',about:'O DANINI',skip:'Preskoči na sadržaj',
+},
+de: {
+ title:'Fahrzeugprüfung vor dem Autokauf | AutoDanini by DANINI',
+ description:'Fahrzeugangebot vor der Anzahlung prüfen: AutoDanini unterstützt bei Risikofragen, Dokumenten, Importkosten und unabhängigen Prüfungen in Deutschland.',
+ home:'Start',services:'Leistungen',guides:'Ratgeber',business:'Für Firmen',contact:'Kontakt',locale:'Sprache',
+ eyebrow:'AUTODANINI / UNTERSTÜTZUNG BEIM FAHRZEUGKAUF',
+ heroA:'Ein Auto aus Deutschland.',heroB:'Eine informierte Entscheidung.',
+ heroText:'Sie haben ein interessantes Fahrzeug gefunden? Klären Sie vor der Anzahlung, was das Inserat offenlässt. Wir unterstützen bei Fragen, Kosten und der möglichen Organisation einer unabhängigen Prüfung.',
+ primary:'Fahrzeuginserat prüfen lassen',secondary:'So funktioniert es',photo:'Symbolbild eines Fahrzeugs im Autohaus',
+ signalA:'Vor der Anzahlung',signalB:'Erst Informationen. Dann entscheiden.',
+ scroll:'Ablauf entdecken',
+ sectionLabel:'01 / RISIKEN VERSTEHEN',sectionTitle:'Das Inserat zeigt ein Auto.',sectionAccent:'Nicht die ganze Geschichte.',
+ sectionIntro:'Bilder und kurze Beschreibungen beweisen keine Fahrzeughistorie. Diese Punkte sollten vor einer Zahlung geklärt werden.',
+ risks:['Wartungsnachweise','FIN und Unterlagen','Vorschäden','Tatsächliche Gesamtkosten'],
+ riskNotes:['Gibt es nachvollziehbare Wartungsbelege und Rechnungen?','Passen Fahrzeugdaten und Papiere zusammen?','Was wird angegeben und was sollte fachlich geprüft werden?','Kaufpreis und Kosten bis zur Zulassung sind nicht dasselbe.'],
+ visualTag:'ILLUSTRATIVE CHECKLISTE — KEIN REALES INSERAT',riskPhoto:'Illustration von Unterlagen beim Fahrzeugimport',
+ diagramLabel:'02 / KLARER ABLAUF',diagramTitle:'Vom Inserat bis zu Ihrer Entscheidung.',
+ stages:[['01','Inserat senden','Schicken Sie den Link und Ihre Fragen.'],['02','Risiken klären','Wir besprechen Angaben, Unterlagen und offene Punkte.'],['03','Prüfung anfragen','Bei Bedarf: Videobesichtigung oder unabhängige Fachprüfung.'],['04','Selbst entscheiden','Sie bewerten die verfügbaren Erkenntnisse vor dem Kauf.']],
+ serviceLabel:'03 / KONKRETE UNTERSTÜTZUNG',serviceTitle:'Mit dem Inserat nicht allein gelassen.',
+ serviceDesc:'Wir helfen bei Verkäuferfragen, Unterlagen, Kostenabschätzung und der Anfrage einer Fahrzeugprüfung. Leistungsumfang, Verfügbarkeit und Preis werden vorab abgestimmt.',
+ serviceAction:'Leistungen ansehen',inspectionAction:'Unabhängige Prüfung',servicePhoto:'Illustration einer Fahrzeugprüfung',
+ guideLabel:'04 / WISSEN VOR DEM KAUF',guideTitle:'Kostenfreie Ratgeber. Nützlich vor der Anzahlung.',guideText:'Dokumente prüfen, Importkosten einschätzen und Wissenslücken frühzeitig erkennen.',
+ guideLink:'Ratgeber ansehen',calculator:'Importkosten schätzen',guideImage:'Fahrzeugunterlagen zur Vorbereitung des Kaufs',
+ businessTitle:'DANINI Business',businessText:'Geschäftsanfragen und Beschaffung zwischen Deutschland und dem Balkan.',businessLink:'Für Unternehmen',
+ closeEyebrow:'IHR NÄCHSTER SCHRITT',closeTitle:'Sie haben bereits ein Fahrzeug gefunden?',closeText:'Schicken Sie den Link und Ihre Fragen. Wir klären zunächst, welche Unterstützung möglich ist.',closeCta:'Fahrzeugprüfung anfragen',
+ disclaimer:'AutoDanini verkauft keine Fahrzeuge und garantiert keinen Fahrzeugzustand. Unabhängige Prüfungen hängen von der Verfügbarkeit Dritter ab. Den Fahrzeugkauf vereinbaren Sie direkt mit dem Verkäufer.',
+ privacy:'Datenschutz',terms:'AGB',cookies:'Cookies',about:'Über DANINI',skip:'Zum Inhalt springen'
+}
 };
 
 export function daniniHome(request, url) {
-  const lang = url.pathname === '/de/' ? 'de' : 'sr';
-  const c = content[lang];
-  const canonical = lang === 'de' ? 'https://daninihub.com/de/' : 'https://daninihub.com/sr/';
-  const link = (href, label, css = '') => `<a class="${css}" href="${href}">${label}</a>`;
-  const nav = ['/buyers.html', '/business.html', '/guides.html', '/contact.html'];
-  const services = ['/live.html', '/inspection.html', '/cenovnik', '/contact.html'];
-  const legal = ['/impressum.html', '/privacy.html', '/terms.html', '/cookies.html'];
-  const headers = {'content-type':'text/html; charset=utf-8','cache-control':'public, max-age=300','x-content-type-options':'nosniff'};
-  if (request.method === 'HEAD') return new Response(null, {headers});
-  return new Response(`<!doctype html>
-<html lang="${lang}"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${c.title}</title><meta name="description" content="${c.description}">
-<link rel="canonical" href="${canonical}">
+ const lang=url.pathname==='/de/'?'de':'sr';
+ const t=copy[lang];
+ const canon='https://daninihub.com/'+lang+'/';
+ const esc=(v)=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ const a=(href,label,klass='')=>'<a href="'+href+'" class="'+klass+'">'+esc(label)+'</a>';
+ const assets='/images/';
+ const hero=assets+'DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg';
+ const documentPhoto=assets+'DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg';
+ const checkPhoto=assets+'DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg';
+ const headers={'content-type':'text/html; charset=utf-8','cache-control':'public,max-age=300','x-content-type-options':'nosniff'};
+ if(request.method==='HEAD')return new Response(null,{headers});
+ return new Response(\`<!doctype html>
+<html lang="\${lang}">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>\${esc(t.title)}</title>
+<meta name="description" content="\${esc(t.description)}">
+<link rel="canonical" href="\${canon}">
 <link rel="alternate" hreflang="sr" href="https://daninihub.com/sr/">
 <link rel="alternate" hreflang="de" href="https://daninihub.com/de/">
 <link rel="alternate" hreflang="x-default" href="https://daninihub.com/">
-<link rel="icon" type="image/svg+xml" href="/danini-favicon.svg">
-<meta name="theme-color" content="#0f172a">
-<script>try{localStorage.setItem("autodanini-language","${lang}")}catch{}</script>
-<meta property="og:type" content="website"><meta property="og:site_name" content="DANINI">
-<meta property="og:title" content="${c.title}"><meta property="og:description" content="${c.description}">
-<meta property="og:url" content="${canonical}"><meta property="og:image" content="https://daninihub.com/danini-pregled-auta.webp">
+<meta property="og:type" content="website"><meta property="og:title" content="\${esc(t.title)}"><meta property="og:description" content="\${esc(t.description)}"><meta property="og:url" content="\${canon}">
+<meta property="og:image" content="https://daninihub.com\${hero}">
+<link rel="icon" href="/danini-favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#101a28">
 <style>
-:root{color-scheme:light;--ink:#0f172a;--muted:#475569;--gold:#facc15;--line:#dce2eb;--paper:#f8fafc}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
-a{color:inherit}a:focus-visible{outline:3px solid #2675d9;outline-offset:4px}
-.shell{width:min(1160px,calc(100% - 48px));margin:auto}.top{background:var(--ink);color:#fff}
-.bar,.brand,.menu,.locale,.actions,.footer-links{display:flex;align-items:center;gap:18px}.bar{min-height:76px;justify-content:space-between}
-.brand{gap:10px;text-decoration:none;font-size:21px;font-weight:800;letter-spacing:.05em}.brand img{display:block}
-.menu a,.locale a,.footer-links a{text-decoration:none}.menu a:hover,.footer-links a:hover{text-decoration:underline}.locale{gap:5px}
-.locale a{padding:7px 10px;border:1px solid #64748b;border-radius:6px;font-size:14px;font-weight:700;white-space:nowrap}.locale [aria-current]{color:var(--ink);background:var(--gold);border-color:var(--gold)}
-.skip{position:absolute;top:4px;left:4px;padding:8px;background:#fff;color:var(--ink);transform:translateY(-150%);z-index:2}.skip:focus{transform:none}
-.hero{background:var(--ink);color:#fff;padding:54px 0 62px}.hero-grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:50px}
-.line-brand{display:inline-block;color:var(--gold);font-size:15px;font-weight:800}.hero h1{font-size:clamp(38px,5vw,70px);line-height:1.03;letter-spacing:-.045em;margin:14px 0 18px}
-.hero p{max-width:54ch;color:#dbe3ef;font-size:clamp(17px,1.7vw,20px);margin:0 0 26px}
-.hero figure{margin:0;position:relative}.hero img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px}.image-caption{position:absolute;bottom:14px;left:14px;right:14px;padding:12px 14px;background:rgba(15,23,42,.86);color:#fff;border:1px solid #66798b;border-radius:8px;font-size:13px;font-weight:700;backdrop-filter:blur(5px)}
-.actions,.footer-links{flex-wrap:wrap;gap:12px}.button{display:inline-flex;align-items:center;min-height:46px;padding:10px 15px;border:1px solid currentColor;border-radius:7px;text-decoration:none;font-weight:750}
-.gold{background:var(--gold);border-color:var(--gold);color:var(--ink)}.button:hover{filter:brightness(.9)}
-.section{padding:50px 0}.section h2,.panel h2{font-size:clamp(25px,3.3vw,39px);line-height:1.14;letter-spacing:-.025em;margin:0 0 18px}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card,.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px}
-.card{display:block;text-decoration:none}.card:hover{border-color:#62769a}.card h3{font-size:19px;margin:0 0 8px}.card p,.panel p{color:var(--muted);margin:0 0 12px}.card span{font-weight:800}
-.panels{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;padding-bottom:50px}.panel p{margin-bottom:20px}.panel .actions{font-size:14px}
-.visual-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px;align-items:center}.visual-copy{color:#475569;max-width:53ch;line-height:1.7}.eyebrow{font-size:12px;letter-spacing:.14em;font-weight:850;color:#785c00}.listing-demo{background:white;border:1px solid #cbd5e1;border-radius:16px;overflow:hidden;box-shadow:0 16px 42px rgba(15,23,42,.08)}.listing-header{background:#0f172a;color:#f8fafc;padding:13px 18px;display:flex;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:.04em}.listing-header strong{color:#facc15}.listing-split{display:grid;grid-template-columns:.9fr 1.1fr}.listing-split img{width:100%;height:100%;max-height:320px;object-fit:cover}.risk-list{list-style:none;display:grid;gap:14px;margin:0;padding:22px 20px}.risk-list li{display:flex;gap:12px;align-items:start;font-size:14px;font-weight:650}.risk-number{min-width:25px;height:25px;border-radius:50%;display:inline-grid;place-items:center;color:#842f22;background:#fff0ed;border:1px solid #f9c5ba;font-weight:850}.process-section{background:#17253a;color:white}.process-section h2{margin-top:12px}.process-grid{list-style:none;padding:0;margin:24px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.process-step{padding:23px;border:1px solid #40516a;border-radius:12px}.process-step h3{font-size:18px;margin:10px 0}.process-step p,.process-note{color:#d9e2ee}.step-number{font-weight:800;color:var(--gold);font-size:25px}.process-note{max-width:70ch;margin:0 0 22px}.process-section .gold{color:#0f172a}@media(max-width:800px){.process-grid{grid-template-columns:repeat(2,1fr)}.visual-grid{grid-template-columns:1fr}}@media(max-width:570px){.process-grid{grid-template-columns:1fr}.listing-split{grid-template-columns:1fr}.listing-split img{height:190px}.listing-header{font-size:10px}}footer{border-top:1px solid var(--line);padding:24px 0}.footer-links{gap:16px;font-size:14px}
-@media(max-width:800px){.shell{width:min(100% - 36px,1160px)}.bar{padding:12px 0;flex-wrap:wrap;gap:8px}.menu{order:3;width:100%;flex-wrap:wrap;gap:5px 14px;font-size:14px}.menu a{padding:5px 0}.hero-grid{gap:24px}.hero{padding:36px 0}.hero img{aspect-ratio:1}.cards{grid-template-columns:1fr}.panels{grid-template-columns:1fr}.section{padding:36px 0}}
-@media(max-width:570px){.hero-grid{grid-template-columns:1fr}.hero img{aspect-ratio:16/9}.card,.panel{padding:18px}.hero .button{flex:1 1 auto;justify-content:center}.locale a{padding:6px 8px}.brand{font-size:19px}}
-</style></head><body>
-<a class="skip" href="#content">${c.skip}</a>
-<header class="top"><div class="shell bar">
-<a href="${lang === 'de' ? '/de/' : '/'}" class="brand"><img src="/danini-favicon.svg" width="38" height="38" alt="">DANINI</a>
-<nav class="menu">${nav.map((href,i)=>link(href,c.nav[i])).join('')}</nav>
-<nav class="locale" aria-label="${lang === 'de' ? 'Sprache' : 'Jezik'}"><a href="/sr/" lang="sr" hreflang="sr"${lang==='sr'?' aria-current="page"':''}>Srpski</a><a href="/de/" lang="de" hreflang="de"${lang==='de'?' aria-current="page"':''}>Deutsch</a></nav>
+:root{--night:#101a28;--night2:#16283b;--gold:#facc15;--sand:#f5f2ea;--paper:#fffefa;--ink:#152336;--muted:#5b6777;--line:#d6dddF}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit}a:focus-visible{outline:3px solid #ebac1a;outline-offset:4px}button{font:inherit}.wrap{width:min(1180px,calc(100% - 48px));margin:auto}.skip{position:absolute;top:0;left:0;transform:translateY(-130%);padding:10px;background:white;color:black;z-index:10}.skip:focus{transform:none}
+.site-head{position:relative;background:var(--night);color:white;z-index:2;border-bottom:1px solid #304258}.topbar{min-height:86px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:25px;letter-spacing:.13em;font-weight:850;text-decoration:none;white-space:nowrap}.brand span{color:var(--gold)}.navigation,.languages{display:flex;gap:26px;align-items:center}.navigation a{text-decoration:none;font-size:13px;font-weight:650;letter-spacing:.01em;color:#e5ecf4}.navigation a:hover{color:var(--gold)}.languages{gap:6px}.languages a{text-decoration:none;font-size:12px;padding:8px 9px;border:1px solid #586b80;border-radius:5px;white-space:nowrap}.languages [aria-current=page]{background:var(--gold);color:var(--night);border-color:var(--gold);font-weight:750}
+.eyebrow{font-size:11px;letter-spacing:.18em;font-weight:850;text-transform:uppercase}.on-dark{color:var(--gold)}.hero{color:white;background:var(--night);overflow:hidden}.hero-grid{display:grid;grid-template-columns:1fr 1.05fr;min-height:640px}.hero-copy{padding:88px 42px 72px max(32px,calc((100vw - 1180px)/2));display:flex;flex-direction:column;align-items:flex-start;justify-content:center}.hero h1{font-size:clamp(43px,4.7vw,75px);letter-spacing:-.055em;line-height:1.08;font-weight:790;margin:20px 0 25px;max-width:680px}.hero h1 em{display:block;color:var(--gold);font-style:normal}.hero p{font-size:17px;line-height:1.8;color:#d7e1ed;max-width:540px;margin:0 0 33px}.hero-visual{position:relative;overflow:hidden;min-height:540px;background:#314252}.hero-visual>img{height:100%;width:100%;display:block;object-fit:cover;filter:contrast(1.05) saturate(.9)}.hero-visual:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(16,26,40,.18),transparent 40%),linear-gradient(0deg,rgba(16,26,40,.72),transparent 50%)}.visual-caption{position:absolute;z-index:1;bottom:48px;left:45px;right:30px;border-left:4px solid var(--gold);padding-left:19px;color:white;font-weight:650;font-size:clamp(16px,2vw,23px);max-width:430px}.visual-caption small{display:block;text-transform:uppercase;letter-spacing:.13em;color:var(--gold);font-size:11px;margin-bottom:5px}
+.actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center}.cta{display:inline-flex;justify-content:center;align-items:center;min-height:54px;padding:12px 22px;border-radius:4px;font-weight:750;font-size:14px;text-decoration:none;transition:background .2s,transform .2s}.cta:hover{transform:translateY(-2px)}.cta-primary{background:var(--gold);color:var(--night)}.cta-secondary{color:white;border:1px solid #65758a}.text-link{text-decoration:none;font-weight:800;border-bottom:2px solid #c6a02d;padding-bottom:4px;display:inline-block}.text-link:hover{color:#94720b}
+.value-strip{background:#f3ead0;border-bottom:1px solid #e6d5a9}.value-line{padding:18px 0;display:flex;gap:15px;align-items:center;font-size:13px;font-weight:700}.value-line strong{letter-spacing:.11em;color:#776221}
+.feature{padding:110px 0}.section-kicker{color:#927021;font-size:11px;letter-spacing:.2em;font-weight:850}.feature h2,.workflow h2,.split h2,.closing h2{font-size:clamp(35px,4.3vw,61px);line-height:1.13;letter-spacing:-.045em;margin:15px 0 28px}.feature h2 em{font-style:normal;color:#a27d28}.intro-line{font-size:18px;color:var(--muted);max-width:720px;line-height:1.8}.story-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:8vw;align-items:center;margin-top:55px}
+.proof-list{list-style:none;padding:0;margin:0}.proof-list li{border-top:1px solid var(--line);padding:19px 0;display:grid;grid-template-columns:38px 1fr;gap:17px}.proof-list li:last-child{border-bottom:1px solid var(--line)}.proof-index{color:#a17b28;font-size:14px;font-weight:800}.proof-list strong{display:block;font-size:18px}.proof-list p{margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.65}.document-visual{background:var(--sand);padding:16px 16px 0;position:relative}.document-visual img{width:100%;aspect-ratio:16/11;object-fit:cover;display:block;filter:saturate(.75)}.document-visual figcaption{background:var(--night2);color:white;padding:20px 24px;position:relative;margin:0 -16px;font-size:12px;font-weight:750;letter-spacing:.07em}.document-visual figcaption:before{content:'';position:absolute;width:34px;height:4px;background:var(--gold);top:0;left:24px}
+.workflow{background:var(--night);color:white;padding:110px 0}.workflow h2{max-width:800px}.flow-line{display:grid;grid-template-columns:repeat(4,1fr);margin:65px 0 30px;border-top:2px solid #64758b;gap:0}.flow-stage{padding:27px 21px 10px 0;position:relative}.flow-stage:before{content:'';position:absolute;top:-9px;left:0;background:var(--gold);width:16px;height:16px;border-radius:50%;box-shadow:0 0 0 7px var(--night)}.flow-stage:not(:last-child):after{content:'→';position:absolute;right:20px;top:29px;color:var(--gold);font-size:20px}.flow-stage b{font-size:12px;color:var(--gold);letter-spacing:.16em}.flow-stage h3{font-size:21px;line-height:1.25;margin:14px 0}.flow-stage p{font-size:14px;color:#ccd9e7;line-height:1.7;max-width:210px}.workflow-note{font-size:13px;color:#bdcad9;max-width:850px}
+.split{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;min-height:580px}.split-image{width:100%;height:100%;max-height:700px;object-fit:cover;display:block}.split-copy{padding:80px max(32px,calc((100vw - 1180px)/2)) 80px 7vw;align-self:center}.split-copy p{color:var(--muted);line-height:1.85;font-size:17px;max-width:540px}.split-copy .actions{margin-top:32px}.split .cta-secondary{color:var(--ink);border-color:#a2aab3}
+.reading{background:var(--sand);padding:100px 0}.reading-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}.reading-row h2{font-size:clamp(31px,3.4vw,49px);line-height:1.14;letter-spacing:-.04em}.reading-row p{color:var(--muted);max-width:510px;font-size:16px}.reading-links{display:flex;flex-wrap:wrap;gap:30px;margin-top:30px}.reading-image{width:100%;max-height:350px;object-fit:cover;border-radius:3px}
+.business-rail{padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.business-inner{display:grid;grid-template-columns:1fr 2fr auto;align-items:center;gap:25px}.business-inner strong{font-size:18px}.business-inner p{color:var(--muted);font-size:14px;margin:0}
+.closing{background:var(--night2);color:white;padding:110px 0;text-align:center}.closing h2{margin:15px auto 23px;max-width:900px}.closing p{color:#cfdeec;font-size:17px;max-width:670px;margin:0 auto 32px;line-height:1.8}
+footer{background:#0d1622;color:#d4dfe9;padding:38px 0}.footer-row{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:13px}.footer-links a{text-decoration:none}.footer-links a:hover{text-decoration:underline}footer small{display:block;color:#b9c5d2;margin-top:21px;max-width:980px;font-size:12px;line-height:1.6}
+@media(max-width:1020px){.topbar{flex-wrap:wrap;padding:18px 0}.navigation{order:3;width:100%;justify-content:space-between;gap:12px}.hero-grid{min-height:auto}.hero-copy{padding:60px 35px}.hero h1{font-size:clamp(39px,5vw,60px)}.split-copy{padding:55px 35px}.story-grid{gap:40px}}
+@media(max-width:720px){.wrap{width:calc(100% - 36px)}.topbar{min-height:75px}.brand{font-size:21px}.navigation{overflow:auto;justify-content:flex-start;gap:24px;white-space:nowrap}.hero-grid{grid-template-columns:1fr}.hero-copy{padding:58px 23px 55px}.hero-visual{height:360px;min-height:0}.hero-visual>img{object-position:center 43%}.visual-caption{left:22px;bottom:23px}.hero h1{font-size:clamp(40px,10vw,62px)}.feature,.workflow,.reading,.closing{padding:66px 0}.story-grid,.reading-row{grid-template-columns:1fr;gap:40px}.flow-line{grid-template-columns:1fr;border-top:0;margin-top:35px;border-left:2px solid #64758b;margin-left:8px}.flow-stage{padding:0 0 26px 27px}.flow-stage:before{top:5px;left:-9px}.flow-stage:not(:last-child):after{content:''}.split{grid-template-columns:1fr}.split-image{max-height:370px}.split-copy{padding:55px 23px}.business-inner{grid-template-columns:1fr;gap:10px}.footer-row{align-items:flex-start}.actions .cta{width:100%}.reading-links{gap:20px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.cta{transition:none}}
+</style>
+</head><body>
+<a class="skip" href="#main">\${esc(t.skip)}</a>
+<header class="site-head"><div class="wrap topbar">
+<a class="brand" href="/"><span>D</span>ANINI</a>
+<nav class="navigation" aria-label="\${esc(t.locale)}">
+\${a('/buyers.html',t.services)}\${a('/guides.html',t.guides)}\${a('/business.html',t.business)}\${a('/contact.html',t.contact)}
+</nav>
+<div class="languages"><a lang="sr" hreflang="sr" href="/sr/"\${lang==='sr'?' aria-current="page"':''}>Srpski</a><a lang="de" hreflang="de" href="/de/"\${lang==='de'?' aria-current="page"':''}>Deutsch</a></div>
 </div></header>
-<main id="content">
-<section class="hero"><div class="shell hero-grid"><div>
-${link('/buyers.html','AutoDanini','line-brand')}<h1>${c.hero}</h1><p>${c.intro}</p>
-<div class="actions">${link('/contact.html',c.actions[0],'button gold')}${link('/guides.html',c.actions[1],'button')}</div>
-</div><figure class="hero-media"><img src="/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg" width="800" height="600" alt="${c.photo}" fetchpriority="high"><figcaption class="image-caption">${lang==='de'?'Kaufentscheidung mit geprüften Informationen vorbereiten':'Priprema odluke na osnovu proverljivih informacija'}</figcaption></figure></div></section>
-<section class="shell section"><h2>${c.tools}</h2><div class="cards">
-${c.cards.map(([heading,desc,href])=>`<a class="card" href="${href}"><h3>${heading}</h3><p>${desc}</p><span aria-hidden="true">↗</span></a>`).join('')}
-</div></section>
-
-<section class="shell section" aria-labelledby="why-title">
-  <span class="line-brand" style="color:#745b00">${lang==='de'?'WARUM VOR DER ANZAHLUNG PRÜFEN?':'ZAŠTO PROVERA PRE KAPARE?'}</span>
-  <h2 id="why-title">${lang==='de'?'Drei häufige Risiken. Ein klarer nächster Schritt.':'Tri česta rizika. Jedan jasan sledeći korak.'}</h2>
-  <div class="cards">
-    ${(lang==='de'?[
-      ['Unklare Fahrzeughistorie','Ein Inserat allein belegt weder Wartung noch Schadenfreiheit. Prüfen Sie Unterlagen und lassen Sie Auffälligkeiten fachlich bewerten.'],
-      ['Unterschätzte Importkosten','Kaufpreis und Gesamtkosten unterscheiden sich. Kalkulieren Sie Steuern, Zulassung, Transport und mögliche Prüfkosten.'],
-      ['Sprachliche Missverständnisse','Klären Sie Fahrzeugzustand, Dokumente und Zahlungsablauf mit dem Verkäufer schriftlich, bevor Sie sich binden.']
-    ]:[
-      ['Nepotpuna istorija vozila','Oglas ne dokazuje servisnu istoriju ni odsustvo oštećenja. Proverite dokumenta i nejasnoće sa stručnjakom.'],
-      ['Nepredviđeni troškovi uvoza','Cena oglasa nije konačan trošak. Uračunajte dažbine, registraciju, transport i moguće preglede.'],
-      ['Nesporazumi s prodavcem','Dogovorite stanje vozila, dokumentaciju i uslove plaćanja pre bilo kakve kapare.']
-    ]).map(([h,p])=>`<article class="card"><h3>${h}</h3><p>${p}</p></article>`).join('')}
-  </div>
-</section>
-
-<section class="shell section" aria-labelledby="example-title">
-  <div class="visual-grid">
-    <div>
-      <span class="eyebrow">${lang==='de'?'INSERAT RICHTIG LESEN':'KAKO ČITATI OGLAS'}</span>
-      <h2 id="example-title">${lang==='de'?'Vier Signale, die Fragen verdienen':'Četiri znaka zbog kojih treba postaviti dodatna pitanja'}</h2>
-      <p class="visual-copy">${lang==='de'?'Ein schönes Foto ersetzt keine Dokumente. Diese Beispiele sind Warnsignale, kein Beweis für Betrug.':'Lepa fotografija ne zamenjuje dokumentaciju. Ovo su primeri signala za proveru, a ne dokaz prevare.'}</p>
-      ${link('/guides.html',lang==='de'?'Mehr im Ratgeber':'Pročitajte vodiče','button')}
-    </div>
-    <div class="listing-demo" role="group" aria-label="${lang==='de'?'Beispiel einer Inseratprüfung':'Ilustrativna provera oglasa'}">
-      <div class="listing-header"><span>${lang==='de'?'BEISPIEL · KEIN ECHTES INSERAT':'PRIMER · NIJE STVARNI OGLAS'}</span><strong>AUTO · CHECK</strong></div>
-      <div class="listing-split">
-        <img src="/images/DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg" width="480" height="320" loading="lazy" alt="${lang==='de'?'Illustration von Fahrzeugunterlagen':'Ilustracija dokumentacije vozila'}">
-        <ol class="risk-list">
-          ${(lang==='de'?['Wartungsnachweise fehlen','FIN und Dokumente abgleichen','Unfallangaben verifizieren','Preis und Nebenkosten prüfen']:['Nedostaje servisna evidencija','Uskladite VIN i dokumenta','Proverite navode o oštećenjima','Proverite cenu i dodatne troškove']).map((v,i)=>`<li><span class="risk-number">${i+1}</span>${v}</li>`).join('')}
-        </ol>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="process-section" aria-labelledby="process-title"><div class="shell section">
-  <span class="line-brand">${lang==='de'?'TRANSPARENTER ABLAUF':'JASAN PROCES'}</span>
-  <h2 id="process-title">${lang==='de'?'So funktioniert Ihre Anfrage':'Kako izgleda provera'}</h2>
-  <ol class="process-grid">
-  ${(lang==='de'?[
-    ['01','Inserat senden','Schicken Sie uns den Link und beschreiben Sie Ihr Ziel.'],
-    ['02','Risiken einordnen','Wir klären offene Fragen, Unterlagen und mögliche Kosten.'],
-    ['03','Prüfung vereinbaren','Bei Bedarf wird eine externe Fachprüfung oder Videobesichtigung angefragt.'],
-    ['04','Selbst entscheiden','Sie erhalten die verfügbaren Informationen und entscheiden selbst über den Kauf.']
-  ]:[
-    ['01','Pošaljite oglas','Dostavite link i navedite šta želite da saznate.'],
-    ['02','Analiza rizika','Razjasnićemo dokumentaciju, nepoznanice i okvirne troškove.'],
-    ['03','Dogovor pregleda','Po potrebi tražimo nezavisan pregled ili video-obilazak.'],
-    ['04','Vi odlučujete','Dobijate dostupne informacije i sami donosite odluku o kupovini.']
-  ]).map(([n,h,p])=>`<li class="process-step"><span class="step-number">${n}</span><h3>${h}</h3><p>${p}</p></li>`).join('')}
-  </ol>
-  <p class="process-note">${lang==='de'?'Kein Fahrzeugverkauf und keine Garantie für den Zustand. Prüfungstermine und Preise werden individuell bestätigt.':'Ne prodajemo vozila i ne garantujemo njihovo stanje. Termine pregleda i cene potvrđujemo za svaki zahtev.'}</p>
-  ${link('/contact.html',lang==='de'?'Fahrzeugprüfung anfragen':'Zatražite proveru vozila','button gold')}
-</div></section>
-<div class="shell panels">
-<section class="panel"><h2>${c.serviceTitle}</h2><p>${c.serviceCopy}</p><div class="actions">${services.map((href,i)=>link(href,c.serviceLinks[i],i===3?'button gold':'button')).join('')}</div></section>
-<section class="panel"><p><strong>DANINI Business</strong></p><h2>${c.businessTitle}</h2><p>${c.businessCopy}</p>${link('/business.html',c.businessAction,'button')}</section>
-</div>
-</main><footer><div class="shell footer-links"><strong>© DANINI</strong>
-${link(lang==='de'?'/danini.html':'/danini-sr.html',c.brand)}${legal.map((href,i)=>link(href,c.legal[i])).join('')}</div></footer>
-</body></html>`, {headers});
+<main id="main">
+<section class="hero"><div class="hero-grid"><div class="hero-copy">
+<span class="eyebrow on-dark">\${esc(t.eyebrow)}</span>
+<h1>\${esc(t.heroA)}<em>\${esc(t.heroB)}</em></h1>
+<p>\${esc(t.heroText)}</p>
+<div class="actions">\${a('/contact.html',''+t.primary,'cta cta-primary')}\${a('#prozess',t.secondary,'cta cta-secondary')}</div>
+</div><div class="hero-visual"><img src="\${hero}" alt="\${esc(t.photo)}" width="1000" height="900" fetchpriority="high"><div class="visual-caption"><small>\${esc(t.signalA)}</small>\${esc(t.signalB)}</div></div></div></section>
+<div class="value-strip"><div class="wrap value-line"><strong>AUTODANINI</strong><span>\${esc(t.scroll)} <span aria-hidden="true">↓</span></span></div></div>
+<section class="feature" id="risiko"><div class="wrap">
+<span class="section-kicker">\${esc(t.sectionLabel)}</span>
+<h2>\${esc(t.sectionTitle)}<em>\${esc(t.sectionAccent)}</em></h2>
+<p class="intro-line">\${esc(t.sectionIntro)}</p>
+<div class="story-grid">
+<ol class="proof-list">
+\${t.risks.map((x,i)=>\`<li><span class="proof-index">0\${i+1}</span><div><strong>\${esc(x)}</strong><p>\${esc(t.riskNotes[i])}</p></div></li>\`).join('')}
+</ol>
+<figure class="document-visual"><img src="\${documentPhoto}" alt="\${esc(t.riskPhoto)}" width="900" height="610" loading="lazy"><figcaption>\${esc(t.visualTag)}</figcaption></figure>
+</div></div></section>
+<section class="workflow" id="prozess"><div class="wrap">
+<span class="eyebrow on-dark">\${esc(t.diagramLabel)}</span>
+<h2>\${esc(t.diagramTitle)}</h2><ol class="flow-line">
+\${t.stages.map(stage=>\`<li class="flow-stage" style="list-style:none"><b>\${esc(stage[0])}</b><h3>\${esc(stage[1])}</h3><p>\${esc(stage[2])}</p></li>\`).join('')}
+</ol><p class="workflow-note">\${esc(t.disclaimer)}</p></div></section>
+<section class="split" id="leistungen"><img class="split-image" src="\${checkPhoto}" width="1050" height="950" loading="lazy" alt="\${esc(t.servicePhoto)}"><div class="split-copy">
+<span class="section-kicker">\${esc(t.serviceLabel)}</span><h2>\${esc(t.serviceTitle)}</h2><p>\${esc(t.serviceDesc)}</p><div class="actions">\${a('/buyers.html',t.serviceAction,'cta cta-primary')}\${a('/inspection.html',t.inspectionAction,'cta cta-secondary')}</div></div></section>
+<section class="reading"><div class="wrap reading-row"><div><span class="section-kicker">\${esc(t.guideLabel)}</span><h2>\${esc(t.guideTitle)}</h2><p>\${esc(t.guideText)}</p><div class="reading-links">\${a('/guides.html',t.guideLink,'text-link')}\${a('/import',t.calculator,'text-link')}</div></div><img class="reading-image" width="850" height="510" loading="lazy" src="\${documentPhoto}" alt="\${esc(t.guideImage)}"></div></section>
+<section class="business-rail"><div class="wrap business-inner"><strong>\${esc(t.businessTitle)}</strong><p>\${esc(t.businessText)}</p>\${a('/business.html',t.businessLink,'text-link')}</div></section>
+<section class="closing" id="anfrage"><div class="wrap"><span class="eyebrow on-dark">\${esc(t.closeEyebrow)}</span><h2>\${esc(t.closeTitle)}</h2><p>\${esc(t.closeText)}</p>\${a('/contact.html',t.closeCta,'cta cta-primary')}</div></section>
+</main><footer><div class="wrap"><div class="footer-row"><strong>DANINI · AutoDanini</strong><nav class="footer-links">\${a('/impressum.html','Impressum')}\${a('/privacy.html',t.privacy)}\${a('/terms.html',t.terms)}\${a('/cookies.html',t.cookies)}\${a(lang==='de'?'/danini.html':'/danini-sr.html',t.about)}</nav></div><small>\${esc(t.disclaimer)}</small></div></footer>
+</body></html>\`,{headers});
 }

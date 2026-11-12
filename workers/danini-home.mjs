@@ -64,7 +64,7 @@ export function daniniHome(request, url) {
  const assets='/images/';
  const hero=assets+'DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg';
  const documentPhoto=assets+'DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg';
- const checkPhoto=assets+'DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg';
+ const checkPhoto=assets+'DANINI_Kartica_05_Originalni_OE_Delovi_Servis.jpg';
  const headers={'content-type':'text/html; charset=utf-8','cache-control':'public,max-age=300','x-content-type-options':'nosniff'};
  if(request.method==='HEAD')return new Response(null,{headers});
  return new Response(`<!doctype html>

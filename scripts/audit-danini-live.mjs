@@ -72,6 +72,25 @@ async function audit(){
   const dead=[...new Set(local.filter(h=>/^(?:\/danini.*\.html|\/contact\.html|\/buyers\.html|\/business\.html)$/.test(h)))].filter(h=>!pages.includes(h));
   if(dead.length)note('WARN',p,'Important internal URL outside audit: '+dead.join(', '));
  }
+ const photos=[
+  '/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg',
+  '/images/DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg',
+  '/images/DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg'
+ ];
+ for(const path of photos){
+  try{
+   const response=await fetch(origin+path,{redirect:'follow',signal:AbortSignal.timeout(15000)});
+   const bytes=new Uint8Array(await response.arrayBuffer());
+   const jpeg=bytes.length>40000&&bytes[0]===255&&bytes[1]===216&&bytes[bytes.length-2]===255&&bytes[bytes.length-1]===217;
+   if(response.status!==200||!(response.headers.get('content-type')||'').includes('image/jpeg')||!jpeg){
+    note('ERROR',path,'Invalid public JPEG: HTTP '+response.status+', bytes '+bytes.length+', type '+response.headers.get('content-type'));
+   }
+  }catch(error){note('ERROR',path,'Photo load failed: '+String(error));}
+ }
+ const sr=htmlByPath.get('/sr/')?.body||'',de=htmlByPath.get('/de/')?.body||'';
+ if(!sr.includes('DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg')||!de.includes('DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg')){
+  note('ERROR','/sr/ & /de/','New inspection visual missing from one of the language homepages');
+ }
  const icon=await get('/danini-favicon.svg');
  if(icon.status!==200||!icon.body.includes('<svg')||!(icon.headers?.get('content-type')||'').includes('image/svg+xml'))note('ERROR','/danini-favicon.svg','SVG favicon not served correctly: '+icon.status);
  const [sitemap,robots,status]=await Promise.all([get('/sitemap.xml'),get('/robots.txt'),get('/api/lead/status')]);

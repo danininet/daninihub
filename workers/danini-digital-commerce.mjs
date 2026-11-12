@@ -19,7 +19,8 @@ export function configured(env){
  const enabled=env.DANINI_DIGITAL_CHECKOUT_ENABLED==='true';
  const mode=env.PAYPAL_ENV;
  return !!(enabled&&['sandbox','live'].includes(mode)&&
-  (mode!=='live'||env.DANINI_DIGITAL_LIVE_APPROVED==='true')&&
+  (mode==='live'?env.DANINI_DIGITAL_LIVE_APPROVED==='true':
+   env.DANINI_PAYPAL_SANDBOX_ACCESS?.length>=32&&emailRe.test(env.DANINI_PAYPAL_SANDBOX_EMAIL||''))&&
   env.DANINI_DB&&env.PAYPAL_CLIENT_ID&&env.PAYPAL_CLIENT_SECRET&&env.PAYPAL_WEBHOOK_ID&&
   emailRe.test(env.DANINI_PAYPAL_RECEIVER_EMAIL||'')&&
   typeof env.DANINI_DIGITAL_SIGNING_SECRET==='string'&&env.DANINI_DIGITAL_SIGNING_SECRET.length>=32&&
@@ -87,8 +88,9 @@ async function emailReceipt(env,record){
  try{
   const link=origin+'/api/danini/digital/download/'+encodeURIComponent(record.reference)+'?token='+encodeURIComponent(await downloadToken(env,record));
   const de=record.language==='de';
+  const sandbox=env.PAYPAL_ENV==='sandbox';
   const message={sender:{name:'DANINI',email:env.DANINI_BREVO_SENDER},to:[{email:record.email}],
-   subject:de?'DANINI – Ihr PDF nach bestätigter Zahlung':'DANINI – PDF nakon potvrđene uplate',
+   subject:(sandbox?'[SANDBOX] ':'')+(de?'DANINI – Ihr PDF nach bestätigter Zahlung':'DANINI – PDF nakon potvrđene uplate'),
    htmlContent:'<p>'+(de?'Ihre Zahlung wurde beim Zahlungsdienst verifiziert.':'Vaša uplata je potvrđena kod pružaoca plaćanja.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF vodič')+'</a></p><p>'+(de?'Link 72 Stunden gültig.':'Link važi 72 sata.')+'</p><p>DANINI · info@daninihub.com</p>'};
   const r=await fetch('https://api.brevo.com/v3/smtp/email',{method:'POST',headers:{'api-key':env.BREVO_API_KEY,'content-type':'application/json'},body:JSON.stringify(message),signal:AbortSignal.timeout(12000)});
   if(!r.ok)throw Error('MAIL_REJECTED');
@@ -128,22 +130,37 @@ async function verifyHuman(token,env,request){
  if(!r.ok)return false;
  const d=await r.json();return d.success===true&&['daninihub.com','www.daninihub.com'].includes(d.hostname);
 }
-async function checkout(request,env){
- if(!await ready(env))return err('CHECKOUT_NOT_READY',503);
- if(!['https://daninihub.com','https://www.daninihub.com'].includes(request.headers.get('Origin')))return err('INVALID_ORIGIN',403);
+async function authorizedSandbox(request,env){
+ const supplied=request.headers.get('X-Danini-Sandbox-Access');
+ const expected=env.DANINI_PAYPAL_SANDBOX_ACCESS;
+ if(!supplied||supplied.length!==expected.length)return false;
+ const key=await crypto.subtle.importKey('raw',encode(expected),{name:'HMAC',hash:'SHA-256'},false,['sign','verify']);
+ const signature=await crypto.subtle.sign('HMAC',key,encode(expected));
+ return crypto.subtle.verify('HMAC',key,signature,encode(supplied));
+}
+async function checkout(request,env,sandbox=false){
+ if(!await ready(env)||sandbox!==(env.PAYPAL_ENV==='sandbox'))return err('CHECKOUT_NOT_READY',503);
+ if(sandbox){
+  if(!await authorizedSandbox(request,env))return err('NOT_FOUND',404);
+ }else if(!['https://daninihub.com','https://www.daninihub.com'].includes(request.headers.get('Origin'))){
+  return err('INVALID_ORIGIN',403);
+ }
  if(!/^application\/json(?:;|$)/i.test(request.headers.get('content-type')||''))return err('UNSUPPORTED_MEDIA',415);
  const raw=await request.text();if(raw.length>12000)return err('TOO_LARGE',413);
  let d;try{d=JSON.parse(raw)}catch{return err('INVALID_JSON');}
- const email=typeof d.email==='string'?d.email.trim().toLowerCase():'';
+ const address=sandbox?env.DANINI_PAYPAL_SANDBOX_EMAIL:d?.email;
+ const email=typeof address==='string'?address.trim().toLowerCase():'';
+ if(!d||typeof d!=='object'||Array.isArray(d))return err('INVALID_ORDER');
  if(d.sku!=='guide'||!emailRe.test(email)||email.length>191||d.termsAccepted!==true||d.instantDeliveryConsent!==true)return err('INVALID_ORDER');
- if(!await verifyHuman(d.turnstileToken,env,request))return err('HUMAN_VERIFICATION_FAILED',403);
+ if(!sandbox&&!await verifyHuman(d.turnstileToken,env,request))return err('HUMAN_VERIFICATION_FAILED',403);
  const ref='DGD-'+crypto.randomUUID().replace(/-/g,'').toUpperCase();
  const language=d.language==='de'?'de':'sr';
  await env.DANINI_DB.prepare("INSERT INTO danini_digital_orders(reference,sku,email,language,amount_cents,status,email_state) VALUES (?,?,?,?,?,'PENDING','PENDING')").bind(ref,'guide',email,language,4900).run();
  try{
   const p=await paypal(env,'/v2/checkout/orders',{method:'POST',requestId:'DANINI-'+ref,body:{intent:'CAPTURE',purchase_units:[{reference_id:ref,custom_id:ref,description:PRODUCTS.guide.label,amount:{currency_code:'EUR',value:'49.00'}}],payment_source:{paypal:{experience_context:{brand_name:'DANINI',user_action:'PAY_NOW',shipping_preference:'NO_SHIPPING',return_url:origin+'/api/danini/digital/paypal/return?ref='+ref,cancel_url:origin+'/digital.html?cancelled=1'}}}}});
   const link=p.links?.find(x=>x.rel==='approve'||x.rel==='payer-action')?.href;
-  if(!link||!/^https:\/\/(www\.)?(sandbox\.)?paypal\.com\//.test(link)||!paypalIdRe.test(p.id))throw Error('INVALID_CHECKOUT_LINK');
+  const approvalOrigin=sandbox?'https://www.sandbox.paypal.com':'https://www.paypal.com';
+  if(!link||new URL(link).origin!==approvalOrigin||!paypalIdRe.test(p.id))throw Error('INVALID_CHECKOUT_LINK');
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='CREATED',paypal_order_id=? WHERE reference=? AND status='PENDING'").bind(p.id,ref).run();
   return json({ok:true,reference:ref,checkoutUrl:link});
  }catch{return err('CHECKOUT_PROVIDER_FAILED',503);}
@@ -205,16 +222,19 @@ async function webhook(request,env){
   const p=await paypal(env,'/v2/checkout/orders/'+encodeURIComponent(id));
   const ref=p.purchase_units?.[0]?.custom_id;
   if(!refRe.test(ref))return new Response(null,{status:204});
-  await finalize(env,ref,id);return new Response(null,{status:204});
+  await finalize(env,ref,id);
+  const latest=await getOrder(env,ref);
+  return latest?.email_state==='SENT'?new Response(null,{status:204}):err('RETRY_LATER',503);
  }catch{return err('RETRY_LATER',503);}
 }
 export async function digitalRoute(request,env){
  const url=new URL(request.url),path=url.pathname;
  if(path==='/api/danini/digital/status'){
-  const on=await ready(env);
+  const on=env.PAYPAL_ENV==='live'&&await ready(env);
   return json({ok:true,enabled:on,mode:configured(env)?env.PAYPAL_ENV:'disabled',guidePriceEur:49,softwareEnabled:false,delivery:'private-d1-pdf'});
  }
  if(path==='/api/danini/digital/checkout'&&request.method==='POST')return checkout(request,env);
+ if(path==='/api/danini/digital/paypal/sandbox/checkout'&&request.method==='POST')return checkout(request,env,true);
  if(path==='/api/danini/digital/paypal/return'&&request.method==='GET')return browserReturn(env,url);
  if(path==='/api/danini/digital/paypal/webhook')return webhook(request,env);
  if(path.startsWith('/api/danini/digital/download/'))return sendDownload(request,env,url);

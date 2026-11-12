@@ -44,6 +44,7 @@ async function main() {
       assert.doesNotMatch(html,/AI_Influenserka|AI Influencerka|[gG]enerated.person/,route);
       assert.match(html,/danini-live-bar/,route);
       assert.doesNotMatch(html,/Cilj odgovora na WhatsApp: 2[–-]4|Antwortziel per WhatsApp: 2[–-]4/,route);
+      if(route==='/sr/upit'||route==='/de/anfrage')assert.doesNotMatch(html,/u međuvremenu uvek možete koristiti WhatsApp ili mejl|alternativ WhatsApp oder E-Mail/,route);
       if (route === '/' || route === '/sr/' || route === '/de/') {
       // The three founder shots are square; service-card car photos remain widescreen.
       assert.match(html,/\.hero-visual\.danini-portrait img\{width:100%;height:auto;aspect-ratio:1\/1/);

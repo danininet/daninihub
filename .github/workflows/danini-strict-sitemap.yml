@@ -1,4 +1,5 @@
 name: DANINI strict sitemap SEO
+# Recheck after normalized production sitemap (PR #194).
 on:
   pull_request:
     paths:

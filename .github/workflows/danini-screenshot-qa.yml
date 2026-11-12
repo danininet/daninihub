@@ -16,6 +16,8 @@ jobs:
         run: node scripts/find-danini-clutter.mjs
       - name: Inspect exact Business hero and pilot DOM
         run: node scripts/inspect-danini-business-live.mjs
+      - name: Verify unfinished auction entries are removed from public navigation
+        run: node scripts/check-unfinished-nav.mjs
       - name: Capture production page on desktop and mobile
         shell: bash
         run: |

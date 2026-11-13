@@ -13,38 +13,65 @@ if (form) {
   const button = form.querySelector<HTMLButtonElement>("button")!;
   const status = document.querySelector<HTMLElement>("#form-status")!;
   let widget = "";
+  let mode: "b2b" | "legacy" | null = null;
   let requestId = crypto.randomUUID();
   const offline = () => {
     status.textContent = de
-      ? "Die sichere Online-Anfrage ist derzeit nicht verfügbar. Schreiben Sie bitte an kontakt@daninihub.com."
-      : "Zaštićeni obrazac trenutno nije dostupan. Pišite na kontakt@daninihub.com.";
+      ? "Die sichere Online-Anfrage ist derzeit nicht verfügbar. Schreiben Sie bitte an info@daninihub.com."
+      : "Zaštićeni obrazac trenutno nije dostupan. Pišite na info@daninihub.com.";
     button.disabled = true;
   };
-  fetch("/api/tenant-config")
-    .then(async (r) => {
-      if (!r.ok) throw Error();
-      const config = (await r.json()) as { enabled: boolean; siteKey: string };
-      if (!config.enabled || !config.siteKey) throw Error();
+  async function initialize() {
+    let config: { enabled: boolean; siteKey?: string } | null = null;
+    try {
+      const response = await fetch("/api/tenant-config", { cache: "no-store" });
+      if (response.ok) {
+        const data = (await response.json()) as { enabled: boolean; siteKey?: string };
+        if (data.enabled && data.siteKey) {
+          mode = "b2b";
+          config = data;
+        }
+      }
+      if (!config) {
+        const legacy = await fetch("/api/lead/status", { cache: "no-store" });
+        if (legacy.ok) {
+          const data = (await legacy.json()) as {
+            enabled: boolean;
+            turnstileSiteKey?: string;
+          };
+          if (data.enabled && data.turnstileSiteKey) {
+            mode = "legacy";
+            config = { enabled: true, siteKey: data.turnstileSiteKey };
+            const upload = form!.querySelector<HTMLInputElement>("#attachments");
+            if (upload) {
+              upload.disabled = true;
+              const help = document.querySelector<HTMLElement>("#upload-help");
+              if (help) help.textContent = de
+                ? "Dokumente senden Sie bitte nur nach persönlicher Aufforderung. Dieses Anfrageformular überträgt keine Dateien."
+                : "Dokumenta šaljite samo na izričit zahtev. Ovaj obrazac ne šalje datoteke.";
+            }
+          }
+        }
+      }
+      if (!config?.siteKey) throw Error("No protected intake configured");
       const script = document.createElement("script");
-      script.src =
-        "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
       script.onload = () => {
         widget = window.turnstile.render(document.querySelector("#captcha")!, {
-          sitekey: config.siteKey,
-          action: "b2b-intake",
+          sitekey: config!.siteKey,
+          action: mode === "b2b" ? "b2b-intake" : "business-contact",
           language: de ? "de" : "sr",
-          callback: () => {
-            button.disabled = false;
-          },
-          "expired-callback": () => {
-            button.disabled = true;
-          },
+          callback: () => { button.disabled = false; },
+          "expired-callback": () => { button.disabled = true; },
         });
       };
       script.onerror = offline;
       document.head.appendChild(script);
-    })
-    .catch(offline);
+    } catch {
+      offline();
+    }
+  }
+  void initialize();
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     button.disabled = true;
@@ -75,19 +102,58 @@ if (form) {
           ),
         })),
       );
-      const r = await fetch("/api/intake", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "idempotency-key": requestId,
-        },
-        body: JSON.stringify({
-          ...values,
-          files,
-          consent: true,
+      const captchaToken = window.turnstile.getResponse(widget);
+      let endpoint = "/api/intake";
+      let headers: Record<string, string> = { "content-type": "application/json" };
+      let body: unknown = {
+        ...values,
+        files,
+        consent: true,
+        language: de ? "de" : "sr",
+        turnstileToken: captchaToken,
+      };
+      if (mode === "b2b") {
+        headers["idempotency-key"] = requestId;
+      } else if (mode === "legacy") {
+        if (selected.length) {
+          status.textContent = de
+            ? "Dieses Formular unterstützt keine Dateianhänge."
+            : "Ovaj obrazac trenutno ne podržava priloge.";
+          return;
+        }
+        const message = String(values.message || "");
+        if (message.length > 3200) {
+          status.textContent = de
+            ? "Bitte kürzen Sie Ihre Nachricht auf 3200 Zeichen."
+            : "Skratite poruku na najviše 3200 znakova.";
+          return;
+        }
+        const verticalLabels: Record<string, string> = {
+          cbam: "CBAM Pre-Check",
+          subcontractor: "Subcontractor Compliance (SOKA/FKS)",
+          nearshoring: "Nearshoring",
+        };
+        const topic = verticalLabels[String(values.vertical)] || "B2B Projektanfrage";
+        endpoint = "/api/lead";
+        body = {
+          kind: "business",
+          name: values.name,
+          company: values.company,
+          email: values.email,
+          topic,
+          message,
           language: de ? "de" : "sr",
-          turnstileToken: window.turnstile.getResponse(widget),
-        }),
+          consent: true,
+          details: { vertical: String(values.vertical), country: String(values.country) },
+          turnstileToken: captchaToken,
+        };
+      } else {
+        throw Error("Intake not configured");
+      }
+      const r = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
       });
       const result = (await r.json()) as { reference: string };
       if (r.status !== 202) throw Error();

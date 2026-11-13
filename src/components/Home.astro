@@ -52,7 +52,7 @@ const de = locale === "de";
           <p class="micro">{de ? "Dies ist eine vorsorgliche Checkliste, keine KI-Analyse, Betrugserkennung oder Prüfung des Verkäufers." : "Ovo je preventivna kontrolna lista, ne AI analiza, otkrivanje prevare niti provera prodavca."}</p>
           <a class="button secondary" href="#contact">{de ? "Persönliche Prüfung anfragen" : "Zatraži ličnu proveru"}</a>
         </div>
-        <p class="micro">{de ? "Die KI-Analyse aus PR #207 ist noch nicht mit dieser Seite verbunden. Es werden keine Inserate automatisch geöffnet oder geprüft." : "AI analiza iz PR #207 još nije povezana sa ovom stranicom. Oglasi se ne otvaraju niti automatski proveravaju."}</p>
+        <p class="micro">{de ? "Die Eingabe öffnet den KI-Berater mit drei Prüffragen und einer Risikomatrix. Es erfolgt kein automatischer Abruf oder eine unabhängige Prüfung von Inseraten." : "Unos otvara AI Savetnika sa tri pitanja i matricom rizika. Sadržaj oglasa se ne preuzima niti nezavisno proverava automatski."}</p>
       </div>
     </div>
   </section>
@@ -119,7 +119,11 @@ const de = locale === "de";
   .auto-advisor-box h2 {font-size:clamp(1.7rem,3vw,2.65rem)}
   .auto-advisor-form label {display:block;margin:1.5rem 0 .6rem;font-weight:700;font-size:.85rem}
   .auto-advisor-controls {display:flex;gap:.8rem}
-  .auto-advisor-form textarea {width:100%;min-height:120px;resize:vertical;font-size:1rem;line-height:1.5}\n  .auto-risk-result {margin-top:1.5rem;padding:1.5rem;border:1px solid #e0c56c;border-radius:12px;background:#fffbeb}\n  .auto-risk-result[hidden] {display:none}\n  .auto-risk-result h3 {font-size:1.25rem}\n  .auto-risk-result li {margin:.65rem 0;line-height:1.6}
+  .auto-advisor-form textarea {width:100%;min-height:120px;resize:vertical;font-size:1rem;line-height:1.5}
+  .auto-risk-result {margin-top:1.5rem;padding:1.5rem;border:1px solid #e0c56c;border-radius:12px;background:#fffbeb}
+  .auto-risk-result[hidden] {display:none}
+  .auto-risk-result h3 {font-size:1.25rem}
+  .auto-risk-result li {margin:.65rem 0;line-height:1.6}
   .auto-advisor-box .micro {margin-bottom:0}
   .auto-steps {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem}
   .auto-steps article {border:1px solid #e2e8f0;border-radius:14px;padding:1.7rem;background:#fff}

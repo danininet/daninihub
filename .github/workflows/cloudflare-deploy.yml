@@ -7,7 +7,6 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  issues: write
 concurrency:
   group: danini-production-deploy
   cancel-in-progress: false
@@ -67,9 +66,13 @@ jobs:
             headers:{authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},
             signal:AbortSignal.timeout(15000)
           });
-          assert.equal(r.status,200,'Could not retrieve existing production bindings; aborting');
-          const data=await r.json();
-          assert.equal(data.success,true);
+          const data=await r.json().catch(()=>({success:false,errors:[{code:'NON_JSON'}]}));
+          if (r.status!==200 || data.success!==true) {
+            // Log API status / numeric error codes only; NEVER log tokens, response headers or binding values.
+            console.error('CLOUDFLARE_BINDINGS_CHECK_FAILED HTTP',r.status,
+              'codes',JSON.stringify((data.errors||[]).map(e=>e.code)));
+            process.exit(1);
+          }
           const bindings=data.result.bindings;
           const find=(name,type)=>{const b=bindings.find(x=>x.name===name&&x.type===type);assert.ok(b,'Required production binding missing: '+name);return b;};
           const d=find('DANINI_DB','d1'), r2=find('DOCUMENTS','r2_bucket'), kv=find('PARTNERS','kv_namespace'), wf=find('INTAKE_WORKFLOW','workflow');
@@ -127,29 +130,3 @@ jobs:
           console.log('PASS production Turnstile and Brevo readiness; no customer email sent');
           NODE
 
-      - name: Report deploy outcome to merged PR #208 for audit
-        if: always()
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          BUILD: ${{ steps.build.outcome }}
-          BINDINGS: ${{ steps.bindings.outcome }}
-          PUBLISH: ${{ steps.publish.outcome }}
-          VERIFY: ${{ steps.verify.outcome }}
-        run: |
-          if [ "$BUILD" = success ] && [ "$BINDINGS" = success ] && [ "$PUBLISH" = success ] && [ "$VERIFY" = success ]; then
-            verdict=SUCCESS
-          else
-            verdict=NOT_CONFIRMED
-          fi
-          {
-            echo "DANINI Cloudflare production deploy (automated evidence)"
-            echo ""
-            echo "Run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            echo "Commit: ${GITHUB_SHA}"
-            echo "Results: build=${BUILD}, bindings=${BINDINGS}, deploy=${PUBLISH}, live-qa=${VERIFY}"
-            echo "Outcome: ${verdict}"
-            echo ""
-            echo "No secret values are included in this report."
-          } > /tmp/danini-deploy-report.md
-          gh issue comment 208 --repo "$GITHUB_REPOSITORY" --body-file /tmp/danini-deploy-report.md

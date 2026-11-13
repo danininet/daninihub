@@ -77,10 +77,10 @@ const sender=env=>({name:'DANINI',email:env.DANINI_BREVO_SENDER});
 // Explicitly override legacy account-wide sender labels on template sends.
 // All addresses correspond to the verified active DANINI senders in Brevo.
 const receiptSender={
- general:{name:'DANINI',email:'kontakt@daninihub.com'},
+ general:{name:'DANINI',email:'info@daninihub.com'},
  vehicle:{name:'DANINI Auto',email:'auto@daninihub.com'},
- support:{name:'DANINI Support',email:'support@daninihub.com'},
- business:{name:'DANINI Business',email:'business@daninihub.com'}
+ support:{name:'DANINI Support',email:'info@daninihub.com'},
+ business:{name:'DANINI Business',email:'info@daninihub.com'}
 };
 function bodyText(d,ref){
  const details=Object.entries(d.details).map(([k,v])=>k+': '+v).join('\n');
@@ -145,7 +145,7 @@ export async function handleApi(request,env={}){
   sender:receiptSender[data.kind],
   templateId:BREVO_TEMPLATE_ID[data.kind][data.language],
   to:[{email:data.email,name:data.name}],
-  replyTo:{email:env.DANINI_BREVO_REPLYTO||env.DANINI_BREVO_SENDER},
+  replyTo:{email:data.kind==='vehicle'?'auto@daninihub.com':'info@daninihub.com'},
   params:{REFERENCE:ref},
   tags:['danini','transactional-receipt']
  };

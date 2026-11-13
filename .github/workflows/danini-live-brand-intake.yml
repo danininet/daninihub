@@ -21,6 +21,8 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           node --check scripts/danini-advisor-pages.cjs
+          node scripts/build-danini-ai-preview.cjs
+          node --check danini-ai-preview-dist/worker.mjs
           node --check public/danini-advisor-client.js
           node --test tests/b2b/ai-intake.test.mjs
           node --test tests/test-danini-contact-worker.mjs

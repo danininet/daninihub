@@ -129,4 +129,4 @@ jobs:
           assert.match(await js.text(),/challenges\.cloudflare\.com\/turnstile/);
           console.log('PASS production Turnstile and Brevo readiness; no customer email sent');
           NODE
-
+# PR208 production release trigger 2026-11-13: workflow content touched to start guarded main deployment.

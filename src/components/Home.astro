@@ -1,217 +1,217 @@
 ---
 import Base from "../layouts/Base.astro";
-import Intake from "./Intake.astro";
-import ClarityCheck from "./ClarityCheck.astro";
-import { content, type Locale } from "../lib/content";
+import type { Locale } from "../lib/content";
 const { locale = "de" } = Astro.props as { locale: Locale };
-const c = content[locale];
+const de = locale === "de";
 ---
-
 <Base
   locale={locale}
-  title={
-    locale === "de"
-      ? "DANINI — Digitale Unternehmensunterstützung DACH und Balkan"
-      : "DANINI — Digitalna poslovna podrška DACH i Balkan"
-  }
-  description={c.intro}
+  title={de ? "Auto aus Deutschland sicherer kaufen — KI-Berater und Fahrzeugprüfung" : "Kupovina automobila iz Nemačke — AI Savetnik i provera vozila"}
+  description={de ? "Inserat prüfen lassen, Fragen klären und eine unabhängige Vor-Ort-Prüfung anfragen. Keine Garantie für ein risikofreies Fahrzeug." : "Proverite oglas, razjasnite rizike i zatražite proveru automobila na terenu. Bez obećanja o kupovini bez rizika."}
 >
-  <div class="wrap">
-    <section class="hero">
+  <section class="auto-hero">
+    <div class="wrap auto-hero-grid">
       <div>
-        <span class="eyebrow">{c.eyebrow}</span>
-        <h1>
-          {locale === "de" ? "Ihr Vorhaben verdient eine klare Entscheidung." : "Od pravog pitanja do jasne odluke."}
-          <span class="accent hero-line">{locale === "de" ? "Mit DANINI." : "Uz DANINI."}</span>
-        </h1>
-        <p class="intro">{locale === "de" ? "Wir verbinden Unternehmen zwischen DACH und Balkan: Informationen klären, Geschäftspartner vorbereiten und administrative Aufgaben nachvollziehbar bearbeiten. Digitale Systeme unterstützen — wichtige Entscheidungen treffen Menschen." : "Povezujemo firme iz DACH regiona i Balkana: razjašnjavamo informacije, pripremamo poslovne kontakte i uređujemo administrativne zadatke. Digitalni sistemi pomažu — važne odluke donose ljudi."}</p>
+        <span class="eyebrow">AUTODANINI · {de ? "FAHRZEUGKAUF MIT KLAREN FAKTEN" : "KUPOVINA VOZILA UZ PROVERLJIVE PODATKE"}</span>
+        <h1>{de ? "Autokauf in Deutschland ohne Risiko und Rätselraten." : "Kupovina automobila iz Nemačke bez rizika i nagađanja."}</h1>
+        <h2 class="auto-subtitle">{de ? "Sie finden das Inserat. Unsere KI deckt Risiken auf dem Papier auf, und unsere Experten prüfen das Auto vor Ort." : "Vi nađete oglas. Naš AI softver otkriva rizike na papiru, a naši stručnjaci proveravaju auto na terenu. Odluku donosite tek kada imate sve dokaze."}</h2>
         <div class="actions">
-          <a class="button" href="#contact">
-            {c.cta} ↗
-          </a>
-          <a class="button secondary" href={locale === "de" ? "/de/danini-methode/" : "/sr/danini-metoda/"}>{locale === "de" ? "Unsere Arbeitsweise" : "Kako radimo"} ↗</a>
+          <a class="button" href="#ai-savetnik">{de ? "Inseratslink einfügen (KI-Check)" : "Zalepi link oglasa (AI Provera)"}</a>
+          <a class="button secondary" href="#provera-na-terenu">{de ? "Vor-Ort-Prüfung anfragen" : "Zatraži pregled na terenu"}</a>
         </div>
-        <p class="micro">
-          {locale === "de"
-            ? "Für Unternehmen · DE / SR · Klar vereinbarter Leistungsumfang"
-            : "Za preduzeća · DE / SR · Jasno dogovoren obim usluge"}
-        </p>
+        <p class="micro">{de ? "Hinweis: KI ersetzt weder eine technische Fahrzeugprüfung noch garantiert sie einen risikofreien Kauf." : "Napomena: AI ne zamenjuje tehnički pregled i ne može garantovati kupovinu bez rizika."}</p>
       </div>
-      <div
-        class="visual"
-        role="img"
-        aria-label={
-          locale === "de"
-            ? "Drei dokumentationsbasierte Leistungen verbinden DACH und Balkan"
-            : "Tri oblasti pripreme dokumentacije povezuju DACH i Balkan"
-        }
-      >
-        <div class="visual-head">
-          <span>DANINI / BUSINESS OPERATIONS</span>
-          <span>DE · AT · CH</span>
-        </div>
-        <div class="bridge">
-          <strong>DACH</strong>
-          <span></span>
-          <strong>BALKAN</strong>
-        </div>
-        <div class="visual-agent-label">{locale === "de" ? "UNSER NACHVOLLZIEHBARER ARBEITSABLAUF" : "NAŠ PROVERLJIVI NAČIN RADA"}</div>
-        <div class="workflow-preview">
-          <span>{locale === "de" ? "Anliegen" : "Upit"}</span><span>→</span>
-          <span>{locale === "de" ? "Prüfen" : "Provera"}</span><span>→</span>
-          <span>{locale === "de" ? "Freigabe" : "Odobrenje"}</span>
-        </div>
-        {c.cards.map((v) => (
-          <div class="visual-row">
-            <b>{v.num}</b>
-            <strong>{v.title}</strong>
-          </div>
-        ))}
-        <div class="visual-foot">
-          {locale === "de"
-            ? "Strukturierte Daten → Menschliche Prüfung"
-            : "Strukturirani podaci → Ljudska provera"}
-        </div>
+      <div class="auto-hero-panel" aria-label={de ? "Drei Schritte zur informierten Kaufentscheidung" : "Tri koraka do informisane odluke"}>
+        <span class="eyebrow">AUTODANINI / {de ? "KAUFENTSCHEIDUNG" : "ODLUKA O KUPOVINI"}</span>
+        <div class="auto-panel-step"><span>01</span><strong>{de ? "Inserat oder FIN erfassen" : "Unesite oglas ili VIN"}</strong></div>
+        <div class="auto-panel-step"><span>02</span><strong>{de ? "Angaben und Nachweise abgleichen" : "Uporedite tvrdnje i dokumentaciju"}</strong></div>
+        <div class="auto-panel-step"><span>03</span><strong>{de ? "Vor Ort unabhängig prüfen" : "Nezavisno proverite auto na terenu"}</strong></div>
+        <p>{de ? "Erst die Fakten. Dann Ihre Entscheidung." : "Prvo činjenice. Zatim vaša odluka."}</p>
       </div>
-    </section>
-  </div>
-  <div class="strip">
-    <div class="wrap">
-      <span>
-        {locale === "de" ? "Klare Leistungsgrenzen" : "Jasne granice usluge"}
-      </span>
-      <span>
-        {locale === "de"
-          ? "Zweisprachige Zusammenarbeit"
-          : "Dvojezična saradnja"}
-      </span>
-      <span>
-        {locale === "de" ? "Freigabe durch Menschen" : "Ljudsko odobrenje"}
-      </span>
-    </div>
-  </div>
-  <section class="master-teaser" aria-labelledby="master-teaser-title">
-    <div class="wrap master-teaser-inner">
-      <div><span class="eyebrow">DANINI OS · {locale === "de" ? "METHODE" : "METODA"}</span>
-        <h2 id="master-teaser-title">{locale === "de" ? "Frag KI — KI fragt zurück." : "Pitaj AI — AI pita tebe!"}</h2>
-        <p>{locale === "de" ? "Nicht irgendeine Antwort. Erst die richtigen Fragen, dann Fakten, Optionen und eine menschliche Entscheidung. Unsere regelbasierte Vorbereitung ist von freigabepflichtigen, noch nicht aktivierten KI-Funktionen getrennt." : "Ne bilo kakav odgovor. Najpre prava pitanja, zatim činjenice, opcije i ljudska odluka. Priprema zasnovana na pravilima odvojena je od AI funkcija koje još nisu odobrene za rad."}</p></div>
-      <div class="master-teaser-action"><a class="button" href={locale === "de" ? "/de/danini-methode/" : "/sr/danini-metoda/"}>{locale === "de" ? "Die sechs Schritte ansehen" : "Pogledajte šest koraka"} ↗</a><a class="link" href={locale === "de" ? "/de/ueber-danini/" : "/sr/o-danini/"}>{locale === "de" ? "Über DANINI" : "O DANINI"} ↗</a></div>
     </div>
   </section>
-  <section class="section white" id="services">
+
+  <section id="ai-savetnik" class="auto-advisor">
+    <div class="wrap">
+      <div class="auto-advisor-box">
+        <span class="eyebrow">{de ? "SCHRITT 1 · INSERAT / FIN" : "KORAK 1 · OGLAS / VIN"}</span>
+        <h2>{de ? "Welches Auto möchten Sie prüfen?" : "Koji automobil želite da proverite?"}</h2>
+        <p>{de ? "Fügen Sie einen Link von einem beliebigen deutschen Autoportal oder Kleinanzeigenmarkt (z. B. mobile.de, Kleinanzeigen, Quoka, lokale Händler) ein — alternativ FIN oder kopierten Anzeigentext." : "Zalepite link bilo kog nemačkog oglasnika (mobile.de, Kleinanzeigen, Quoka, lokalni oglasi) ili unesite VIN odnosno kopirani opis automobila."}</p>
+        <form class="auto-advisor-form" id="universal-advisor-form" data-locale={locale}>
+          <label for="vehicle-source">{de ? "Inseratslink, FIN oder Anzeigentext" : "Link oglasa, VIN ili tekst opisa"}</label>
+          <textarea id="vehicle-source" name="source" required maxlength="6000" rows="4" placeholder={de ? "Link eines beliebigen Inserats (mobile.de, Kleinanzeigen...) oder FIN / Beschreibung einfügen..." : "Zalepite link bilo kog oglasnika (mobile.de, Kleinanzeigen...) ili unesite VIN / opis automobila..."} autocomplete="off" aria-describedby="source-privacy" ></textarea>
+          <p id="source-privacy" class="micro">{de ? "Keine Ausweisbilder, Telefonnummern, Adressen oder Zahlungsdaten einfügen. Die Eingabe bleibt bei dieser Vorprüfung im Browser." : "Ne unosite slike dokumenata, brojeve telefona, adrese ni podatke za plaćanje. Unos za ovu preliminarnu proveru ostaje u pregledaču."}</p>
+          <div class="auto-advisor-controls">
+            <button class="button" type="submit">{de ? "Prüfpunkte anzeigen" : "Prikaži tačke provere"}</button>
+          </div>
+        </form>
+        <div class="auto-risk-result" id="universal-risk-result" hidden role="status" aria-live="polite">
+          <h3 id="universal-risk-heading"></h3>
+          <p id="universal-risk-summary"></p>
+          <ul id="universal-risk-list"></ul>
+          <p class="micro">{de ? "Dies ist eine vorsorgliche Checkliste, keine KI-Analyse, Betrugserkennung oder Prüfung des Verkäufers." : "Ovo je preventivna kontrolna lista, ne AI analiza, otkrivanje prevare niti provera prodavca."}</p>
+          <a class="button secondary" href="#contact">{de ? "Persönliche Prüfung anfragen" : "Zatraži ličnu proveru"}</a>
+        </div>
+        <p class="micro">{de ? "Die Eingabe öffnet den KI-Berater mit drei Prüffragen und einer Risikomatrix. Es erfolgt kein automatischer Abruf oder eine unabhängige Prüfung von Inseraten." : "Unos otvara AI Savetnika sa tri pitanja i matricom rizika. Sadržaj oglasa se ne preuzima niti nezavisno proverava automatski."}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section white" aria-labelledby="auto-steps-title">
     <div class="wrap">
       <div class="section-head">
-        <span class="eyebrow">{c.services}</span>
-        <h2>{c.lead}</h2>
-        <p>{c.sub}</p>
+        <span class="eyebrow">{de ? "SO FUNKTIONIERT ES" : "KAKO FUNKCIONIŠE"}</span>
+        <h2 id="auto-steps-title">{de ? "Drei Schritte statt Bauchgefühl." : "Tri koraka umesto nagađanja."}</h2>
       </div>
-      <div class="cards">
-        {c.cards.map((v) => (
-          <article class="card">
-            <span class="number">{v.num} / DANINI</span>
-            <h3>{v.title}</h3>
-            <b class="micro">{v.short}</b>
-            <p>{v.text}</p>
-            <ul>
-              {v.items.map((i) => (
-                <li>{i}</li>
-              ))}
-            </ul>
-            <a class="link" href={`/${locale}/${v.id}/`}>
-              {locale === "de"
-                ? "Leistungsumfang ansehen"
-                : "Pogledajte obim usluge"}{" "}
-              ↗
-            </a>
-          </article>
-        ))}
+      <div class="auto-steps">
+        <article><b>01</b><h3>{de ? "Inserat ansehen" : "Pregled oglasa"}</h3><p>{de ? "Fahrzeugdaten, Verkäuferangaben und offene Fragen sammeln." : "Prikupljamo podatke o vozilu, tvrdnje prodavca i otvorena pitanja."}</p></article>
+        <article><b>02</b><h3>{de ? "Risiken dokumentieren" : "Dokumentovanje rizika"}</h3><p>{de ? "Widersprüche und fehlende Nachweise kennzeichnen. Keine automatische Garantie." : "Obeležavamo neslaganja i dokaze koji nedostaju. Bez automatskih garancija."}</p></article>
+        <article><b>03</b><h3>{de ? "Fahrzeug prüfen lassen" : "Provera vozila"}</h3><p>{de ? "Auf Wunsch eine unabhängige Prüfung am Standort abstimmen." : "Po zahtevu dogovaramo nezavisnu proveru na lokaciji."}</p></article>
       </div>
     </div>
   </section>
-  <section class="section" id="process">
+
+  <section class="section auto-inspection" id="provera-na-terenu">
+    <div class="wrap auto-inspection-grid">
+      <div>
+        <span class="eyebrow">{de ? "SCHRITT 2 · PRÜFUNG VOR ORT" : "KORAK 2 · PROVERA NA TERENU"}</span>
+        <h2>{de ? "Ein Inserat ist kein technischer Prüfbericht." : "Oglas nije izveštaj o tehničkom stanju."}</h2>
+        <p>{de ? "Lassen Sie eine Prüfung am Standort anfragen. Umfang, Verfügbarkeit und Kosten werden vor einer Beauftragung persönlich bestätigt." : "Zatražite pregled vozila na lokaciji. Obim usluge, dostupnost i cena potvrđuju se pre angažovanja."}</p>
+      </div>
+      <div><a class="button" href="#contact">{de ? "Vor-Ort-Prüfung anfragen" : "Zatraži pregled na terenu"}</a></div>
+    </div>
+  </section>
+
+  <section class="section white" id="contact">
+    <div class="wrap auto-contact">
+      <span class="eyebrow">{de ? "KONTAKT" : "KONTAKT"}</span>
+      <h2>{de ? "Fahrzeugprüfung persönlich abstimmen." : "Dogovorite proveru vozila."}</h2>
+      <p>{de ? "Senden Sie uns den Inseratslink und den gewünschten Prüfungsort. Wir melden uns mit den nächsten Schritten." : "Pošaljite link oglasa i mesto gde se vozilo nalazi. Javićemo vam naredne korake."}</p>
+      <a class="button" href="mailto:info@daninihub.com?subject=AutoDanini%20-%20Fahrzeugpruefung">info@daninihub.com</a>
+    </div>
+  </section>
+
+  <section class="auto-storage" aria-labelledby="storage-title">
     <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">{c.process}</span>
-        <h2>
-          {locale === "de"
-            ? "Vom Vorhaben zur Arbeitsgrundlage."
-            : "Od namere do pregledne dokumentacije."}
-        </h2>
-      </div>
-      <div class="process-grid">
-        {c.flow.map((v, i) => (
-          <div class="step">
-            <span>0{i + 1}</span>
-            <h3>{v}</h3>
-            <p>{c.flowText[i]}</p>
-          </div>
-        ))}
+      <span class="eyebrow">DANINI · {de ? "WEITERE ANGEBOTE" : "OSTALE OBLASTI"}</span>
+      <h2 id="storage-title">{de ? "Für Partner und Autohäuser (demnächst)" : "Za partnere i auto-kuće (Uskoro)"}</h2>
+      <div class="auto-storage-grid">
+        <div><strong>{de ? "Marketplace / Auktionen" : "Marketplace / Aukcije"}</strong><p>{de ? "Angebot für Geschäftspartner in Vorbereitung." : "Ponuda za poslovne partnere u pripremi."}</p></div>
+        <div><strong>{de ? "Digitale Produkte" : "Digitalni proizvodi"}</strong><p>{de ? "Zusätzliche Werkzeuge und Informationen." : "Dodatni alati i informacije."}</p></div>
+        <div><strong>DANINI Business (B2B)</strong><p>{de ? "Weitere Geschäftsdienstleistungen" : "Dodatne poslovne usluge"}</p><a href={de ? "/de/danini-methode/" : "/sr/danini-metoda/"}>{de ? "Mehr erfahren" : "Saznajte više"} →</a></div>
       </div>
     </div>
   </section>
-  <section class="section dark">
-    <div class="wrap two-col">
-      <div>
-        <span class="eyebrow">DANINI OS · ASSISTED OPERATIONS</span>
-        <h2>{c.ai}</h2>
-        <p>{c.aiText}</p>
-        <p class="micro">{locale === "de" ? "Heute: regelbasierte Zuordnung und vorbereitete Prüf- und Freigabeschritte. Generative KI und erweiterte Dokumentenannahme sind derzeit nicht aktiv." : "Danas: razvrstavanje po pravilima i pripremljeni koraci za proveru i odobravanje. Generativni AI i napredni prijem dokumenata trenutno nisu aktivni."}</p>
-        <a
-          class="button secondary"
-          href={`/${locale}/ai-transparenz/`}
-          style="color:white"
-        >
-          {locale === "de" ? "Transparenz ansehen" : "Kako koristimo AI"} ↗
-        </a>
-      </div>
-      <div>
-        <div class="pill">
-          01 /{" "}
-          {locale === "de"
-            ? "Strukturierte Informationen"
-            : "Strukturirane informacije"}
-        </div>
-        <div class="pill">
-          02 /{" "}
-          {locale === "de" ? "Nachvollziehbare Entwürfe" : "Proverljivi nacrti"}
-        </div>
-        <div class="pill">
-          03 /{" "}
-          {locale === "de"
-            ? "Freigabe vor dem finalen Bericht"
-            : "Odobrenje pre završnog izveštaja"}
-        </div>
-        <p class="micro">{c.boundary}</p>
-      </div>
-    </div>
-  </section>
-  <ClarityCheck locale={locale} />
-  <section class="section" id="contact">
-    <div class="wrap two-col">
-      <div>
-        <span class="eyebrow">{c.contact}</span>
-        <h2>{c.formTitle}</h2>
-        <p>{c.formText}</p>
-        <p>
-          <a href="mailto:info@daninihub.com">info@daninihub.com ↗</a>
-        </p>
-      </div>
-      <Intake locale={locale} />
-    </div>
-  </section>
-  <div class="wrap">
-    <div class="auto-banner">
-      <div>
-        <b>AutoDanini · by DANINI</b>
-        <p>
-          {locale === "de"
-            ? "Fahrzeugsuche, Kaufvorbereitung und unabhängige Prüfung."
-            : "Pretraga vozila, priprema kupovine i nezavisna provera."}
-        </p>
-      </div>
-      <a class="button secondary" href="/auto/">
-        AutoDanini ↗
-      </a>
-    </div>
-  </div>
 </Base>
+<style>
+  .auto-hero {background:linear-gradient(135deg,#f8fafc 0%,#edf3fc 100%); padding:clamp(3rem,7vw,6rem) 0}
+  .auto-hero-grid {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(290px,.8fr);align-items:center;gap:clamp(2rem,5vw,5rem)}
+  .auto-hero h1 {font-size:clamp(2.4rem,4.6vw,4.6rem);max-width:850px}
+  .auto-hero .auto-subtitle {font-size:clamp(1.08rem,1.6vw,1.4rem);font-weight:450;line-height:1.65;letter-spacing:normal;color:#334155;max-width:740px}
+  .auto-hero-panel {background:#0f172a;color:#fff;border-radius:20px;padding:clamp(1.5rem,3vw,3rem);box-shadow:0 25px 55px #0f172a22}
+  .auto-hero-panel .eyebrow {color:#bac8db}
+  .auto-panel-step {display:flex;gap:1.3rem;align-items:center;padding:1.7rem 0;border-bottom:1px solid #ffffff2a}
+  .auto-panel-step span {color:#facc15;font-weight:800}
+  .auto-panel-step strong {font-size:1rem}
+  .auto-hero-panel p {color:#e2e8f0}
+  .auto-advisor {padding:2rem 0 4rem;background:#edf3fc;scroll-margin-top:2rem}
+  .auto-advisor-box {border:1px solid #cad7e6;background:white;border-radius:18px;padding:clamp(1.4rem,4vw,3rem);box-shadow:0 14px 44px #0f172a10}
+  .auto-advisor-box h2 {font-size:clamp(1.7rem,3vw,2.65rem)}
+  .auto-advisor-form label {display:block;margin:1.5rem 0 .6rem;font-weight:700;font-size:.85rem}
+  .auto-advisor-controls {display:flex;gap:.8rem}
+  .auto-advisor-form textarea {width:100%;min-height:120px;resize:vertical;font-size:1rem;line-height:1.5}
+  .auto-risk-result {margin-top:1.5rem;padding:1.5rem;border:1px solid #e0c56c;border-radius:12px;background:#fffbeb}
+  .auto-risk-result[hidden] {display:none}
+  .auto-risk-result h3 {font-size:1.25rem}
+  .auto-risk-result li {margin:.65rem 0;line-height:1.6}
+  .auto-advisor-box .micro {margin-bottom:0}
+  .auto-steps {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem}
+  .auto-steps article {border:1px solid #e2e8f0;border-radius:14px;padding:1.7rem;background:#fff}
+  .auto-steps b {color:#927500}
+  .auto-steps h3 {font-size:1.2rem}
+  .auto-inspection {background:#0f172a;scroll-margin-top:2rem}
+  .auto-inspection h2,.auto-inspection p {color:#fff}
+  .auto-inspection .eyebrow {color:#bdc8d7}
+  .auto-inspection-grid {display:grid;grid-template-columns:2fr 1fr;gap:2rem;align-items:center}
+  .auto-contact {text-align:center;max-width:850px}
+  .auto-contact .button {margin-top:1rem}
+  .auto-storage {background:#f1f5f9;padding:2.5rem 0 4rem;border-top:1px solid #e2e8f0}
+  .auto-storage h2 {font-size:clamp(1.3rem,2.2vw,1.85rem);margin:.6rem 0 1.5rem}
+  .auto-storage-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+  .auto-storage-grid>div {padding:1.3rem;border:1px solid #dce2ea;background:#e9eef4;border-radius:10px}
+  .auto-storage-grid strong {font-size:.92rem}
+  .auto-storage-grid p,.auto-storage-grid a {font-size:.8rem}
+  .auto-storage-grid a {text-decoration:underline}
+  @media(max-width:850px) {.auto-hero-grid,.auto-inspection-grid {grid-template-columns:1fr}.auto-steps,.auto-storage-grid {grid-template-columns:1fr}}
+  @media(max-width:680px) {.auto-advisor-controls {flex-direction:column}.auto-advisor-controls .button {width:100%}}
+</style>
+<script>
+  // Client-side guidance only: neither fetches third-party sites nor submits user data.
+  const form = document.getElementById("universal-advisor-form") as HTMLFormElement | null;
+  const textarea = document.getElementById("vehicle-source") as HTMLTextAreaElement | null;
+  const result = document.getElementById("universal-risk-result");
+  const heading = document.getElementById("universal-risk-heading");
+  const summary = document.getElementById("universal-risk-summary");
+  const list = document.getElementById("universal-risk-list");
+  if (form && textarea && result && heading && summary && list) {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const value = textarea.value.trim();
+      if (!value) { textarea.focus(); return; }
+      // One-tab handoff; avoid exposing listing text and VIN in URL or server logs.
+      let transferred = false;
+      try {
+        sessionStorage.setItem("danini-advisor-source-v1", value.slice(0, 6000));
+        transferred = true;
+      } catch { /* Browser storage disabled: continue with local checklist. */ }
+      if (transferred) {
+        window.location.assign(form.dataset.locale === "de" ? "/de/ai-savetnik/" : "/sr/ai-savetnik/");
+        return;
+      }
+      const vin = /^[A-HJ-NPR-Z0-9]{17}$/i.test(value);
+      const match = value.match(/https?:\/\/[^\s<>"']+/i);
+      let url: URL | null = null;
+      if (match) {
+        try {
+          const parsed = new URL(match[0]);
+          if (parsed.protocol === "https:" || parsed.protocol === "http:") url = parsed;
+        } catch { /* Treat as copied text */ }
+      }
+      const host = url?.hostname.toLowerCase().replace(/^www\./, "") || "";
+      const classified = vin ? "vin" : url ? "link" : "text";
+      const marketplace = !!host && (host === "kleinanzeigen.de" || host.endsWith(".kleinanzeigen.de") || host === "quoka.de" || host.endsWith(".quoka.de"));
+      const privateOrUnknown = !vin && (marketplace || classified === "text" || (classified === "link" && !/(^|\.)(mobile\.de|autoscout24\.de)$/.test(host)));
+      const de = form.dataset.locale === "de";
+      const questionsDe = [
+        "FIN am Fahrzeug mit Zulassungsbescheinigung Teil I und Teil II abgleichen; Fahrzeugidentität und Berechtigung zur Veräußerung unabhängig prüfen.",
+        "Verkäuferidentität und Verfügungsberechtigung klären; bei fremdem Namen Vollmacht und Eigentumskette prüfen.",
+        "HU-Bericht, Wartungsbelege, Laufleistung, Unfallschäden und offene Finanzierung anhand unabhängiger Nachweise prüfen.",
+        "Keine Anzahlung, Ausweiskopie oder Zahlungsdaten nur auf Basis des Inserats versenden; sichere Übergabe und Zahlung vereinbaren.",
+        "Vor dem Kauf unabhängige Besichtigung und Diagnose vereinbaren."
+      ];
+      const questionsSr = [
+        "Uporediti VIN na vozilu sa saobraćajnom dozvolom i dokumentima vozila (Zulassungsbescheinigung Teil I i II); nezavisno proveriti identitet vozila i pravo prodaje.",
+        "Proveriti identitet prodavca i ovlašćenje za prodaju; ako vozilo nije na njegovo ime, tražiti dokaz o ovlašćenju i vlasništvu.",
+        "Tražiti TÜV/HU izveštaj, servisnu istoriju, dokaze o kilometraži, udesima i eventualnom finansiranju.",
+        "Ne uplaćivati avans niti slati lična dokumenta samo na osnovu oglasa; dogovoriti bezbedno plaćanje i primopredaju.",
+        "Organizovati nezavisni fizički pregled i dijagnostiku pre kupovine."
+      ];
+      heading.textContent = de ? "Checkliste zur Kaufvorbereitung" : "Kontrolna lista pre kupovine";
+      summary.textContent = de
+        ? (privateOrUnknown
+          ? "Kleinanzeige, lokaler Anbieter oder kopierter Text: Verkäuferstatus und Eigentumsnachweise sind unklar. Zusätzliche Identitäts- und Dokumentenprüfung empfohlen. Die Plattform allein belegt keinen Betrug."
+          : "Auch auf großen Portalen und bei FIN-Eingaben müssen Angaben unabhängig überprüft werden. Keine automatische Auswertung durchgeführt.")
+        : (privateOrUnknown
+          ? "Mali oglas, lokalni izvor ili kopirani tekst: status prodavca i dokumentacija nisu potvrđeni. Preporučena je dodatna provera identiteta i vlasništva. Sama platforma nije dokaz prevare."
+          : "I kod velikih platformi ili unosa VIN-a podaci zahtevaju nezavisnu proveru. Automatska analiza nije izvršena.");
+      list.replaceChildren();
+      for (const text of de ? questionsDe : questionsSr) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        list.appendChild(li);
+      }
+      result.hidden = false;
+      result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+</script>

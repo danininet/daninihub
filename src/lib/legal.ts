@@ -5,7 +5,7 @@ export const legal = {
       sections: [
         ["Anbieter gemäß § 5 DDG", "DANINI · Dragan Zdravković · Fischerstr. 54, 47055 Duisburg, Deutschland. E-Mail: info@daninihub.com."],
         ["Verantwortlich gemäß § 18 Abs. 2 MStV", "Für journalistisch-redaktionelle Inhalte, soweit anwendbar: Dragan Zdravković, Fischerstr. 54, 47055 Duisburg, Deutschland."],
-        ["Steuerliche Angaben", "Bei Anwendung der Kleinunternehmerregelung gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen. Es werden keine ungeprüften Register- oder Umsatzsteuer-Identifikationsnummern angegeben."],
+        ["Steuer- und Registerangaben", "Eine Umsatzsteuer-Identifikationsnummer oder ein Registereintrag wird nur angegeben, wenn eine solche Kennung tatsächlich besteht und verifiziert ist. Ob die Kleinunternehmerregelung anwendbar ist, wird nicht allein durch diese Website festgelegt."],
         ["Leistungsabgrenzung", "DANINI bietet technische und administrative B2B-Unterstützung bei der Sammlung, Strukturierung und Vorbereitung von Dokumenten. Keine erlaubnispflichtige Rechtsdienstleistung oder individuelle Rechtsberatung nach RDG; keine Steuerberatung nach StBerG; keine Zollvertretung und keine Abgabe von Zollanmeldungen für Dritte gemäß Art. 18 UZK. Verbindliche Prüfungen erfolgen ausschließlich durch hierzu befugte Stellen."],
         ["KI-Transparenz", "Automatisierte Werkzeuge und gegebenenfalls KI unterstützen die Vorbereitung von Entwürfen. Vor der Lieferung eines finalen Berichts findet eine persönliche Prüfung und Freigabe statt. Keine amtlichen Bescheinigungen oder regulatorischen Garantien."]
       ]
@@ -19,7 +19,8 @@ export const legal = {
         ["E-Mail-Versand", "Für transaktionale Nachrichten und geschäftliche Kommunikation nutzen wir Brevo (Sendinblue GmbH, Berlin, Deutschland). Dabei können E-Mail-Adresse, Nachrichtentext, Vorgangskennung und Versandmetadaten verarbeitet werden. Etwaige Unterauftragsverarbeiter und Drittlandübermittlungen unterliegen den einschlägigen vertraglichen Schutzmaßnahmen."],
         ["Bot-Schutz und Cookies", "Aktive Anfrageformulare können durch Cloudflare Turnstile gegen automatisierte Eingaben geschützt werden. Turnstile wird nicht als Werbe-Tracking eingesetzt; dabei können technische Informationen und zur Sicherheitsprüfung erforderliche Kennungen verarbeitet werden. Eine allgemeine Zusage, dass unter allen Umständen keinerlei Cookies oder Drittlandübermittlungen vorkommen, wird nicht gemacht. Das neue B2B-Frontend setzt keine eigene Marketinganalyse ein."],
         ["KI und automatisierte Entscheidungen (Art. 22 DSGVO)", "Regelbasierte und nach gesonderter Aktivierung gegebenenfalls KI-gestützte Systeme können Eingaben strukturieren und Entwürfe erstellen. Eine verantwortliche Person prüft und genehmigt jeden finalen Bericht vor Auslieferung (Human-in-the-Loop). Es werden keine ausschließlich automatisierten Entscheidungen getroffen, die gegenüber Betroffenen rechtliche oder vergleichbar erhebliche Wirkungen entfalten. Eine externe KI-Verarbeitung erfolgt erst nach gesonderter Prüfung von Anbieter, Vertrag, Region und Datenflüssen."],
-        ["Speicherdauer", "Wir speichern personenbezogene Daten nur so lange, wie dies für die jeweiligen Zwecke, Sicherheitsanforderungen und gesetzliche Aufbewahrungspflichten notwendig ist. Die geplante technische Bereinigung sieht für Vorgänge etwa 30 Tage und für minimale Auditdaten etwa 90 Tage vor; tatsächliche Dienstleister- und gesetzliche Aufbewahrungsfristen können abweichen."],
+        ["Speicherdauer", "Wir speichern personenbezogene Daten zweckgebunden und nur so lange, wie dies für Anfragen, vereinbarte Leistungen, IT-Sicherheit und gesetzliche Pflichten erforderlich ist. Für das neue B2B-Verfahren sind eine technische Bereinigung nach etwa 30 Tagen und minimale Auditdaten bis etwa 90 Tage vorgesehen, soweit dieses Verfahren aktiviert ist; gesetzliche Aufbewahrung, E-Mail-Systeme und Anbieterprotokolle können abweichen. Informationen zu den konkreten Fristen erhalten Sie über die angegebene Kontaktadresse."],
+        ["Pflichtangaben und Widerspruch", "Für die Beantwortung einer Anfrage sind zumindest Kontaktangaben und eine Beschreibung des Anliegens nötig; ohne diese kann eine Bearbeitung unmöglich sein. Die Angabe weiterer Informationen ist freiwillig. Soweit eine Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO beruht, können Betroffene aus Gründen ihrer besonderen Situation gemäß Art. 21 DSGVO widersprechen."],
         ["Ihre Rechte", "Nach Maßgabe der DSGVO können Sie Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch verlangen sowie eine Einwilligung für die Zukunft widerrufen. Kontakt: info@daninihub.com. Sie haben außerdem das Recht zur Beschwerde bei einer Datenschutzaufsichtsbehörde, insbesondere der Landesbeauftragten für Datenschutz und Informationsfreiheit Nordrhein-Westfalen."]
       ]
     },
@@ -45,67 +46,40 @@ export const legal = {
   },
   sr: {
     impressum: {
-      title: "Impressum — nacrt",
+      title: "Impressum",
       sections: [
-        [
-          "Pružalac usluge",
-          "Dragan Zdravković · DANINI. Prema postojećem repozitorijumu: Fischerstr. 54, 47055 Duisburg, Nemačka. [POPUNITI: potvrditi aktuelnu adresu za uredno uručenje i poslovni status]. Kontakt: kontakt@daninihub.com. [POPUNITI: proveriti prijem i mogućnost odgovora za info@daninihub.com].",
-        ],
-        [
-          "Registracija i porezi",
-          "[POPUNITI: proveriti registraciju delatnosti i eventualne podatke registra i PDV identifikacioni broj]. Ne navodimo nepostojeće registracione podatke.",
-        ],
-        [
-          "Granice usluge",
-          "DANINI priprema podatke i dokumentaciju za preduzeća. Bez individualnog pravnog i poreskog savetovanja, carinskog zastupanja, sertifikacije i prijema tuđih sredstava. AutoDanini ponude imaju zasebne uslove.",
-        ],
-      ],
+        ["Pružalac digitalne usluge (§ 5 DDG)", "DANINI — Dragan Zdravković, Fischerstr. 54, 47055 Duisburg, Deutschland. Kontakt: info@daninihub.com. DANINI je poslovni naziv fizičkog lica, a ne GmbH."],
+        ["Odgovorno lice za urednički sadržaj (§ 18 st. 2 MStV)", "Za novinarsko-uredničke sadržaje, ukoliko je odredba primenljiva: Dragan Zdravković, Fischerstr. 54, 47055 Duisburg, Deutschland."],
+        ["Registracija i poreski podaci", "Brojevi registra i identifikacioni brojevi za PDV ne navode se bez utvrđene zakonske obaveze i potvrđenog podatka. Samo objavljivanje sajta ne potvrđuje poreski status niti primenu pravila za male preduzetnike."],
+        ["Granice poslovnih usluga", "DANINI pruža informativnu, tehničku i administrativnu B2B podršku, preliminarno strukturiranje podataka i pripremu poslovnih kontakata. Ne pruža individualno pravno ili poresko savetovanje, carinsko zastupanje, zvaničnu regulatornu proveru niti sertifikaciju. Za takve poslove angažuju se ovlašćena lica."],
+        ["Transparentnost automatizacije", "Digitalni alati mogu pripremiti radne nacrte. Konačan izveštaj, kada je ta usluga ugovorena i aktivna, podleže proveri i odobrenju odgovornog lica. Nema garancije odobrenja organa ili poslovnog rezultata."]
+      ]
     },
     datenschutz: {
-      title: "Obaveštenje o privatnosti — nacrt",
+      title: "Obaveštenje o zaštiti podataka",
       sections: [
-        [
-          "Rukovalac i svrha",
-          "Prema postojećem impressumu: Dragan Zdravković. [POPUNITI: potvrditi aktuelne podatke rukovaoca]. Kontaktne, poslovne i projektne podatke obrađujemo radi odgovora na upit. Pravni osnov zavisi od konkretne obrade, naročito član 6(1)(b) ili (f) DSGVO; potvrda čitanja nije opšta saglasnost.",
-        ],
-        [
-          "Obrada podataka",
-          "Predviđeni su Cloudflare za hosting, zaštitu i predmete i Brevo za poslovne poruke. Dokumenti se čuvaju privatno, uz ograničen pristup. [POPUNITI: proveriti ugovore o obradi, podobrađivače i prenose u treće zemlje]. EU lokacija skladištenja ne znači da se sve obrade odvijaju samo u EU.",
-        ],
-        [
-          "AI i ljudska kontrola",
-          "Generativni AI je podrazumevano isključen. Aktiviranje zahteva proveru pružaoca, EU endpointa, ugovora, tokova podataka i troškova. Nacrti se proveravaju pre odobravanja. Ljudsko odobrenje ne zamenjuje procenu primene člana 22 DSGVO.",
-        ],
-        [
-          "Rokovi i prava",
-          "Tehnički predlog: predmeti 30 dana, zatim nedeljno brisanje, do 7 dodatnih dana; minimalna revizorska evidencija 90 dana. [POPUNITI: potvrditi obavezne rokove, izuzetke i čuvanje kod Workflow i e-mail pružalaca]. Pod zakonskim uslovima možete tražiti pristup, ispravku, brisanje, ograničenje i prenos podataka, uložiti prigovor i obratiti se nadležnom organu.",
-        ],
-        [
-          "Kolačići i kontakt",
-          "Novi B2B frontend nema marketinšku analitiku. Aktivni obrazac učitava Cloudflare Turnstile. [POPUNITI: proveriti stvarno skladištenje i pravni osnov prema TDDDG]. Kontakt za privatnost: kontakt@daninihub.com.",
-        ],
-      ],
+        ["Rukovalac podataka", "DANINI — Dragan Zdravković, Fischerstr. 54, 47055 Duisburg, Deutschland. Za pitanja o privatnosti: info@daninihub.com."],
+        ["Podaci, svrha i pravni osnov", "Obrađujemo kontakt podatke, naziv preduzeća, opis projekta, poslovnu prepisku i tehničke bezbednosne podatke radi odgovaranja na upit, pripreme i izvršavanja ugovora, ispunjavanja zakonskih obaveza i zaštite od zloupotrebe. Osnov su, zavisno od slučaja, član 6 stav 1 tačke b, c ili f DSGVO; kada je pristanak stvarno potreban, tačka a. Legitimni interes je bezbedan rad sajta i odgovaranje na poslovne upite. Potvrda da je obaveštenje pročitano nije saglasnost za marketing."],
+        ["Pružaoci usluga i primaoci", "Cloudflare koristimo za sajt, bezbednost i zaštitu obrazaca (Turnstile). Postojeća tehnička infrastruktura uključuje Workers; za napredni B2B tok predviđeni su D1 baza, privatni R2 prostor i Workflows, kada su aktivirani. Brevo se koristi za poslovnu i transakcionu e-poštu. Ne podrazumeva se da se svaki podatak već čuva u svim navedenim servisima."],
+        ["Međunarodni prenosi", "Pružaoci usluga mogu uključiti podobrađivače ili obradu van EEP. Lokacija evropskog centra podataka sama po sebi ne isključuje međunarodne prenose. Za primenljive prenose zahtevaju se odgovarajući pravni mehanizmi iz poglavlja V DSGVO. Detalje o konkretnim primaocima i zaštitnim merama možete zatražiti na info@daninihub.com."],
+        ["Zaštita od botova i kolačići", "Na aktivnim obrascima Cloudflare Turnstile obrađuje tehničke podatke radi zaštite od automatskih zahteva. Namena nije marketinško profilisanje. Ovaj B2B frontend ne postavlja sopstvenu marketinšku analitiku; ponašanje bezbednosnih kolačića i obrada kod pružalaca zavise od stvarne konfiguracije."],
+        ["Automatizacija i AI", "Pravila mogu pomoći u razvrstavanju poslovnih zahteva. Generativna AI obrada podataka nije automatski uključena. Konačni izveštaji zahtevaju ljudsku proveru. Ne donosimo isključivo automatizovane odluke sa pravnim ili slično značajnim dejstvom u smislu člana 22 DSGVO."],
+        ["Čuvanje podataka", "Podaci se čuvaju samo koliko je potrebno za obradu upita, ugovor, bezbednost i zakonske obaveze. Za napredni B2B sistem predviđeno je tehničko uklanjanje predmeta približno posle 30 dana i minimalnih revizorskih zapisa približno posle 90 dana, kada je taj sistem aktivan. Zakonski rokovi, e-mail arhive i rokovi pružalaca usluga mogu biti drugačiji. Za pojedinačan rok možete nam pisati."],
+        ["Obaveznost davanja podataka", "Za odgovor je neophodna mogućnost kontakta i osnovni opis upita; bez toga možda ne možemo da odgovorimo. Ostali podaci su dobrovoljni. Ne šaljite lična dokumenta, zdravstvene podatke ili osetljive podatke zaposlenih putem početnog obrasca."],
+        ["Vaša prava", "Pod uslovima iz DSGVO imate pravo na pristup, ispravku, brisanje, ograničenje obrade, prenosivost i prigovor, kao i opoziv datog pristanka za budućnost. Za obradu zasnovanu na legitimnom interesu moguć je prigovor prema članu 21 DSGVO. Prigovor nadzornom organu možete podneti, između ostalog, Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen. Kontakt: info@daninihub.com."]
+      ]
     },
     agb: {
-      title: "Uslovi B2B usluga — nacrt",
+      title: "Opšti uslovi poslovanja (B2B)",
       sections: [
-        [
-          "Oblast primene",
-          "Predloženi uslovi odnose se samo na B2B pripremu dokumentacije. Ne zamenjuju postojeće potrošačke uslove AutoDanini ponuda. [POPUNITI: potvrditi poslovni status pružaoca i ugovorni okvir].",
-        ],
-        [
-          "Angažovanje i cena",
-          "Upit je neobavezujući. Angažovanje nastaje posebnim dogovorom o obimu, ceni, porezima, roku i isporuci. Nema obećanja dozvola, uštede, prihoda ili prihvatanja od strane organa.",
-        ],
-        [
-          "Obaveze i rezultat",
-          "Klijent dostavlja tačne i potrebne podatke koje ima pravo da dostavi. DANINI ih strukturira, izdvaja nedostatke i priprema radnu osnovu. Nisu uključeni obavezujući stručni zaključci, poreski saveti, carinske prijave, laboratorijska ispitivanja niti sertifikacija.",
-        ],
-        [
-          "Uloge i odgovornost",
-          "DANINI ne postaje automatski uvoznik, ovlašćeni predstavnik niti pružalac platnih usluga. Ne upravlja tuđim sredstvima. Ne isključuju se obavezna zakonska prava. [POPUNITI: stručna provera granica usluge, odgovornosti, raskida i primenljivog prava].",
-        ],
-      ],
+        ["Oblast primene", "Ovi uslovi odnose se isključivo na usluge za preduzetnike i preduzeća u smislu § 14 BGB. Posebne potrošačke i AutoDanini ponude nisu obuhvaćene ovim B2B uslovima."],
+        ["Upit, zaključenje ugovora i naknada", "Slanje upita je besplatno i neobavezujuće. Ugovor nastaje tek zasebnim dogovorom o usluzi, obimu, rokovima, ceni i uslovima plaćanja. Za konkretnu ponudu važe jasno utvrđeni poreski uslovi i dogovoreni način isporuke."],
+        ["Predmet i granice usluge", "DANINI može pripremati poslovne kontakte, strukturirati tehničke podatke, evidentirati nedostajuće dokumente i pružati administrativnu podršku. Preliminarna provera nije zvanična CBAM, carinska, poreska, radnopravna ili druga regulatorna potvrda. Ne pružamo usluge koje zahtevaju posebnu dozvolu bez odgovarajućeg ovlašćenja; u takvim slučajevima klijent angažuje nadležnog stručnjaka."],
+        ["Saradnja i odgovornost naručioca", "Naručilac obezbeđuje tačne i potpune podatke koje ima pravo da prosledi. On sam odlučuje o zakonskim prijavama, ugovornim partnerima i poslovnim potezima. DANINI ne garantuje poslovni rezultat, izbor partnera, izdavanje dozvole ili usklađenost sa propisima."],
+        ["Kontrola rezultata", "Automatski pripremljeni nacrti i preliminarne liste su pomoćni materijal. Konačni ugovoreni izveštaj se proverava pre dostavljanja. Ne smatra se službenim mišljenjem ili sertifikatom."],
+        ["Odgovornost", "Odgovornost nije ograničena za nameru i grubu nepažnju, povrede života, tela ili zdravlja i druge slučajeve obavezne zakonske odgovornosti. Kod lake nepažnje pri povredi bitnih ugovornih obaveza odgovornost je ograničena na predvidivu, tipičnu štetu; za nebitne obaveze isključena je samo koliko zakon dozvoljava. Obavezna prava nisu ograničena."],
+        ["Ostale odredbe", "Pojedinačni dogovor ima prednost nad opštim uslovima. Primenjuje se nemačko pravo u meri dozvoljenoj obaveznim propisima. Nadležnost sudova određuje se prema zakonu."]
+      ]
     },
     "ai-transparenz": {
       title: "AI transparentnost",

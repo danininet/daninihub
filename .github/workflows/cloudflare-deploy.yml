@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  issues: write
 concurrency:
   group: danini-production-deploy
   cancel-in-progress: false
@@ -24,9 +25,11 @@ jobs:
           node-version: '22'
           cache: npm
       - name: Require deployment credentials
+        id: credentials
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing CLOUDFLARE_API_TOKEN GitHub secret; no deployment performed'; exit 1; }
       - name: Install locked dependencies and build actual Cloudflare assets
+        id: build
         run: |
           npm ci --no-audit --no-fund
           npm run build:platform
@@ -53,6 +56,7 @@ jobs:
           console.log('PASS: built SR/DE production HTML is the reviewed PR #208 Astro release');
           NODE
       - name: Preserve current non-secret production bindings
+        id: bindings
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -83,12 +87,14 @@ jobs:
           console.log('PASS: production D1, R2, KV, Workflow and required secret names verified; no secret values logged');
           NODE
       - name: Deploy complete production Worker and static assets
+        id: publish
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: c7c8ad399f1e851d1c3a8be34e66f822
           command: deploy --config wrangler.production-ci.jsonc --keep-vars
       - name: Verify deployed bilingual advisor, public sitekey and API
+        id: verify
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
@@ -120,3 +126,30 @@ jobs:
           assert.match(await js.text(),/challenges\.cloudflare\.com\/turnstile/);
           console.log('PASS production Turnstile and Brevo readiness; no customer email sent');
           NODE
+
+      - name: Report deploy outcome to merged PR #208 for audit
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD: ${{ steps.build.outcome }}
+          BINDINGS: ${{ steps.bindings.outcome }}
+          PUBLISH: ${{ steps.publish.outcome }}
+          VERIFY: ${{ steps.verify.outcome }}
+        run: |
+          if [ "$BUILD" = success ] && [ "$BINDINGS" = success ] && [ "$PUBLISH" = success ] && [ "$VERIFY" = success ]; then
+            verdict=SUCCESS
+          else
+            verdict=NOT_CONFIRMED
+          fi
+          {
+            echo "DANINI Cloudflare production deploy (automated evidence)"
+            echo ""
+            echo "Run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Results: build=${BUILD}, bindings=${BINDINGS}, deploy=${PUBLISH}, live-qa=${VERIFY}"
+            echo "Outcome: ${verdict}"
+            echo ""
+            echo "No secret values are included in this report."
+          } > /tmp/danini-deploy-report.md
+          gh issue comment 208 --repo "$GITHUB_REPOSITORY" --body-file /tmp/danini-deploy-report.md

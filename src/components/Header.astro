@@ -8,7 +8,7 @@ interface Props {
 
 const { locale, slug = "" } = Astro.props;
 const isDe = locale === "de";
-const home = isDe ? "/" : "/sr/";
+const home = isDe ? "/de/" : "/sr/";
 const altSlug = (language: "de" | "sr") => {
   if (["ueber-danini", "o-danini"].includes(slug)) return language === "de" ? "ueber-danini" : "o-danini";
   if (["danini-methode", "danini-metoda"].includes(slug)) return language === "de" ? "danini-methode" : "danini-metoda";
@@ -28,7 +28,7 @@ const navItems = [
   <div class="wrap nav danini-header">
     <a class="brand" href={home} aria-label={isDe ? "DANINI — Startseite" : "DANINI — Početna"}>
       <span class="mark" aria-hidden="true">D</span>
-      <span>DANINI<small>DACH ↔ BALKAN</small></span>
+      <span>DANINI<small>AUTO · DIGITAL · AI</small></span>
     </a>
 
     <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>

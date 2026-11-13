@@ -8,8 +8,8 @@ const client=readFileSync('public/danini-advisor-client.js','utf8');
 const nav=readFileSync('src/components/Header.astro','utf8');
 
 test('SR/DE automotive hero and universal source input',()=>{
- assert.match(home,/Kupovina automobila iz Nemačke bez rizika/);
- assert.match(home,/Autokauf in Deutschland ohne Risiko/);
+ assert.match(home,/Automobil iz Nemačke./);
+ assert.match(home,/Fahrzeugkauf in Deutschland./);
  assert.match(home,/<textarea id="vehicle-source"/);
  assert.match(home,/maxlength="6000"/);
  assert.match(home,/Kleinanzeigen/);

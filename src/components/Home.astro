@@ -11,38 +11,41 @@ const de = locale === "de";
 >
   <section class="auto-hero">
     <div class="wrap auto-hero-grid">
-      <div>
+      <div class="auto-hero-copy">
         <span class="eyebrow">AUTODANINI · {de ? "FAHRZEUGKAUF MIT KLAREN FAKTEN" : "KUPOVINA VOZILA UZ PROVERLJIVE PODATKE"}</span>
-        <h1>{de ? "Autokauf in Deutschland ohne Risiko und Rätselraten." : "Kupovina automobila iz Nemačke bez rizika i nagađanja."}</h1>
-        <h2 class="auto-subtitle">{de ? "Sie finden das Inserat. Unsere KI deckt Risiken auf dem Papier auf, und unsere Experten prüfen das Auto vor Ort." : "Vi nađete oglas. Naš AI softver otkriva rizike na papiru, a naši stručnjaci proveravaju auto na terenu. Odluku donosite tek kada imate sve dokaze."}</h2>
+        <h1>{de ? "Fahrzeugkauf in Deutschland. Klar prüfen, sicherer entscheiden." : "Automobil iz Nemačke. Proveri pre nego što kupiš."}</h1>
+        <p class="auto-lead">{de ? "Sie haben ein Inserat gefunden? Wir helfen, offene Fragen sichtbar zu machen, Dokumente zu prüfen und eine Vor-Ort-Prüfung anzufragen." : "Pronašao si oglas? Prođi kroz tri ključne provere, saznaj šta nedostaje i zatraži nezavisan pregled vozila pre kupovine."}</p>
         <div class="actions">
-          <a class="button" href="#ai-savetnik">{de ? "Inseratslink einfügen (KI-Check)" : "Zalepi link oglasa (AI Provera)"}</a>
+          <a class="button" href="#ai-savetnik">{de ? "Inserat jetzt prüfen" : "Proveri oglas sada"}</a>
           <a class="button secondary" href="#provera-na-terenu">{de ? "Vor-Ort-Prüfung anfragen" : "Zatraži pregled na terenu"}</a>
         </div>
-        <p class="micro">{de ? "Hinweis: KI ersetzt weder eine technische Fahrzeugprüfung noch garantiert sie einen risikofreien Kauf." : "Napomena: AI ne zamenjuje tehnički pregled i ne može garantovati kupovinu bez rizika."}</p>
+        <p class="micro auto-hero-note">{de ? "Klare Prüffragen statt falscher Versprechen. Ein Inserat allein ist kein Fahrzeugnachweis." : "Jasna pitanja i provere, bez lažnih garancija. Oglas nije dokaz o stanju vozila."}</p>
       </div>
       <div class="auto-hero-panel" aria-label={de ? "Drei Schritte zur informierten Kaufentscheidung" : "Tri koraka do informisane odluke"}>
-        <span class="eyebrow">AUTODANINI / {de ? "KAUFENTSCHEIDUNG" : "ODLUKA O KUPOVINI"}</span>
-        <div class="auto-panel-step"><span>01</span><strong>{de ? "Inserat oder FIN erfassen" : "Unesite oglas ili VIN"}</strong></div>
-        <div class="auto-panel-step"><span>02</span><strong>{de ? "Angaben und Nachweise abgleichen" : "Uporedite tvrdnje i dokumentaciju"}</strong></div>
-        <div class="auto-panel-step"><span>03</span><strong>{de ? "Vor Ort unabhängig prüfen" : "Nezavisno proverite auto na terenu"}</strong></div>
-        <p>{de ? "Erst die Fakten. Dann Ihre Entscheidung." : "Prvo činjenice. Zatim vaša odluka."}</p>
+        <span class="eyebrow">{de ? "SO LÄUFT IHRE PRÜFUNG" : "KAKO IZGLEDA PROVERA"}</span><h2 class="auto-panel-title">{de ? "Drei Schritte. Eine klarere Entscheidung." : "Tri koraka. Sigurnija odluka."}</h2>
+        <div class="auto-panel-step"><span>01</span><div><strong>{de ? "Inserat erfassen" : "Unesi oglas"}</strong><small>{de ? "Link, FIN oder Anzeigentext" : "Link, VIN ili tekst oglasa"}</small></div></div>
+        <div class="auto-panel-step"><span>02</span><div><strong>{de ? "Risiken eingrenzen" : "Razjasni rizike"}</strong><small>{de ? "Drei konkrete Prüffragen" : "Tri konkretna pitanja"}</small></div></div>
+        <div class="auto-panel-step"><span>03</span><div><strong>{de ? "Nächsten Schritt wählen" : "Izaberi sledeći korak"}</strong><small>{de ? "Dokumente, Kosten, Besichtigung" : "Dokumenta, troškovi, pregled"}</small></div></div>
+        <p class="auto-panel-bottom">{de ? "Keine automatische Fahrzeuggarantie. Sie behalten die Kontrolle." : "Bez automatskih garancija. Odluka ostaje tvoja."}</p>
       </div>
     </div>
   </section>
 
+  <div class="auto-benefits"><div class="wrap auto-benefits-inner"><span>{de ? "KLARE FRAGEN" : "JASNA PITANJA"}</span><span>{de ? "KEINE VERSTECKTEN SCHRITTE" : "BEZ SKRIVENIH KORAKA"}</span><span>{de ? "ENTSCHEIDUNG BLEIBT BEI IHNEN" : "ODLUKA JE TVOJA"}</span></div></div>
+
   <section id="ai-savetnik" class="auto-advisor">
     <div class="wrap">
       <div class="auto-advisor-box">
+        <div class="auto-section-number">01 / {de ? "IHRE FAHRZEUGANGABEN" : "PODACI O VOZILU"}</div>
         <span class="eyebrow">{de ? "SCHRITT 1 · INSERAT / FIN" : "KORAK 1 · OGLAS / VIN"}</span>
-        <h2>{de ? "Welches Auto möchten Sie prüfen?" : "Koji automobil želite da proverite?"}</h2>
+        <h2>{de ? "Starten Sie mit Ihrem Inserat." : "Počni od svog oglasa."}</h2>
         <p>{de ? "Fügen Sie einen Link von einem beliebigen deutschen Autoportal oder Kleinanzeigenmarkt (z. B. mobile.de, Kleinanzeigen, Quoka, lokale Händler) ein — alternativ FIN oder kopierten Anzeigentext." : "Zalepite link bilo kog nemačkog oglasnika (mobile.de, Kleinanzeigen, Quoka, lokalni oglasi) ili unesite VIN odnosno kopirani opis automobila."}</p>
         <form class="auto-advisor-form" id="universal-advisor-form" data-locale={locale}>
           <label for="vehicle-source">{de ? "Inseratslink, FIN oder Anzeigentext" : "Link oglasa, VIN ili tekst opisa"}</label>
           <textarea id="vehicle-source" name="source" required maxlength="6000" rows="4" placeholder={de ? "Link eines beliebigen Inserats (mobile.de, Kleinanzeigen...) oder FIN / Beschreibung einfügen..." : "Zalepite link bilo kog oglasnika (mobile.de, Kleinanzeigen...) ili unesite VIN / opis automobila..."} autocomplete="off" aria-describedby="source-privacy" ></textarea>
           <p id="source-privacy" class="micro">{de ? "Keine Ausweisbilder, Telefonnummern, Adressen oder Zahlungsdaten einfügen. Die Eingabe bleibt bei dieser Vorprüfung im Browser." : "Ne unosite slike dokumenata, brojeve telefona, adrese ni podatke za plaćanje. Unos za ovu preliminarnu proveru ostaje u pregledaču."}</p>
           <div class="auto-advisor-controls">
-            <button class="button" type="submit">{de ? "Prüfpunkte anzeigen" : "Prikaži tačke provere"}</button>
+            <button class="button" type="submit">{de ? "Weiter zur 3-Fragen-Prüfung" : "Nastavi na 3 pitanja"}</button>
           </div>
         </form>
         <div class="auto-risk-result" id="universal-risk-result" hidden role="status" aria-live="polite">
@@ -57,7 +60,7 @@ const de = locale === "de";
     </div>
   </section>
 
-  <section class="section white" aria-labelledby="auto-steps-title">
+  <section class="section white auto-process" aria-labelledby="auto-steps-title">
     <div class="wrap">
       <div class="section-head">
         <span class="eyebrow">{de ? "SO FUNKTIONIERT ES" : "KAKO FUNKCIONIŠE"}</span>
@@ -82,7 +85,7 @@ const de = locale === "de";
     </div>
   </section>
 
-  <section class="section white" id="contact">
+  <section class="section white auto-contact-section" id="contact">
     <div class="wrap auto-contact">
       <span class="eyebrow">{de ? "KONTAKT" : "KONTAKT"}</span>
       <h2>{de ? "Fahrzeugprüfung persönlich abstimmen." : "Dogovorite proveru vozila."}</h2>
@@ -94,7 +97,7 @@ const de = locale === "de";
   <section class="auto-storage" aria-labelledby="storage-title">
     <div class="wrap">
       <span class="eyebrow">DANINI · {de ? "WEITERE ANGEBOTE" : "OSTALE OBLASTI"}</span>
-      <h2 id="storage-title">{de ? "Für Partner und Autohäuser (demnächst)" : "Za partnere i auto-kuće (Uskoro)"}</h2>
+      <h2 id="storage-title">{de ? "DANINI für Geschäftspartner" : "DANINI za poslovne partnere"}</h2>
       <div class="auto-storage-grid">
         <div><strong>{de ? "Marketplace / Auktionen" : "Marketplace / Aukcije"}</strong><p>{de ? "Angebot für Geschäftspartner in Vorbereitung." : "Ponuda za poslovne partnere u pripremi."}</p></div>
         <div><strong>{de ? "Digitale Produkte" : "Digitalni proizvodi"}</strong><p>{de ? "Zusätzliche Werkzeuge und Informationen." : "Dodatni alati i informacije."}</p></div>
@@ -103,48 +106,89 @@ const de = locale === "de";
     </div>
   </section>
 </Base>
+
 <style>
-  .auto-hero {background:linear-gradient(135deg,#f8fafc 0%,#edf3fc 100%); padding:clamp(3rem,7vw,6rem) 0}
-  .auto-hero-grid {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(290px,.8fr);align-items:center;gap:clamp(2rem,5vw,5rem)}
-  .auto-hero h1 {font-size:clamp(2.4rem,4.6vw,4.6rem);max-width:850px}
-  .auto-hero .auto-subtitle {font-size:clamp(1.08rem,1.6vw,1.4rem);font-weight:450;line-height:1.65;letter-spacing:normal;color:#334155;max-width:740px}
-  .auto-hero-panel {background:#0f172a;color:#fff;border-radius:20px;padding:clamp(1.5rem,3vw,3rem);box-shadow:0 25px 55px #0f172a22}
-  .auto-hero-panel .eyebrow {color:#bac8db}
-  .auto-panel-step {display:flex;gap:1.3rem;align-items:center;padding:1.7rem 0;border-bottom:1px solid #ffffff2a}
-  .auto-panel-step span {color:#facc15;font-weight:800}
-  .auto-panel-step strong {font-size:1rem}
-  .auto-hero-panel p {color:#e2e8f0}
-  .auto-advisor {padding:2rem 0 4rem;background:#edf3fc;scroll-margin-top:2rem}
-  .auto-advisor-box {border:1px solid #cad7e6;background:white;border-radius:18px;padding:clamp(1.4rem,4vw,3rem);box-shadow:0 14px 44px #0f172a10}
-  .auto-advisor-box h2 {font-size:clamp(1.7rem,3vw,2.65rem)}
-  .auto-advisor-form label {display:block;margin:1.5rem 0 .6rem;font-weight:700;font-size:.85rem}
-  .auto-advisor-controls {display:flex;gap:.8rem}
-  .auto-advisor-form textarea {width:100%;min-height:120px;resize:vertical;font-size:1rem;line-height:1.5}
-  .auto-risk-result {margin-top:1.5rem;padding:1.5rem;border:1px solid #e0c56c;border-radius:12px;background:#fffbeb}
-  .auto-risk-result[hidden] {display:none}
-  .auto-risk-result h3 {font-size:1.25rem}
-  .auto-risk-result li {margin:.65rem 0;line-height:1.6}
-  .auto-advisor-box .micro {margin-bottom:0}
-  .auto-steps {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem}
-  .auto-steps article {border:1px solid #e2e8f0;border-radius:14px;padding:1.7rem;background:#fff}
-  .auto-steps b {color:#927500}
-  .auto-steps h3 {font-size:1.2rem}
-  .auto-inspection {background:#0f172a;scroll-margin-top:2rem}
-  .auto-inspection h2,.auto-inspection p {color:#fff}
-  .auto-inspection .eyebrow {color:#bdc8d7}
-  .auto-inspection-grid {display:grid;grid-template-columns:2fr 1fr;gap:2rem;align-items:center}
-  .auto-contact {text-align:center;max-width:850px}
-  .auto-contact .button {margin-top:1rem}
-  .auto-storage {background:#f1f5f9;padding:2.5rem 0 4rem;border-top:1px solid #e2e8f0}
-  .auto-storage h2 {font-size:clamp(1.3rem,2.2vw,1.85rem);margin:.6rem 0 1.5rem}
-  .auto-storage-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-  .auto-storage-grid>div {padding:1.3rem;border:1px solid #dce2ea;background:#e9eef4;border-radius:10px}
-  .auto-storage-grid strong {font-size:.92rem}
-  .auto-storage-grid p,.auto-storage-grid a {font-size:.8rem}
-  .auto-storage-grid a {text-decoration:underline}
-  @media(max-width:850px) {.auto-hero-grid,.auto-inspection-grid {grid-template-columns:1fr}.auto-steps,.auto-storage-grid {grid-template-columns:1fr}}
-  @media(max-width:680px) {.auto-advisor-controls {flex-direction:column}.auto-advisor-controls .button {width:100%}}
+/* AutoDanini customer experience — scoped to this component and its Astro children */
+.auto-hero{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(120deg,#f5f9fd 0%,#edf4f9 55%,#e3edf5 100%);padding:clamp(54px,7vw,112px) 0 clamp(64px,7vw,105px)}
+.auto-hero:before{content:"";position:absolute;right:-13%;top:-42%;width:52vw;height:52vw;max-width:900px;max-height:900px;border-radius:50%;border:1px solid #b1c8d9;box-shadow:0 0 0 60px #dceaf43d,0 0 0 120px #dceaf422;pointer-events:none;z-index:-1}
+.auto-hero-grid{display:grid;grid-template-columns:minmax(0,1.13fr) minmax(345px,.87fr);gap:clamp(35px,6vw,94px);align-items:center}
+.auto-hero-copy{min-width:0}
+.auto-hero .eyebrow{color:#0d7669;letter-spacing:.16em;font-size:.74rem;font-weight:800}
+.auto-hero h1{max-width:820px;font-size:clamp(2.9rem,5vw,5.6rem);font-weight:820;line-height:1.08;letter-spacing:-.065em;color:#0f172a;margin:24px 0}
+.auto-hero .auto-lead{max-width:680px;font-size:clamp(1.08rem,1.55vw,1.3rem);line-height:1.75;color:#334155;margin:0}
+.auto-hero .actions{gap:13px;margin:33px 0 20px}
+.auto-hero .button,.auto-advisor .button,.auto-inspection .button,.auto-contact .button{border-radius:12px;font-size:.94rem;min-height:56px;padding:15px 26px;font-weight:780;box-shadow:0 10px 28px #0f766e15;transition:transform .15s ease, box-shadow .15s ease}
+.auto-hero .button:hover,.auto-advisor .button:hover,.auto-inspection .button:hover,.auto-contact .button:hover{transform:translateY(-2px);box-shadow:0 14px 30px #0f766e25}
+.auto-hero .button:not(.secondary){background:#0b7669;color:white}
+.auto-hero .button.secondary{background:#fff;color:#142338;border:1.5px solid #aebfce}
+.auto-hero .auto-hero-note{font-size:.81rem;max-width:600px;color:#536779}
+.auto-hero-panel{background:linear-gradient(155deg,#14283d 0%,#0b1728 100%);color:white;border:1px solid #314359;border-radius:26px;padding:clamp(29px,3vw,46px);box-shadow:0 32px 70px #0c1c302f;position:relative}
+.auto-hero-panel:before{content:"";position:absolute;top:-13px;right:32px;width:90px;height:6px;border-radius:6px;background:#facc15}
+.auto-hero-panel .eyebrow{color:#9fe7dc;font-size:.7rem}
+.auto-hero-panel .auto-panel-title{font-size:clamp(1.45rem,2vw,2rem);font-weight:750;line-height:1.22;letter-spacing:-.035em;color:#f9fafb;margin:14px 0 18px}
+.auto-panel-step{display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:center;border-top:1px solid #ffffff23;padding:18px 0}
+.auto-panel-step span{display:grid;place-items:center;height:46px;width:46px;border-radius:13px;background:#ffffff12;color:#facc15;font-weight:800;font-size:.9rem}
+.auto-panel-step div{display:flex;flex-direction:column;gap:5px}
+.auto-panel-step strong{font-size:1.02rem;font-weight:750;color:#fff;line-height:1.4}
+.auto-panel-step small{font-size:.82rem;color:#cbd5e1;line-height:1.4}
+.auto-hero-panel .auto-panel-bottom{font-size:.8rem;color:#d4e0ec;margin:18px 0 0;line-height:1.65}
+.auto-benefits{background:#0f2434;border-top:1px solid #223d53;border-bottom:1px solid #223d53}
+.auto-benefits-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;padding-top:19px;padding-bottom:19px;text-align:center}
+.auto-benefits span{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:#c6e9e3}
+.auto-advisor{padding:clamp(48px,6vw,92px) 0;background:#f2f6fa;scroll-margin-top:16px}
+.auto-advisor-box{position:relative;display:block;max-width:1080px;margin:0 auto;border-radius:24px;border:1px solid #d8e2ec;background:white;padding:clamp(28px,5vw,65px);box-shadow:0 28px 70px #1c314414}
+.auto-section-number{position:absolute;right:clamp(28px,5vw,65px);top:27px;color:#0f766e;font-size:.7rem;letter-spacing:.14em;font-weight:800}
+.auto-advisor-box .eyebrow{color:#0f766e}
+.auto-advisor-box h2{font-size:clamp(2rem,3.4vw,3.2rem);max-width:780px;color:#102235;line-height:1.14;margin:18px 0}
+.auto-advisor-box > p{max-width:770px;color:#40546a;font-size:1rem;line-height:1.75}
+.auto-advisor-form{margin-top:30px}
+.auto-advisor-form label{display:block;font-size:.94rem;font-weight:750;color:#17273c;margin:0 0 13px}
+.auto-advisor-form textarea{width:100%;min-height:164px;padding:21px 24px;border:2px solid #9cb3c5;border-radius:15px;color:#0f172a;background:#fbfdff;font-size:1rem;line-height:1.6;resize:vertical;transition:border-color .15s ease,box-shadow .15s ease}
+.auto-advisor-form textarea:focus{border-color:#0f766e;box-shadow:0 0 0 4px #0f766e20}
+.auto-advisor-form textarea::placeholder{color:#52677a;opacity:1}
+.auto-advisor-form #source-privacy{font-size:.8rem;margin:12px 0 19px}
+.auto-advisor-controls{display:flex;justify-content:flex-start}
+.auto-advisor-controls .button{background:#0f766e;color:#fff;min-width:290px}
+.auto-advisor-box > .micro:last-child{font-size:.78rem;border-top:1px solid #e2e8f0;padding-top:21px;margin-top:27px}
+.auto-risk-result{margin-top:30px;padding:26px;border:1px solid #cbd5e1;border-left:5px solid #eab308;border-radius:15px;background:#f8fafc;color:#17273c}
+.auto-risk-result[hidden]{display:none}
+.auto-risk-result h3{font-size:1.3rem;color:#0f172a}
+.auto-risk-result p,.auto-risk-result li{color:#334155}
+.auto-risk-result li{line-height:1.6;margin:9px 0}
+.auto-process{background:#fff;padding:clamp(65px,7vw,100px) 0}
+.auto-process .section-head{text-align:center;margin:0 auto 44px}
+.auto-process .section-head .eyebrow{color:#0f766e}
+.auto-process .section-head h2{color:#0f172a;font-size:clamp(2rem,3.5vw,3.2rem)}
+.auto-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.auto-steps article{background:#f6f9fc;border:1px solid #d7e1ea;border-radius:19px;padding:clamp(24px,3vw,38px);min-width:0;box-shadow:0 10px 25px #16263c08}
+.auto-steps article b{display:grid;place-items:center;width:49px;height:49px;border-radius:13px;background:#d4f1e8;color:#0d7669;font-weight:800}
+.auto-steps article h3{font-size:clamp(1.12rem,1.5vw,1.4rem);line-height:1.3;color:#142338;margin:22px 0 10px}
+.auto-steps article p{font-size:.92rem;line-height:1.75;color:#40546a;margin:0}
+.auto-inspection{background:#0f2434;padding:clamp(60px,6vw,94px) 0;scroll-margin-top:20px}
+.auto-inspection-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(240px,.7fr);gap:65px;align-items:center}
+.auto-inspection h2{font-size:clamp(2rem,3.2vw,3.2rem);line-height:1.15;color:#fff;max-width:770px}
+.auto-inspection p{font-size:1.03rem;line-height:1.75;color:#d4e0ea;max-width:800px}
+.auto-inspection .eyebrow{color:#9fe7dc}
+.auto-inspection .button{background:#facc15;color:#172033}
+.auto-contact-section{background:#fff;padding:clamp(72px,7vw,110px) 0}
+.auto-contact{text-align:center;max-width:900px}
+.auto-contact .eyebrow{color:#0f766e}
+.auto-contact h2{color:#0f172a;font-size:clamp(2.2rem,3.7vw,3.6rem);line-height:1.12;max-width:860px;margin:22px auto}
+.auto-contact p{color:#465a6e;max-width:700px;margin:0 auto;font-size:1.02rem}
+.auto-contact .button{margin-top:31px;background:#0f766e;color:#fff;font-size:1rem}
+.auto-storage{background:#edf3f8;border-top:1px solid #d6e1ea;padding:48px 0 65px}
+.auto-storage .eyebrow{color:#0f766e}
+.auto-storage h2{color:#17273c;font-size:clamp(1.5rem,2.4vw,2.05rem);margin:10px 0 23px}
+.auto-storage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.auto-storage-grid>div{border:1px solid #d3dee8;border-radius:14px;background:#fff;padding:22px}
+.auto-storage-grid strong{display:block;color:#17273c;font-size:.95rem;margin-bottom:10px}
+.auto-storage-grid p{font-size:.86rem;color:#52677a;margin:0 0 8px}
+.auto-storage-grid a{font-size:.85rem;font-weight:750;text-decoration:underline;color:#0f766e}
+@media(max-width:980px){.auto-hero-grid{grid-template-columns:1fr;gap:38px}.auto-hero-copy{max-width:800px}.auto-hero-panel{max-width:850px}.auto-inspection-grid{grid-template-columns:1fr;gap:24px}}
+@media(max-width:730px){.auto-hero{padding:48px 0 58px}.auto-hero h1{font-size:clamp(2.45rem,8.6vw,3.5rem)}.auto-benefits-inner{grid-template-columns:1fr;gap:10px;padding-block:22px}.auto-steps,.auto-storage-grid{grid-template-columns:1fr}.auto-process .section-head{text-align:left}.auto-inspection{padding-block:60px}.auto-advisor-box{padding:28px 23px}.auto-section-number{position:static;margin-bottom:16px}.auto-advisor-controls .button{width:100%;min-width:0}.auto-hero .actions{display:grid;grid-template-columns:1fr}.auto-hero .button{width:100%}.auto-contact .button{max-width:100%}}
+@media(prefers-reduced-motion:reduce){.auto-hero .button,.auto-advisor .button,.auto-inspection .button,.auto-contact .button{transition:none}}
 </style>
+
 <script>
   // Client-side guidance only: neither fetches third-party sites nor submits user data.
   const form = document.getElementById("universal-advisor-form") as HTMLFormElement | null;

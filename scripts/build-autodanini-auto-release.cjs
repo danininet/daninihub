@@ -306,6 +306,27 @@ for(const locale of ['sr','de']){
       (full,quote,url)=>'url('+quote+'/'+url+quote+')');
   localized=localized.replace('</head>',
     '<script>try{localStorage.setItem("autodanini-language","'+locale+'")}catch(_){}</script></head>');
+  // These are the actual Cloudflare static assets for /de/ and /sr/.
+  // Apply DANINI umbrella UI here, not only to the separate Astro layout.
+  localized=localized.replace(
+    '<span class="brand-lockup"><strong>AutoDanini</strong><small>by DANINI · DE ↔ BALKAN</small></span>',
+    '<span class="brand-lockup"><strong>DANINI</strong><small>AUTO · DIGITAL · AI</small></span>'
+  );
+  const darkTechStyle=`<style id="danini-dark-tech">
+  :root{color-scheme:dark;--dn-bg:#0a0e14;--dn-surface:#131b27;--dn-text:#f3f6fa;--dn-muted:#b8c6d7;--dn-border:#354458;--dn-mint:#64e8ce;--dn-amber:#ffbf69;--dn-critical:#ff747d}
+  body[data-page="index"]{font-family:Inter,system-ui,sans-serif;background:var(--dn-bg);color:var(--dn-text)}
+  body[data-page="index"] header,body[data-page="index"] footer{background:var(--dn-surface);color:var(--dn-text);border-color:var(--dn-border)}
+  body[data-page="index"] header a,body[data-page="index"] header strong,body[data-page="index"] header small{color:var(--dn-text)}
+  body[data-page="index"] header small{color:var(--dn-mint)}
+  body[data-page="index"] :is(section,article,aside){border-color:var(--dn-border)}
+  body[data-page="index"] :is(a,button,input,select):focus-visible{outline:3px solid var(--dn-mint);outline-offset:3px}
+  body[data-page="index"] .hero{background-color:var(--dn-bg)}
+  body[data-page="index"] .hero .wrap{color:var(--dn-text)}
+  </style><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">`;
+  localized=localized.replace('</head>',darkTechStyle+'</head>');
+  localized=localized.replace('<meta name="theme-color" content="#111820">','<meta name="theme-color" content="#0A0E14">');
+  if(!localized.includes('AUTO · DIGITAL · AI')||!localized.includes('danini-dark-tech'))
+    throw Error('DANINI_DARK_TECH_LOCALE_MISSING '+locale);
   // /sr/ duplicates the root SR landing page and stays canonical to '/'.
   // /de/ is a distinct indexed entrypoint with its own canonical URL.
   if(locale==='de'){
@@ -325,6 +346,8 @@ for(const locale of ['sr','de']){
      !localized.includes('/assets/'))
     throw Error('AUTODANINI_LOCALE_BUILD_INVALID '+locale);
 }
+// Preview-only bilingual DANINI advisor routes; no live AI or lead submission.
+require('./danini-advisor-pages.cjs').writeAdvisorPages(out);
 fs.writeFileSync(path.join(out,'AUTODANINI_RELEASE_INFO.json'),
  JSON.stringify({site:'AutoDanini',source:'vendored-reviewed-v12-20261022',pages:pages.length,
   releaseMode:'public-visual-only',accounts:false,admin:false,payments:false,ai:false},null,2)+'\n');

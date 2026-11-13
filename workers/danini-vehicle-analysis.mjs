@@ -11,7 +11,6 @@ const question={
 };
 function extract(text){
  const match=(re)=>text.match(re)?.[1]?.trim()||null;
- const price=match(/(?:€\s*|EUR\s*)([\d.,\s]{3,14})\b|/i); // overwritten by two unambiguous alternatives
  const rawPrice=match(/(?:€|EUR)\s*([\d.,]{3,14})\b/i)||match(/\b([\d.,]{3,14})\s*(?:€|EUR)\b/i);
  const km=match(/\b([\d.,]{2,12})\s*km\b/i);
  const year=match(/(?:baujahr|erstzulassung|ez|godište|godina|year)\s*[:\-]?\s*((?:19|20)\d{2})\b/i);

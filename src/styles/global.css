@@ -586,3 +586,23 @@ footer .micro {
   .workflow-preview { gap:.4rem; }
   .workflow-preview span:nth-child(odd) { padding:.5rem .65rem; font-size:.66rem; }
 }
+
+.clarity-section { padding:4rem 0; background:#101f35; }
+.clarity-shell { padding:clamp(1.5rem,4vw,3.4rem); background:#fff; border-radius:18px; box-shadow:0 24px 65px #00000022; }
+.clarity-heading { max-width:790px; }
+.clarity-heading h2 { font-size:clamp(1.8rem,3.1vw,2.8rem); margin:.6rem 0; }
+.clarity-heading p { margin:0 0 2rem; }
+.clarity-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.2rem; }
+.clarity-form label { display:flex; flex-direction:column; gap:.6rem; font-weight:650; font-size:.9rem; }
+.clarity-form label:nth-child(3) { grid-column:1/-1; }
+.clarity-form textarea { min-height:100px; }
+.clarity-form > .button { justify-self:start; }
+.clarity-result { grid-column:1/-1; border:1px solid #e5c748; background:#fffae7; border-radius:12px; padding:1.2rem; }
+.clarity-result[hidden] { display:none; }
+.clarity-result p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.clarity-result .button { background:transparent; border-color:#8c781c; }
+@media (max-width:680px) {
+ .clarity-section { padding:2rem 0; }
+ .clarity-form { grid-template-columns:1fr; }
+ .clarity-form > .button { justify-self:stretch; }
+}

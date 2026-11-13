@@ -1,14 +1,14 @@
 # DANINI B2B implementation — 13 November 2026
 
-**Decision: NOT READY for production.** Isolated implementation for review. No production deployment, DNS change, payment or live database migration has been performed.
+**Current status (13 November 2026 evening): B2B intake is NOT YET ENABLED in production.** Production and staging Workers, workflows, D1 and R2 bindings exist. The additive B2B schema was subsequently applied to the production commerce database after a Cloudflare D1 SQL export. Existing payment and legacy intake remain separate. No DNS or payment changes were made during this database activation step.
 
 ## Baseline verified
 
 - Main commit: `e0e0cecf611952dd0ec621968132c575c1a791e2`.
 - Production account: `c7c8ad399f1e851d1c3a8be34e66f822`; Worker `autodanini` and route-overlay Worker `danini-master-page`. The other account named Danini has no Workers or D1 databases.
 - Existing D1 `danini-commerce` is in EU jurisdiction. Read-only schema inspection found `danini_digital_files`, `danini_digital_orders`, `danini_digital_pdf_chunks`; new migration does not modify those tables.
-- R2 API returned error 10042: enable R2 through the dashboard. R2 was not activated; billing approval was not assumed.
-- No existing Workflows found in the production account.
+- Updated 13 November: R2 bucket `danini-b2b-private` now exists and both Workers have DOCUMENTS bindings. This supersedes the earlier R2-disabled observation.
+- Updated 13 November: Workflows `danini-intake-production` (Worker `autodanini`) and `danini-intake-staging` (Worker `danini-b2b-staging`) exist. Both showed zero instances at inspection.
 - Brevo: domain authenticated and verified; eight active senders, including `info@daninihub.com`. Sender verification is not proof of mailbox reception or delivery.
 - Cloudflare Email Routing is enabled and synced. Eight business addresses, including `info@daninihub.com`, forward to the owner Gmail address. Real receipt and reply for the new B2B flow remain unverified; configured forwarding is not proof of delivery.
 
@@ -27,6 +27,15 @@
 - Nine reviewed legacy redirects, locale/canonical metadata, sitemap and security headers.
 - Dependency remediation: body-parser 2.4.0 and qs 6.17.1 after confirmed advisories. Cookie 2.0.2 is a direct development dependency to prevent Astro build resolving Express's older cookie API.
 
+## Production schema update (13 November 2026 evening)
+
+- Cloudflare D1 export reported `complete` with bookmark `00000016-00000000-00005122-94d195425a0b9f20ba035db3d8c970e1` before database changes. The export URL is short-lived; retain an independently stored backup before any additional high-risk migration.
+- Applied 20 additive schema statements from `migrations/2026-11-13-b2b-platform.sql` to production D1 `danini-commerce` via Cloudflare API; all reported success.
+- Read-only verification confirms `cases`, `mail_outbox`, `workflow_events`, `audit_logs`, and `rate_buckets` as well as existing `danini_digital_orders`.
+- `B2B_ACTIVE` is still false in both Workers. New production B2B intake is not yet live, and no real test request or e-mail was sent in this update.
+- Existing Brevo integration in production has `BREVO_API_KEY` configured as a Worker secret. Staging lacks this binding. Do not interpret this as a missing account-wide Brevo key.
+- Pending production prerequisites: dedicated director/review credential with recoverable secure operator storage, `TOKEN_SECRET`, `RATE_SECRET`, `DIRECTOR_HMAC_SECRET`, live E2E validation and controlled enablement.
+
 ## Validation
 
 | Check | Status | Evidence/limit |
@@ -42,7 +51,7 @@
 | Query plans | PASS | Expiry, case-file and request-key lookups use indexes |
 | Static SEO/link audit | PASS | 16 B2B pages; 9 redirect targets; isolated legal drafts |
 | Browser/Lighthouse | PASS in GitHub CI | Run [43415191389](https://github.com/danininet/daninihub/actions/runs/43415191389) completed successfully against local Wrangler: desktop/mobile DE/SR, no overflow or browser console errors. Lighthouse category scores: performance 100, accessibility 100, best practices 100, SEO 100, agentic browsing 100. A nonweighted brand-label finding was subsequently corrected by using its visible text as the accessible name. Scores describe this test build, not production or a complete accessibility certification. |
-| Real Cloudflare Workflow | BLOCKED | R2 inactive and no isolated staging bindings/secrets |
+| Real Cloudflare Workflow | PARTIAL | R2, D1 and Workflow bindings exist. Both B2B_ACTIVE flags are false; staging lacks BREVO_API_KEY, production lacks TOKEN_SECRET, RATE_SECRET and DIRECTOR_HMAC_SECRET. No Workflow executions verified. |
 | End-to-end B2B Turnstile/Brevo | BLOCKED | Requires staging host and configured Turnstile; previous legacy delivery not repeated |
 | Paid AI | BLOCKED | EU endpoint, DPA, provider, model and budget unapproved |
 | Legal release | BLOCKED | Current identity/business status, service address and processor contracts need verification |
@@ -61,7 +70,7 @@ GitHub Actions also confirmed the local Worker health endpoint and a 503 respons
 
 ## Release requirements
 
-- Confirm R2 activation/billing terms; provision private EU bucket and separate staging D1/KV/Workflow, with no production data copied into staging.
+- DONE: R2 private bucket, staging D1 and production/staging Workflows exist. Confirm jurisdiction/retention and avoid copying production data into staging.
 - Supply staging secrets via secure provider settings: Turnstile, Brevo sender/reply-to, dedicated HMAC and token/rate secrets. Never commit secrets.
 - Generate the reviewed config using `scripts/prepare-b2b-config.mjs`; it rejects the production D1 for staging. Keep `B2B_ACTIVE=false` until checks pass.
 - Confirm business identity/address, appropriate service boundaries and processing contracts. Resolve legal placeholders before release.

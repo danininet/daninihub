@@ -3,9 +3,12 @@ on:
   pull_request:
     paths:
       - 'workers/danini-vehicle-analysis.mjs'
+      - 'workers/danini-vehicle-ai.mjs'
       - 'workers/danini-intake.mjs'
       - 'public/danini-advisor-client.js'
       - 'tests/b2b/vehicle-analysis.test.mjs'
+      - 'tests/b2b/vehicle-ai.test.mjs'
+      - 'wrangler.jsonc'
       - '.github/workflows/vehicle-analysis-qa.yml'
   workflow_dispatch:
 permissions:
@@ -22,7 +25,8 @@ jobs:
       - name: Syntax check
         run: |
           node --check workers/danini-vehicle-analysis.mjs
+          node --check workers/danini-vehicle-ai.mjs
           node --check workers/danini-intake.mjs
           node --check public/danini-advisor-client.js
       - name: Mocked no-email/no-paid-AI unit tests
-        run: node --test tests/b2b/vehicle-analysis.test.mjs tests/b2b/ai-intake.test.mjs
+        run: node --test tests/b2b/vehicle-analysis.test.mjs tests/b2b/vehicle-ai.test.mjs tests/b2b/ai-intake.test.mjs

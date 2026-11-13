@@ -34,7 +34,7 @@ try {
       const rgb=(selector)=>{
         const el=document.querySelector(selector);
         if(!el)throw Error('Missing contrast probe '+selector);
-        const m=getComputedStyle(el).color.match(/\\d+(?:\\.\\d+)?/g);
+        const m=getComputedStyle(el).color.match(/\d+(?:\.\d+)?/g);
         return m?.slice(0,3).map(Number) || [];
       };
       return {
@@ -59,7 +59,7 @@ try {
     assert.equal(await page.locator('#listing').inputValue(),example.value,'source handoff lost data');
     const advisorContrast=await page.evaluate(()=>{
       return ['.advisor-page h1','.advisor-panel h2','.advisor-question h3'].map(sel=>{
-        const m=getComputedStyle(document.querySelector(sel)).color.match(/\\d+(?:\\.\\d+)?/g);
+        const m=getComputedStyle(document.querySelector(sel)).color.match(/\d+(?:\.\d+)?/g);
         return m?.slice(0,3).map(Number)||[];
       });
     });

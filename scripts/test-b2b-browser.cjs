@@ -12,6 +12,9 @@ const fs = require("fs");
     const page = await browser.newPage({ viewport: { width, height: 1000 } });
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
     await page.route("**/api/tenant-config", (route) =>
       route.fulfill({ json: { enabled: false } }),
     );
@@ -19,6 +22,10 @@ const fs = require("fs");
       await page.goto(`http://127.0.0.1:4321/${locale}/`, {
         waitUntil: "networkidle",
       });
+      await page.waitForFunction(
+        () => document.querySelector("#form-status")?.textContent,
+        { timeout: 10000 },
+      );
       await page.screenshot({
         path: `outputs/b2b/${locale}-${width}.png`,
         fullPage: true,

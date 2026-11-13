@@ -70,17 +70,18 @@ for (const name of pages) {
   );
   fs.writeFileSync(path.join(auto, name), html);
 }
-const routes = {
-  "/buyers.html": "/auto/buyers/",
-  "/business.html": "/de/",
-  "/exclusive.html": "/auto/exclusive/",
-  "/about.html": "/auto/about/",
-  "/inspection": "/auto/inspection/",
-  "/import": "/auto/import/",
-  "/sr/kalkulator": "/auto/import/",
-  "/sr/pregled-auta": "/auto/inspection/",
-  "/sr/dovoz-auta": "/auto/delivery/",
-};
+const redirectSource = fs
+  .readFileSync("public/_redirects", "utf8")
+  .trim()
+  .split("\n");
+const routes = Object.fromEntries(
+  redirectSource.map((line) => {
+    const [from, to, status] = line.trim().split(/\s+/);
+    if (status !== "301" || !from.startsWith("/") || !to.startsWith("/"))
+      throw Error("Invalid redirect " + line);
+    return [from, to];
+  }),
+);
 for (const target of Object.values(routes)) {
   const file = path.join(dest, target.replace(/\/$/, ".html"));
   const index = path.join(dest, target, "index.html");

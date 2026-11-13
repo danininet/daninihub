@@ -54,6 +54,23 @@ const c = content[locale];
         maxlength="4000"
       ></textarea>
     </label>
+    <label class="field full">
+      {locale === "de"
+        ? "Textunterlagen (optional)"
+        : "Tekstualna dokumentacija (opciono)"}
+      <input
+        id="attachments"
+        type="file"
+        accept=".txt,text/plain"
+        multiple
+        aria-describedby="upload-help"
+      />
+      <span class="micro" id="upload-help">
+        {locale === "de"
+          ? "Bis zu 2 UTF-8-Textdateien, je 32 KB. Keine Ausweise oder sensiblen Personaldaten. PDF/Office-Dateien werden nicht angenommen."
+          : "Do 2 UTF-8 tekstualne datoteke, svaka do 32 KB. Bez ličnih dokumenata i osetljivih podataka. PDF/Office datoteke se ne prihvataju."}
+      </span>
+    </label>
     <p class="notice full">{c.notice}</p>
     <label class="check full">
       <input name="consent" type="checkbox" required />

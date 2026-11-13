@@ -5,6 +5,9 @@ function dbAdapter() {
   db.exec(fs.readFileSync("migrations/2026-11-13-b2b-platform.sql", "utf8"));
   return {
     db,
+    async batch(statements) {
+      return Promise.all(statements.map((statement) => statement.run()));
+    },
     prepare(sql) {
       return {
         bind(...args) {

@@ -227,3 +227,78 @@ test("expiry and case lookup use indexes", () => {
     );
   }
 });
+
+test("plain-text attachments are stored privately and workflow events are recorded", async () => {
+  const e = env(),
+    old = globalThis.fetch;
+  try {
+    globalThis.fetch = captcha;
+    const result = await (
+      await intake(
+        req({
+          ...valid(),
+          files: [
+            {
+              name: "product.txt",
+              type: "text/plain",
+              data: "Product material: steel",
+            },
+          ],
+        }),
+        e,
+      )
+    ).json();
+    const stored = await e.DOCUMENTS.get(`cases/${result.caseId}/intake.json`);
+    assert.equal(
+      (await stored.json()).files[0].data,
+      "Product material: steel",
+    );
+    assert.equal(
+      e.DANINI_DB.db.prepare("SELECT count(*) AS n FROM workflow_events").get()
+        .n,
+      1,
+    );
+  } finally {
+    globalThis.fetch = old;
+  }
+});
+test("forged director signature is rejected before decision", async () => {
+  const e = env();
+  const id = crypto.randomUUID();
+  const request = new Request("https://danini.test/portal/approve/" + id, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-danini-timestamp": String(Math.floor(Date.now() / 1000)),
+      "x-danini-nonce": "forged-nonce-1234567890",
+      "x-danini-signature": "0".repeat(64),
+    },
+    body: JSON.stringify({ decision: "approve", draftHash: "a".repeat(64) }),
+  });
+  await assert.rejects(approve(request, e, id), (x) => x.status === 401);
+});
+test("expired case capability cannot retrieve status", async () => {
+  const e = env(),
+    old = globalThis.fetch;
+  try {
+    globalThis.fetch = captcha;
+    const c = await (await intake(req(), e)).json();
+    e.DANINI_DB.db
+      .prepare("UPDATE cases SET expires_at=0 WHERE id=?")
+      .run(c.caseId);
+    assert.equal(
+      (
+        await caseStatus(
+          new Request("https://danini.test", {
+            headers: { authorization: "Bearer " + c.accessToken },
+          }),
+          e,
+          c.caseId,
+        )
+      ).status,
+      404,
+    );
+  } finally {
+    globalThis.fetch = old;
+  }
+});

@@ -33,9 +33,19 @@ export async function audit(
   action: string,
   actor = "system",
 ) {
-  await env.DANINI_DB.prepare("INSERT INTO audit_logs VALUES (?,?,?,?,?)")
-    .bind(crypto.randomUUID(), id, action, actor, Math.floor(Date.now() / 1000))
-    .run();
+  const now = Math.floor(Date.now() / 1000);
+  await env.DANINI_DB.batch([
+    env.DANINI_DB.prepare("INSERT INTO audit_logs VALUES (?,?,?,?,?)").bind(
+      crypto.randomUUID(),
+      id,
+      action,
+      actor,
+      now,
+    ),
+    env.DANINI_DB.prepare(
+      "INSERT OR IGNORE INTO workflow_events VALUES (?,?,?,?,?)",
+    ).bind(`${id}:${action}`, id, action, "recorded", now),
+  ]);
 }
 export async function intake(request: Request, env: Env) {
   if (!ready(env)) return json({ error: "not_configured" }, 503);
@@ -100,7 +110,7 @@ export async function intake(request: Request, env: Env) {
       "DN-" +
       new Date().toISOString().slice(0, 10).replaceAll("-", "") +
       "-" +
-      id.slice(0, 8).toUpperCase();
+      id.replaceAll("-", "").slice(0, 12).toUpperCase();
     const days = Number(env.RETENTION_DAYS || 30);
     if (!Number.isInteger(days) || days < 1 || days > 90)
       throw new HttpError(503, "retention_not_configured");

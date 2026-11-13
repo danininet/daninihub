@@ -51,6 +51,30 @@ if (form) {
     const values = Object.fromEntries(new FormData(form!));
     status.textContent = de ? "Wird sicher übertragen …" : "Bezbedno slanje …";
     try {
+      const selected = Array.from(
+        form!.querySelector<HTMLInputElement>("#attachments")?.files || [],
+      );
+      if (
+        selected.length > 2 ||
+        selected.some(
+          (file) =>
+            file.size > 32000 || !file.name.toLowerCase().endsWith(".txt"),
+        )
+      ) {
+        status.textContent = de
+          ? "Bitte höchstens zwei .txt-Dateien mit jeweils bis zu 32 KB wählen."
+          : "Izaberite najviše dve .txt datoteke do 32 KB svaka.";
+        return;
+      }
+      const files = await Promise.all(
+        selected.map(async (file) => ({
+          name: file.name,
+          type: "text/plain",
+          data: new TextDecoder("utf-8", { fatal: true }).decode(
+            await file.arrayBuffer(),
+          ),
+        })),
+      );
       const r = await fetch("/api/intake", {
         method: "POST",
         headers: {
@@ -59,6 +83,7 @@ if (form) {
         },
         body: JSON.stringify({
           ...values,
+          files,
           consent: true,
           language: de ? "de" : "sr",
           turnstileToken: window.turnstile.getResponse(widget),

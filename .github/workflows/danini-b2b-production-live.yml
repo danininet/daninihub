@@ -26,6 +26,16 @@ jobs:
             assert.equal(r.status,200, path+': '+t.slice(0,180));
             return t;
           }
+          for (const p of ['/', '/de/', '/sr/']) {
+            const html=await get(p);
+            assert.match(html,/CBAM/i,p+' must show new B2B homepage');
+            assert.match(html,/Nearshoring/i,p+' must show B2B navigation');
+            assert.match(html,/<html lang="(de|sr)"/i,p+' must be localized');
+          }
+          const sitemap=await fetch(origin+'/sitemap.xml',{signal:AbortSignal.timeout(20000)});
+          assert.equal(sitemap.status,200,'new sitemap live');
+          const sitemapXml=await sitemap.text();
+          assert.match(sitemapXml,/\/de\/cbam\//,'sitemap B2B route');
           for(const p of ['/de/cbam/','/de/subcontractor/','/de/nearshoring/','/sr/cbam/','/de/impressum/','/de/datenschutz/','/de/agb/','/auto/']){
             assert.match(await get(p),/DANINI/i,p+' branded HTML');
           }

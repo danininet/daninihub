@@ -25,7 +25,7 @@ for (const locale of locales)
     );
     // A muted "Aukcije (Uskoro)" label is allowed; linking buyers to unfinished auction/tender services is not.
     assert.ok(!/wa\.me|Informativni pilot/.test(html), file);
-    assert.ok(!/<a\\b[^>]*href=["'][^"']*\\/(?:auctions|tender)(?:\\.html|\\/)/i.test(html), file);
+    assert.ok(!/<a\b[^>]*href=["'][^"']*\/(?:auctions|tender)(?:\.html|\/)/i.test(html), file);
     for (const m of html.matchAll(
       /(?:href|src)="(\/[^"#?]*)(?:[?#][^"]*)?"/g,
     )) {

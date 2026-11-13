@@ -606,3 +606,67 @@ footer .micro {
  .clarity-form { grid-template-columns:1fr; }
  .clarity-form > .button { justify-self:stretch; }
 }
+
+/* DANINI Dark Tech UI — scoped global design tokens, SR/DE */
+:root {
+  color-scheme: dark;
+  --danini-bg: #0a0e14;
+  --danini-surface: #131b27;
+  --danini-elevated: #1b2635;
+  --danini-border: #354458;
+  --danini-text: #f3f6fa;
+  --danini-muted: #b8c6d7;
+  --danini-mint: #64e8ce;
+  --danini-amber: #ffbf69;
+  --danini-critical: #ff747d;
+  --ink: var(--danini-bg);
+  color: var(--danini-text);
+  background: var(--danini-bg);
+  font-family: "Inter Variable", Inter, system-ui, sans-serif;
+}
+body { background: var(--danini-bg); color: var(--danini-text); }
+p, .micro, .number, .eyebrow, .card p, .card ul, .step p, .strip .wrap { color: var(--danini-muted); }
+header, .section.white, .card, .method-step, .master-panel, .form, .clarity-shell {
+  background: var(--danini-surface);
+  color: var(--danini-text);
+  border-color: var(--danini-border);
+}
+header { border-bottom: 1px solid var(--danini-border); }
+.brand small { color: var(--danini-muted); letter-spacing: .08em; }
+.mark { background: var(--danini-elevated); color: var(--danini-mint); border: 1px solid var(--danini-border); }
+.lang { border-left-color: var(--danini-border); }
+.lang a { padding: .35rem .5rem; border-radius: .4rem; }
+.lang [aria-current] { background: var(--danini-elevated); color: var(--danini-mint); text-decoration: none; }
+.lang a:hover, .business-nav a:hover { color: var(--danini-mint); }
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--danini-mint);
+  outline-offset: 3px;
+}
+.accent, .visual-row b, .visual-agent-label { color: var(--danini-mint); }
+.button { background: var(--danini-mint); color: var(--danini-bg); }
+.button.secondary { color: var(--danini-text); border-color: var(--danini-border); }
+.button:disabled { cursor: not-allowed; }
+.visual, .hero .visual, .dark, .clarity-section, footer {
+  background: var(--danini-surface);
+  color: var(--danini-text);
+  border-color: var(--danini-border);
+}
+.visual .bridge span:after { background: var(--danini-surface); color: var(--danini-mint); }
+.strip, .auto-banner { border-color: var(--danini-border); }
+.master-teaser, .master-intro { background: var(--danini-elevated); border-color: var(--danini-border); }
+.method-step span { background: var(--danini-mint); color: var(--danini-bg); }
+.pill, .card, .method-step, .master-panel { border-color: var(--danini-border); }
+.card:hover { border-color: var(--danini-mint); }
+.form, .clarity-shell { box-shadow: none; }
+input, select, textarea {
+  background: var(--danini-bg);
+  color: var(--danini-text);
+  border-color: var(--danini-border);
+}
+input::placeholder, textarea::placeholder { color: var(--danini-muted); }
+.notice, .clarity-result { background: var(--danini-elevated); color: var(--danini-text); border-color: var(--danini-border); }
+.clarity-result p, .clarity-heading p { color: var(--danini-muted); }
+.clarity-result .button { color: var(--danini-text); border-color: var(--danini-mint); }
+.draft { background: #48331d; color: #ffe5bd; }
+:root { --status-confirmed: var(--danini-mint); --status-warning: var(--danini-amber); --status-critical: var(--danini-critical); }

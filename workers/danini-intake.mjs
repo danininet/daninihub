@@ -172,7 +172,7 @@ export async function handleAiIntake(request,env={}){
  const reference='DN-AI-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+crypto.randomUUID().slice(0,8).toUpperCase();
  const email={
   sender:sender(env),
-  to:[{email:'kontakt@daninihub.com'}],
+  to:[{email:env.DANINI_NOTIFY_TO}],
   replyTo:{email:data.email,name:data.name},
   subject:'DANINI AI / Fahrzeugprüfung / '+reference,
   textContent:aiReport(data,reference),

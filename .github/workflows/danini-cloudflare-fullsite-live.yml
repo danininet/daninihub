@@ -1,4 +1,5 @@
 name: DANINI Cloudflare full-site live QA
+# B2B cutover: verify current production and historic SEO redirects.
 on:
   push:
     branches: [main]

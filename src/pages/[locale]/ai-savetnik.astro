@@ -1,0 +1,26 @@
+---
+import Base from "../../layouts/Base.astro";
+const locale = Astro.params.locale as "de" | "sr";
+export function getStaticPaths() {
+  return ["de", "sr"].map((locale) => ({ params: { locale } }));
+}
+const de = locale === "de";
+---
+<Base
+  locale={locale}
+  slug="ai-savetnik"
+  title={de ? "KI-Berater — Fahrzeugprüfung vorbereiten" : "AI Savetnik — priprema provere vozila"}
+  description={de ? "Bereiten Sie Ihre Anfrage zur Fahrzeugprüfung vor." : "Pripremite upit za proveru vozila."}
+>
+  <section class="section white">
+    <div class="wrap advisor-landing">
+      <span class="eyebrow">AUTODANINI / {de ? "KI-BERATER" : "AI SAVETNIK"}</span>
+      <h1>{de ? "Fahrzeugprüfung vorbereiten" : "Pripremite proveru vozila"}</h1>
+      <p>{de ? "Die automatische KI-Analyse aus PR #207 ist noch nicht veröffentlicht. Ihr Inserat oder Ihre FIN wurde mit diesem Schritt nicht analysiert oder versendet." : "Automatska AI analiza iz PR #207 još nije objavljena. Ovim korakom vaš oglas ili VIN nisu analizirani niti poslati."}</p>
+      <p>{de ? "Für eine persönliche Prüfung senden Sie bitte den Inseratslink und den Standort des Fahrzeugs an:" : "Za ličnu proveru pošaljite link oglasa i lokaciju vozila na:"}</p>
+      <a class="button" href="mailto:info@daninihub.com?subject=AutoDanini%20-%20Fahrzeugpruefung">info@daninihub.com</a>
+      <p><a href={`/${locale}/#ai-savetnik`}>{de ? "Zurück zur Startseite" : "Nazad na početnu"}</a></p>
+    </div>
+  </section>
+</Base>
+<style>.advisor-landing{max-width:850px}.advisor-landing p{font-size:1.05rem}.advisor-landing a:not(.button){text-decoration:underline}</style>

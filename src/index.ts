@@ -16,7 +16,7 @@ export default {
       p = url.pathname;
     try {
       if (p === "/api/health" && request.method === "GET")
-        return json({ service: "danini-b2b", enabled: ready(env) });
+        return json({ status: "ok" }, 200);
       if (p === "/api/tenant-config" && request.method === "GET")
         return json({
           name: "DANINI",

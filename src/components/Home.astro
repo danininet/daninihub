@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Intake from "./Intake.astro";
+import ClarityCheck from "./ClarityCheck.astro";
 import { content, type Locale } from "../lib/content";
 const { locale = "de" } = Astro.props as { locale: Locale };
 const c = content[locale];
@@ -184,6 +185,7 @@ const c = content[locale];
       </div>
     </div>
   </section>
+  <ClarityCheck locale={locale} />
   <section class="section" id="contact">
     <div class="wrap two-col">
       <div>

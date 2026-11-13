@@ -67,6 +67,29 @@
   input.addEventListener('input', () => {
     el('vehicle-identifier').textContent = (input.value.trim().slice(0,180) || '—');
   });
+  // The handoff sets textarea.value programmatically; dispatch input so previews update.
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  const costs = ['cost-price','cost-transport','cost-fees','cost-check'].map(el);
+  const total = el('cost-total');
+  if (total && costs.every(Boolean)) {
+    const numberFormat = new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'sr-RS', { style:'currency', currency:'EUR' });
+    const recalculate = () => {
+      const values = costs.map(field => field.value.trim());
+      if (values.every(value => value === '')) {
+        total.textContent = lang === 'de' ? 'Beträge eingeben' : 'Unesite iznose';
+        return;
+      }
+      const nums = values.map(value => value === '' ? 0 : Number(value));
+      if (nums.some(n => !Number.isFinite(n) || n < 0 || n > 10000000)) {
+        total.textContent = lang === 'de' ? 'Ungültiger Betrag' : 'Neispravan iznos';
+        return;
+      }
+      const cents = nums.reduce((sum,n) => sum + Math.round(n * 100), 0);
+      total.textContent = (lang === 'de' ? 'Zwischensumme: ' : 'Zbir poznatih troškova: ') + numberFormat.format(cents / 100);
+    };
+    costs.forEach(field => field.addEventListener('input', recalculate));
+    recalculate();
+  }
   update();
   const validSource = value => {
     const v = value.trim();

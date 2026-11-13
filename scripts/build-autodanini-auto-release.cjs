@@ -346,6 +346,8 @@ for(const locale of ['sr','de']){
      !localized.includes('/assets/'))
     throw Error('AUTODANINI_LOCALE_BUILD_INVALID '+locale);
 }
+// Preview-only bilingual DANINI advisor routes; no live AI or lead submission.
+require('./danini-advisor-pages.cjs').writeAdvisorPages(out);
 fs.writeFileSync(path.join(out,'AUTODANINI_RELEASE_INFO.json'),
  JSON.stringify({site:'AutoDanini',source:'vendored-reviewed-v12-20261022',pages:pages.length,
   releaseMode:'public-visual-only',accounts:false,admin:false,payments:false,ai:false},null,2)+'\n');

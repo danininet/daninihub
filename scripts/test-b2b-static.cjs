@@ -57,7 +57,7 @@ const redirects = fs
   .trim()
   .split("\n")
   .map((line) => line.split(/\s+/));
-assert.equal(redirects.length, 9);
+assert.equal(redirects.length, 11);
 const map = new Map(redirects.map(([a, b]) => [a, b]));
 for (const [from, to, status] of redirects) {
   assert.equal(status, "301");
@@ -65,5 +65,5 @@ for (const [from, to, status] of redirects) {
   assert.ok(!map.has(to), "redirect chain " + from);
 }
 console.log(
-  `PASS ${count} B2B pages, language/SEO/local links, 9 redirects, published DE legal and SR draft isolation.`,
+  `PASS ${count} B2B pages, language/SEO/local links, 11 redirects, published DE legal and SR draft isolation.`,
 );

@@ -48,7 +48,8 @@ for (const locale of locales)
       "agb",
       "ai-transparenz",
     ].includes(slug);
-    assert.equal(html.includes("noindex,follow"), legal, file);
+    const shouldNoindex = slug === "ai-transparenz" || (legal && locale === "sr");
+    assert.equal(html.includes("noindex,follow"), shouldNoindex, file);
     count++;
   }
 const redirects = fs
@@ -64,5 +65,5 @@ for (const [from, to, status] of redirects) {
   assert.ok(!map.has(to), "redirect chain " + from);
 }
 console.log(
-  `PASS ${count} B2B pages, language/SEO/local links, 9 redirects, legal draft isolation.`,
+  `PASS ${count} B2B pages, language/SEO/local links, 9 redirects, published DE legal and SR draft isolation.`,
 );

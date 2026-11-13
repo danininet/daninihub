@@ -1,0 +1,10 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": ["src/**/*.ts", "src/**/*.astro", ".astro/types.d.ts"],
+  "exclude": ["dist", "node_modules", "autodanini"],
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types"],
+    "allowJs": true,
+    "checkJs": false
+  }
+}

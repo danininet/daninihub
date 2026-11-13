@@ -1,0 +1,40 @@
+---
+import Base from "../../layouts/Base.astro";
+import { content, verticals, type Locale } from "../../lib/content";
+export function getStaticPaths() {
+  return ["de", "sr"].flatMap((locale) =>
+    verticals.map((vertical) => ({ params: { locale, vertical } })),
+  );
+}
+const locale = Astro.params.locale as Locale;
+const c = content[locale];
+const card = c.cards.find((v) => v.id === Astro.params.vertical)!;
+---
+
+<Base locale={locale} title={card.title} description={card.text} slug={card.id}>
+  <section class="section">
+    <div class="wrap detail">
+      <span class="eyebrow">DANINI / {card.num}</span>
+      <h1>{card.title}</h1>
+      <p class="intro">{card.text}</p>
+      <h2>{locale === "de" ? "Was Sie erhalten" : "Šta dobijate"}</h2>
+      <p>{card.details}</p>
+      <ul>
+        {card.items.map((i) => (
+          <li>{i}</li>
+        ))}
+      </ul>
+      <p class="notice">{c.boundary}</p>
+      <div class="actions">
+        <a class="button" href={`/${locale}/#contact`}>
+          {c.cta} ↗
+        </a>
+      </div>
+      <p>
+        {locale === "de"
+          ? "Umfang, Bearbeitungszeit und Preis werden vor einer Beauftragung schriftlich vereinbart."
+          : "Obim, rok obrade i cena dogovaraju se pisanim putem pre angažovanja."}
+      </p>
+    </div>
+  </section>
+</Base>

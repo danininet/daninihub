@@ -1,0 +1,106 @@
+---
+import "../styles/global.css";
+import type { Locale } from "../lib/content";
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  slug?: string;
+  noindex?: boolean;
+}
+const { title, description, locale, slug = "", noindex = false } = Astro.props;
+const canonical = new URL(
+  `/${locale}/${slug ? slug + "/" : ""}`,
+  "https://daninihub.com",
+);
+const isDe = locale === "de";
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title} | DANINI</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0F172A" />
+    <meta name="robots" content={noindex ? "noindex,follow" : "index,follow"} />
+    <link rel="canonical" href={canonical} />
+    {["de", "sr"].map((l) => (
+      <link
+        rel="alternate"
+        hreflang={l}
+        href={`https://daninihub.com/${l}/${slug ? slug + "/" : ""}`}
+      />
+    ))}
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={`https://daninihub.com/de/${slug ? slug + "/" : ""}`}
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={`${title} | DANINI`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={isDe ? "de_DE" : "sr_RS"} />
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      {isDe ? "Zum Inhalt" : "Pređi na sadržaj"}
+    </a>
+    <header>
+      <div class="wrap nav">
+        <a class="brand" href={`/${locale}/`} aria-label="DANINI">
+          <span class="mark" aria-hidden="true">
+            D
+          </span>
+          <span>
+            DANINI<small>DACH ↔ BALKAN</small>
+          </span>
+        </a>
+        <nav aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
+          <a href={`/${locale}/#services`}>{isDe ? "Leistungen" : "Usluge"}</a>
+          <a href={`/${locale}/#process`}>
+            {isDe ? "Arbeitsweise" : "Kako radimo"}
+          </a>
+          <a href="/auto/">AutoDanini ↗</a>
+        </nav>
+        <div class="lang">
+          {["de", "sr"].map((l) => (
+            <a
+              href={`/${l}/${slug ? slug + "/" : ""}`}
+              aria-current={l === locale ? "page" : undefined}
+            >
+              {l.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer>
+      <div class="wrap">
+        <div>
+          <b>DANINI</b>
+          <p class="micro">DACH ↔ BALKAN · © {new Date().getFullYear()}</p>
+        </div>
+        <nav
+          aria-label={isDe ? "Rechtliche Informationen" : "Pravne informacije"}
+        >
+          <a href={`/${locale}/impressum/`}>Impressum</a>
+          <a href={`/${locale}/datenschutz/`}>
+            {isDe ? "Datenschutz" : "Privatnost"}
+          </a>
+          <a href={`/${locale}/agb/`}>{isDe ? "AGB" : "Uslovi"}</a>
+          <a href={`/${locale}/ai-transparenz/`}>
+            {isDe ? "KI-Transparenz" : "AI transparentnost"}
+          </a>
+          <a href="mailto:kontakt@daninihub.com">kontakt@daninihub.com</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

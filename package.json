@@ -24,7 +24,12 @@
     "test:danini": "node scripts/test-danini-calculator.js",
     "test:ecosystem": "node scripts/test-danini-ecosystem.js",
     "test:digital": "node scripts/test-digital-delivery.js",
-    "diagnose:hostinger": "node scripts/diagnose-hostinger-config.cjs"
+    "diagnose:hostinger": "node scripts/diagnose-hostinger-config.cjs",
+    "build:b2b": "astro build",
+    "check:b2b": "astro check",
+    "test:b2b": "node --import tsx --test tests/b2b/*.test.mjs",
+    "dev:b2b": "astro dev --host 0.0.0.0",
+    "build:platform": "npm run build:auto-release && npm run build:b2b && node scripts/merge-platform-assets.cjs"
   },
   "keywords": [
     "vehicle-import",
@@ -40,7 +45,7 @@
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
     "@google/generative-ai": "^0.24.1",
-    "body-parser": "2.3.0",
+    "body-parser": "2.4.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -50,8 +55,22 @@
     "stripe": "^22.1.0"
   },
   "overrides": {
-    "body-parser": "2.3.0",
+    "body-parser": "2.4.0",
     "proxy-addr": "2.0.8",
-    "qs": "6.16.0"
+    "qs": "6.17.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@cloudflare/workers-types": "^5.20261113.1",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@playwright/test": "^1.65.0",
+    "astro": "^7.4.11",
+    "cookie": "^2.0.2",
+    "lighthouse": "^13.6.0",
+    "prettier": "^3.10.1",
+    "prettier-plugin-astro": "^1.1.2",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.161.0"
   }
 }

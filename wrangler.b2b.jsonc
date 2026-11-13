@@ -1,0 +1,44 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "danini-b2b-local",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-07",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/portal/*"],
+    "not_found_handling": "404-page",
+  },
+  "vars": {
+    "B2B_ACTIVE": "false",
+    "AI_ENABLED": "false",
+    "SITE_ORIGIN": "http://localhost:8787",
+    "RETENTION_DAYS": "30",
+  },
+  "d1_databases": [
+    {
+      "binding": "DANINI_DB",
+      "database_name": "danini-b2b-local",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "kv_namespaces": [
+    { "binding": "PARTNERS", "id": "00000000000000000000000000000000" },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "DOCUMENTS",
+      "bucket_name": "danini-b2b-local",
+      "jurisdiction": "eu",
+    },
+  ],
+  "workflows": [
+    {
+      "name": "danini-intake-local",
+      "binding": "INTAKE_WORKFLOW",
+      "class_name": "IntakeWorkflow",
+    },
+  ],
+  "triggers": { "crons": ["0 3 * * 0"] },
+}

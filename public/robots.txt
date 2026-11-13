@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /api/
+Disallow: /portal/
+Sitemap: https://daninihub.com/sitemap.xml

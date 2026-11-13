@@ -1,0 +1,85 @@
+---
+import type { Locale } from "../lib/content";
+const { locale } = Astro.props as { locale: Locale };
+const de = locale === "de";
+---
+<section class="clarity-section" id="klarheits-check">
+  <div class="wrap">
+    <div class="clarity-shell">
+      <div class="clarity-heading">
+        <span class="eyebrow">DANINI OS / {de ? "KLARHEITS-CHECK" : "PROVERA JASNOĆE"}</span>
+        <h2>{de ? "Drei Antworten. Ein sinnvoller nächster Schritt." : "Tri odgovora. Jasan sledeći korak."}</h2>
+        <p>{de ? "Ein einfacher, lokaler Vorbereitungsassistent: Er ordnet Ihr Anliegen und übernimmt Ihre Angaben in die geschützte Anfrage. Keine externe KI, keine Speicherung vor dem Absenden." : "Jednostavan pomoćnik radi u vašem pregledaču: razvrstava upit i prenosi podatke u zaštićenu formu. Bez spoljnog AI servisa i bez čuvanja pre slanja."}</p>
+      </div>
+      <form id="clarity-form" class="clarity-form" data-locale={locale}>
+        <label><span>01 / {de ? "Worum geht es?" : "Šta vam je potrebno?"}</span>
+          <select name="vertical" required>
+            <option value="">{de ? "Bitte wählen" : "Izaberite oblast"}</option>
+            <option value="cbam">{de ? "Daten für CBAM-Import vorbereiten" : "Pripremiti CBAM podatke"}</option>
+            <option value="subcontractor">{de ? "Unterlagen für Nachunternehmer" : "Pripremiti dokumentaciju podizvođača"}</option>
+            <option value="nearshoring">{de ? "Produktionspartner finden" : "Pronaći proizvodne partnere"}</option>
+          </select>
+        </label>
+        <label><span>02 / {de ? "In welchem Zielmarkt?" : "Na kom ciljnom tržištu?"}</span>
+          <select name="country" required>
+            <option value="DE">Deutschland / Nemačka</option>
+            <option value="AT">Österreich / Austrija</option>
+            <option value="CH">Schweiz / Švajcarska</option>
+          </select>
+        </label>
+        <label><span>03 / {de ? "Welches konkrete Ergebnis benötigen Sie?" : "Koji konkretan rezultat očekujete?"}</span>
+          <textarea name="goal" required minlength="15" maxlength="800" placeholder={de ? "Beispiel: Wir suchen zwei geprüfte Produktionskontakte und eine Übersicht offener Unterlagen." : "Primer: Potrebna su nam dva potencijalna proizvodna partnera i pregled dokumentacije koja nedostaje."}></textarea>
+        </label>
+        <button class="button" type="submit">{de ? "Anfrage vorbereiten" : "Pripremi upit"} ↗</button>
+        <div class="clarity-result" id="clarity-result" role="status" aria-live="polite" hidden>
+          <strong>{de ? "Vorbereitung abgeschlossen" : "Priprema završena"}</strong>
+          <p id="clarity-summary"></p>
+          <button class="button secondary" type="button" id="clarity-transfer">{de ? "In das Anfrageformular übernehmen" : "Prenesi u poslovni obrazac"} ↗</button>
+        </div>
+      </form>
+      <p class="micro">{de ? "Dieser Check erstellt keine behördliche Prüfung, keine Empfehlung eines zugelassenen Fachberaters und kein kostenpflichtiges Angebot." : "Ovaj alat ne izdaje službenu potvrdu, stručnu regulatornu procenu niti ponudu koja obavezuje na plaćanje."}</p>
+    </div>
+  </div>
+</section>
+<script>
+  const clarityForm = document.querySelector<HTMLFormElement>("#clarity-form");
+  const resultBox = document.querySelector<HTMLElement>("#clarity-result");
+  const summary = document.querySelector<HTMLElement>("#clarity-summary");
+  const transfer = document.querySelector<HTMLButtonElement>("#clarity-transfer");
+  if (clarityForm && resultBox && summary && transfer) {
+    const isDe = clarityForm.dataset.locale === "de";
+    const labels: Record<string, string> = isDe ? {
+      cbam: "CBAM-Vorprüfung", subcontractor: "Nachunternehmerunterlagen", nearshoring: "Produktionspartnersuche"
+    } : {
+      cbam: "Preliminarna CBAM provera", subcontractor: "Dokumentacija podizvođača", nearshoring: "Pronalazak proizvodnih partnera"
+    };
+    let saved: {vertical:string;country:string;goal:string} | null = null;
+    clarityForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!clarityForm.reportValidity()) return;
+      const values = new FormData(clarityForm);
+      const vertical = String(values.get("vertical") || "");
+      const country = String(values.get("country") || "");
+      const goal = String(values.get("goal") || "").trim();
+      if (!labels[vertical] || !["DE","AT","CH"].includes(country) || goal.length < 15) return;
+      saved = { vertical, country, goal };
+      summary.textContent = isDe
+        ? `Thema: ${labels[vertical]}. Zielmarkt: ${country}. Ziel: ${goal}. Im nächsten Schritt bitten wir um Ihre Kontaktdaten und die Zustimmung zur Datenschutzerklärung.`
+        : `Oblast: ${labels[vertical]}. Ciljna zemlja: ${country}. Cilj: ${goal}. U sledećem koraku unesite kontakt i potvrdite da ste pročitali obaveštenje o privatnosti.`;
+      resultBox.hidden = false;
+    });
+    transfer.addEventListener("click", () => {
+      if (!saved) return;
+      const intake = document.querySelector<HTMLFormElement>("#intake");
+      if (!intake) return;
+      const vertical = intake.querySelector<HTMLSelectElement>('[name="vertical"]');
+      const country = intake.querySelector<HTMLSelectElement>('[name="country"]');
+      const message = intake.querySelector<HTMLTextAreaElement>('[name="message"]');
+      if (vertical) vertical.value = saved.vertical;
+      if (country) country.value = saved.country;
+      if (message) message.value = saved.goal;
+      intake.scrollIntoView({behavior:"smooth", block:"start"});
+      intake.querySelector<HTMLInputElement>('[name="name"]')?.focus({preventScroll:true});
+    });
+  }
+</script>

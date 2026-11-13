@@ -2,6 +2,10 @@ import { verticals } from "../lib/content";
 export function GET() {
   const urls = [
     "https://daninihub.com/",
+    "https://daninihub.com/de/ueber-danini/",
+    "https://daninihub.com/de/danini-methode/",
+    "https://daninihub.com/sr/o-danini/",
+    "https://daninihub.com/sr/danini-metoda/",
     ...["de", "sr"].flatMap((l) =>
       ["", ...verticals, "impressum", "datenschutz", "agb"].map(
         (s) => `https://daninihub.com/${l}/${s ? s + "/" : ""}`,

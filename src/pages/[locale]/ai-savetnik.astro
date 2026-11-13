@@ -57,7 +57,14 @@ const questions=de?[
      {[0,1,2].map(i=>(<div class="advisor-risk" data-risk-row={i}><i class="dot neutral"></i><span data-risk-label>{de?"Ungeprüft":"Nije provereno"}</span></div>))}
      <p id="advisor-status" role="status" aria-live="polite"></p>
      <details><summary>{de?"Kostenübersicht":"Pregled troškova"}</summary>
-      <p>{de?"Kaufpreis, Transport, Steuern und Prüfkosten können erst mit konkreten Daten kalkuliert werden. Hier wird kein Betrag erfunden.":"Kupovna cena, prevoz, dažbine i pregled računaju se tek na osnovu konkretnih podataka. Ovde se ne prikazuje izmišljena cena."}</p>
+      <p>{de?"Unverbindliche Summe nur aus Ihren eingetragenen Euro-Beträgen. Nicht erfasste Steuern und Gebühren sind nicht enthalten.":"Neobavezujući zbir iznosa koje sami unesete u evrima. Nepoznati porezi i dažbine nisu uključeni."}</p>
+      <div class="advisor-costs" id="advisor-costs">
+        <label for="cost-price">{de?"Kaufpreis (€)":"Cena vozila (€)"}</label><input id="cost-price" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" placeholder="0,00" />
+        <label for="cost-transport">{de?"Transport (€)":"Prevoz (€)"}</label><input id="cost-transport" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" placeholder="0,00" />
+        <label for="cost-fees">{de?"Steuern / Abgaben (nur bekannter Betrag, €)":"Porezi / dažbine (samo poznat iznos, €)"}</label><input id="cost-fees" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" placeholder="0,00" />
+        <label for="cost-check">{de?"Fahrzeugprüfung (€)":"Pregled vozila (€)"}</label><input id="cost-check" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" placeholder="0,00" />
+        <output id="cost-total" aria-live="polite">{de?"Beträge eingeben":"Unesite iznose"}</output>
+      </div>
      </details>
      <form id="advisor-contact" class="advisor-contact" onsubmit="return false">
       <label for="advisor-name">{de?"Name":"Ime"}</label><input id="advisor-name" required maxlength="90" autocomplete="name" />
@@ -114,6 +121,9 @@ const questions=de?[
  .advisor-check input{width:auto}
  .advisor-panel details{margin:1.2rem 0}.advisor-panel summary{cursor:pointer;font-weight:700}
  .advisor-panel .button{width:100%}
+ .advisor-costs{display:grid;gap:.45rem;margin-top:1rem}
+ .advisor-costs input{max-width:100%}
+ .advisor-costs output{font-weight:800;padding:.75rem;background:#e9f9f4;border-radius:8px;margin-top:.6rem}
  @media(max-width:1100px){.advisor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.advisor-panel:last-child{grid-column:1/-1}}
  @media(max-width:700px){.advisor-grid{grid-template-columns:1fr}.advisor-panel:last-child{grid-column:auto}.answer-grid{grid-template-columns:1fr}}
 </style>

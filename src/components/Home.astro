@@ -155,6 +155,18 @@ const home = `/${locale}/`;
       event.preventDefault();
       const value = textarea.value.trim();
       if (!value) { textarea.focus(); return; }
+      // Never put user-submitted VIN, text or private seller details in a URL.
+      // Session handoff is same-origin, tab-scoped and removed on advisor load.
+      try {
+        sessionStorage.setItem("danini-advisor-source-v1", value.slice(0, 6000));
+        window.location.assign(form.dataset.locale === "de" ? "/de/ai-savetnik/" : "/sr/ai-savetnik/");
+      } catch {
+        // Storage may be disabled: use an in-page checklist without transmitting data.
+        const note = document.getElementById("universal-risk-summary");
+        if (note) note.textContent = form.dataset.locale === "de" ? "Browser-Speicher blockiert: lokale Prüfliste anzeigen." : "Memorija pregledača je blokirana: prikazana je lokalna kontrolna lista.";
+      }
+      if (sessionStorage.getItem("danini-advisor-source-v1") === value.slice(0,6000)) return;
+
       const de = form.dataset.locale === "de";
       const vin = /^[A-HJ-NPR-Z0-9]{17}$/i.test(value);
       const match = value.match(/https?:\/\/[^\s<>"']+/i);

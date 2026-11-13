@@ -538,3 +538,8 @@ footer nav {
     width: 100%;
   }
 }
+
+.dark .eyebrow,
+footer .micro {
+  color: #b8c5d7;
+}

@@ -123,3 +123,19 @@ fs.writeFileSync(sitemapFile, sitemap);
 console.log(
   `Preserved legacy assets; packaged ${pages.length} AutoDanini pages; validated ${Object.keys(routes).length} redirects.`,
 );
+
+fs.writeFileSync(
+  path.join(dest, "llms.txt"),
+  `# DANINI
+
+> Administrative B2B project preparation between DACH and the Balkans. Final reports require human review. No legal, tax or compliance certification.
+
+## Services
+- [Deutsch](https://daninihub.com/de/): German homepage.
+- [Srpski](https://daninihub.com/sr/): Serbian homepage.
+- [CBAM](https://daninihub.com/de/cbam/): Data preparation and gaps.
+- [Subcontractors](https://daninihub.com/de/subcontractor/): Country-specific documentation preparation.
+- [Nearshoring](https://daninihub.com/de/nearshoring/): Supplier and product documentation.
+- [AutoDanini](https://daninihub.com/auto/): Vehicle preparation and inspection services.
+`,
+);

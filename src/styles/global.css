@@ -670,3 +670,118 @@ input::placeholder, textarea::placeholder { color: var(--danini-muted); }
 .clarity-result .button { color: var(--danini-text); border-color: var(--danini-mint); }
 .draft { background: #48331d; color: #ffe5bd; }
 :root { --status-confirmed: var(--danini-mint); --status-warning: var(--danini-amber); --status-critical: var(--danini-critical); }
+
+
+/* PR208 urgent visibility repair: automotive buyer pages use LIGHT surfaces.
+   The global Dark Tech tokens remain scoped to other pages, but must never
+   force pale text on the light AutoDanini hero, forms, cards or advisor. */
+body:has(.auto-hero) .auto-hero,
+body:has(.auto-hero) .auto-advisor,
+body:has(.auto-hero) .section.white,
+body:has(.auto-hero) .auto-storage,
+body:has(.advisor-page) .advisor-page {
+  color: #0f172a;
+}
+body:has(.auto-hero) .auto-hero :is(h1,h2,h3,strong),
+body:has(.auto-hero) .auto-advisor :is(h1,h2,h3,strong,label),
+body:has(.auto-hero) .section.white :is(h1,h2,h3,strong,label),
+body:has(.auto-hero) .auto-storage :is(h1,h2,h3,strong),
+body:has(.advisor-page) .advisor-page :is(h1,h2,h3,strong,label,summary) {
+  color: #0f172a;
+}
+body:has(.auto-hero) .auto-hero :is(p,.eyebrow,.micro),
+body:has(.auto-hero) .auto-advisor :is(p,.eyebrow,.micro),
+body:has(.auto-hero) .section.white :is(p,.eyebrow,.micro),
+body:has(.auto-hero) .auto-storage :is(p,.eyebrow,.micro),
+body:has(.advisor-page) .advisor-page :is(p,.eyebrow,.micro) {
+  color: #334155;
+}
+body:has(.auto-hero) .section.white {
+  background: #fff;
+  border-color: #dce4ed;
+}
+body:has(.auto-hero) .auto-advisor-box,
+body:has(.advisor-page) .advisor-panel {
+  color: #0f172a;
+  background: #fff;
+  border-color: #cbd5e1;
+}
+body:has(.advisor-page) .advisor-page {
+  background: #f1f5f9;
+}
+body:has(.advisor-page) .advisor-question {
+  color: #0f172a;
+  background: #eaf0f7;
+}
+body:has(.auto-hero) .auto-advisor textarea,
+body:has(.advisor-page) .advisor-page :is(input,textarea,select) {
+  background: #fff;
+  color: #0f172a;
+  border: 2px solid #64748b;
+}
+body:has(.auto-hero) .auto-advisor textarea::placeholder,
+body:has(.advisor-page) .advisor-page :is(input,textarea)::placeholder {
+  color: #475569;
+  opacity: 1;
+}
+body:has(.auto-hero) .auto-hero-panel,
+body:has(.auto-hero) .auto-inspection {
+  background: #0f172a;
+  color: #f8fafc;
+}
+body:has(.auto-hero) .auto-hero-panel :is(h1,h2,h3,strong,p),
+body:has(.auto-hero) .auto-inspection :is(h1,h2,h3,strong,p) {
+  color: #f8fafc;
+}
+body:has(.auto-hero) .auto-hero-panel .eyebrow,
+body:has(.auto-hero) .auto-inspection .eyebrow {
+  color: #d1e1f5;
+}
+body:has(.auto-hero) .auto-hero-panel .auto-panel-step span { color: #facc15; }
+body:has(.auto-hero) .auto-steps article {
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+body:has(.auto-hero) .auto-steps article p { color: #334155; }
+body:has(.advisor-page) .advisor-risk,
+body:has(.advisor-page) .advisor-check,
+body:has(.advisor-page) .answer-grid button { color: #0f172a; }
+body:has(.advisor-page) .answer-grid button {
+  background: #f8fafc;
+  border: 1px solid #94a3b8;
+}
+body:has(.advisor-page) .answer-grid button[aria-pressed="true"] {
+  background: #ccfbf1;
+  border: 2px solid #0f766e;
+}
+body:has(.advisor-page) .advisor-warning { color: #0f172a; }
+body:has(.advisor-page) .advisor-warning p { color: #334155; }
+body:has(.auto-hero) .auto-storage-grid > div {
+  background: #fff;
+  color: #0f172a;
+}
+body:has(.auto-hero) .auto-risk-result :is(h2,h3,p,li) { color: #334155; }
+body:has(.auto-hero) .auto-risk-result h3 { color: #0f172a; }
+body:has(.auto-hero) .auto-contact .button,
+body:has(.auto-hero) .auto-advisor .button,
+body:has(.advisor-page) #advisor-cta {
+  background: #0f766e;
+  color: #fff;
+  font-weight: 750;
+}
+body:has(.auto-hero) .auto-hero .button.secondary {
+  color: #0f172a;
+  border-color: #64748b;
+  background: rgba(255,255,255,.85);
+}
+body:has(.auto-hero) .auto-inspection .button {
+  color: #0f172a;
+  background: #facc15;
+}
+@media (max-width:680px) {
+  body:has(.auto-hero) .auto-hero { padding-block: 2.5rem; }
+  body:has(.auto-hero) .auto-hero h1 { font-size: clamp(2rem,9vw,3rem); line-height: 1.13; }
+  body:has(.auto-hero) .auto-hero-panel { padding: 1.35rem; }
+  body:has(.advisor-page) .advisor-panel { padding: 1.1rem; }
+}

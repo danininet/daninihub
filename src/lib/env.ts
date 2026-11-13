@@ -1,4 +1,7 @@
 export interface Env {
+  ACCESS_TEAM_DOMAIN?: string;
+  ACCESS_AUD?: string;
+  DIRECTOR_EMAIL?: string;
   ASSETS: Fetcher;
   DANINI_DB: D1Database;
   PARTNERS: KVNamespace;

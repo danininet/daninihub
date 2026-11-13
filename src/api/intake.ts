@@ -198,21 +198,34 @@ export async function caseStatus(request: Request, env: Env, id: string) {
 export async function approve(request: Request, env: Env, id: string) {
   const data = await readJson(request, 2000);
   const body = JSON.stringify(data);
-  await authorizeDirector(request, env, body);
+  const actor = await authorizeDirector(request, env, body);
   if (
-    !["approve", "reject"].includes(data.decision) ||
+    !["approve", "reject", "revise"].includes(data.decision) ||
     !/^[a-f0-9]{64}$/.test(data.draftHash || "")
   )
     throw new HttpError(400, "invalid_decision");
+  if (data.decision === "revise") {
+    const revisions = await env.DANINI_DB.prepare(
+      "SELECT count(*) AS n FROM audit_logs WHERE case_id=? AND action='draft_revised'",
+    )
+      .bind(id)
+      .first<{ n: number }>();
+    if ((revisions?.n || 0) >= 3)
+      throw new HttpError(409, "revision_limit_reached");
+  }
   const now = Math.floor(Date.now() / 1000),
     decisionId = crypto.randomUUID();
   const r = await env.DANINI_DB.prepare(
     "UPDATE cases SET status=?,approved_hash=?,decision_id=?,decision_at=? WHERE id=? AND status='awaiting_approval' AND draft_hash=? AND expires_at>? AND review_deadline>? AND decision_id IS NULL",
   )
     .bind(
-      data.decision === "approve" ? "approved" : "rejected",
+      data.decision === "approve"
+        ? "approved"
+        : data.decision === "revise"
+          ? "revision_requested"
+          : "rejected",
       data.decision === "approve" ? data.draftHash : null,
-      decisionId,
+      data.decision === "revise" ? null : decisionId,
       now,
       id,
       data.draftHash,
@@ -221,7 +234,9 @@ export async function approve(request: Request, env: Env, id: string) {
     )
     .run();
   if (r.meta.changes !== 1) throw new HttpError(409, "not_approvable");
-  await audit(env, id, data.decision, "director");
+  await audit(env, id, data.decision, actor);
+  if (data.decision === "revise")
+    return json({ recorded: true, nextAction: "edit_draft" });
   try {
     const instance = await env.INTAKE_WORKFLOW.get(id);
     await instance.sendEvent({
@@ -237,11 +252,109 @@ export async function approve(request: Request, env: Env, id: string) {
 export async function directorReview(request: Request, env: Env, id: string) {
   await authorizeDirector(request, env, "");
   const row = await env.DANINI_DB.prepare(
-    "SELECT id,reference,status,draft_hash,expires_at FROM cases WHERE id=? AND expires_at>?",
+    "SELECT id,reference,status,vertical,language,country,created_at,review_deadline,delivery_status,draft_hash,expires_at FROM cases WHERE id=? AND expires_at>?",
   )
     .bind(id, Math.floor(Date.now() / 1000))
     .first();
   if (!row) return json({ error: "not_found" }, 404);
   const draft = await env.DOCUMENTS.get(`cases/${id}/draft.json`);
-  return json({ case: row, draft: draft ? await draft.json() : null });
+  const input = await env.DOCUMENTS.get(`cases/${id}/intake.json`);
+  const history = await env.DANINI_DB.prepare(
+    "SELECT action,actor,created_at FROM audit_logs WHERE case_id=? ORDER BY created_at DESC LIMIT 100",
+  )
+    .bind(id)
+    .all();
+  const messages = await env.DANINI_DB.prepare(
+    "SELECT id,state,created_at FROM mail_outbox WHERE case_id=? ORDER BY created_at DESC LIMIT 20",
+  )
+    .bind(id)
+    .all();
+  return json({
+    case: row,
+    intake: input ? await input.json() : null,
+    draft: draft ? await draft.json() : null,
+    history: history.results,
+    messages: messages.results,
+  });
+}
+
+export async function directorCases(request: Request, env: Env) {
+  await authorizeDirector(request, env, "");
+  const rows = await env.DANINI_DB.prepare(
+    "SELECT id,reference,status,vertical,language,created_at,review_deadline,delivery_status FROM cases WHERE tenant_id='danini' AND expires_at>? ORDER BY created_at DESC LIMIT 50",
+  )
+    .bind(Math.floor(Date.now() / 1000))
+    .all();
+  return json({ cases: rows.results });
+}
+// Revisions cannot send mail. The existing Workflow stays parked until a separate
+// approval of the new hash, within the original review deadline.
+export async function reviseDraft(request: Request, env: Env, id: string) {
+  const data = await readJson(request, 16000);
+  const actor = await authorizeDirector(request, env, JSON.stringify(data));
+  if (
+    typeof data.summary !== "string" ||
+    !data.summary.trim() ||
+    data.summary.length > 5000 ||
+    !/^[a-f0-9]{64}$/.test(data.draftHash || "")
+  )
+    throw new HttpError(400, "invalid_revision");
+  const now = Math.floor(Date.now() / 1000);
+  const count = await env.DANINI_DB.prepare(
+    "SELECT count(*) AS n FROM audit_logs WHERE case_id=? AND action='draft_revised'",
+  )
+    .bind(id)
+    .first<{ n: number }>();
+  if ((count?.n || 0) >= 3) throw new HttpError(409, "revision_limit_reached");
+  const lock = await env.DANINI_DB.prepare(
+    "UPDATE cases SET status='revising' WHERE id=? AND status='revision_requested' AND draft_hash=? AND expires_at>? AND review_deadline>?",
+  )
+    .bind(id, data.draftHash, now, now)
+    .run();
+  if (lock.meta.changes !== 1) throw new HttpError(409, "not_revisable");
+  try {
+    const object = await env.DOCUMENTS.get(`cases/${id}/draft.json`);
+    if (!object) throw Error("DRAFT_MISSING");
+    const original = await object.text();
+    if ((await digest(original)) !== data.draftHash)
+      throw Error("DRAFT_CHANGED");
+    const draft = JSON.parse(original);
+    const archive = `cases/${id}/revision-${crypto.randomUUID()}.json`;
+    await env.DOCUMENTS.put(archive, original, {
+      httpMetadata: { contentType: "application/json" },
+    });
+    await env.DANINI_DB.prepare("INSERT INTO case_files VALUES (?,?,?,?,?,?)")
+      .bind(
+        crypto.randomUUID(),
+        id,
+        archive,
+        "draft_revision",
+        data.draftHash,
+        now,
+      )
+      .run();
+    draft.summary = data.summary.trim();
+    draft.reviewedBy = actor;
+    draft.revisedAt = new Date().toISOString();
+    const serialized = JSON.stringify(draft),
+      hash = await digest(serialized);
+    await env.DOCUMENTS.put(`cases/${id}/draft.json`, serialized, {
+      httpMetadata: { contentType: "application/json" },
+    });
+    await audit(env, id, "draft_revised", actor);
+    await env.DANINI_DB.prepare(
+      "UPDATE cases SET status='awaiting_approval',draft_hash=?,approved_hash=NULL,decision_id=NULL,decision_at=NULL WHERE id=? AND status='revising'",
+    )
+      .bind(hash, id)
+      .run();
+    return json({ recorded: true, draftHash: hash });
+  } catch {
+    // Fail closed after partial storage: operator reconciliation, never approval.
+    await env.DANINI_DB.prepare(
+      "UPDATE cases SET status='revision_failed' WHERE id=? AND status='revising'",
+    )
+      .bind(id)
+      .run();
+    throw new HttpError(503, "revision_failed");
+  }
 }

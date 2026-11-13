@@ -71,7 +71,7 @@ export class IntakeWorkflow extends WorkflowEntrypoint<
     } catch {
       await step.do("review-deadline", async () => {
         await this.env.DANINI_DB.prepare(
-          "UPDATE cases SET status='review_expired' WHERE id=? AND status='awaiting_approval'",
+          "UPDATE cases SET status='review_expired' WHERE id=? AND status IN ('awaiting_approval','revision_requested')",
         )
           .bind(id)
           .run();
@@ -110,6 +110,7 @@ export class IntakeWorkflow extends WorkflowEntrypoint<
           : "Rules-based, human-approved administrative report",
         draft.summary,
         ...draft.missingData.map((x: string) => "- " + x),
+        ...(draft.questions || []).map((x: string) => "? " + x),
         ...draft.limitations,
       ].join("\n\n");
       const accepted = await mail(this.env, id, "final", {

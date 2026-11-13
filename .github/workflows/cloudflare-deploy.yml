@@ -1,0 +1,95 @@
+name: DANINI Cloudflare production deploy (guarded)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cloudflare-deploy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: danini-production-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: c7c8ad399f1e851d1c3a8be34e66f822
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Require deployment credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing CLOUDFLARE_API_TOKEN GitHub secret; no deployment performed'; exit 1; }
+      - name: Install locked dependencies and build actual Cloudflare assets
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build:auto-release
+          node --test tests/b2b/ai-intake.test.mjs tests/b2b/ai-preview.test.mjs
+          test -f autodanini-auto-dist/de/ai-savetnik/index.html
+          test -f autodanini-auto-dist/sr/ai-savetnik/index.html
+      - name: Preserve current non-secret production bindings
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const config=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
+          const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+process.env.CLOUDFLARE_ACCOUNT_ID+'/workers/scripts/autodanini/settings',{
+            headers:{authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},
+            signal:AbortSignal.timeout(15000)
+          });
+          assert.equal(r.status,200,'Could not retrieve existing production bindings; aborting');
+          const data=await r.json();
+          assert.equal(data.success,true);
+          const bindings=data.result.bindings;
+          const find=(name,type)=>{const b=bindings.find(x=>x.name===name&&x.type===type);assert.ok(b,'Required production binding missing: '+name);return b;};
+          const d=find('DANINI_DB','d1'), r2=find('DOCUMENTS','r2_bucket'), kv=find('PARTNERS','kv_namespace'), wf=find('INTAKE_WORKFLOW','workflow');
+          assert.equal(config.d1_databases[0].database_id,d.database_id,'D1 ID mismatch; abort');
+          config.r2_buckets=[{binding:'DOCUMENTS',bucket_name:r2.bucket_name}];
+          config.kv_namespaces=[{binding:'PARTNERS',id:kv.namespace_id}];
+          config.workflows=[{binding:'INTAKE_WORKFLOW',name:wf.workflow_name,class_name:wf.class_name,...(wf.script_name?{script_name:wf.script_name}:{})}];
+          config.keep_vars=true;
+          assert.equal(config.name,'autodanini');
+          assert.deepEqual(config.assets.run_worker_first,['/api/*']);
+          const names=['BREVO_API_KEY','DANINI_CONTACT_ACTIVE','DANINI_TURNSTILE_SECRET','DANINI_TURNSTILE_SITEKEY','DANINI_NOTIFY_TO','DANINI_BREVO_SENDER'];
+          for(const name of names)find(name,'secret_text');
+          config.secrets={required:names};
+          fs.writeFileSync('wrangler.production-ci.jsonc',JSON.stringify(config,null,2)+'\n');
+          console.log('PASS: production D1, R2, KV, Workflow and required secret names verified; no secret values logged');
+          NODE
+      - name: Deploy complete production Worker and static assets
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: c7c8ad399f1e851d1c3a8be34e66f822
+          command: deploy --config wrangler.production-ci.jsonc --keep-vars
+      - name: Verify deployed bilingual advisor, public sitekey and API
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const base='https://daninihub.com';
+          for(const path of ['/de/ai-savetnik/','/sr/ai-savetnik/']){
+            const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
+            assert.equal(r.status,200,path+' HTTP status');
+            const html=await r.text();
+            assert.equal((html.match(/data-question=/g)||[]).length,3,path+' questions');
+            assert.match(html,/advisor-turnstile/,path+' Turnstile container');
+            assert.match(html,/danini-advisor-client\.js/,path+' advisor client script');
+            console.log('PASS',path,'HTTP 200');
+          }
+          const resp=await fetch(base+'/api/lead/status',{signal:AbortSignal.timeout(20000)});
+          assert.equal(resp.status,200);
+          const status=await resp.json();
+          assert.equal(status.enabled,true);
+          assert.equal(status.channel,'brevo');
+          assert.equal(status.turnstileSiteKey,'0x4AAAAAAF5ySODGLwgzvV0n');
+          const js=await fetch(base+'/danini-advisor-client.js',{signal:AbortSignal.timeout(20000)});
+          assert.equal(js.status,200);
+          assert.match(await js.text(),/challenges\.cloudflare\.com\/turnstile/);
+          console.log('PASS production Turnstile and Brevo readiness; no customer email sent');
+          NODE

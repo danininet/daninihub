@@ -1,0 +1,34 @@
+---
+import type { Locale } from "../lib/content";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isDe = locale === "de";
+const legalLinks = [
+  { href: `/${locale}/impressum/`, label: "Impressum" },
+  { href: `/${locale}/datenschutz/`, label: isDe ? "Datenschutz" : "Privatnost" },
+  { href: `/${locale}/agb/`, label: isDe ? "AGB" : "Uslovi" },
+];
+---
+
+<footer>
+  <div class="wrap">
+    <div>
+      <b>DANINI</b>
+      <p class="micro">
+        {isDe
+          ? "© 2026 DANINI. Alle Rechte vorbehalten."
+          : "© 2026 DANINI. Sva prava zadržana."}
+      </p>
+    </div>
+    <nav aria-label={isDe ? "Rechtliche Informationen" : "Pravne informacije"}>
+      {legalLinks.map((item) => (
+        <a href={item.href}>{item.label}</a>
+      ))}
+      <a href="mailto:kontakt@daninihub.com">kontakt@daninihub.com</a>
+    </nav>
+  </div>
+</footer>

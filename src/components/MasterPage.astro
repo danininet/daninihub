@@ -1,0 +1,53 @@
+---
+import Base from "../layouts/Base.astro";
+import type { Locale } from "../lib/content";
+interface Props { locale: Locale; kind: "about" | "method" }
+const { locale, kind } = Astro.props;
+const de = locale === "de";
+const slug = kind === "about" ? (de ? "ueber-danini" : "o-danini") : (de ? "danini-methode" : "danini-metoda");
+const title = kind === "about" ? (de ? "Über DANINI — unser Unternehmen und unsere Arbeitsweise" : "O DANINI — naše poslovanje i način rada") : (de ? "Die DANINI-Methode — Frag KI, KI fragt zurück" : "DANINI metoda — Pitaj AI, AI pita tebe");
+const intro = kind === "about" ? (de
+  ? "DANINI verbindet Geschäftsvorbereitung, digitale Werkzeuge und menschliche Verantwortung. Wir klären Anforderungen, strukturieren Informationen und koordinieren nächste Schritte — nachvollziehbar und ohne leere Erfolgsversprechen."
+  : "DANINI povezuje poslovnu podršku, digitalne alate i ljudsku odgovornost. Razjašnjavamo potrebe, strukturiramo informacije i pripremamo sledeće korake — bez praznih obećanja.")
+  : (de
+  ? "Nicht jede schnelle Antwort ist die richtige Entscheidung. Wir fragen gezielt nach, überprüfen Annahmen und dokumentieren die nächsten Schritte. Bis zu drei gezielte Rückfragen pro Runde."
+  : "Nije svaki brz odgovor i dobra odluka. Postavljamo ciljna potpitanja, proveravamo pretpostavke i dokumentujemo sledeće korake. Najviše tri potpitanja po ciklusu.");
+const steps = de ? [
+  ["01", "Anliegen", "Ziel, Situation und gewünschtes Ergebnis klären."],
+  ["02", "Rückfragen", "Bis zu drei gezielte Fragen. Keine endlosen Dialoge."],
+  ["03", "Prüfung", "Fakten, Quellen, Unbekanntes und Risiken trennen."],
+  ["04", "Optionen", "Mögliche Wege mit Aufwand und Grenzen vergleichen."],
+  ["05", "Entscheidung", "Wichtige Schritte benötigen menschliche Freigabe."],
+  ["06", "Ausführung", "Vereinbarte Arbeit erledigen und Ergebnisse dokumentieren."]
+] : [
+  ["01", "Upit", "Razumeti cilj, situaciju i očekivani rezultat."],
+  ["02", "Potpitanja", "Do tri ciljna pitanja. Bez beskonačnih razgovora."],
+  ["03", "Provera", "Odvojiti činjenice, izvore, nepoznanice i rizike."],
+  ["04", "Opcije", "Uporediti rešenja, troškove i ograničenja."],
+  ["05", "Odluka", "Važne radnje odobrava odgovorno lice."],
+  ["06", "Izvršenje", "Izvršiti dogovoreno i dokumentovati rezultat."]
+];
+---
+<Base locale={locale} slug={slug} title={title} description={intro}>
+  <section class="section master-intro">
+    <div class="wrap">
+      <span class="eyebrow">DANINI / {kind === "about" ? (de ? "UNTERNEHMEN" : "PREDUZEĆE") : (de ? "UNSERE METHODE" : "NAŠA METODA")}</span>
+      <h1>{kind === "method" ? (de ? "Frag KI. KI fragt zurück." : "Pitaj AI. AI pita tebe!") : (de ? "Menschen entscheiden. Systeme unterstützen." : "Čovek odlučuje. Sistem pomaže.")}</h1>
+      <p class="intro">{intro}</p>
+      <div class="actions"><a class="button" href={de ? "/de/#contact" : "/sr/#contact"}>{de ? "Anliegen schildern" : "Opišite svoj problem"} ↗</a><a class="button secondary" href={kind === "about" ? (de ? "/de/danini-methode/" : "/sr/danini-metoda/") : (de ? "/de/ueber-danini/" : "/sr/o-danini/")}>{kind === "about" ? (de ? "Methode kennenlernen" : "Upoznajte metodu") : (de ? "Über DANINI" : "O DANINI")}</a></div>
+    </div>
+  </section>
+  <section class="section white">
+    <div class="wrap">
+      <div class="section-head"><span class="eyebrow">{de ? "UNSER BETRIEBSSYSTEM" : "NAŠ OPERATIVNI SISTEM"}</span><h2>{de ? "Von einer Frage zu einem überprüfbaren Ergebnis." : "Od pitanja do proverljivog rezultata."}</h2><p>{de ? "Ein nachvollziehbarer Prozess statt eines unkontrollierten KI-Versprechens." : "Proverljiv postupak, a ne nekontrolisano obećanje o AI."}</p></div>
+      <div class="method-steps">{steps.map(([num, heading, detail]) => <div class="method-step"><span>{num}</span><h3>{heading}</h3><p>{detail}</p></div>)}</div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap master-columns">
+      <article class="master-panel"><span class="eyebrow">{de ? "HEUTE NUTZBAR" : "DOSTUPNO DANAS"}</span><h2>{de ? "Klare B2B-Unterstützung" : "Konkretna B2B podrška"}</h2><p>{de ? "Projektanfragen, administrative Vorbereitung, erste Dokumentenlisten und Abstimmung mit Ihnen. Leistungsumfang und Preis werden erst nach Rücksprache vereinbart." : "Poslovni upiti, administrativna priprema, preliminarni spiskovi dokumentacije i dogovor sa vama. Obim i cena određuju se pre angažovanja."}</p><a class="link" href={de ? "/de/#services" : "/sr/#services"}>{de ? "Geschäftsleistungen ansehen" : "Pogledajte poslovne usluge"} ↗</a></article>
+      <article class="master-panel"><span class="eyebrow">{de ? "TRANSPARENTE AUTOMATISIERUNG" : "TRANSPARENTNA AUTOMATIZACIJA"}</span><h2>{de ? "Werkzeuge, keine Schein-Agenten" : "Alati, bez lažnih agenata"}</h2><p>{de ? "Regelbasierte Zuordnung und vorbereitete Entwürfe können Abläufe unterstützen. Die generative KI und die erweiterte Dokumentenverarbeitung bleiben deaktiviert, bis Datenschutz, Kosten und Sicherheit geprüft sind. Keine automatische Rechts- oder Konformitätsfreigabe." : "Razvrstavanje po pravilima i priprema nacrta mogu podržati rad. Generativni AI i napredna obrada dokumenata ostaju isključeni dok ne prođu proveru privatnosti, troškova i bezbednosti. Nema automatskog pravnog ili regulatornog odobrenja."}</p><a class="link" href={de ? "/de/ai-transparenz/" : "/sr/ai-transparenz/"}>{de ? "KI-Transparenz" : "AI transparentnost"} ↗</a></article>
+    </div>
+  </section>
+  <section class="section dark"><div class="wrap master-cta"><span class="eyebrow">DANINI · DACH ↔ BALKAN</span><h2>{de ? "Was ist Ihr nächster, wirklich wichtiger Schritt?" : "Koji je vaš sledeći zaista važan korak?"}</h2><p>{de ? "Schildern Sie Ihr Ziel — wir prüfen zunächst, ob wir konkret helfen können. Die Anfrage ist kostenlos und unverbindlich." : "Opišite cilj — najpre proveravamo možemo li konkretno pomoći. Upit je besplatan i neobavezujući."}</p><a class="button" href={de ? "/de/#contact" : "/sr/#contact"}>{de ? "Projektanfrage senden" : "Pošaljite poslovni upit"} ↗</a></div></section>
+</Base>

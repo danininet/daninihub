@@ -10,7 +10,7 @@
 - R2 API returned error 10042: enable R2 through the dashboard. R2 was not activated; billing approval was not assumed.
 - No existing Workflows found in the production account.
 - Brevo: domain authenticated and verified; eight active senders, including `info@daninihub.com`. Sender verification is not proof of mailbox reception or delivery.
-- Connected mail provider does not expose the `info@daninihub.com` mailbox. No unrelated mailbox was opened.
+- Cloudflare Email Routing is enabled and synced. Eight business addresses, including `info@daninihub.com`, forward to the owner Gmail address. Real receipt and reply for the new B2B flow remain unverified; configured forwarding is not proof of delivery.
 
 ## Implemented
 
@@ -34,20 +34,20 @@
 | Existing AutoDanini build | PASS | 30 legacy pages build; source intact |
 | Astro build | PASS | 19 generated pages before legacy merge |
 | Astro/TypeScript | PASS | 0 errors, warnings or hints |
-| B2B security and Workflow logic | PASS | 13 automated tests; SQLite-backed adapter and mocked provider/runtime boundary |
+| B2B security and Workflow logic | PASS | 16 automated tests; SQLite-backed adapter and mocked provider/runtime boundary |
 | Existing regression suite | PASS | importos, site, funnel, buyer plan, purchase, cases, calculator, ecosystem, digital |
 | Digital regression | PASS | PayPal capture, expiry, signature, PDF access; no real payment |
 | Wrangler bundle dry-run | PASS | Bound Worker and Workflow compile, no upload |
 | Local D1 migrations | PASS | Existing commerce + additive B2B schema, no remote writes |
 | Query plans | PASS | Expiry, case-file and request-key lookups use indexes |
 | Static SEO/link audit | PASS | 16 B2B pages; 9 redirect targets; isolated legal drafts |
-| Browser/Lighthouse | PASS in GitHub CI | Run 43413231102 passed desktop/mobile DE/SR. Initial scores: performance 100, SEO 100, accessibility 96, best practices 96. Contrast/label findings subsequently fixed and recheck pending. Local container socket restrictions remain. |
+| Browser/Lighthouse | PASS in GitHub CI | Run [43415191389](https://github.com/danininet/daninihub/actions/runs/43415191389) completed successfully against local Wrangler: desktop/mobile DE/SR, no overflow or browser console errors. Lighthouse category scores: performance 100, accessibility 100, best practices 100, SEO 100, agentic browsing 100. A nonweighted brand-label finding was subsequently corrected by using its visible text as the accessible name. Scores describe this test build, not production or a complete accessibility certification. |
 | Real Cloudflare Workflow | BLOCKED | R2 inactive and no isolated staging bindings/secrets |
 | End-to-end B2B Turnstile/Brevo | BLOCKED | Requires staging host and configured Turnstile; previous legacy delivery not repeated |
 | Paid AI | BLOCKED | EU endpoint, DPA, provider, model and budget unapproved |
 | Legal release | BLOCKED | Current identity/business status, service address and processor contracts need verification |
 
-A separate GitHub Actions workflow builds and performs browser/Lighthouse QA without production secrets. Its actual run result must be checked; defining CI is not a PASS.
+GitHub Actions also confirmed the local Worker health endpoint and a 503 response while intake is inactive. These checks use no production secrets and do not establish real external-service delivery.
 
 ## Remaining implementation limits
 

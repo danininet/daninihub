@@ -29,16 +29,36 @@ jobs:
       - name: Install locked dependencies and build actual Cloudflare assets
         run: |
           npm ci --no-audit --no-fund
-          npm run build:auto-release
+          npm run build:platform
+          npm run check:b2b
+          node --test tests/b2b/autodanini-home-qa.test.mjs
           node --test tests/b2b/ai-intake.test.mjs tests/b2b/ai-preview.test.mjs
-          test -f autodanini-auto-dist/de/ai-savetnik/index.html
-          test -f autodanini-auto-dist/sr/ai-savetnik/index.html
+          test -f dist/de/ai-savetnik/index.html
+          test -f dist/sr/ai-savetnik/index.html
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          const locales = [
+            ['de','Autokauf in Deutschland ohne Risiko'],
+            ['sr','Kupovina automobila iz Nemačke bez rizika']
+          ];
+          for (const [locale,heading] of locales) {
+            const home=fs.readFileSync('dist/'+locale+'/index.html','utf8');
+            const advisor=fs.readFileSync('dist/'+locale+'/ai-savetnik/index.html','utf8');
+            assert.ok(home.includes(heading),'New buyer-focused Hero missing in '+locale);
+            assert.ok(home.includes('universal-advisor-form'),'Universal input missing in '+locale);
+            assert.ok(advisor.includes('id="listing"'),'Advisor input missing in '+locale);
+            assert.ok(advisor.includes('data-question'),'Advisor questions missing in '+locale);
+          }
+          console.log('PASS: built SR/DE production HTML is the reviewed PR #208 Astro release');
+          NODE
       - name: Preserve current non-secret production bindings
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import assert from 'node:assert/strict';
           const config=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
+          config.assets.directory='./dist'; // Publish the merged Astro + preserved AutoDanini asset bundle.
           const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+process.env.CLOUDFLARE_ACCOUNT_ID+'/workers/scripts/autodanini/settings',{
             headers:{authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},
             signal:AbortSignal.timeout(15000)
@@ -81,6 +101,13 @@ jobs:
             assert.match(html,/advisor-turnstile/,path+' Turnstile container');
             assert.match(html,/danini-advisor-client\.js/,path+' advisor client script');
             console.log('PASS',path,'HTTP 200');
+          }
+          for (const [path,heading] of [['/de/','Autokauf in Deutschland ohne Risiko'],['/sr/','Kupovina automobila iz Nemačke bez rizika']]){
+            const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
+            assert.equal(r.status,200,path+' HTTP status');
+            const html=await r.text();
+            assert.ok(html.includes(heading),path+' new Astro hero not live');
+            assert.ok(html.includes('universal-advisor-form'),path+' universal input missing');
           }
           const resp=await fetch(base+'/api/lead/status',{signal:AbortSignal.timeout(20000)});
           assert.equal(resp.status,200);

@@ -1,3 +1,5 @@
+> Current continuation: [Issue 205 execution](ISSUE-205-EXECUTION.md). The historical R2/Workflow blockers below are superseded: resources exist; staging credentials and portal were added. Real B2B end-to-end delivery remains unverified.
+
 # DANINI B2B implementation — 13 November 2026
 
 **Decision: NOT READY for production.** Isolated implementation for review. No production deployment, DNS change, payment or live database migration has been performed.

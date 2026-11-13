@@ -4,7 +4,7 @@ import {
   type WorkflowStep,
 } from "cloudflare:workers";
 import type { Env } from "../lib/env";
-import { analyze } from "../ai/analyze";
+import { analyze, auriFilter } from "../ai/analyze";
 import { digest } from "../security/http";
 import { audit } from "../api/intake";
 import { mail } from "../lib/mail";
@@ -103,11 +103,18 @@ export class IntakeWorkflow extends WorkflowEntrypoint<
       if (!inputObject) throw Error("INTAKE_MISSING");
       const input = await inputObject.json<any>();
       const draft = JSON.parse(text);
+      if (auriFilter(draft, true).status !== "PASS")
+        throw Error("DRAFT_SCHEMA_FAILED");
+      const de = draft.language === "de";
       const report = [
         `DANINI | ${row.reference}`,
         draft.generatedBy === "ai"
-          ? "AI-assisted, human-approved administrative report"
-          : "Rules-based, human-approved administrative report",
+          ? de
+            ? "KI-unterstützter, menschlich freigegebener administrativer Bericht"
+            : "Administrativni izveštaj uz AI podršku, odobren od odgovornog lica"
+          : de
+            ? "Regelbasierter, menschlich freigegebener administrativer Bericht"
+            : "Administrativni izveštaj na osnovu pravila, odobren od odgovornog lica",
         draft.summary,
         ...draft.missingData.map((x: string) => "- " + x),
         ...(draft.questions || []).map((x: string) => "? " + x),

@@ -90,7 +90,7 @@ test('Brevo operator alert and neutral customer receipt only after captcha passe
   assert.equal(records[0].replyTo.email,payload().email);
   assert.equal(records[1].to[0].email,payload().email);
   assert.equal(records[1].templateId,38,'German general inquiry must use verified DANINI Kontakt DE branded template');
-  assert.deepEqual(records[1].sender,{name:'DANINI',email:'kontakt@daninihub.com'});
+  assert.deepEqual(records[1].sender,{name:'DANINI',email:'info@daninihub.com'});
   assert.ok(records[1].params.REFERENCE.startsWith('DN-'));
   assert.ok(!JSON.stringify(records[1]).includes(payload().message),'receipt must never echo untrusted input');
   assert.equal(records[0].to.length,1);
@@ -113,7 +113,7 @@ test('vehicle, support and B2B requests route to distinct verified logo template
    assert.equal(sent.length,2);
    assert.equal(sent[1].templateId,templateId);
    assert.equal(sent[1].sender.name,kind==='vehicle'?'DANINI Auto':kind==='business'?'DANINI Business':kind==='support'?'DANINI Support':'DANINI');
-   assert.equal(sent[1].sender.email,({vehicle:'auto@daninihub.com',business:'business@daninihub.com',support:'support@daninihub.com',general:'kontakt@daninihub.com'})[kind]);
+   assert.equal(sent[1].sender.email,({vehicle:'auto@daninihub.com',business:'info@daninihub.com',support:'info@daninihub.com',general:'info@daninihub.com'})[kind]);
    assert.equal(sent[1].params.REFERENCE, (await result.json()).reference);
    assert.ok(!JSON.stringify(sent[1]).includes(payload().message));
   }

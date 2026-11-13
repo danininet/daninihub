@@ -32,7 +32,9 @@ async function audit(){
    if(!/hreflang=["']sr["']/.test(s)||!/hreflang=["']de["']/.test(s))note('ERROR',p,'DE/SR alternate links missing');
   }
   if(p==='/buyers.html'||p==='/business.html'||p==='/contact.html'){
-   if(!s.includes('dn-service-header'))note('ERROR',p,'Shared logo/menu not in rendered HTML');
+   if(p==='/buyers.html' && (!s.includes('autodanini-mark.svg') || !/<nav\b/.test(s)))note('ERROR',p,'AutoDanini logo/menu missing');
+   if(p==='/business.html' && (!s.includes('danini-header') || !s.includes('business-nav')))note('ERROR',p,'DANINI business navigation missing');
+   if(p==='/contact.html' && !s.includes('dn-service-header'))note('ERROR',p,'Shared contact logo/menu missing');
   }
   if(p==='/contact.html'&&!s.includes('mailto:kontakt@daninihub.com'))note('ERROR',p,'Direct email absent');
   // Live customer readiness: guides, visible pilot prices and qualified handoff.
@@ -67,7 +69,7 @@ async function audit(){
    if(!s.includes('datenschutz@daninihub.com')||!s.includes('Fischerstr. 54'))note('ERROR',p,'Public privacy controller/contact not published');
   }
 
-  if(p==='/'){if(!s.includes('dn-header'))note('ERROR',p,'DANINI masthead absent');}
+  if(p==='/'){if(!s.includes('danini-header') || !s.includes('business-nav'))note('ERROR',p,'DANINI masthead absent');}
   const local=anchors(s).filter(h=>h.startsWith('/')).map(h=>h.split('#')[0].split('?')[0]).filter(Boolean);
   const dead=[...new Set(local.filter(h=>/^(?:\/danini.*\.html|\/contact\.html|\/buyers\.html|\/business\.html)$/.test(h)))].filter(h=>!pages.includes(h));
   if(dead.length)note('WARN',p,'Important internal URL outside audit: '+dead.join(', '));
@@ -88,8 +90,8 @@ async function audit(){
   }catch(error){note('ERROR',path,'Photo load failed: '+String(error));}
  }
  const sr=htmlByPath.get('/sr/')?.body||'',de=htmlByPath.get('/de/')?.body||'';
- if(!sr.includes('DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg')||!de.includes('DANINI_Kartica_01_Pregled_Auta_Nemacka.jpg')){
-  note('ERROR','/sr/ & /de/','New inspection visual missing from one of the language homepages');
+ if(!sr.includes('workflow-preview')||!de.includes('workflow-preview')||!sr.includes('role="img"')||!de.includes('role="img"')){
+  note('ERROR','/sr/ & /de/','DANINI business workflow visual missing from a language homepage');
  }
  const icon=await get('/danini-favicon.svg');
  if(icon.status!==200||!icon.body.includes('<svg')||!(icon.headers?.get('content-type')||'').includes('image/svg+xml'))note('ERROR','/danini-favicon.svg','SVG favicon not served correctly: '+icon.status);
@@ -97,7 +99,7 @@ async function audit(){
  if(sitemap.status!==200||!sitemap.body.includes('<urlset'))note('ERROR','/sitemap.xml','Not valid sitemap XML');
  const locs=[...sitemap.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
  if(new Set(locs).size!==locs.length)note('WARN','/sitemap.xml','Duplicate URLs in sitemap');
- for(const p of ['/danini.html','/danini-sr.html','/','/de/'])if(!locs.includes(origin+p))note('ERROR','/sitemap.xml','Missing '+p);
+ for(const p of ['/','/de/','/sr/','/de/ueber-danini/','/sr/o-danini/','/de/danini-methode/','/sr/danini-metoda/','/auto/'])if(!locs.includes(origin+p))note('ERROR','/sitemap.xml','Missing '+p);
  if(!robots.body.includes('Sitemap: '+origin+'/sitemap.xml'))note('ERROR','/robots.txt','No sitemap declaration');
  let cfg={};try{cfg=JSON.parse(status.body)}catch{};
  if(status.status!==200||typeof cfg.enabled!=='boolean')note('ERROR','/api/lead/status','No valid readiness API');

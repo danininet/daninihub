@@ -20,6 +20,7 @@ export interface Env {
   AI_API_KEY?: string;
   AI_MODEL?: string;
   AI_PROCESSING_APPROVED?: string;
+  MAIL_TEST_RECIPIENT?: string;
   BREVO_API_KEY?: string;
   DANINI_BREVO_SENDER?: string;
   DANINI_NOTIFY_TO?: string;

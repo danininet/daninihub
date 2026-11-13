@@ -24,6 +24,7 @@ export function validateDraft(value: any): value is Draft {
     ["de", "sr"].includes(value.language) &&
     ["cbam", "subcontractor", "nearshoring"].includes(value.vertical) &&
     typeof value.summary === "string" &&
+    value.summary.trim().length > 0 &&
     value.summary.length <= 5000 &&
     ["missingData", "questions", "limitations"].every(
       (k) =>
@@ -184,5 +185,24 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
     promptVersion: "b2b-v1",
     createdAt: base.createdAt,
     limitations: [...base.limitations, ...output.limitations].slice(0, 10),
+  };
+}
+
+// This filter checks workflow quality and approval, never regulatory compliance.
+export function auriFilter(draft: unknown, approved = false, cycles = 0) {
+  if (cycles > 3 || !validateDraft(draft))
+    return {
+      status: "STOP" as const,
+      reason: "Invalid draft or clarification limit exceeded.",
+    };
+  if (!approved)
+    return {
+      status: "NEEDS_REVIEW" as const,
+      reason: "Human review of the exact draft is required.",
+    };
+  return {
+    status: "PASS" as const,
+    reason:
+      "Valid draft and recorded approval; not a legal or regulatory clearance.",
   };
 }

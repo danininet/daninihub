@@ -61,6 +61,11 @@ export async function intake(request: Request, env: Env) {
   if (!rate || rate.count > 10) return json({ error: "rate_limited" }, 429);
   const raw = await readJson(request, 80000);
   const data = validateIntake(raw);
+  if (
+    env.MAIL_TEST_RECIPIENT &&
+    data.email.toLowerCase() !== env.MAIL_TEST_RECIPIENT.toLowerCase()
+  )
+    throw new HttpError(400, "test_recipient_only");
   const requestKey = request.headers.get("idempotency-key") || "";
   if (!/^[a-zA-Z0-9_-]{20,80}$/.test(requestKey))
     throw new HttpError(400, "idempotency_key_required");

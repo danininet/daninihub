@@ -10,7 +10,7 @@ import {
 } from "../../src/api/intake.ts";
 import { digest, hmac } from "../../src/security/http.ts";
 import { authorizeOwner } from "../../src/security/access.ts";
-import { analyze } from "../../src/ai/analyze.ts";
+import { analyze, auriFilter } from "../../src/ai/analyze.ts";
 async function signed(e, path, data) {
   const body = data ? JSON.stringify(data) : "",
     method = data ? "POST" : "GET",
@@ -198,4 +198,36 @@ test("Access verifies signature, audience, expiry, owner email and cross-origin 
   } finally {
     globalThis.fetch = old;
   }
+});
+
+test("AURI returns STOP, NEEDS_REVIEW and PASS without regulatory claims", async () => {
+  const draft = await analyze({}, valid());
+  assert.equal(auriFilter(draft).status, "NEEDS_REVIEW");
+  assert.equal(auriFilter(draft, true).status, "PASS");
+  assert.equal(auriFilter(draft, true, 4).status, "STOP");
+  assert.equal(auriFilter({ ...draft, summary: "" }, true).status, "STOP");
+});
+
+test("staging refuses non-owner intake and all non-test mail recipients", async () => {
+  const { mail } = await import("../../src/lib/mail.ts");
+  const e = { ...env(), MAIL_TEST_RECIPIENT: "test@example.test" };
+  await assert.rejects(
+    intake(req(), e),
+    (x) => x.message === "test_recipient_only",
+  );
+  for (const message of [
+    { to: [{ email: "customer@example.test" }] },
+    {
+      to: [{ email: "test@example.test" }],
+      bcc: [{ email: "outsider@example.test" }],
+    },
+  ])
+    await assert.rejects(
+      mail(e, "unused", "final", message),
+      /TEST_RECIPIENT_ONLY/,
+    );
+  assert.equal(
+    e.DANINI_DB.db.prepare("SELECT count(*) AS n FROM mail_outbox").get().n,
+    0,
+  );
 });

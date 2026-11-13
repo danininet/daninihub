@@ -21,7 +21,8 @@
     "RETENTION_DAYS": "30",
     "ACCESS_TEAM_DOMAIN": "https://danininet.cloudflareaccess.com",
     "ACCESS_AUD": "54658fbe8fd607628f720021810fe2397aca1d4b488112749d299e797a231f8e",
-    "DIRECTOR_EMAIL": "dragangaganet@gmail.com"
+    "DIRECTOR_EMAIL": "dragangaganet@gmail.com",
+    "MAIL_TEST_RECIPIENT": "dragangaganet@gmail.com"
   },
   "d1_databases": [
     {

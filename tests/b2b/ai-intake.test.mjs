@@ -71,7 +71,7 @@ test('AI intake routes three validated answers to contact mailbox only after Tur
     assert.match(result.reference, /^DN-AI-/);
     assert.equal(calls.length, 2);
     const email = JSON.parse(calls[1].options.body);
-    assert.equal(email.to[0].email, 'kontakt@daninihub.com');
+    assert.equal(email.to[0].email, env.DANINI_NOTIFY_TO);
     assert.match(email.textContent, /mobile.de/);
     assert.match(email.textContent, /RED \/ REQUIRES HUMAN REVIEW/);
     assert.doesNotMatch(JSON.stringify(result), /test-only-secret/);

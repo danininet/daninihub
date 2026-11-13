@@ -33,7 +33,7 @@ const localizedSlug = (language: "de" | "sr") => {
     <meta name="theme-color" content="#0F172A" />
     <meta name="robots" content={noindex ? "noindex,follow" : "index,follow"} />
     <link rel="canonical" href={canonical} />
-    {["de", "sr"].map((l) => (
+    {(["de", "sr"] as const).map((l) => (
       <link
         rel="alternate"
         hreflang={l}

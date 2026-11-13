@@ -15,12 +15,10 @@ const altSlug = (language: "de" | "sr") => {
   return slug;
 };
 const navItems = [
-  { href: home, label: isDe ? "Start" : "Početna" },
-  { href: `${home}#services`, label: isDe ? "Leistungen" : "Usluge" },
-  { href: isDe ? "/de/danini-methode/" : "/sr/danini-metoda/", label: isDe ? "Unsere Methode" : "Naša metoda" },
-  { href: isDe ? "/de/ueber-danini/" : "/sr/o-danini/", label: isDe ? "Über DANINI" : "O DANINI" },
-  { href: "/auto/", label: "AutoDanini" },
-  { href: `${home}#contact`, label: isDe ? "Projekt anfragen" : "Pošaljite upit" },
+  { href: home, label: isDe ? "Startseite" : "Početna" },
+  { href: `${home}#ai-savetnik`, label: isDe ? "KI-Berater" : "AI Savetnik" },
+  { href: `${home}#provera-na-terenu`, label: isDe ? "Vor-Ort-Prüfung" : "Provera na terenu" },
+  { href: `${home}#contact`, label: "Kontakt" },
 ];
 ---
 
@@ -28,7 +26,7 @@ const navItems = [
   <div class="wrap nav danini-header">
     <a class="brand" href={home} aria-label={isDe ? "DANINI — Startseite" : "DANINI — Početna"}>
       <span class="mark" aria-hidden="true">D</span>
-      <span>DANINI<small>AUTO · DIGITAL · AI</small></span>
+      <span>DANINI<small>AUTODANINI · BY DANINI</small></span>
     </a>
 
     <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>

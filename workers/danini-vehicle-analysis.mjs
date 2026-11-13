@@ -1,3 +1,4 @@
+import {evaluateListingWithAI,isAiConfigured} from './danini-vehicle-ai.mjs';
 /** Safe, clearly labelled NON-AI listing text extraction.
  * Never fetch third-party URLs: listing-site consent and SSRF safety take precedence.
  * AI activation requires separate reviewed provider binding and spending approval.
@@ -68,10 +69,27 @@ export async function handleVehicleAnalysis(request,env={}){
   if(count>=5)return json({error:'rate_limited'},429);
   await env.PARTNERS.put(key,String(count+1),{expirationTtl:3600});
  }catch{return json({error:'rate_limit_unavailable'},503)}
+ // Additional daily inference cap (best-effort KV; protects ordinary usage, not a strict monetary ceiling).
+ let aiBudgetOk=false;
+ if(isAiConfigured(env)){
+  try{
+   const budgetKey='vehicle-ai-daily:'+new Date().toISOString().slice(0,10);
+   const dailyCount=Number(await env.PARTNERS.get(budgetKey)||0);
+   if(dailyCount<20){
+    // Reserve a slot before inference. Concurrent KV writes are not an atomic budget.
+    await env.PARTNERS.put(budgetKey,String(dailyCount+1),{expirationTtl:90000});
+    aiBudgetOk=true;
+   }
+  }catch{aiBudgetOk=false;}
+ }
  const fields=normalizeFields(extract(source));
  const missing=Object.entries({brand:fields.brand,model:fields.model,year:fields.year,mileageKm:fields.mileageKm,priceEur:fields.priceEur,fuel:fields.fuel,gearbox:fields.gearbox}).filter(([,v])=>v==null).map(([k])=>k);
  const warnings=[];
  if(/unfallfrei|bez udesa/i.test(source))warnings.push(language==='de'?'Unfallfreiheit wird behauptet, aber nicht unabhängig belegt.':'Tvrdi se da vozilo nije imalo udes, ali to nije nezavisno potvrđeno.');
  if(/scheckheftgepflegt|servisna knjiga/i.test(source))warnings.push(language==='de'?'Servicehistorie wird behauptet; Belege anfordern.':'Servisna istorija se tvrdi; tražite dokumentaciju.');
- return json({status:'preliminary',method:'rule_based_text_extraction',aiUsed:false,sourceType:'user_supplied_text',fields,missing,warnings,questions:question[language],independentVerificationRequired:true,disclaimer:language==='de'?'Automatische Texterkennung, KEINE KI-Analyse, keine Fahrzeugbewertung oder unabhängige Prüfung.':'Automatsko izdvajanje iz teksta, NIJE AI analiza, procena vrednosti niti nezavisna provera.'});
+ const ai=aiBudgetOk?await evaluateListingWithAI(source,fields,language,env):{aiUsed:false,aiStatus:isAiConfigured(env)?'daily_limit':'disabled'};
+ return json({status:ai.aiUsed?'ai_assisted':'preliminary',method:ai.aiUsed?'workers_ai_plus_text_extraction':'rule_based_text_extraction',
+  aiUsed:ai.aiUsed,aiStatus:ai.aiStatus,...(ai.aiUsed?{aiModel:ai.aiModel,aiRisks:ai.aiRisks,aiSellerQuestions:ai.aiSellerQuestions}:{}),
+  sourceType:'user_supplied_text',fields,missing,warnings,questions:question[language],independentVerificationRequired:true,
+  disclaimer:language==='de'?(ai.aiUsed?'KI-unterstützte Prüfung des vom Nutzer kopierten Textes. Aussagen und Risiken sind NICHT unabhängig verifiziert.':'Automatische Texterkennung, KEINE KI-Analyse, keine Fahrzeugbewertung oder unabhängige Prüfung.'):(ai.aiUsed?'AI-podržana provera teksta koji je korisnik kopirao. Tvrdnje i rizici NISU nezavisno provereni.':'Automatsko izdvajanje iz teksta, NIJE AI analiza, procena vrednosti niti nezavisna provera.')});
 }

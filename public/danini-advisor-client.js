@@ -7,7 +7,7 @@
   const messages = lang === 'de' ? {
     loading: 'Eingabe wird vorbereitet …', missing: 'Angaben fehlen — beantworten Sie drei Fragen.',
     ready: 'Alle drei Antworten liegen vor. Dies ist eine Selbstauskunft, keine Fahrzeugprüfung.',
-    invalid: 'Bitte eine gültige https-Inseratadresse oder eine 17-stellige FIN eingeben.',
+    invalid: 'Bitte https-Inserat, 17-stellige FIN oder Beschreibung (mindestens 30 Zeichen) eingeben.',
     contact: 'Name, gültige E-Mail und Datenschutzeinwilligung sind erforderlich.',
     captcha: 'Bitte die Sicherheitsprüfung abschließen.', unavailable: 'Anfragen sind derzeit nicht verfügbar.',
     sending: 'Anfrage wird übermittelt …', sent: 'Anfrage angenommen. Referenz: ',
@@ -19,7 +19,7 @@
   } : {
     loading: 'Priprema unosa …', missing: 'Nedostaju podaci — odgovorite na tri pitanja.',
     ready: 'Sva tri odgovora su uneta. Ovo su izjave korisnika, a ne pregled vozila.',
-    invalid: 'Unesite ispravan https URL oglasa ili VIN sa 17 znakova.',
+    invalid: 'Unesite https oglas, VIN od 17 znakova ili opis od najmanje 30 znakova.',
     contact: 'Obavezni su ime, ispravna e-mail adresa i saglasnost za obradu.',
     captcha: 'Završite bezbednosnu proveru.', unavailable: 'Slanje upita trenutno nije dostupno.',
     sending: 'Slanje upita …', sent: 'Upit prihvaćen. Referenca: ',
@@ -34,6 +34,7 @@
   const cta = el('advisor-cta');
   const status = el('advisor-status');
   const input = el('listing');
+  try { const saved = sessionStorage.getItem('danini-advisor-source-v1'); if (saved) { input.value = saved.slice(0,6000); sessionStorage.removeItem('danini-advisor-source-v1'); } } catch {}
   const answers = [null, null, null];
   let phase = 'idle', busy = false, captchaToken = '', captchaWidget = null;
   let serviceEnabled = false;
@@ -64,15 +65,16 @@
     });
   });
   input.addEventListener('input', () => {
-    el('vehicle-identifier').textContent = input.value.trim() || '—';
+    el('vehicle-identifier').textContent = (input.value.trim().slice(0,180) || '—');
   });
   update();
   const validSource = value => {
     const v = value.trim();
     if (/^[A-HJ-NPR-Z0-9]{17}$/i.test(v)) return true;
+    if (v.length >= 30 && v.length <= 6000 && !/^https?:\/\//i.test(v)) return true;
     try {
       const u = new URL(v);
-      return u.protocol === 'https:' && !!u.hostname && !u.username && !u.password && v.length <= 500;
+      return u.protocol === 'https:' && !!u.hostname && !u.username && !u.password && v.length <= 6000;
     } catch { return false; }
   };
   const feedback = el('advisor-feedback');
@@ -105,6 +107,8 @@
     if (cta.disabled || !answers.every(a => a !== null) || busy) return;
     const source = input.value.trim();
     if (!validSource(source)) { show(messages.invalid); input.focus(); return; }
+    // Protected backend still accepts URL/VIN only; never send copied text until updated.
+    if (!/^[A-HJ-NPR-Z0-9]{17}$/i.test(source) && !/^https:\/\//i.test(source)) { show(lang === 'de' ? 'Textprüfung bleibt lokal. Kontaktieren Sie uns für eine manuelle Prüfung.' : 'Provera teksta ostaje lokalna. Kontaktirajte nas za ručnu proveru.'); return; }
     if (!form.reportValidity() || !el('advisor-consent').checked) { show(messages.contact); return; }
     if (!serviceEnabled) { show(messages.unavailable); return; }
     if (!captchaToken) { show(messages.captcha); return; }

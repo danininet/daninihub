@@ -58,7 +58,7 @@ for (const [locale, slugs] of Object.entries({de:["ueber-danini","danini-methode
     assert.ok(!html.includes("noindex,follow"), file);
     assert.ok(html.includes('mailto:info@daninihub.com') || html.includes('/#contact'), file);
     assert.ok(html.includes('hreflang="de"') && html.includes('hreflang="sr"'), file);
-    assert.ok((html.match(/<h1(?:\\s|>)/g)||[]).length === 1, file);
+    assert.ok((html.match(/<h1(?:\s|>)/g) || []).length === 1, file);
   }
 }
 const redirects = fs

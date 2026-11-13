@@ -1,0 +1,31 @@
+name: AutoDanini Astro QA (no deployment)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/danini-advisor-client.js'
+      - 'tests/b2b/autodanini-home-qa.test.mjs'
+      - '.github/workflows/autodanini-astro-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  astro-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Check PR207 client JavaScript
+        run: node --check public/danini-advisor-client.js
+      - name: Static integration contract (SR/DE)
+        run: node --test tests/b2b/autodanini-home-qa.test.mjs
+      - name: Astro type and template checks
+        run: npm run check:b2b
+      - name: Build Astro SR/DE static pages
+        run: npm run build:b2b

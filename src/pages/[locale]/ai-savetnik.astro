@@ -74,6 +74,7 @@ const questions=de?[
      </form>
      <div id="advisor-turnstile"></div>
      <button id="advisor-cta" class="button" type="button" disabled>{de?"Manuelle Prüfung anfragen":"Zatraži ručnu proveru"}</button>
+     <a class="advisor-email-fallback" href="mailto:info@daninihub.com?subject=AutoDanini%20-%20Fahrzeugpruefung">{de?"Anfrage stattdessen per E-Mail senden":"Pošalji zahtev putem e-maila"}</a>
      <p id="advisor-feedback" role="status" aria-live="polite"></p>
      <p class="micro">{de?"Dies ist eine Selbsteinschätzung, kein Nachweis für Eigentum, Zustand oder Betrug. Freigabe und Versand hängen vom konfigurierten Backend ab.":"Ovo je samoprocena, ne dokaz vlasništva, stanja ili prevare. Slanje zavisi od aktivnog i bezbedno konfigurisanog servera."}</p>
     </section>
@@ -142,7 +143,10 @@ const questions=de?[
 .advisor-check input{width:19px;height:19px;flex:none;margin:2px 0 0}
 #advisor-turnstile{min-height:0}
 #advisor-cta{width:100%;min-height:54px;margin-top:15px;background:#0f766e;color:#fff;border:none;border-radius:10px;font-weight:790;font-size:.94rem}
-#advisor-cta:disabled{opacity:.65;cursor:not-allowed}
+#advisor-cta:disabled{display:none}
+.advisor-email-fallback{display:flex;align-items:center;justify-content:center;min-height:54px;background:#0d776b;color:#fff!important;border-radius:11px;padding:13px 18px;margin-top:16px;font-weight:780;font-size:.92rem;text-align:center;text-decoration:none!important}
+.advisor-email-fallback:hover{background:#095e55}
+.advisor-email-fallback:focus-visible{outline:3px solid #facc15;outline-offset:4px}
 #advisor-feedback{font-size:.89rem}
 .advisor-back{margin:30px 0 0!important}
 .advisor-back a{color:#0f766e;font-weight:750;text-decoration:underline;text-underline-offset:4px}

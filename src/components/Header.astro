@@ -11,12 +11,12 @@ const isDe = locale === "de";
 const home = isDe ? "/" : "/sr/";
 const navItems = [
   { href: home, label: isDe ? "Home" : "Početna" },
-  { href: `/${locale}/cbam/`, label: "CBAM Pre-Check" },
+  { href: `/${locale}/cbam/`, label: isDe ? "CBAM-Vorprüfung für Importeure" : "Preliminarna CBAM provera za uvoznike" },
   {
     href: `/${locale}/subcontractor/`,
-    label: isDe ? "Subcontractor (SOKA/FKS)" : "Podizvođači (SOKA/FKS)",
+    label: isDe ? "Nachunternehmer prüfen — Unterlagen, SOKA-BAU und Zollkontrollen" : "Provera podizvođača i potrebne dokumentacije",
   },
-  { href: `/${locale}/nearshoring/`, label: "Nearshoring" },
+  { href: `/${locale}/nearshoring/`, label: isDe ? "Produktionspartner in Südosteuropa finden" : "Proizvodnja i poslovna saradnja — DACH i Balkan" },
   { href: "/auto/", label: "AutoDanini" },
   { href: `${home}#contact`, label: isDe ? "Kontakt" : "Kontakt" },
 ];

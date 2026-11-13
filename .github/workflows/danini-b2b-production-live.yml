@@ -29,7 +29,7 @@ jobs:
           for (const p of ['/', '/de/', '/sr/']) {
             const html=await get(p);
             assert.match(html,/CBAM/i,p+' must show new B2B homepage');
-            assert.match(html,/Nearshoring/i,p+' must show B2B navigation');
+            assert.match(html,/Produktionspartner|Proizvodnja i poslovna saradnja/i,p+' must show understandable production-partner navigation');
             assert.match(html,/<html lang="(de|sr)"/i,p+' must be localized');
           }
           const sitemap=await fetch(origin+'/sitemap.xml',{signal:AbortSignal.timeout(20000)});

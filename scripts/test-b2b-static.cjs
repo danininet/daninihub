@@ -42,14 +42,12 @@ for (const locale of locales)
         `${file}: missing ${url}`,
       );
     }
-    const legal = [
-      "impressum",
-      "datenschutz",
-      "agb",
-      "ai-transparenz",
-    ].includes(slug);
-    const shouldNoindex = slug === "ai-transparenz" || (legal && locale === "sr");
+    const shouldNoindex = slug === "ai-transparenz";
     assert.equal(html.includes("noindex,follow"), shouldNoindex, file);
+    if (["impressum", "datenschutz", "agb"].includes(slug)) {
+      assert.ok(!/\[POPUNITI:|Nacrt za proveru|pravna verifikacija u toku|kontakt@daninihub\.com/i.test(html), file);
+      assert.ok(html.includes("info@daninihub.com"), file);
+    }
     count++;
   }
 const redirects = fs
@@ -65,5 +63,5 @@ for (const [from, to, status] of redirects) {
   assert.ok(!map.has(to), "redirect chain " + from);
 }
 console.log(
-  `PASS ${count} B2B pages, language/SEO/local links, 11 redirects, published DE legal and SR draft isolation.`,
+  `PASS ${count} B2B pages, language/SEO/local links, 11 redirects, published DE/SR legal pages.`,
 );

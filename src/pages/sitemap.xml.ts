@@ -3,7 +3,7 @@ export function GET() {
   const urls = [
     "https://daninihub.com/",
     ...["de", "sr"].flatMap((l) =>
-      ["", ...verticals].map(
+      ["", ...verticals, "impressum", "datenschutz", "agb"].map(
         (s) => `https://daninihub.com/${l}/${s ? s + "/" : ""}`,
       ),
     ),

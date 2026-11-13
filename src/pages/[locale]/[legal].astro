@@ -18,12 +18,9 @@ const page = legal[locale][slug];
   title={page.title}
   description={page.title}
   slug={slug}
-  noindex={locale === "sr" || slug === "ai-transparenz"}
+  noindex={slug === "ai-transparenz"}
 >
   <article class="wrap legal">
-    {locale === "sr" && (
-      <p class="draft">Nacrt za proveru. Nije odobreno za objavljivanje.</p>
-    )}
     <h1>{page.title}</h1>
     {page.sections.map(([title, text]) => (
       <section>

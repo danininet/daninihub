@@ -10,8 +10,8 @@ const c = content[locale];
   locale={locale}
   title={
     locale === "de"
-      ? "Dokumentation & digitale Vorbereitung für DACH und Balkan"
-      : "Dokumentacija i digitalna priprema za DACH i Balkan"
+      ? "DANINI — Digitale Unternehmensunterstützung DACH und Balkan"
+      : "DANINI — Digitalna poslovna podrška DACH i Balkan"
   }
   description={c.intro}
 >
@@ -20,15 +20,15 @@ const c = content[locale];
       <div>
         <span class="eyebrow">{c.eyebrow}</span>
         <h1>
-          {c.title}
-          <br />
-          <span class="accent">{c.accent}</span>
+          {locale === "de" ? "Ihr Vorhaben verdient eine klare Entscheidung." : "Od pravog pitanja do jasne odluke."}
+          <span class="accent hero-line">{locale === "de" ? "Mit DANINI." : "Uz DANINI."}</span>
         </h1>
-        <p class="intro">{c.intro}</p>
+        <p class="intro">{locale === "de" ? "Wir verbinden Unternehmen zwischen DACH und Balkan: Informationen klären, Geschäftspartner vorbereiten und administrative Aufgaben nachvollziehbar bearbeiten. Digitale Systeme unterstützen — wichtige Entscheidungen treffen Menschen." : "Povezujemo firme iz DACH regiona i Balkana: razjašnjavamo informacije, pripremamo poslovne kontakte i uređujemo administrativne zadatke. Digitalni sistemi pomažu — važne odluke donose ljudi."}</p>
         <div class="actions">
           <a class="button" href="#contact">
             {c.cta} ↗
           </a>
+          <a class="button secondary" href={locale === "de" ? "/de/danini-methode/" : "/sr/danini-metoda/"}>{locale === "de" ? "Unsere Arbeitsweise" : "Kako radimo"} ↗</a>
         </div>
         <p class="micro">
           {locale === "de"
@@ -46,13 +46,19 @@ const c = content[locale];
         }
       >
         <div class="visual-head">
-          <span>DANINI / BUSINESS DESK</span>
+          <span>DANINI / BUSINESS OPERATIONS</span>
           <span>DE · AT · CH</span>
         </div>
         <div class="bridge">
           <strong>DACH</strong>
           <span></span>
           <strong>BALKAN</strong>
+        </div>
+        <div class="visual-agent-label">{locale === "de" ? "UNSER NACHVOLLZIEHBARER ARBEITSABLAUF" : "NAŠ PROVERLJIVI NAČIN RADA"}</div>
+        <div class="workflow-preview">
+          <span>{locale === "de" ? "Anliegen" : "Upit"}</span><span>→</span>
+          <span>{locale === "de" ? "Prüfen" : "Provera"}</span><span>→</span>
+          <span>{locale === "de" ? "Freigabe" : "Odobrenje"}</span>
         </div>
         {c.cards.map((v) => (
           <div class="visual-row">
@@ -83,6 +89,14 @@ const c = content[locale];
       </span>
     </div>
   </div>
+  <section class="master-teaser" aria-labelledby="master-teaser-title">
+    <div class="wrap master-teaser-inner">
+      <div><span class="eyebrow">DANINI OS · {locale === "de" ? "METHODE" : "METODA"}</span>
+        <h2 id="master-teaser-title">{locale === "de" ? "Frag KI — KI fragt zurück." : "Pitaj AI — AI pita tebe!"}</h2>
+        <p>{locale === "de" ? "Nicht irgendeine Antwort. Erst die richtigen Fragen, dann Fakten, Optionen und eine menschliche Entscheidung. Unsere regelbasierte Vorbereitung ist von freigabepflichtigen, noch nicht aktivierten KI-Funktionen getrennt." : "Ne bilo kakav odgovor. Najpre prava pitanja, zatim činjenice, opcije i ljudska odluka. Priprema zasnovana na pravilima odvojena je od AI funkcija koje još nisu odobrene za rad."}</p></div>
+      <div class="master-teaser-action"><a class="button" href={locale === "de" ? "/de/danini-methode/" : "/sr/danini-metoda/"}>{locale === "de" ? "Die sechs Schritte ansehen" : "Pogledajte šest koraka"} ↗</a><a class="link" href={locale === "de" ? "/de/ueber-danini/" : "/sr/o-danini/"}>{locale === "de" ? "Über DANINI" : "O DANINI"} ↗</a></div>
+    </div>
+  </section>
   <section class="section white" id="services">
     <div class="wrap">
       <div class="section-head">
@@ -137,9 +151,10 @@ const c = content[locale];
   <section class="section dark">
     <div class="wrap two-col">
       <div>
-        <span class="eyebrow">AI + HUMAN REVIEW</span>
+        <span class="eyebrow">DANINI OS · ASSISTED OPERATIONS</span>
         <h2>{c.ai}</h2>
         <p>{c.aiText}</p>
+        <p class="micro">{locale === "de" ? "Heute: regelbasierte Zuordnung und vorbereitete Prüf- und Freigabeschritte. Generative KI und erweiterte Dokumentenannahme sind derzeit nicht aktiv." : "Danas: razvrstavanje po pravilima i pripremljeni koraci za proveru i odobravanje. Generativni AI i napredni prijem dokumenata trenutno nisu aktivni."}</p>
         <a
           class="button secondary"
           href={`/${locale}/ai-transparenz/`}

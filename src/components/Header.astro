@@ -1,0 +1,85 @@
+---
+import type { Locale } from "../lib/content";
+
+interface Props {
+  locale: Locale;
+  slug?: string;
+}
+
+const { locale, slug = "" } = Astro.props;
+const isDe = locale === "de";
+const home = isDe ? "/" : "/sr/";
+const navItems = [
+  { href: home, label: isDe ? "Home" : "Početna" },
+  { href: `/${locale}/cbam/`, label: "CBAM Pre-Check" },
+  {
+    href: `/${locale}/subcontractor/`,
+    label: isDe ? "Subcontractor (SOKA/FKS)" : "Podizvođači (SOKA/FKS)",
+  },
+  { href: `/${locale}/nearshoring/`, label: "Nearshoring" },
+  { href: "/auto/", label: "AutoDanini" },
+  { href: `${home}#contact`, label: isDe ? "Kontakt" : "Kontakt" },
+];
+---
+
+<header>
+  <div class="wrap nav danini-header">
+    <a class="brand" href={home} aria-label="DANINI — Home">
+      <span class="mark" aria-hidden="true">D</span>
+      <span>DANINI<small>DACH ↔ BALKAN</small></span>
+    </a>
+
+    <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
+      {navItems.map((item) => (
+        <a href={item.href}>{item.label}</a>
+      ))}
+    </nav>
+
+    <div class="lang" aria-label={isDe ? "Sprache" : "Jezik"}>
+      {(["de", "sr"] as const).map((language) => (
+        <a
+          href={`/${language}/${slug ? slug + "/" : ""}`}
+          lang={language}
+          aria-current={language === locale ? "page" : undefined}
+        >
+          {language.toUpperCase()}
+        </a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<style>
+  .danini-header {
+    gap: 18px;
+  }
+  .danini-header .business-nav {
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    line-height: 1.5;
+  }
+  .danini-header .business-nav a:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+  .danini-header .lang {
+    flex-shrink: 0;
+  }
+  @media (max-width: 1050px) {
+    .danini-header {
+      flex-wrap: wrap;
+      padding-block: 18px;
+    }
+    .danini-header .business-nav {
+      order: 3;
+      width: 100%;
+      margin-left: 0;
+      justify-content: flex-start;
+    }
+    .danini-header .lang {
+      margin-left: auto;
+    }
+  }
+</style>

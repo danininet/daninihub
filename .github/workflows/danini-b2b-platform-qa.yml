@@ -1,7 +1,7 @@
 name: DANINI B2B platform QA
 on:
   push:
-    branches: [codex/danini-b2b-platform-20261113]
+    branches: [main, codex/danini-b2b-platform-20261113]
   pull_request:
     paths: ['src/**', 'tests/b2b/**', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json']
 permissions:

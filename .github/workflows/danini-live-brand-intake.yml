@@ -17,9 +17,18 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify DANINI Cloudflare brand Worker module syntax
         run: node --check workers/danini-brand-overlay.mjs
-      - name: Audit all key public site pages and favicon
+      - name: Validate PR against isolated static preview build
+        if: github.event_name == 'pull_request'
+        run: |
+          node --check scripts/danini-advisor-pages.cjs
+          node --check public/danini-advisor-client.js
+          node --test tests/b2b/ai-intake.test.mjs
+          node --test tests/test-danini-contact-worker.mjs
+      - name: Audit currently deployed public site (production monitoring only)
+        if: github.event_name != 'pull_request'
         run: node scripts/audit-danini-live.mjs
       - name: Check live master brand, existing AutoDanini and protected intake
+        if: github.event_name != 'pull_request'
         run: |
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';

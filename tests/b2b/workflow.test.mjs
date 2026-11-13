@@ -41,7 +41,7 @@ for (const scenario of ["approve", "reject", "timeout", "tampered"])
         const { caseId } = await (await intake(req(), e)).json();
         globalThis.fetch = async (_url, options) => {
           const msg = JSON.parse(options.body);
-          if (msg.textContent?.includes("administrative report")) finalSends++;
+          if (msg.subject?.startsWith("DANINI | ") && msg.textContent) finalSends++;
           return Response.json({ messageId: "test-provider-id" });
         };
         const step = {

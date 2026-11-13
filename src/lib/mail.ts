@@ -9,6 +9,20 @@ export async function mail(
 ) {
   if (!env.BREVO_API_KEY || !env.DANINI_BREVO_SENDER || !env.DANINI_NOTIFY_TO)
     throw Error("MAIL_NOT_CONFIGURED");
+  if (env.MAIL_TEST_RECIPIENT) {
+    const recipients = [message.to, message.cc, message.bcc].flatMap((x) =>
+      Array.isArray(x) ? x : [],
+    );
+    if (
+      !recipients.length ||
+      recipients.some(
+        (r: any) =>
+          typeof r?.email !== "string" ||
+          r.email.toLowerCase() !== env.MAIL_TEST_RECIPIENT!.toLowerCase(),
+      )
+    )
+      throw Error("TEST_RECIPIENT_ONLY");
+  }
   const id = `${caseId}:${kind}`;
   const claim = await env.DANINI_DB.prepare(
     "INSERT OR IGNORE INTO mail_outbox(id,case_id,state,created_at) VALUES (?,?,'submitting',?)",

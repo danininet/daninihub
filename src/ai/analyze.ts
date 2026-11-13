@@ -1,5 +1,8 @@
 import type { Env } from "../lib/env";
 export interface Draft {
+  facts?: string[];
+  unknowns?: string[];
+  auri?: { status: "PASS" | "NEEDS_REVIEW" | "STOP"; reason: string };
   schemaVersion: 1;
   generatedBy: "rules" | "ai";
   model: string;
@@ -21,6 +24,7 @@ export function validateDraft(value: any): value is Draft {
     ["de", "sr"].includes(value.language) &&
     ["cbam", "subcontractor", "nearshoring"].includes(value.vertical) &&
     typeof value.summary === "string" &&
+    value.summary.trim().length > 0 &&
     value.summary.length <= 5000 &&
     ["missingData", "questions", "limitations"].every(
       (k) =>
@@ -92,6 +96,29 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
         ],
   };
   base.missingData = lists[input.vertical] || [];
+  base.questions = base.missingData
+    .map((item) =>
+      de
+        ? `Welche Angaben haben Sie zu: ${item}?`
+        : `Koje podatke imate za: ${item}?`,
+    )
+    .slice(0, 3);
+  base.facts = [
+    de
+      ? `Kundenangaben (nicht unabhängig geprüft): ${input.company}; ${input.country}; ${input.vertical}.`
+      : `Navodi kupca (nisu nezavisno provereni): ${input.company}; ${input.country}; ${input.vertical}.`,
+  ];
+  base.unknowns = [
+    de
+      ? "Richtigkeit und Vollständigkeit der Angaben; fachliche Bewertung; Aufwand und vereinbarter Preis."
+      : "Tačnost i potpunost podataka; stručna procena; potreban rad i ugovorena cena.",
+  ];
+  base.auri = {
+    status: "NEEDS_REVIEW",
+    reason: de
+      ? "Kundenangaben und Entwurf erfordern menschliche Prüfung. Keine externe Recherche ausgeführt."
+      : "Navodi kupca i nacrt zahtevaju ljudsku proveru. Spoljno istraživanje nije izvršeno.",
+  };
   // Disabled means rules-based document triage, never a falsely labelled AI analysis.
   if (env.AI_ENABLED !== "true") return base;
   if (
@@ -150,10 +177,32 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
     throw Error("AI_SCHEMA_FAILED");
   return {
     ...output,
+    facts: base.facts,
+    unknowns: base.unknowns,
+    auri: base.auri,
     generatedBy: "ai",
     model: env.AI_MODEL,
     promptVersion: "b2b-v1",
     createdAt: base.createdAt,
     limitations: [...base.limitations, ...output.limitations].slice(0, 10),
+  };
+}
+
+// This filter checks workflow quality and approval, never regulatory compliance.
+export function auriFilter(draft: unknown, approved = false, cycles = 0) {
+  if (cycles > 3 || !validateDraft(draft))
+    return {
+      status: "STOP" as const,
+      reason: "Invalid draft or clarification limit exceeded.",
+    };
+  if (!approved)
+    return {
+      status: "NEEDS_REVIEW" as const,
+      reason: "Human review of the exact draft is required.",
+    };
+  return {
+    status: "PASS" as const,
+    reason:
+      "Valid draft and recorded approval; not a legal or regulatory clearance.",
   };
 }

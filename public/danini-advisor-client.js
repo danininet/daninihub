@@ -1,0 +1,141 @@
+/* DANINI Advisor — three-question state machine; no live listing scrape or automated valuation. */
+(() => {
+  'use strict';
+  const root = document.querySelector('[data-advisor]');
+  if (!root) return;
+  const lang = root.dataset.locale === 'de' ? 'de' : 'sr';
+  const messages = lang === 'de' ? {
+    loading: 'Eingabe wird vorbereitet …', missing: 'Angaben fehlen — beantworten Sie drei Fragen.',
+    ready: 'Alle drei Antworten liegen vor. Dies ist eine Selbstauskunft, keine Fahrzeugprüfung.',
+    invalid: 'Bitte eine gültige https-Inseratadresse oder eine 17-stellige FIN eingeben.',
+    contact: 'Name, gültige E-Mail und Datenschutzeinwilligung sind erforderlich.',
+    captcha: 'Bitte die Sicherheitsprüfung abschließen.', unavailable: 'Anfragen sind derzeit nicht verfügbar.',
+    sending: 'Anfrage wird übermittelt …', sent: 'Anfrage angenommen. Referenz: ',
+    failure: 'Senden nicht möglich. Bitte später erneut versuchen.',
+    green: 'Angabe bestätigt (nicht unabhängig geprüft)',
+    amber: 'Nachweis offen / weitere Prüfung erforderlich',
+    red: 'Kritischer Widerspruch — menschliche Prüfung erforderlich',
+    unknown: 'Offen'
+  } : {
+    loading: 'Priprema unosa …', missing: 'Nedostaju podaci — odgovorite na tri pitanja.',
+    ready: 'Sva tri odgovora su uneta. Ovo su izjave korisnika, a ne pregled vozila.',
+    invalid: 'Unesite ispravan https URL oglasa ili VIN sa 17 znakova.',
+    contact: 'Obavezni su ime, ispravna e-mail adresa i saglasnost za obradu.',
+    captcha: 'Završite bezbednosnu proveru.', unavailable: 'Slanje upita trenutno nije dostupno.',
+    sending: 'Slanje upita …', sent: 'Upit prihvaćen. Referenca: ',
+    failure: 'Slanje nije uspelo. Pokušajte kasnije.',
+    green: 'Potvrđeno prema korisniku (nije nezavisno provereno)',
+    amber: 'Dokaz nedostaje / potrebna provera',
+    red: 'Kritično neslaganje — potrebna ljudska provera',
+    unknown: 'Nepoznato'
+  };
+  const el = id => root.querySelector('#' + id);
+  const form = el('advisor-contact');
+  const cta = el('advisor-cta');
+  const status = el('advisor-status');
+  const input = el('listing');
+  const answers = [null, null, null];
+  let phase = 'idle', busy = false, captchaToken = '', captchaWidget = null;
+  let serviceEnabled = false;
+  const stateRows = [...root.querySelectorAll('[data-risk-row]')];
+  const update = () => {
+    const done = answers.every(a => a !== null);
+    cta.disabled = !done || busy;
+    phase = busy ? 'submitting' : done ? 'complete' : 'missing_data';
+    status.textContent = done ? messages.ready : messages.missing;
+    stateRows.forEach((row, i) => {
+      const a = answers[i];
+      const dot = row.querySelector('.dot');
+      dot.className = 'dot ' + (a === null ? 'neutral' : a === 'confirmed' ? 'green' : a === 'missing' ? 'yellow' : 'red');
+      row.querySelector('[data-risk-label]').textContent = a === null ? messages.unknown : a === 'confirmed' ? messages.green : a === 'missing' ? messages.amber : messages.red;
+    });
+  };
+  phase = 'loading';
+  status.textContent = messages.loading;
+  root.querySelectorAll('[data-question]').forEach((card, i) => {
+    card.querySelectorAll('button[data-answer]').forEach(button => {
+      button.disabled = false;
+      button.addEventListener('click', () => {
+        if (busy) return;
+        answers[i] = button.dataset.answer;
+        card.querySelectorAll('button[data-answer]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+        update();
+      });
+    });
+  });
+  input.addEventListener('input', () => {
+    el('vehicle-identifier').textContent = input.value.trim() || '—';
+  });
+  update();
+  const validSource = value => {
+    const v = value.trim();
+    if (/^[A-HJ-NPR-Z0-9]{17}$/i.test(v)) return true;
+    try {
+      const u = new URL(v);
+      return u.protocol === 'https:' && !!u.hostname && !u.username && !u.password && v.length <= 500;
+    } catch { return false; }
+  };
+  const feedback = el('advisor-feedback');
+  const show = message => { feedback.textContent = message; };
+  function loadTurnstile(sitekey) {
+    if (!sitekey || typeof sitekey !== 'string') return;
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.onload = () => {
+      if (!window.turnstile) return;
+      captchaWidget = window.turnstile.render(el('advisor-turnstile'), {
+        sitekey,
+        callback: token => { captchaToken = token; },
+        'expired-callback': () => { captchaToken = ''; },
+        'error-callback': () => { captchaToken = ''; }
+      });
+    };
+    script.onerror = () => show(messages.unavailable);
+    document.head.appendChild(script);
+  }
+  fetch('/api/lead/status', { headers: { accept: 'application/json' }, credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      serviceEnabled = data?.enabled === true;
+      if (serviceEnabled) loadTurnstile(data.turnstileSiteKey);
+      else show(messages.unavailable);
+    }).catch(() => show(messages.unavailable));
+  cta.addEventListener('click', async () => {
+    if (cta.disabled || !answers.every(a => a !== null) || busy) return;
+    const source = input.value.trim();
+    if (!validSource(source)) { show(messages.invalid); input.focus(); return; }
+    if (!form.reportValidity() || !el('advisor-consent').checked) { show(messages.contact); return; }
+    if (!serviceEnabled) { show(messages.unavailable); return; }
+    if (!captchaToken) { show(messages.captcha); return; }
+    const payload = {
+      language: lang, source,
+      answers: answers.map((value, index) => ({ question: index + 1, status: value })),
+      name: el('advisor-name').value.trim(),
+      email: el('advisor-email').value.trim(),
+      consent: el('advisor-consent').checked,
+      'cf-turnstile-response': captchaToken
+    };
+    busy = true;
+    update();
+    show(messages.sending);
+    try {
+      const response = await fetch('/api/ai-intake', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok || !data.accepted) throw new Error('REJECTED');
+      show(messages.sent + String(data.reference || '—'));
+    } catch {
+      show(messages.failure);
+    } finally {
+      busy = false;
+      captchaToken = '';
+      if (window.turnstile && captchaWidget !== null) window.turnstile.reset(captchaWidget);
+      update();
+    }
+  });
+})();

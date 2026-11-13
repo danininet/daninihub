@@ -37,15 +37,23 @@ const home = `/${locale}/`;
       <div class="auto-advisor-box">
         <span class="eyebrow">{de ? "SCHRITT 1 · INSERAT / FIN" : "KORAK 1 · OGLAS / VIN"}</span>
         <h2>{de ? "Welches Auto möchten Sie prüfen?" : "Koji automobil želite da proverite?"}</h2>
-        <p>{de ? "Fügen Sie den Link zu einem Inserat (z. B. mobile.de) oder die 17-stellige FIN ein." : "Zalepite link oglasa (npr. mobile.de) ili unesite VIN od 17 znakova."}</p>
-        <form class="auto-advisor-form" action={`/${locale}/ai-savetnik/`} method="get">
-          <label for="vehicle-source">{de ? "Inseratslink oder FIN" : "Link oglasa ili VIN"}</label>
+        <p>{de ? "Fügen Sie einen Link von einem beliebigen deutschen Autoportal oder Kleinanzeigenmarkt (z. B. mobile.de, Kleinanzeigen, Quoka, lokale Händler) ein — alternativ FIN oder kopierten Anzeigentext." : "Zalepite link bilo kog nemačkog oglasnika (mobile.de, Kleinanzeigen, Quoka, lokalni oglasi) ili unesite VIN odnosno kopirani opis automobila."}</p>
+        <form class="auto-advisor-form" id="universal-advisor-form" data-locale={locale}>
+          <label for="vehicle-source">{de ? "Inseratslink, FIN oder Anzeigentext" : "Link oglasa, VIN ili tekst opisa"}</label>
+          <textarea id="vehicle-source" name="source" required maxlength="6000" rows="4" placeholder={de ? "Link eines beliebigen Inserats (mobile.de, Kleinanzeigen...) oder FIN / Beschreibung einfügen..." : "Zalepite link bilo kog oglasnika (mobile.de, Kleinanzeigen...) ili unesite VIN / opis automobila..."} autocomplete="off" aria-describedby="source-privacy" ></textarea>
+          <p id="source-privacy" class="micro">{de ? "Keine Ausweisbilder, Telefonnummern, Adressen oder Zahlungsdaten einfügen. Die Eingabe bleibt bei dieser Vorprüfung im Browser." : "Ne unosite slike dokumenata, brojeve telefona, adrese ni podatke za plaćanje. Unos za ovu preliminarnu proveru ostaje u pregledaču."}</p>
           <div class="auto-advisor-controls">
-            <input id="vehicle-source" name="source" type="text" required maxlength="500" placeholder={de ? "https://www.mobile.de/… oder 17-stellige FIN" : "https://www.mobile.de/… ili VIN (17 znakova)"} autocomplete="off" />
-            <button class="button" type="submit">{de ? "Prüfung vorbereiten" : "Pripremi proveru"}</button>
+            <button class="button" type="submit">{de ? "Prüfpunkte anzeigen" : "Prikaži tačke provere"}</button>
           </div>
         </form>
-        <p class="micro">{de ? "Die Eingabe startet die Vorbereitung. Die automatisierte KI-Auswertung aus PR #207 ist noch nicht in main integriert." : "Unos otvara pripremu provere. Automatska AI analiza iz PR #207 još nije integrisana u main."}</p>
+        <div class="auto-risk-result" id="universal-risk-result" hidden role="status" aria-live="polite">
+          <h3 id="universal-risk-heading"></h3>
+          <p id="universal-risk-summary"></p>
+          <ul id="universal-risk-list"></ul>
+          <p class="micro">{de ? "Dies ist eine vorsorgliche Checkliste, keine KI-Analyse, Betrugserkennung oder Prüfung des Verkäufers." : "Ovo je preventivna kontrolna lista, ne AI analiza, otkrivanje prevare niti provera prodavca."}</p>
+          <a class="button secondary" href="#contact">{de ? "Persönliche Prüfung anfragen" : "Zatraži ličnu proveru"}</a>
+        </div>
+        <p class="micro">{de ? "Die KI-Analyse aus PR #207 ist noch nicht mit dieser Seite verbunden. Es werden keine Inserate automatisch geöffnet oder geprüft." : "AI analiza iz PR #207 još nije povezana sa ovom stranicom. Oglasi se ne otvaraju niti automatski proveravaju."}</p>
       </div>
     </div>
   </section>
@@ -112,7 +120,7 @@ const home = `/${locale}/`;
   .auto-advisor-box h2 {font-size:clamp(1.7rem,3vw,2.65rem)}
   .auto-advisor-form label {display:block;margin:1.5rem 0 .6rem;font-weight:700;font-size:.85rem}
   .auto-advisor-controls {display:flex;gap:.8rem}
-  .auto-advisor-controls input {min-width:0;flex:1;font-size:1rem}
+  .auto-advisor-form textarea {width:100%;min-height:120px;resize:vertical;font-size:1rem;line-height:1.5}\n  .auto-risk-result {margin-top:1.5rem;padding:1.5rem;border:1px solid #e0c56c;border-radius:12px;background:#fffbeb}\n  .auto-risk-result[hidden] {display:none}\n  .auto-risk-result h3 {font-size:1.25rem}\n  .auto-risk-result li {margin:.65rem 0;line-height:1.6}
   .auto-advisor-box .micro {margin-bottom:0}
   .auto-steps {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem}
   .auto-steps article {border:1px solid #e2e8f0;border-radius:14px;padding:1.7rem;background:#fff}
@@ -134,3 +142,63 @@ const home = `/${locale}/`;
   @media(max-width:850px) {.auto-hero-grid,.auto-inspection-grid {grid-template-columns:1fr}.auto-steps,.auto-storage-grid {grid-template-columns:1fr}}
   @media(max-width:680px) {.auto-advisor-controls {flex-direction:column}.auto-advisor-controls .button {width:100%}}
 </style>
+<script>
+  // Client-side guidance only: neither fetches third-party sites nor submits user data.
+  const form = document.getElementById("universal-advisor-form") as HTMLFormElement | null;
+  const textarea = document.getElementById("vehicle-source") as HTMLTextAreaElement | null;
+  const result = document.getElementById("universal-risk-result");
+  const heading = document.getElementById("universal-risk-heading");
+  const summary = document.getElementById("universal-risk-summary");
+  const list = document.getElementById("universal-risk-list");
+  if (form && textarea && result && heading && summary && list) {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const value = textarea.value.trim();
+      if (!value) { textarea.focus(); return; }
+      const de = form.dataset.locale === "de";
+      const vin = /^[A-HJ-NPR-Z0-9]{17}$/i.test(value);
+      const match = value.match(/https?:\/\/[^\s<>"']+/i);
+      let url: URL | null = null;
+      if (match) {
+        try {
+          const parsed = new URL(match[0]);
+          if (parsed.protocol === "https:" || parsed.protocol === "http:") url = parsed;
+        } catch { /* Treat as copied text */ }
+      }
+      const host = url?.hostname.toLowerCase().replace(/^www\./, "") || "";
+      const classified = vin ? "vin" : url ? "link" : "text";
+      const marketplace = !!host && (host === "kleinanzeigen.de" || host.endsWith(".kleinanzeigen.de") || host === "quoka.de" || host.endsWith(".quoka.de"));
+      const privateOrUnknown = !vin && (marketplace || classified === "text" || (classified === "link" && !/(^|\.)(mobile\.de|autoscout24\.de)$/.test(host)));
+      const questionsDe = [
+        "FIN am Fahrzeug mit Zulassungsbescheinigung Teil I und Teil II abgleichen; Fahrzeugidentität und Berechtigung zur Veräußerung unabhängig prüfen.",
+        "Verkäuferidentität und Verfügungsberechtigung klären; bei fremdem Namen Vollmacht und Eigentumskette prüfen.",
+        "HU-Bericht, Wartungsbelege, Laufleistung, Unfallschäden und offene Finanzierung anhand unabhängiger Nachweise prüfen.",
+        "Keine Anzahlung, Ausweiskopie oder Zahlungsdaten nur auf Basis des Inserats versenden; sichere Übergabe und Zahlung vereinbaren.",
+        "Vor dem Kauf unabhängige Besichtigung und Diagnose vereinbaren."
+      ];
+      const questionsSr = [
+        "Uporediti VIN na vozilu sa saobraćajnom dozvolom i dokumentima vozila (Zulassungsbescheinigung Teil I i II); nezavisno proveriti identitet vozila i pravo prodaje.",
+        "Proveriti identitet prodavca i ovlašćenje za prodaju; ako vozilo nije na njegovo ime, tražiti dokaz o ovlašćenju i vlasništvu.",
+        "Tražiti TÜV/HU izveštaj, servisnu istoriju, dokaze o kilometraži, udesima i eventualnom finansiranju.",
+        "Ne uplaćivati avans niti slati lična dokumenta samo na osnovu oglasa; dogovoriti bezbedno plaćanje i primopredaju.",
+        "Organizovati nezavisni fizički pregled i dijagnostiku pre kupovine."
+      ];
+      heading.textContent = de ? "Checkliste zur Kaufvorbereitung" : "Kontrolna lista pre kupovine";
+      summary.textContent = de
+        ? (privateOrUnknown
+          ? "Kleinanzeige, lokaler Anbieter oder kopierter Text: Verkäuferstatus und Eigentumsnachweise sind unklar. Zusätzliche Identitäts- und Dokumentenprüfung empfohlen. Die Plattform allein belegt keinen Betrug."
+          : "Auch auf großen Portalen und bei FIN-Eingaben müssen Angaben unabhängig überprüft werden. Keine automatische Auswertung durchgeführt.")
+        : (privateOrUnknown
+          ? "Mali oglas, lokalni izvor ili kopirani tekst: status prodavca i dokumentacija nisu potvrđeni. Preporučena je dodatna provera identiteta i vlasništva. Sama platforma nije dokaz prevare."
+          : "I kod velikih platformi ili unosa VIN-a podaci zahtevaju nezavisnu proveru. Automatska analiza nije izvršena.");
+      list.replaceChildren();
+      for (const text of de ? questionsDe : questionsSr) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        list.appendChild(li);
+      }
+      result.hidden = false;
+      result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+</script>

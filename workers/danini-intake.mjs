@@ -102,12 +102,97 @@ function bodyText(d,ref){
   'Bitte über die bestätigte geschäftliche Antwortadresse antworten.'
  ].join('\n');
 }
+
+/** Strict vehicle self-assessment intake. No URL fetching, no automated diagnosis. */
+function validateAiIntake(body){
+ if(!body||typeof body!=='object'||Array.isArray(body)||body.consent!==true)return null;
+ if(body.language!=='de'&&body.language!=='sr')return null;
+ const source=safeField(body.source,500);
+ const vin=/^[A-HJ-NPR-Z0-9]{17}$/i.test(source);
+ let httpsUrl=false;
+ if(!vin){
+  try{
+   const u=new URL(source);
+   httpsUrl=u.protocol==='https:' && !!u.hostname && !u.username && !u.password && source.length<=500;
+  }catch{}
+ }
+ if(!vin&&!httpsUrl)return null;
+ const name=safeField(body.name,90);
+ const email=safeField(body.email,254).toLowerCase();
+ if(!name||!validEmail(email))return null;
+ if(!Array.isArray(body.answers)||body.answers.length!==3)return null;
+ const statuses=[];
+ for(let i=0;i<3;i++){
+  const entry=body.answers[i];
+  if(!entry||typeof entry!=='object'||Array.isArray(entry)||entry.question!==i+1||
+    !['confirmed','missing','critical'].includes(entry.status))return null;
+  statuses.push(entry.status);
+ }
+ return {source,name,email,language:body.language,statuses};
+}
+function aiReport(data,reference){
+ const topics=data.language==='de'?
+  ['Herkunftsnachweis','FIN und Fahrzeugpapiere','Service-/Schadenhistorie']:
+  ['Dokaz o poreklu','VIN i dokumenta','Servisna i štetna istorija'];
+ const labels={confirmed:'CONFIRMED (self-reported; NOT independently checked)',
+  missing:'AMBER / MISSING EVIDENCE',critical:'RED / REQUIRES HUMAN REVIEW'};
+ return ['DANINI — AI Berater / AI Savetnik','Referenz: '+reference,
+  'Sprache / Jezik: '+data.language,
+  'Inserat / VIN: '+data.source,
+  'Kontakt: '+data.name,'E-Mail: '+data.email,'',
+  'Risikomatrix / Matrica rizika:',
+  ...data.statuses.map((value,i)=>(i+1)+'. '+topics[i]+': '+labels[value]),
+  '', 'Nur Angaben des Absenders / Samo izjave podnosioca.',
+  'Keine automatische Fahrzeuginspektion / Nema automatskog pregleda.',
+  'Anfrage zur manuellen Prüfung; kein Newsletter-Abonnement.'
+ ].join('\n');
+}
+export async function handleAiIntake(request,env={}){
+ if(request.method!=='POST')return response({error:'method_not_allowed'},405);
+ if(!isReady(env))return response({error:'not_configured'},503);
+ const origin=request.headers.get('origin');
+ if(!['https://daninihub.com','https://www.daninihub.com'].includes(origin))
+  return response({error:'invalid_origin'},403);
+ if(!/^application\/json(?:\s*;|$)/i.test(request.headers.get('content-type')||''))
+  return response({error:'invalid_type'},415);
+ if(Number(request.headers.get('content-length')||'0')>MAX_BYTES)
+  return response({error:'too_large'},413);
+ let body;
+ try{
+  const raw=await request.text();
+  if(raw.length>MAX_BYTES)return response({error:'too_large'},413);
+  body=JSON.parse(raw);
+ }catch{return response({error:'invalid_json'},400);}
+ if(!body||typeof body!=='object'||Array.isArray(body))return response({error:'invalid_fields'},400);
+ const token=body['cf-turnstile-response'];
+ if(!await verifyCaptcha(request,env,token))
+  return response({error:'human_verification_failed'},403);
+ const data=validateAiIntake(body);
+ if(!data)return response({error:'invalid_fields'},400);
+ const reference='DN-AI-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+crypto.randomUUID().slice(0,8).toUpperCase();
+ const email={
+  sender:sender(env),
+  to:[{email:'kontakt@daninihub.com'}],
+  replyTo:{email:data.email,name:data.name},
+  subject:'DANINI AI / Fahrzeugprüfung / '+reference,
+  textContent:aiReport(data,reference),
+  tags:['danini','vehicle-intake','manual-review']
+ };
+ try{await brevoSend(env,email);}
+ catch{
+  // Do not leak provider response, account settings or personal data.
+  return response({error:'mail_provider_unavailable'},502);
+ }
+ return response({accepted:true,reference},202);
+}
+
 export async function handleApi(request,env={}){
  const url=new URL(request.url);
  if(url.pathname==='/api/lead/status' && request.method==='GET'){
   return response({enabled:isReady(env),channel:isReady(env)?'brevo':'setup_required',
    turnstileSiteKey:isReady(env)?env.DANINI_TURNSTILE_SITEKEY:null});
  }
+ if(url.pathname==='/api/ai-intake')return handleAiIntake(request,env);
  if(url.pathname!=='/api/lead')return response({error:'not_found'},404);
  if(request.method!=='POST')return response({error:'method_not_allowed'},405);
  if(!isReady(env))return response({error:'not_configured'},503);

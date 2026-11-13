@@ -1,0 +1,42 @@
+name: DANINI B2B staging live verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/danini-b2b-staging-live.yml'
+      - 'wrangler.b2b-staging.jsonc'
+      - 'src/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check deployed B2B staging site and fail-closed intake
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const origin = 'https://danini-b2b-staging.dragangaganet.workers.dev';
+          const routes = ['/', '/de/', '/sr/', '/de/cbam/', '/de/subcontractor/', '/de/nearshoring/', '/de/impressum/', '/de/datenschutz/', '/de/agb/', '/auto/'];
+          async function get(route) {
+            const res = await fetch(origin + route, {signal: AbortSignal.timeout(18000), headers: {'cache-control':'no-cache'}});
+            const body = await res.text();
+            console.log(res.status, route, body.length);
+            assert.equal(res.status, 200, route + ': ' + body.slice(0, 120));
+            return body;
+          }
+          for (const route of routes) {
+            const body = await get(route);
+            assert.match(body, /DANINI/i, route + ' must contain brand');
+          }
+          const health = JSON.parse(await get('/api/health'));
+          assert.deepEqual(health, {status:'ok'});
+          const config = JSON.parse(await get('/api/tenant-config'));
+          assert.equal(config.enabled, false, 'Staging intake must stay closed until live security tests');
+          console.log('PASS: deployed B2B staging routes and closed intake');
+          JS

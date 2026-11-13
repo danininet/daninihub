@@ -36,7 +36,7 @@ const fs = require("fs");
         lang: document.documentElement.lang,
         canonical: document.querySelector("link[rel=canonical]")?.href,
         formStatus: document.querySelector("#form-status")?.textContent,
-        buttonDisabled: document.querySelector("button[type=submit]")?.disabled,
+        buttonDisabled: document.querySelector("#intake button[type=submit]")?.disabled,
       }));
       if (
         data.overflow ||
@@ -47,7 +47,20 @@ const fs = require("fs");
         errors.length
       )
         throw Error(JSON.stringify({ data, errors }));
-      results.push({ width, locale, ...data, errors });
+      // Three-question local DANINI OS assistant must prepare, not send, a request.
+      await page.locator('#clarity-form select[name="vertical"]').selectOption("nearshoring");
+      await page.locator('#clarity-form select[name="country"]').selectOption("DE");
+      await page.locator('#clarity-form textarea[name="goal"]').fill(
+        "We need reliable business production partners and a list of open documentation requirements."
+      );
+      await page.locator('#clarity-form button[type="submit"]').click();
+      if (!(await page.locator("#clarity-result").isVisible())) throw Error("Clarity result missing");
+      await page.locator("#clarity-transfer").click();
+      if (await page.locator('#intake select[name="vertical"]').inputValue() !== "nearshoring")
+        throw Error("Clarity vertical not transferred");
+      if (!(await page.locator('#intake textarea[name="message"]').inputValue()).includes("production partners"))
+        throw Error("Clarity goal not transferred");
+      results.push({ width, locale, ...data, clarityAssistant: "pass", errors });
     }
     await page.close();
   }

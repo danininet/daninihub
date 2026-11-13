@@ -76,6 +76,17 @@
       for(const [key,label] of Object.entries(lang==='de'?deNames:names))line(label,data.fields?.[key]);
       line(lang==='de'?'Fehlende Angaben':'Nedostajući podaci',(data.missing||[]).join(', ')||'—');
       for(const risk of data.warnings||[])line(lang==='de'?'Hinweis':'Napomena',risk);
+      if(data.aiUsed===true){
+        line(lang==='de'?'KI-Status':'AI status',lang==='de'?'KI-Auswertung des kopierten Inseratstextes':'AI analiza kopiranog teksta oglasa');
+        for(const item of data.aiRisks||[])line(lang==='de'?'KI-Risiko (unbestätigt)':'AI rizik (nepotvrđeno)',item.evidence+' — '+item.concern);
+        const aiTitle=document.createElement('strong');aiTitle.textContent=lang==='de'?'Weitere KI-Fragen an den Verkäufer':'Dodatna AI pitanja za prodavca';
+        analysisOutput.append(aiTitle);
+        const aiUl=document.createElement('ul');
+        for(const q of data.aiSellerQuestions||[]){const li=document.createElement('li');li.textContent=q;aiUl.append(li);}
+        analysisOutput.append(aiUl);
+      }else{
+        line(lang==='de'?'KI nicht verfügbar':'AI nije dostupan',lang==='de'?'Nur regelbasierte Vorprüfung; keine KI-Analyse ausgeführt.':'Prikazana je samo preliminarna provera; AI analiza nije izvršena.');
+      }
       const h=document.createElement('strong');h.textContent=lang==='de'?'Fragen an den Verkäufer':'Pitanja za prodavca';analysisOutput.append(h);
       const ul=document.createElement('ul');
       for(const q of data.questions||[]){const li=document.createElement('li');li.textContent=q;ul.append(li);}

@@ -1,0 +1,41 @@
+name: DANINI B2B production safety and cutover readiness
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/danini-b2b-production-live.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate live B2B pages and existing paid/lead API without submitting data
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const origin='https://daninihub.com';
+          async function get(path){
+            const r=await fetch(origin+path,{signal:AbortSignal.timeout(20000),headers:{'cache-control':'no-cache','accept':'text/html,application/json'}});
+            const t=await r.text();
+            console.log(path,r.status,t.length,r.headers.get('content-type'));
+            assert.equal(r.status,200, path+': '+t.slice(0,180));
+            return t;
+          }
+          for(const p of ['/de/cbam/','/de/subcontractor/','/de/nearshoring/','/sr/cbam/','/de/impressum/','/de/datenschutz/','/de/agb/','/auto/']){
+            assert.match(await get(p),/DANINI/i,p+' branded HTML');
+          }
+          assert.deepEqual(JSON.parse(await get('/api/health')),{status:'ok'});
+          const cfg=JSON.parse(await get('/api/tenant-config'));
+          assert.equal(cfg.enabled,false,'advanced B2B intake must remain disabled until separate validation');
+          const lead=JSON.parse(await get('/api/lead/status'));
+          assert.equal(lead.enabled,true,'existing protected Brevo lead intake must remain live');
+          const digital=JSON.parse(await get('/api/danini/digital/status'));
+          assert.equal(digital.ok,true,'existing digital payment API must remain reachable');
+          assert.equal(typeof digital.enabled,'boolean');
+          console.log('PASS B2B pages, health, closed advanced intake, live Brevo lead API and digital status');
+          JS

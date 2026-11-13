@@ -19,10 +19,10 @@ const questions=de?[
  title={de?"KI-Berater — Fahrzeugkauf vorbereiten":"AI Savetnik — priprema kupovine vozila"}
  description={de?"Drei Fragen und dokumentierte Prüfpunkte vor dem Autokauf.":"Tri pitanja i kontrolne tačke pre kupovine automobila."}>
  <section class="section advisor-page" data-advisor data-locale={locale}>
-  <div class="wrap">
+  <div class="wrap advisor-wrap">
    <span class="eyebrow">AUTODANINI · {de?"KI-BERATER":"AI SAVETNIK"}</span>
-   <h1>{de?"Fahrzeugdaten prüfen. Risiken hinterfragen.":"Proverite podatke. Postavite prava pitanja."}</h1>
-   <p>{de?"Frag KI — KI fragt zurück: drei Fragen vor Ihrer Entscheidung. Dies ist eine dokumentierte Selbstauskunft, keine Live-Analyse eines Inserats.":"Pitaj AI — AI pita tebe: tri pitanja pre odluke. Ovo je strukturirana samoprocena, a ne automatsko čitanje oglasa."}</p>
+   <h1>{de?"Ihr Auto. Ihre Fragen. Ein klarer Prüfweg.":"Tvoj automobil. Tri pitanja. Jasnija odluka."}</h1>
+   <p class="advisor-lead">{de?"Erfassen Sie das Inserat, beantworten Sie drei konkrete Fragen und sehen Sie offene Risiken und bekannte Kosten auf einen Blick. Keine automatische Auswertung externer Verkaufsportale.":"Unesi oglas, odgovori na tri konkretna pitanja i pogledaj šta treba dodatno proveriti i koliko iznose poznati troškovi. Bez automatskog čitanja oglasnika."}</p>
    <div class="advisor-grid">
     <section class="advisor-panel">
      <h2>01 / {de?"Fahrzeugangaben":"Podaci o vozilu"}</h2>
@@ -78,7 +78,7 @@ const questions=de?[
      <p class="micro">{de?"Dies ist eine Selbsteinschätzung, kein Nachweis für Eigentum, Zustand oder Betrug. Freigabe und Versand hängen vom konfigurierten Backend ab.":"Ovo je samoprocena, ne dokaz vlasništva, stanja ili prevare. Slanje zavisi od aktivnog i bezbedno konfigurisanog servera."}</p>
     </section>
    </div>
-   <p><a href={`/${locale}/#ai-savetnik`}>{de?"Zurück zur Startseite":"Nazad na početnu"}</a></p>
+   <p class="advisor-back"><a href={`/${locale}/#ai-savetnik`}>{de?"← Zurück zur Startseite":"← Nazad na početnu"}</a></p>
   </div>
  </section>
 </Base>
@@ -99,31 +99,54 @@ const questions=de?[
  }
 </script>
 <style>
- .advisor-page{background:#f8fafc}.advisor-page h1{font-size:clamp(2rem,4vw,3.7rem)}
- .advisor-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1fr);gap:1rem;align-items:start;margin:2.3rem 0}
- .advisor-panel{min-width:0;background:#fff;border:1px solid #dce4ed;border-radius:15px;padding:1.5rem}
- .advisor-panel h2{font-size:1.35rem;margin:0 0 1.2rem}
- .advisor-panel label{display:block;font-weight:650;font-size:.85rem;margin:.7rem 0}
- .advisor-panel textarea{min-height:150px;resize:vertical}
- .source-preview{overflow-wrap:anywhere;max-height:115px;overflow:auto;font-size:.8rem}
- .advisor-warning{background:#fff9e7;border:1px solid #e8d8a7;border-radius:9px;padding:1rem;font-size:.87rem}
- .advisor-warning ul{padding-left:1rem;line-height:1.7}
- .advisor-question{background:#f1f5f9;padding:1rem;margin:.9rem 0;border-radius:11px}
- .advisor-question h3{font-size:1rem;margin:0 0 .75rem}
- .answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
- .answer-grid button{border:1px solid #bdcad9;background:#fff;border-radius:8px;padding:.8rem;cursor:pointer;text-align:left;font:inherit;font-size:.83rem}
- .answer-grid button[aria-pressed=true]{border:2px solid #0c766e;background:#e3faf5}
- .advisor-risk{display:flex;gap:.7rem;align-items:center;border-bottom:1px solid #e2e8f0;padding:1rem 0;font-size:.88rem}
- .dot{width:12px;height:12px;border-radius:50%;background:#64748b;flex:none}
- .dot.green{background:#169b76}.dot.yellow{background:#e4a11b}.dot.red{background:#e04f58}
- .advisor-contact{display:grid;gap:.45rem;margin:1rem 0}.advisor-contact a{text-decoration:underline;font-size:.83rem}
- .advisor-check{display:flex!important;gap:.6rem;align-items:flex-start}
- .advisor-check input{width:auto}
- .advisor-panel details{margin:1.2rem 0}.advisor-panel summary{cursor:pointer;font-weight:700}
- .advisor-panel .button{width:100%}
- .advisor-costs{display:grid;gap:.45rem;margin-top:1rem}
- .advisor-costs input{max-width:100%}
- .advisor-costs output{font-weight:800;padding:.75rem;background:#e9f9f4;border-radius:8px;margin-top:.6rem}
- @media(max-width:1100px){.advisor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.advisor-panel:last-child{grid-column:1/-1}}
- @media(max-width:700px){.advisor-grid{grid-template-columns:1fr}.advisor-panel:last-child{grid-column:auto}.answer-grid{grid-template-columns:1fr}}
+.advisor-page{background:linear-gradient(145deg,#f3f7fb 0%,#eaf1f8 100%);padding:clamp(44px,5vw,82px) 0 95px;color:#142338;min-height:75vh}
+.advisor-wrap{max-width:1440px}
+.advisor-page .eyebrow{color:#0f766e;font-weight:800;letter-spacing:.15em;font-size:.74rem}
+.advisor-page h1{color:#112338;font-size:clamp(2.5rem,4.7vw,4.8rem);max-width:1000px;font-weight:810;line-height:1.08;letter-spacing:-.055em;margin:24px 0}
+.advisor-page .advisor-lead{color:#40536a;max-width:800px;line-height:1.75;font-size:clamp(1.04rem,1.4vw,1.22rem)}
+.advisor-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin:clamp(30px,4vw,55px) 0 20px}
+.advisor-panel{min-width:0;background:#fff;border:1px solid #d2deea;border-radius:22px;padding:clamp(24px,3vw,40px);box-shadow:0 15px 44px #142b4210;color:#142338}
+.advisor-panel:nth-child(3){grid-column:1/-1;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);column-gap:40px;align-items:start}
+.advisor-panel:nth-child(3)>h2{grid-column:1/-1}
+.advisor-panel h2{color:#142338;font-size:clamp(1.4rem,2vw,1.8rem);font-weight:790;line-height:1.25;margin:0 0 23px;letter-spacing:-.03em}
+.advisor-panel h3{color:#142338}
+.advisor-panel p{color:#46586d;line-height:1.7}
+.advisor-panel label{display:block;color:#142338;font-weight:700;font-size:.9rem;margin:10px 0 9px}
+.advisor-panel :is(input,textarea){font:inherit;background:#fcfdff;color:#13253b;border:1.5px solid #a1b3c3;border-radius:11px;padding:12px 15px;width:100%}
+.advisor-panel textarea{min-height:167px;resize:vertical;font-size:1rem;line-height:1.6}
+.advisor-panel textarea::placeholder{color:#64748b;opacity:1}
+.source-preview{overflow-wrap:anywhere;max-height:125px;overflow:auto;font-size:.79rem;padding:8px 0;color:#41556a}
+.advisor-warning{background:#fffaea;border:1px solid #eadbaa;border-radius:13px;padding:20px;margin-top:20px;font-size:.88rem;color:#513e17}
+.advisor-warning strong{color:#413117}
+.advisor-warning p{color:#59461f}
+.advisor-warning ul{padding-left:19px;line-height:1.75;margin-bottom:0}
+.advisor-question{background:#f3f7fa;padding:20px;margin:13px 0;border:1px solid #dfE8f0;border-radius:13px}
+.advisor-question h3{font-size:1rem;line-height:1.55;margin:0 0 16px;font-weight:740}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.answer-grid button{border:1.5px solid #a1b3c3;background:#fff;color:#17283a;border-radius:10px;padding:13px 15px;cursor:pointer;text-align:left;font:inherit;font-size:.86rem;line-height:1.45;font-weight:670;min-height:52px}
+.answer-grid button:hover{border-color:#0f766e}
+.answer-grid button[aria-pressed=true]{border:2px solid #0b7669;background:#ddf8ef;color:#064c46}
+.advisor-risk{display:flex;gap:12px;align-items:center;border-bottom:1px solid #e2e8f0;padding:13px 0;color:#22354b;font-size:.94rem}
+.dot{width:13px;height:13px;border-radius:50%;background:#8697ab;flex:none}
+.dot.green{background:#169b76}.dot.yellow{background:#e4a11b}.dot.red{background:#e04f58}
+#advisor-status{border-radius:10px;background:#eff7fa;padding:15px;color:#233e53;font-size:.9rem;font-weight:680}
+.advisor-panel details{margin:22px 0}
+.advisor-panel summary{cursor:pointer;font-weight:800;color:#0f766e;padding:13px 0;font-size:1rem}
+.advisor-costs{display:grid;grid-template-columns:1fr 1fr;gap:9px 16px;margin-top:16px}
+.advisor-costs label{margin:8px 0 0}
+.advisor-costs input{max-width:100%;grid-row:auto}
+.advisor-costs output{grid-column:1/-1;font-size:1.12rem;font-weight:800;padding:19px;background:#e4f6ef;color:#07564e;border-radius:11px;margin-top:12px}
+.advisor-contact{display:grid;gap:5px;margin:0}
+.advisor-contact a{text-decoration:underline;color:#0f766e;font-size:.85rem}
+.advisor-check{display:flex!important;gap:10px;align-items:flex-start;font-size:.81rem!important;line-height:1.55}
+.advisor-check input{width:19px;height:19px;flex:none;margin:2px 0 0}
+#advisor-turnstile{min-height:0}
+#advisor-cta{width:100%;min-height:54px;margin-top:15px;background:#0f766e;color:#fff;border:none;border-radius:10px;font-weight:790;font-size:.94rem}
+#advisor-cta:disabled{opacity:.65;cursor:not-allowed}
+#advisor-feedback{font-size:.89rem}
+.advisor-back{margin:30px 0 0!important}
+.advisor-back a{color:#0f766e;font-weight:750;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:1020px){.advisor-panel:nth-child(3){display:block}.advisor-grid{gap:18px}}
+@media(max-width:790px){.advisor-grid{grid-template-columns:1fr}.advisor-panel:nth-child(3){grid-column:auto}.advisor-panel{padding:24px}.advisor-page{padding-top:48px}.advisor-page h1{font-size:clamp(2.35rem,7vw,3.2rem)}}
+@media(max-width:420px){.answer-grid{grid-template-columns:1fr}.advisor-costs{grid-template-columns:1fr}.advisor-costs output{grid-column:1}.advisor-panel{padding:20px}.advisor-page h1{font-size:2.25rem}}
 </style>

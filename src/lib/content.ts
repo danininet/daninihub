@@ -49,7 +49,7 @@ export const content = {
       {
         id: "cbam",
         num: "01",
-        title: "CBAM Data & Pre-Compliance",
+        title: "CBAM-Vorprüfung für Importeure",
         short: "Daten ordnen. Fehlende Angaben erkennen.",
         text: "Für Importeure und Lieferanten: Produkt-, Mengen- und Emissionsinformationen in eine nachvollziehbare Arbeitsgrundlage überführen.",
         items: [
@@ -63,7 +63,7 @@ export const content = {
       {
         id: "subcontractor",
         num: "02",
-        title: "DACH Subcontractor Readiness",
+        title: "Nachunternehmer prüfen — Unterlagen, SOKA-BAU und Zollkontrollen",
         short: "Teams vorbereiten. Unterlagen zusammenführen.",
         text: "Für Unternehmen mit grenzüberschreitenden Einsätzen: Dokumentation nach Zielland, Tätigkeit und Projekt geordnet.",
         items: [
@@ -77,16 +77,16 @@ export const content = {
       {
         id: "nearshoring",
         num: "03",
-        title: "Nearshoring & Product Compliance",
+        title: "Produktionspartner in Südosteuropa finden",
         short: "Lieferketten aufbauen. Dokumentation stärken.",
-        text: "Für Produzenten und Einkäufer: Herkunfts-, Material- und Produktinformationen für die Zusammenarbeit zwischen Balkan und DACH.",
+        text: "Für Einkäufer und Hersteller mit Produktionsbedarf in Südosteuropa: Wir helfen, Anforderungen zu klären, potenzielle Produktionspartner zu recherchieren, öffentlich zugängliche Firmendaten vorzuprüfen und erste Kontakte vorzubereiten. Sie erhalten eine Kandidatenübersicht mit offenen Prüfpunkten; technische und rechtliche Eignung müssen unabhängig bestätigt werden.",
         items: [
           "Lieferanteninformationen strukturieren",
           "Herkunfts- und Materialnachweise zuordnen",
           "Technische Unterlagen auf Vollständigkeit prüfen",
         ],
         details:
-          "Eine nachvollziehbare Dokumentenstruktur mit offenen Prüfpunkten zu Ursprung, Kennzeichnung und Produktsicherheit. Keine Zertifizierung, Laborprüfung oder automatische Übernahme einer Importeurrolle.",
+          "Ablauf: Bedarf, Produkt und Zielregion angeben; DANINI recherchiert passende Betriebe, sammelt überprüfbare Basisdaten und dokumentiert fehlende Nachweise; nach Ihrer Entscheidung kann eine erste Kontaktaufnahme vorbereitet werden. Keine Garantie für Lieferfähigkeit, Zuverlässigkeit, Preise, Produktkonformität oder Vertragsabschluss. Keine Zertifizierung, Laborprüfung oder Übernahme einer Importeurrolle.",
       },
     ],
   },
@@ -138,7 +138,7 @@ export const content = {
       {
         id: "cbam",
         num: "01",
-        title: "CBAM podaci i preliminarna priprema",
+        title: "Preliminarna CBAM provera za uvoznike",
         short: "Sređeni podaci. Vidljivi nedostaci.",
         text: "Za uvoznike i dobavljače: pregledna radna osnova sa informacijama o proizvodima, količinama i emisijama.",
         items: [
@@ -152,7 +152,7 @@ export const content = {
       {
         id: "subcontractor",
         num: "02",
-        title: "Priprema podizvođača za DACH",
+        title: "Provera podizvođača i potrebne dokumentacije",
         short: "Spremniji timovi. Pregledna dokumentacija.",
         text: "Za preduzeća koja angažuju timove preko granice: dokumentacija razvrstana prema zemlji, delatnosti i projektu.",
         items: [
@@ -166,16 +166,16 @@ export const content = {
       {
         id: "nearshoring",
         num: "03",
-        title: "Nearshoring i dokumentacija proizvoda",
+        title: "Proizvodnja i poslovna saradnja — DACH i Balkan",
         short: "Pouzdanija saradnja. Uređeni podaci.",
-        text: "Za proizvođače i kupce: poreklo, materijali i dokumentacija proizvoda za saradnju Balkana i DACH regiona.",
+        text: "Za kupce i proizvođače koji traže poslovne i proizvodne partnere između DACH regiona i Balkana: pomažemo da se zahtevi definišu, pronađu kandidati, preliminarno provere dostupni poslovni podaci i pripremi kontakt. Dobijate pregled potencijalnih partnera i otvorenih pitanja, ne potvrdu njihove pouzdanosti.",
         items: [
           "Strukturiranje podataka o dobavljačima",
           "Razvrstavanje dokaza o poreklu i sastavu",
           "Provera potpunosti tehničkih dokumenata",
         ],
         details:
-          "Pregledna dokumentacija sa otvorenim tačkama o poreklu, označavanju i bezbednosti proizvoda. Bez sertifikacije, laboratorijskih ispitivanja i automatskog preuzimanja uloge uvoznika.",
+          "Koraci: navedite proizvod, količinu, cilj i zemlju; DANINI istražuje potencijalne firme, beleži javno proverljive podatke i nedostajuće dokumente, pa uz vaše odobrenje priprema prvi kontakt. Ne garantujemo isporuku, cenu, kvalitet, pravnu usklađenost ili zaključenje ugovora. Bez sertifikacije i preuzimanja uloge uvoznika.",
       },
     ],
   },

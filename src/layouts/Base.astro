@@ -1,6 +1,8 @@
 ---
 import "../styles/global.css";
 import type { Locale } from "../lib/content";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 interface Props {
   title: string;
   description: string;
@@ -49,58 +51,10 @@ const isDe = locale === "de";
     <a class="skip" href="#main">
       {isDe ? "Zum Inhalt" : "Pređi na sadržaj"}
     </a>
-    <header>
-      <div class="wrap nav">
-        <a class="brand" href={`/${locale}/`}>
-          <span class="mark" aria-hidden="true">
-            D
-          </span>
-          <span>
-            DANINI<small>DACH ↔ BALKAN</small>
-          </span>
-        </a>
-        <nav aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
-          <a href={`/${locale}/#services`}>{isDe ? "Leistungen" : "Usluge"}</a>
-          <a href={`/${locale}/#process`}>
-            {isDe ? "Arbeitsweise" : "Kako radimo"}
-          </a>
-          <a href="/auto/">AutoDanini ↗</a>
-        </nav>
-        <div class="lang">
-          {["de", "sr"].map((l) => (
-            <a
-              href={`/${l}/${slug ? slug + "/" : ""}`}
-              aria-current={l === locale ? "page" : undefined}
-            >
-              {l.toUpperCase()}
-            </a>
-          ))}
-        </div>
-      </div>
-    </header>
+    <Header locale={locale} slug={slug} />
     <main id="main">
       <slot />
     </main>
-    <footer>
-      <div class="wrap">
-        <div>
-          <b>DANINI</b>
-          <p class="micro">DACH ↔ BALKAN · © {new Date().getFullYear()}</p>
-        </div>
-        <nav
-          aria-label={isDe ? "Rechtliche Informationen" : "Pravne informacije"}
-        >
-          <a href={`/${locale}/impressum/`}>Impressum</a>
-          <a href={`/${locale}/datenschutz/`}>
-            {isDe ? "Datenschutz" : "Privatnost"}
-          </a>
-          <a href={`/${locale}/agb/`}>{isDe ? "AGB" : "Uslovi"}</a>
-          <a href={`/${locale}/ai-transparenz/`}>
-            {isDe ? "KI-Transparenz" : "AI transparentnost"}
-          </a>
-          <a href="mailto:kontakt@daninihub.com">kontakt@daninihub.com</a>
-        </nav>
-      </div>
-    </footer>
+    <Footer locale={locale} />
   </body>
 </html>

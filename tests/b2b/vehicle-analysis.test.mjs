@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {handleVehicleAnalysis} from '../../workers/danini-vehicle-analysis.mjs';
 
 const longText='Volkswagen Golf Baujahr 2018, Diesel, Automatik, 143.000 km, 12.500 EUR. Unfallfrei laut Anbieter, scheckheftgepflegt. Weitere Angaben nach Rückfrage.';
-const make=(source,origin='https://daninihub.com')=>new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin,'content-type':'application/json','cf-connecting-ip':'192.0.2.1'},body:JSON.stringify({language:'de',source,turnstileToken:'mock-token-long-enough'})});
+const make=(source,origin='https://daninihub.com',token='mock-token-long-enough')=>new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin,'content-type':'application/json','cf-connecting-ip':'192.0.2.1'},body:JSON.stringify({language:'de',source,turnstileToken:token})});
 test('URL never fetched; asks for copied ad text',async()=>{
  const r=await handleVehicleAnalysis(make('https://www.mobile.de/fahrzeuge/details.html?id=123'));
  assert.equal(r.status,422);
@@ -14,7 +14,7 @@ test('blocks cross-origin before verification',async()=>{
  assert.equal(r.status,403);
 });
 test('requires CAPTCHA before processing copied text',async()=>{
- const r=await handleVehicleAnalysis(make(longText),{DANINI_TURNSTILE_SECRET:'test'});
+ const r=await handleVehicleAnalysis(make(longText,'https://daninihub.com',''),{DANINI_TURNSTILE_SECRET:'test'});
  assert.equal(r.status,403);
 });
 test('verified text extraction reports gaps and never claims AI',async()=>{

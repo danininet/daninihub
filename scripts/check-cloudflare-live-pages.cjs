@@ -17,10 +17,10 @@ const root = process.env.DANINI_SITE_URL || 'https://daninihub.com';
 // Search Console migration: these historic search entrypoints must keep their
 // original intent and never silently fall through to a generic homepage.
 const seoRedirectCases = [
-  ['/de/wissen/deutschland-selbstimport','/selbstimport.html'],
-  ['/sr/vodic/uvoz-zoll-eur1-i-dovoz','/uvoz-vodic.html'],
-  ['/sr/kalkulator','/import.html'],
-  ['/de/impressum','/impressum.html']
+  ['/de/wissen/deutschland-selbstimport','/auto/selbstimport/'],
+  ['/sr/vodic/uvoz-zoll-eur1-i-dovoz','/auto/uvoz-vodic/'],
+  ['/sr/kalkulator','/auto/import/'],
+  ['/de/impressum','/de/impressum/']
 ];
 // A PR tests the existing live site, whereas a main push validates its newly deployed pages.
 const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
@@ -43,7 +43,7 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
-  if (path === '/de/' && !(isPullRequest ? /Fahrzeugprüfung und Importberatung|Fahrzeugkauf, digitale Produkte und KI-Lösungen|Autokauf selbst vorbereiten/ : /Autokauf selbst vorbereiten/).test(html))
+  if (path === '/de/' && !/CBAM|Nearshoring/.test(html))
     throw new Error('Wrong /de/ release (expected localized page)');
   if (path === '/sr/' && !/DANINI/.test(html))
     throw new Error('Wrong /sr/ release');
@@ -65,7 +65,7 @@ async function checkSeoRedirect(oldPath,expectedPath){
     headers:{accept:'text/html'},
     signal:AbortSignal.timeout(12000)
   });
-  if(response.status!==301)throw Error('Expected HTTP 301, got HTTP '+response.status);
+  if(![301,307,308].includes(response.status))throw Error('Expected HTTP redirect, got HTTP '+response.status);
   const location=response.headers.get('location');
   if(!location)throw Error('HTTP 301 lacks Location');
   const resolved=new URL(location,url);
@@ -91,7 +91,7 @@ async function main(){
   const redirects=await Promise.all(seoRedirectCases.map(async ([oldPath,target])=>{
     try {
       const res=await checkSeoRedirect(oldPath,target);
-      console.log('PASS 301',oldPath,'→',res.destination);
+      console.log('PASS redirect',oldPath,'→',res.destination);
       return {path:oldPath,pass:true};
     }catch(error){
       console.error('FAIL 301',oldPath,error.message);

@@ -1,5 +1,11 @@
 name: AutoDanini Astro QA (no deployment)
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'tests/b2b/autodanini-browser-qa.mjs'
+      - '.github/workflows/autodanini-astro-qa.yml'
   pull_request:
     branches: [main]
     paths:
@@ -46,7 +52,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: autodanini-pr208-responsive-screenshots
+          name: autodanini-contrast-responsive-screenshots
           path: qa-screenshots/
           if-no-files-found: ignore
           retention-days: 7

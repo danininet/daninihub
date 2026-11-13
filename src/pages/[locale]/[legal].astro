@@ -18,14 +18,9 @@ const page = legal[locale][slug];
   title={page.title}
   description={page.title}
   slug={slug}
-  noindex
+  noindex={slug === "ai-transparenz"}
 >
   <article class="wrap legal">
-    <p class="draft">
-      {locale === "de"
-        ? "Entwurf zur Prüfung. Nicht zur Veröffentlichung freigegeben."
-        : "Nacrt za proveru. Nije odobreno za objavljivanje."}
-    </p>
     <h1>{page.title}</h1>
     {page.sections.map(([title, text]) => (
       <section>

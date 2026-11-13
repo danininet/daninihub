@@ -50,6 +50,17 @@ for (const locale of locales)
     }
     count++;
   }
+for (const [locale, slugs] of Object.entries({de:["ueber-danini","danini-methode"],sr:["o-danini","danini-metoda"]})) {
+  for (const slug of slugs) {
+    const file = path.join(root, locale, slug, "index.html");
+    const html = fs.readFileSync(file, "utf8");
+    assert.ok(html.includes(`lang="${locale}"`), file);
+    assert.ok(!html.includes("noindex,follow"), file);
+    assert.ok(html.includes('mailto:info@daninihub.com') || html.includes('/#contact'), file);
+    assert.ok(html.includes('hreflang="de"') && html.includes('hreflang="sr"'), file);
+    assert.ok((html.match(/<h1(?:\\s|>)/g)||[]).length === 1, file);
+  }
+}
 const redirects = fs
   .readFileSync(path.join(root, "_redirects"), "utf8")
   .trim()

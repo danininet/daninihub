@@ -1,0 +1,200 @@
+---
+import Base from "../layouts/Base.astro";
+import Intake from "./Intake.astro";
+import { content, type Locale } from "../lib/content";
+const { locale = "de" } = Astro.props as { locale: Locale };
+const c = content[locale];
+---
+
+<Base
+  locale={locale}
+  title={
+    locale === "de"
+      ? "Dokumentation & digitale Vorbereitung für DACH und Balkan"
+      : "Dokumentacija i digitalna priprema za DACH i Balkan"
+  }
+  description={c.intro}
+>
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">{c.eyebrow}</span>
+        <h1>
+          {c.title}
+          <br />
+          <span class="accent">{c.accent}</span>
+        </h1>
+        <p class="intro">{c.intro}</p>
+        <div class="actions">
+          <a class="button" href="#contact">
+            {c.cta} ↗
+          </a>
+        </div>
+        <p class="micro">
+          {locale === "de"
+            ? "Für Unternehmen · DE / SR · Klar vereinbarter Leistungsumfang"
+            : "Za preduzeća · DE / SR · Jasno dogovoren obim usluge"}
+        </p>
+      </div>
+      <div
+        class="visual"
+        role="img"
+        aria-label={
+          locale === "de"
+            ? "Drei dokumentationsbasierte Leistungen verbinden DACH und Balkan"
+            : "Tri oblasti pripreme dokumentacije povezuju DACH i Balkan"
+        }
+      >
+        <div class="visual-head">
+          <span>DANINI / BUSINESS DESK</span>
+          <span>DE · AT · CH</span>
+        </div>
+        <div class="bridge">
+          <strong>DACH</strong>
+          <span></span>
+          <strong>BALKAN</strong>
+        </div>
+        {c.cards.map((v) => (
+          <div class="visual-row">
+            <b>{v.num}</b>
+            <strong>{v.title}</strong>
+          </div>
+        ))}
+        <div class="visual-foot">
+          {locale === "de"
+            ? "Strukturierte Daten → Menschliche Prüfung"
+            : "Strukturirani podaci → Ljudska provera"}
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="strip">
+    <div class="wrap">
+      <span>
+        {locale === "de" ? "Klare Leistungsgrenzen" : "Jasne granice usluge"}
+      </span>
+      <span>
+        {locale === "de"
+          ? "Zweisprachige Zusammenarbeit"
+          : "Dvojezična saradnja"}
+      </span>
+      <span>
+        {locale === "de" ? "Freigabe durch Menschen" : "Ljudsko odobrenje"}
+      </span>
+    </div>
+  </div>
+  <section class="section white" id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">{c.services}</span>
+        <h2>{c.lead}</h2>
+        <p>{c.sub}</p>
+      </div>
+      <div class="cards">
+        {c.cards.map((v) => (
+          <article class="card">
+            <span class="number">{v.num} / DANINI</span>
+            <h3>{v.title}</h3>
+            <b class="micro">{v.short}</b>
+            <p>{v.text}</p>
+            <ul>
+              {v.items.map((i) => (
+                <li>{i}</li>
+              ))}
+            </ul>
+            <a class="link" href={`/${locale}/${v.id}/`}>
+              {locale === "de"
+                ? "Leistungsumfang ansehen"
+                : "Pogledajte obim usluge"}{" "}
+              ↗
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section" id="process">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">{c.process}</span>
+        <h2>
+          {locale === "de"
+            ? "Vom Vorhaben zur Arbeitsgrundlage."
+            : "Od namere do pregledne dokumentacije."}
+        </h2>
+      </div>
+      <div class="process-grid">
+        {c.flow.map((v, i) => (
+          <div class="step">
+            <span>0{i + 1}</span>
+            <h3>{v}</h3>
+            <p>{c.flowText[i]}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section dark">
+    <div class="wrap two-col">
+      <div>
+        <span class="eyebrow">AI + HUMAN REVIEW</span>
+        <h2>{c.ai}</h2>
+        <p>{c.aiText}</p>
+        <a
+          class="button secondary"
+          href={`/${locale}/ai-transparenz/`}
+          style="color:white"
+        >
+          {locale === "de" ? "Transparenz ansehen" : "Kako koristimo AI"} ↗
+        </a>
+      </div>
+      <div>
+        <div class="pill">
+          01 /{" "}
+          {locale === "de"
+            ? "Strukturierte Informationen"
+            : "Strukturirane informacije"}
+        </div>
+        <div class="pill">
+          02 /{" "}
+          {locale === "de" ? "Nachvollziehbare Entwürfe" : "Proverljivi nacrti"}
+        </div>
+        <div class="pill">
+          03 /{" "}
+          {locale === "de"
+            ? "Freigabe vor dem finalen Bericht"
+            : "Odobrenje pre završnog izveštaja"}
+        </div>
+        <p class="micro">{c.boundary}</p>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="contact">
+    <div class="wrap two-col">
+      <div>
+        <span class="eyebrow">{c.contact}</span>
+        <h2>{c.formTitle}</h2>
+        <p>{c.formText}</p>
+        <p>
+          <a href="mailto:kontakt@daninihub.com">kontakt@daninihub.com ↗</a>
+        </p>
+      </div>
+      <Intake locale={locale} />
+    </div>
+  </section>
+  <div class="wrap">
+    <div class="auto-banner">
+      <div>
+        <b>AutoDanini · by DANINI</b>
+        <p>
+          {locale === "de"
+            ? "Fahrzeugsuche, Kaufvorbereitung und unabhängige Prüfung."
+            : "Pretraga vozila, priprema kupovine i nezavisna provera."}
+        </p>
+      </div>
+      <a class="button secondary" href="/auto/">
+        AutoDanini ↗
+      </a>
+    </div>
+  </div>
+</Base>

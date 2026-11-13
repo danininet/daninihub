@@ -1,0 +1,98 @@
+---
+import { content, type Locale } from "../lib/content";
+const { locale = "de" } = Astro.props as { locale: Locale };
+const c = content[locale];
+---
+
+<form class="form" id="intake" data-locale={locale}>
+  <div class="form-grid">
+    <label class="field">
+      {c.name}
+      <input name="name" autocomplete="name" required maxlength="100" />
+    </label>
+    <label class="field">
+      {c.company}
+      <input
+        name="company"
+        autocomplete="organization"
+        required
+        maxlength="160"
+      />
+    </label>
+    <label class="field">
+      {c.email}
+      <input
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        maxlength="254"
+      />
+    </label>
+    <label class="field">
+      {c.country}
+      <select name="country">
+        <option value="DE">Deutschland</option>
+        <option value="AT">Österreich</option>
+        <option value="CH">Schweiz</option>
+      </select>
+    </label>
+    <label class="field full">
+      {c.area}
+      <select name="vertical">
+        {c.cards.map((v) => (
+          <option value={v.id}>{v.title}</option>
+        ))}
+      </select>
+    </label>
+    <label class="field full">
+      {c.message}
+      <textarea
+        name="message"
+        required
+        minlength="20"
+        maxlength="4000"
+      ></textarea>
+    </label>
+    <label class="field full">
+      {locale === "de"
+        ? "Textunterlagen (optional)"
+        : "Tekstualna dokumentacija (opciono)"}
+      <input
+        id="attachments"
+        type="file"
+        accept=".txt,text/plain"
+        multiple
+        aria-describedby="upload-help"
+      />
+      <span class="micro" id="upload-help">
+        {locale === "de"
+          ? "Bis zu 2 UTF-8-Textdateien, je 32 KB. Keine Ausweise oder sensiblen Personaldaten. PDF/Office-Dateien werden nicht angenommen."
+          : "Do 2 UTF-8 tekstualne datoteke, svaka do 32 KB. Bez ličnih dokumenata i osetljivih podataka. PDF/Office datoteke se ne prihvataju."}
+      </span>
+    </label>
+    <p class="notice full">{c.notice}</p>
+    <label class="check full">
+      <input name="consent" type="checkbox" required />
+      <span>
+        {c.consent}{" "}
+        <a href={`/${locale}/datenschutz/`}>
+          {locale === "de" ? "Datenschutz" : "Privatnost"}
+        </a>
+      </span>
+    </label>
+    <div id="captcha" class="full"></div>
+    <button class="button full" type="submit" disabled>
+      {c.send} ↗
+    </button>
+    <div
+      class="status full"
+      role="status"
+      aria-live="polite"
+      id="form-status"
+    ></div>
+  </div>
+</form>
+<script>
+  import "../lib/intake-client";
+</script>

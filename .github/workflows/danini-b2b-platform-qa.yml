@@ -1,0 +1,44 @@
+name: DANINI B2B platform QA
+on:
+  push:
+    branches: [codex/danini-b2b-platform-20261113]
+  pull_request:
+    paths: ['src/**', 'tests/b2b/**', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run check:b2b && npm run test:b2b && npm run test:regression
+      - run: npm run build:platform && node scripts/test-b2b-static.cjs
+      - run: npx wrangler deploy --dry-run --config wrangler.b2b.jsonc
+      - run: npx wrangler d1 migrations apply DANINI_DB --local --config wrangler.b2b.jsonc
+      - run: npx playwright install --with-deps chromium
+      - name: Browser and Lighthouse
+        run: |
+          npx wrangler dev --local --ip 127.0.0.1 --port 4321 --config wrangler.b2b.jsonc > /tmp/b2b-server.log 2>&1 &
+          for i in $(seq 1 45); do curl -fsS http://127.0.0.1:4321/api/health && break; sleep 1; done
+          curl -fsS http://127.0.0.1:4321/api/health
+          test "$(curl -s -o /tmp/b2b-disabled.json -w '%{http_code}' -X POST http://127.0.0.1:4321/api/intake)" = "503"
+          node scripts/test-b2b-browser.cjs
+          export CHROME_PATH=$(node -e "console.log(require('@playwright/test').chromium.executablePath())")
+          npx lighthouse http://127.0.0.1:4321/de/ --chrome-flags="--headless --no-sandbox" --output=json --output-path=outputs/b2b/lighthouse.json --quiet
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: danini-b2b-review
+          path: |
+            outputs/b2b/
+            dist/
+          retention-days: 7

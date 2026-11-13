@@ -1,0 +1,37 @@
+---
+import Base from "../../layouts/Base.astro";
+import { legal } from "../../lib/legal";
+export function getStaticPaths() {
+  return ["de", "sr"].flatMap((locale) =>
+    ["impressum", "datenschutz", "agb", "ai-transparenz"].map((legal) => ({
+      params: { locale, legal },
+    })),
+  );
+}
+const locale = Astro.params.locale as "de" | "sr";
+const slug = Astro.params.legal as keyof typeof legal.de;
+const page = legal[locale][slug];
+---
+
+<Base
+  locale={locale}
+  title={page.title}
+  description={page.title}
+  slug={slug}
+  noindex
+>
+  <article class="wrap legal">
+    <p class="draft">
+      {locale === "de"
+        ? "Entwurf zur Prüfung. Nicht zur Veröffentlichung freigegeben."
+        : "Nacrt za proveru. Nije odobreno za objavljivanje."}
+    </p>
+    <h1>{page.title}</h1>
+    {page.sections.map(([title, text]) => (
+      <section>
+        <h2>{title}</h2>
+        <p>{text}</p>
+      </section>
+    ))}
+  </article>
+</Base>

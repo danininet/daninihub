@@ -25,3 +25,11 @@ _archive/
 # Local/private large audio files
 *.m4a
 docs/reference/*.m4a
+
+# B2B local builds and private runtime state
+.astro/
+.wrangler/
+autodanini-auto-dist/
+autodanini/staging-v12/public/dragan-business-phone.jpg
+autodanini/staging-v12/public/dragan-business-portrait.jpg
+autodanini/staging-v12/public/images/

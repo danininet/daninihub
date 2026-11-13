@@ -9,22 +9,24 @@ interface Props {
 const { locale, slug = "" } = Astro.props;
 const isDe = locale === "de";
 const home = isDe ? "/" : "/sr/";
+const altSlug = (language: "de" | "sr") => {
+  if (["ueber-danini", "o-danini"].includes(slug)) return language === "de" ? "ueber-danini" : "o-danini";
+  if (["danini-methode", "danini-metoda"].includes(slug)) return language === "de" ? "danini-methode" : "danini-metoda";
+  return slug;
+};
 const navItems = [
-  { href: home, label: isDe ? "Home" : "Početna" },
-  { href: `/${locale}/cbam/`, label: isDe ? "CBAM-Vorprüfung für Importeure" : "Preliminarna CBAM provera za uvoznike" },
-  {
-    href: `/${locale}/subcontractor/`,
-    label: isDe ? "Nachunternehmer prüfen — Unterlagen, SOKA-BAU und Zollkontrollen" : "Provera podizvođača i potrebne dokumentacije",
-  },
-  { href: `/${locale}/nearshoring/`, label: isDe ? "Produktionspartner in Südosteuropa finden" : "Proizvodnja i poslovna saradnja — DACH i Balkan" },
+  { href: home, label: isDe ? "Start" : "Početna" },
+  { href: `${home}#services`, label: isDe ? "Leistungen" : "Usluge" },
+  { href: isDe ? "/de/danini-methode/" : "/sr/danini-metoda/", label: isDe ? "Unsere Methode" : "Naša metoda" },
+  { href: isDe ? "/de/ueber-danini/" : "/sr/o-danini/", label: isDe ? "Über DANINI" : "O DANINI" },
   { href: "/auto/", label: "AutoDanini" },
-  { href: `${home}#contact`, label: isDe ? "Kontakt" : "Kontakt" },
+  { href: `${home}#contact`, label: isDe ? "Projekt anfragen" : "Pošaljite upit" },
 ];
 ---
 
 <header>
   <div class="wrap nav danini-header">
-    <a class="brand" href={home} aria-label="DANINI — Home">
+    <a class="brand" href={home} aria-label={isDe ? "DANINI — Startseite" : "DANINI — Početna"}>
       <span class="mark" aria-hidden="true">D</span>
       <span>DANINI<small>DACH ↔ BALKAN</small></span>
     </a>
@@ -38,7 +40,7 @@ const navItems = [
     <div class="lang" aria-label={isDe ? "Sprache" : "Jezik"}>
       {(["de", "sr"] as const).map((language) => (
         <a
-          href={`/${language}/${slug ? slug + "/" : ""}`}
+          href={`/${language}/${altSlug(language) ? altSlug(language) + "/" : ""}`}
           lang={language}
           aria-current={language === locale ? "page" : undefined}
         >
@@ -54,7 +56,7 @@ const navItems = [
     gap: 18px;
   }
   .danini-header .business-nav {
-    gap: 15px;
+    gap: 17px;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;

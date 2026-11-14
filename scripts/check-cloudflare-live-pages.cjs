@@ -43,8 +43,20 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
-  if (path === '/de/' && !/CBAM|Nearshoring/.test(html))
-    throw new Error('Wrong /de/ release (expected localized page)');
+  if (path === '/de/') {
+    // The current Home.astro is automotive; retired B2B product names are not release markers.
+    const required = [
+      /<html\b[^>]*\blang=["']de["']/i,
+      /<h1\b[^>]*>\s*Fahrzeugkauf in Deutschland\./i,
+      /<form\b[^>]*\bid=["']universal-advisor-form["']/i,
+      /<textarea\b[^>]*\bid=["']vehicle-source["']/i,
+      /href=["']#provera-na-terenu["']/i,
+      /href=["']mailto:info@daninihub\.com/i
+    ];
+    if (response.status !== 200 || new URL(response.url).pathname !== '/de/' ||
+        !required.every(pattern => pattern.test(html)))
+      throw new Error('Wrong /de/ release (expected German automotive homepage and key controls)');
+  }
   if (path === '/sr/' && !/DANINI/.test(html))
     throw new Error('Wrong /sr/ release');
   return {status: response.status, bytes: Buffer.byteLength(html)};

@@ -23,6 +23,12 @@
     }
   ],
   "main": "workers/danini-intake.mjs",
+  "kv_namespaces": [
+    {
+      "binding": "PARTNERS",
+      "id": "b87637aaa2c24b1281a8bd86ca86525d"
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DANINI_DB",

@@ -31,6 +31,8 @@
   };
   const el = id => root.querySelector('#' + id);
   const form = el('advisor-contact');
+  // Keep native submission disabled without an inline handler forbidden by CSP.
+  form.addEventListener('submit', event => event.preventDefault());
   const cta = el('advisor-cta');
   const status = el('advisor-status');
   const input = el('listing');

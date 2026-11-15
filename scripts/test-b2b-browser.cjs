@@ -26,6 +26,11 @@ const assert = require("node:assert/strict");
       });
       for (const locale of ["de", "sr"]) {
         const base = "http://127.0.0.1:4321/" + locale + "/";
+        if (locale === "de") {
+          const rootResponse = await page.goto("http://127.0.0.1:4321/",{waitUntil:"networkidle"});
+          assert.equal(rootResponse.status(),200,"root URL HTTP 200");
+          assert.match(await page.locator("main h1").innerText(),/Klare Prozesse/,"root URL DANINI brand");
+        }
         const brandResponse = await page.goto(base, { waitUntil: "networkidle" });
         assert.equal(brandResponse.status(), 200, locale + " brand HTTP 200");
         const home = await page.evaluate(() => ({

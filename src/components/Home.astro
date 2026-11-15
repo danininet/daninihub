@@ -1,11 +1,12 @@
 ---
 import Base from "../layouts/Base.astro";
 import type { Locale } from "../lib/content";
-const { locale = "de" } = Astro.props as { locale: Locale };
+const { locale = "de", slug = "" } = Astro.props as { locale: Locale; slug?: string };
 const de = locale === "de";
 ---
 <Base
   locale={locale}
+  slug={slug}
   title={de ? "Auto aus Deutschland sicherer kaufen — KI-Berater und Fahrzeugprüfung" : "Kupovina automobila iz Nemačke — AI Savetnik i provera vozila"}
   description={de ? "Inserat prüfen lassen, Fragen klären und eine unabhängige Vor-Ort-Prüfung anfragen. Keine Garantie für ein risikofreies Fahrzeug." : "Proverite oglas, razjasnite rizike i zatražite proveru automobila na terenu. Bez obećanja o kupovini bez rizika."}
 >

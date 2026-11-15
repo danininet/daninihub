@@ -2,6 +2,7 @@
   "name": "autodanini",
   "compatibility_date": "2026-11-07",
   "previews": {},
+  "ai": {"binding": "AI"},
   "assets": {
     "directory": "./autodanini-auto-dist",
     "html_handling": "auto-trailing-slash",
@@ -22,6 +23,12 @@
     }
   ],
   "main": "workers/danini-intake.mjs",
+  "kv_namespaces": [
+    {
+      "binding": "PARTNERS",
+      "id": "b87637aaa2c24b1281a8bd86ca86525d"
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DANINI_DB",

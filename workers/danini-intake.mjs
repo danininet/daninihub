@@ -1,3 +1,4 @@
+import {handleVehicleAnalysis} from './danini-vehicle-analysis.mjs';
 import {digitalRoute} from './danini-digital-commerce.mjs';
 /**
  * DANINI / Cloudflare Workers lead intake.
@@ -192,6 +193,7 @@ export async function handleApi(request,env={}){
   return response({enabled:isReady(env),channel:isReady(env)?'brevo':'setup_required',
    turnstileSiteKey:isReady(env)?env.DANINI_TURNSTILE_SITEKEY:null});
  }
+ if(url.pathname==='/api/vehicle-analysis')return handleVehicleAnalysis(request,env);
  if(url.pathname==='/api/ai-intake')return handleAiIntake(request,env);
  if(url.pathname!=='/api/lead')return response({error:'not_found'},404);
  if(request.method!=='POST')return response({error:'method_not_allowed'},405);

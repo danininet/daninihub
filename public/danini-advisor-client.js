@@ -31,10 +31,71 @@
   };
   const el = id => root.querySelector('#' + id);
   const form = el('advisor-contact');
+  // Keep native submission disabled without an inline handler forbidden by CSP.
+  form.addEventListener('submit', event => event.preventDefault());
   const cta = el('advisor-cta');
   const status = el('advisor-status');
   const input = el('listing');
   try { const saved = sessionStorage.getItem('danini-advisor-source-v1'); if (saved) { input.value = saved.slice(0,6000); sessionStorage.removeItem('danini-advisor-source-v1'); } } catch {}
+  // Optional preliminary evidence extraction. No third-party scraping and no paid AI calls.
+  const analysisPanel = document.createElement('section');
+  analysisPanel.setAttribute('aria-label', lang === 'de' ? 'Inserat-Vorprüfung' : 'Preliminarna provera oglasa');
+  analysisPanel.style.cssText='margin:1rem 0;padding:1rem;border:1px solid currentColor;border-radius:0.75rem;overflow-wrap:anywhere';
+  const analysisButton = document.createElement('button');
+  analysisButton.type='button';
+  analysisButton.textContent=lang==='de'?'Inserat analysieren (Text-Vorprüfung)':'Analiziraj oglas (provera teksta)';
+  const analysisHelp=document.createElement('p');
+  analysisHelp.textContent=lang==='de'?'Kopieren Sie den Inseratstext in das Feld oben. Links allein werden nicht automatisch abgerufen. Die Vorprüfung ist keine KI-Bewertung.':'Nalepite tekst oglasa u polje iznad. Linkovi se ne preuzimaju automatski. Ova preliminarna provera nije AI procena.';
+  const analysisOutput=document.createElement('div');
+  analysisOutput.setAttribute('role','status');
+  analysisOutput.setAttribute('aria-live','polite');
+  analysisPanel.append(analysisButton,analysisHelp,analysisOutput);
+  input.insertAdjacentElement('afterend',analysisPanel);
+  analysisButton.addEventListener('click',async()=>{
+    if(analysisButton.disabled)return;
+    analysisButton.disabled=true;
+    analysisOutput.textContent=lang==='de'?'Inseratstext wird geprüft …':'Provera teksta oglasa …';
+    try{
+      const source=input.value.trim();
+      if(!captchaToken){analysisOutput.textContent=messages.captcha;return;}
+      const res=await fetch('/api/vehicle-analysis',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},credentials:'same-origin',body:JSON.stringify({language:lang,source,turnstileToken:captchaToken})});
+      const data=await res.json();
+      if(!res.ok){
+        analysisOutput.textContent=data.message||(data.error==='text_required'?(lang==='de'?'Bitte Inseratstext statt URL einfügen.':'Nalepite tekst oglasa umesto URL-a.'):(lang==='de'?'Prüfung nicht möglich: ':'Provera nije uspela: ')+String(data.error||res.status));
+        return;
+      }
+      analysisOutput.replaceChildren();
+      const line=(label,value)=>{
+        const p=document.createElement('p');
+        const b=document.createElement('strong');
+        b.textContent=label+': ';
+        p.append(b,document.createTextNode(String(value??'—')));
+        analysisOutput.append(p);
+      };
+      line(lang==='de'?'Verfahren':'Metod',data.disclaimer);
+      const names={brand:'Marka',model:'Model',year:'Godina',mileageKm:'Kilometraža (km)',priceEur:'Cena (EUR)',fuel:'Gorivo',gearbox:'Menjač'};
+      const deNames={brand:'Marke',model:'Modell',year:'Baujahr',mileageKm:'Kilometer',priceEur:'Preis (EUR)',fuel:'Kraftstoff',gearbox:'Getriebe'};
+      for(const [key,label] of Object.entries(lang==='de'?deNames:names))line(label,data.fields?.[key]);
+      line(lang==='de'?'Fehlende Angaben':'Nedostajući podaci',(data.missing||[]).join(', ')||'—');
+      for(const risk of data.warnings||[])line(lang==='de'?'Hinweis':'Napomena',risk);
+      if(data.aiUsed===true){
+        line(lang==='de'?'KI-Status':'AI status',lang==='de'?'KI-Auswertung des kopierten Inseratstextes':'AI analiza kopiranog teksta oglasa');
+        for(const item of data.aiRisks||[])line(lang==='de'?'KI-Risiko (unbestätigt)':'AI rizik (nepotvrđeno)',item.evidence+' — '+item.concern);
+        const aiTitle=document.createElement('strong');aiTitle.textContent=lang==='de'?'Weitere KI-Fragen an den Verkäufer':'Dodatna AI pitanja za prodavca';
+        analysisOutput.append(aiTitle);
+        const aiUl=document.createElement('ul');
+        for(const q of data.aiSellerQuestions||[]){const li=document.createElement('li');li.textContent=q;aiUl.append(li);}
+        analysisOutput.append(aiUl);
+      }else{
+        line(lang==='de'?'KI nicht verfügbar':'AI nije dostupan',lang==='de'?'Nur regelbasierte Vorprüfung; keine KI-Analyse ausgeführt.':'Prikazana je samo preliminarna provera; AI analiza nije izvršena.');
+      }
+      const h=document.createElement('strong');h.textContent=lang==='de'?'Fragen an den Verkäufer':'Pitanja za prodavca';analysisOutput.append(h);
+      const ul=document.createElement('ul');
+      for(const q of data.questions||[]){const li=document.createElement('li');li.textContent=q;ul.append(li);}
+      analysisOutput.append(ul);
+    }catch{analysisOutput.textContent=lang==='de'?'Verbindung fehlgeschlagen. Bitte erneut versuchen.':'Veza nije uspela. Pokušajte ponovo.';}
+    finally{analysisButton.disabled=false;captchaToken='';if(window.turnstile&&captchaWidget!==null)window.turnstile.reset(captchaWidget);}
+  });
   const answers = [null, null, null];
   let phase = 'idle', busy = false, captchaToken = '', captchaWidget = null;
   let serviceEnabled = false;

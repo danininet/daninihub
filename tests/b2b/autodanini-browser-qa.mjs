@@ -32,7 +32,7 @@ try {
     const response=await page.goto(base+'/'+locale+'/auto-check/',{waitUntil:'networkidle'});
     assert.equal(response.status(),200);
     const h1=await page.locator('.auto-hero h1').textContent();
-    assert.match(h1,locale==='de'?/Fahrzeugkauf in Deutschland/:/Automobil iz Nemačke/);
+    assert.match(h1,locale==='de'?/Auto in Deutschland gefunden/:/Našao si auto u Nemačkoj/);
     assert.equal(await page.locator('#vehicle-source').count(),1);
     // Visibility regression: white-on-light text passed earlier DOM-only QA.
     // Check computed colors on actual rendered elements, not merely HTML existence.

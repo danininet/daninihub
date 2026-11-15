@@ -8,8 +8,8 @@ const client=readFileSync('public/danini-advisor-client.js','utf8');
 const nav=readFileSync('src/components/Header.astro','utf8');
 
 test('SR/DE automotive hero and universal source input',()=>{
- assert.match(home,/Automobil iz Nemačke./);
- assert.match(home,/Fahrzeugkauf in Deutschland./);
+ assert.match(home,/Našao si auto u Nemačkoj?/);
+ assert.match(home,/Auto in Deutschland gefunden?/);
  assert.match(home,/<textarea id="vehicle-source"/);
  assert.match(home,/maxlength="6000"/);
  assert.match(home,/Kleinanzeigen/);
@@ -42,8 +42,8 @@ test('DANINI navigation keeps both commercial lines and languages',()=>{
  const route=readFileSync('src/pages/[locale]/auto-check.astro','utf8');
  const rootPage=readFileSync('src/pages/index.astro','utf8');
  assert.match(rootPage,/DaniniLanding/);
- assert.match(brand,/Jasni procesi/);
- assert.match(brand,/Klare Prozesse/);
+ assert.match(brand,/Nemački poslovni upiti/);
+ assert.match(brand,/Deutsche Kundenanfragen/);
  assert.match(business,/DANINI Anfragebüro/);
  assert.match(route,/slug="auto-check"/);
 });

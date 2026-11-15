@@ -22,8 +22,14 @@ try {
    const page=await context.newPage();
    const errors=[];
    page.on('pageerror',error=>errors.push(error.message));
+   const brandResponse=await page.goto(base+'/'+locale+'/',{waitUntil:'networkidle'});
+   assert.equal(brandResponse.status(),200);
+   assert.equal(await page.locator('h1').count(),1);
+   assert.equal(await page.locator('.d-card').count(),2);
+   assert.equal(await page.locator('a[href="/'+locale+'/business/"]').count()>0,true);
+   assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth+2),true,locale+' '+viewport.name+' brand overflow');
    for(const example of examples) {
-    const response=await page.goto(base+'/'+locale+'/',{waitUntil:'networkidle'});
+    const response=await page.goto(base+'/'+locale+'/auto-check/',{waitUntil:'networkidle'});
     assert.equal(response.status(),200);
     const h1=await page.locator('.auto-hero h1').textContent();
     assert.match(h1,locale==='de'?/Fahrzeugkauf in Deutschland/:/Automobil iz Nemačke/);

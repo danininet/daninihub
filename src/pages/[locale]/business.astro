@@ -1,0 +1,8 @@
+---
+import BusinessLanding from "../../components/BusinessLanding.astro";
+export function getStaticPaths() {
+  return ["de", "sr"].map((locale) => ({ params: { locale } }));
+}
+const locale = Astro.params.locale as "de" | "sr";
+---
+<BusinessLanding locale={locale} />

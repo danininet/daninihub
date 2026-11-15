@@ -5,7 +5,7 @@
  * Read-only; never changes DNS, site configuration, mail or payments.
  */
 const pages = [
-  '/', '/sr/', '/de/',
+  '/', '/sr/', '/de/', '/de/business/', '/sr/business/', '/de/auto-check/', '/sr/auto-check/',
   '/index.html', '/buyers.html', '/dealers.html', '/live.html',
   '/inspection.html', '/import.html', '/exclusive.html', '/tender.html',
   '/auctions.html', '/guides.html', '/digital.html', '/ai-solutions.html', '/business.html', '/cnc.html', '/selbstimport.html', '/uvoz-vodic.html', '/about.html', '/contact.html',
@@ -24,7 +24,7 @@ const seoRedirectCases = [
 ];
 // A PR tests the existing live site, whereas a main push validates its newly deployed pages.
 const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
-const proposedPages = new Set(['/business.html','/cnc.html','/selbstimport.html','/uvoz-vodic.html']);
+const proposedPages = new Set(['/de/business/','/sr/business/','/de/auto-check/','/sr/auto-check/','/business.html','/cnc.html','/selbstimport.html','/uvoz-vodic.html']);
 const build = process.env.GITHUB_SHA || 'manual';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function check(path) {
@@ -43,21 +43,11 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
-  if (path === '/de/') {
-    // The current Home.astro is automotive; retired B2B product names are not release markers.
-    const required = [
-      /<html\b[^>]*\blang=["']de["']/i,
-      /<h1\b[^>]*>\s*Fahrzeugkauf in Deutschland\./i,
-      /<form\b[^>]*\bid=["']universal-advisor-form["']/i,
-      /<textarea\b[^>]*\bid=["']vehicle-source["']/i,
-      /href=["']#provera-na-terenu["']/i,
-      /href=["']mailto:info@daninihub\.com/i
-    ];
-    if (response.status !== 200 || new URL(response.url).pathname !== '/de/' ||
-        !required.every(pattern => pattern.test(html)))
-      throw new Error('Wrong /de/ release (expected German automotive homepage and key controls)');
-  }
-  if (path === '/sr/' && !/DANINI/.test(html))
+  if (path === '/' && !isPullRequest && !/Klare Prozesse\. Bessere Entscheidungen\./.test(html))
+    throw new Error('Root URL does not present DANINI brand');
+  if (path === '/de/' && !isPullRequest && !/Klare Prozesse\. Bessere Entscheidungen\./.test(html))
+    throw new Error('Wrong /de/ release (expected localized page)');
+  if (path === '/sr/' && !isPullRequest && !/Jasni procesi\. Bolje odluke\./.test(html))
     throw new Error('Wrong /sr/ release');
   return {status: response.status, bytes: Buffer.byteLength(html)};
 }

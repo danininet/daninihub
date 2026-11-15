@@ -35,6 +35,13 @@ test('PR207 three questions and risk UI wired in both locales',()=>{
  assert.match(advisor,/Kostenübersicht/);
  assert.match(advisor,/Pregled troškova/);
 });
-test('four item navigation retains German and Serbian labels',()=>{
- for(const label of ['Startseite','Početna','KI-Berater','AI Savetnik','Vor-Ort-Prüfung','Provera na terenu','Kontakt']) assert.ok(nav.includes(label),label);
+test('DANINI navigation keeps both commercial lines and languages',()=>{
+ for(const label of ['Startseite','Početna','DANINI Business','AutoDanini','Unsere Methode','Naša metoda','Kontakt']) assert.ok(nav.includes(label),label);
+ const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
+ const business=readFileSync('src/components/BusinessLanding.astro','utf8');
+ const route=readFileSync('src/pages/[locale]/auto-check.astro','utf8');
+ assert.match(brand,/Jasni procesi/);
+ assert.match(brand,/Klare Prozesse/);
+ assert.match(business,/DANINI Anfragebüro/);
+ assert.match(route,/slug="auto-check"/);
 });

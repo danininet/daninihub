@@ -72,8 +72,13 @@ jobs:
           // production config on 2026-11-15. GitHub deploy token needs write, not
           // additional Workers Scripts Settings read permission (HTTP 400 / 9106).
           const prod=JSON.parse(fs.readFileSync('wrangler.b2b-production.jsonc','utf8'));
+          // Use the existing integrated Worker entrypoint: it exports IntakeWorkflow,
+          // routes B2B/portal endpoints, and delegates legacy AutoDanini/Brevo APIs.
+          config.main=prod.main;
+          config.assets.run_worker_first=prod.assets.run_worker_first;
           assert.equal(config.name,prod.name,'Worker name mismatch; abort');
-          assert.deepEqual(config.assets.run_worker_first,['/api/*']);
+          assert.deepEqual(config.assets.run_worker_first,['/api/*','/portal/*']);
+          assert.equal(config.main,'src/index.ts','Incorrect integrated entrypoint; abort');
           assert.equal(config.d1_databases[0].database_id,prod.d1_databases[0].database_id,'D1 mismatch; abort');
           assert.equal(prod.d1_databases[0].database_id,'9c3fc741-5cb0-432f-82ca-c75e8220c435','Unexpected D1 target; abort');
           assert.equal(prod.kv_namespaces[0].id,'b87637aaa2c24b1281a8bd86ca86525d','Unexpected KV target; abort');

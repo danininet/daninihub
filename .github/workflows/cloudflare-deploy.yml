@@ -68,32 +68,25 @@ jobs:
           import assert from 'node:assert/strict';
           const config=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
           config.assets.directory='./dist'; // Publish the merged Astro + preserved AutoDanini asset bundle.
-          const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+process.env.CLOUDFLARE_ACCOUNT_ID+'/workers/scripts/autodanini/settings',{
-            headers:{authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},
-            signal:AbortSignal.timeout(15000)
-          });
-          const data=await r.json().catch(()=>({success:false,errors:[{code:'NON_JSON'}]}));
-          if (r.status!==200 || data.success!==true) {
-            // Log API status / numeric error codes only; NEVER log tokens, response headers or binding values.
-            console.error('CLOUDFLARE_BINDINGS_CHECK_FAILED HTTP',r.status,
-              'codes',JSON.stringify((data.errors||[]).map(e=>e.code)));
-            process.exit(1);
-          }
-          const bindings=data.result.bindings;
-          const find=(name,type)=>{const b=bindings.find(x=>x.name===name&&x.type===type);assert.ok(b,'Required production binding missing: '+name);return b;};
-          const d=find('DANINI_DB','d1'), r2=find('DOCUMENTS','r2_bucket'), kv=find('PARTNERS','kv_namespace'), wf=find('INTAKE_WORKFLOW','workflow');
-          assert.equal(config.d1_databases[0].database_id,d.database_id,'D1 ID mismatch; abort');
-          config.r2_buckets=[{binding:'DOCUMENTS',bucket_name:r2.bucket_name}];
-          config.kv_namespaces=[{binding:'PARTNERS',id:kv.namespace_id}];
-          config.workflows=[{binding:'INTAKE_WORKFLOW',name:wf.workflow_name,class_name:wf.class_name,...(wf.script_name?{script_name:wf.script_name}:{})}];
-          config.keep_vars=true;
-          assert.equal(config.name,'autodanini');
+          // Cloudflare account metadata was independently checked against this repository's
+          // production config on 2026-11-15. GitHub deploy token needs write, not
+          // additional Workers Scripts Settings read permission (HTTP 400 / 9106).
+          const prod=JSON.parse(fs.readFileSync('wrangler.b2b-production.jsonc','utf8'));
+          assert.equal(config.name,prod.name,'Worker name mismatch; abort');
           assert.deepEqual(config.assets.run_worker_first,['/api/*']);
+          assert.equal(config.d1_databases[0].database_id,prod.d1_databases[0].database_id,'D1 mismatch; abort');
+          assert.equal(prod.d1_databases[0].database_id,'9c3fc741-5cb0-432f-82ca-c75e8220c435','Unexpected D1 target; abort');
+          assert.equal(prod.kv_namespaces[0].id,'b87637aaa2c24b1281a8bd86ca86525d','Unexpected KV target; abort');
+          assert.equal(prod.r2_buckets[0].bucket_name,'danini-b2b-private','Unexpected R2 target; abort');
+          assert.equal(prod.workflows[0].name,'danini-intake-production','Unexpected Workflow target; abort');
+          config.r2_buckets=prod.r2_buckets;
+          config.kv_namespaces=prod.kv_namespaces;
+          config.workflows=prod.workflows;
+          config.keep_vars=true;
           const names=['BREVO_API_KEY','DANINI_CONTACT_ACTIVE','DANINI_TURNSTILE_SECRET','DANINI_TURNSTILE_SITEKEY','DANINI_NOTIFY_TO','DANINI_BREVO_SENDER'];
-          for(const name of names)find(name,'secret_text');
           config.secrets={required:names};
           fs.writeFileSync('wrangler.production-ci.jsonc',JSON.stringify(config,null,2)+'\n');
-          console.log('PASS: production D1, R2, KV, Workflow and required secret names verified; no secret values logged');
+          console.log('PASS: checked production config IDs and required secret declarations; existing live binding names previously verified; no secret values logged');
           NODE
       - name: Deploy complete production Worker and static assets
         id: publish

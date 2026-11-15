@@ -14,11 +14,11 @@ const de = locale === "de";
     <div class="wrap auto-hero-grid">
       <div class="auto-hero-copy">
         <span class="eyebrow">AUTODANINI · {de ? "FAHRZEUGKAUF MIT KLAREN FAKTEN" : "KUPOVINA VOZILA UZ PROVERLJIVE PODATKE"}</span>
-        <h1>{de ? "Fahrzeugkauf in Deutschland. Klar prüfen, sicherer entscheiden." : "Automobil iz Nemačke. Proveri pre nego što kupiš."}</h1>
-        <p class="auto-lead">{de ? "Sie haben ein Inserat gefunden? Wir helfen, offene Fragen sichtbar zu machen, Dokumente zu prüfen und eine Vor-Ort-Prüfung anzufragen." : "Pronašao si oglas? Prođi kroz tri ključne provere, saznaj šta nedostaje i zatraži nezavisan pregled vozila pre kupovine."}</p>
+        <h1>{de ? "Auto in Deutschland gefunden? Prüfen wir das Angebot vor Ihrer Reise." : "Našao si auto u Nemačkoj? Proverimo oglas pre puta i kapare."}</h1>
+        <p class="auto-lead">{de ? "Schicken Sie uns ein Inserat: Wir strukturieren Fahrzeugangaben, klären fehlende Nachweise und können auf Anfrage den Verkäufer auf Deutsch kontaktieren. Sie entscheiden danach, ob sich ein teurer Vor-Ort-Check lohnt." : "Pošalji oglas: pomažemo da razjasniš podatke, dokumentaciju i rizike, a po dogovoru kontaktiramo prodavca na nemačkom. Tako lakše odlučuješ da li se isplati put ili stručni pregled."}</p>
         <div class="actions">
           <a class="button" href="#ai-savetnik">{de ? "Inserat jetzt prüfen" : "Proveri oglas sada"}</a>
-          <a class="button secondary" href="#provera-na-terenu">{de ? "Vor-Ort-Prüfung anfragen" : "Zatraži pregled na terenu"}</a>
+          <a class="button secondary" href="#provera-na-terenu">{de ? "Persönlichen Vorab-Check anfragen" : "Zatraži proveru pre puta"}</a>
         </div>
         <p class="micro auto-hero-note">{de ? "Klare Prüffragen statt falscher Versprechen. Ein Inserat allein ist kein Fahrzeugnachweis." : "Jasna pitanja i provere, bez lažnih garancija. Oglas nije dokaz o stanju vozila."}</p>
       </div>
@@ -72,6 +72,21 @@ const de = locale === "de";
         <article><b>02</b><h3>{de ? "Risiken dokumentieren" : "Dokumentovanje rizika"}</h3><p>{de ? "Widersprüche und fehlende Nachweise kennzeichnen. Keine automatische Garantie." : "Obeležavamo neslaganja i dokaze koji nedostaju. Bez automatskih garancija."}</p></article>
         <article><b>03</b><h3>{de ? "Fahrzeug prüfen lassen" : "Provera vozila"}</h3><p>{de ? "Auf Wunsch eine unabhängige Prüfung am Standort abstimmen." : "Po zahtevu dogovaramo nezavisnu proveru na lokaciji."}</p></article>
       </div>
+    </div>
+  </section>
+
+  <section class="section white auto-precheck" aria-labelledby="precheck-title">
+    <div class="wrap">
+      <span class="eyebrow">AUTODANINI · {de ? "PERSÖNLICHE VORPRÜFUNG" : "LIČNA PROVERA PRE PUTA"}</span>
+      <h2 id="precheck-title">{de ? "Erst die Unterlagen. Dann die Entscheidung." : "Prvo proveri podatke. Onda odluči da li putuješ."}</h2>
+      <p>{de ? "Für Käufer aus dem Balkan und der Diaspora: Wir sichten das zugesandte Inserat, sammeln offene Fragen und stimmen auf Wunsch eine deutschsprachige Verkäuferanfrage ab. Sie erhalten eine verständliche Zusammenfassung mit den nächsten Schritten." : "Za kupce sa Balkana i iz dijaspore: pregledamo dostavljeni oglas, izdvajamo otvorena pitanja i po dogovoru pripremamo kontakt sa nemačkim prodavcem. Dobijate razumljiv rezime i konkretne sledeće korake."}</p>
+      <div class="auto-precheck-grid">
+        <article><b>01</b><h3>{de ? "Inserat & Angaben" : "Oglas i podaci"}</h3><p>{de ? "Preis, FIN, Ausstattung, Kilometerstand und Widersprüche im Angebot." : "Cena, VIN, oprema, kilometraža i eventualna neslaganja u oglasu."}</p></article>
+        <article><b>02</b><h3>{de ? "Verkäufer & Dokumente" : "Prodavac i dokumenta"}</h3><p>{de ? "Fragen zu Fahrzeugpapieren, Servicebelegen und möglicher unabhängiger Prüfung." : "Pitanja o dokumentima, servisu i eventualnom nezavisnom pregledu."}</p></article>
+        <article><b>03</b><h3>{de ? "Klare Empfehlung zum nächsten Schritt" : "Jasan sledeći korak"}</h3><p>{de ? "Was belegt ist, was fehlt und was vor einer Anzahlung zu klären ist." : "Šta je potvrđeno, šta nedostaje i šta razjasniti pre kapare."}</p></article>
+      </div>
+      <a class="button" href="mailto:auto@daninihub.com?subject=AutoDanini%20-%20Vorabpruefung%20eines%20Inserats">{de ? "Inserat zur persönlichen Vorprüfung senden" : "Pošalji oglas za ličnu proveru"}</a>
+      <p class="micro">{de ? "Leistungsumfang, Preis und Zeitrahmen erhalten Sie vor einer Beauftragung schriftlich. Keine technische Fahrzeuguntersuchung." : "Obim usluge, cenu i rok dobijate pisano pre angažovanja. Ovo nije mehanički pregled vozila."}</p>
     </div>
   </section>
 
@@ -153,7 +168,7 @@ const de = locale === "de";
 .auto-risk-result h3{font-size:1.3rem;color:#0f172a}
 .auto-risk-result p,.auto-risk-result li{color:#334155}
 .auto-risk-result li{line-height:1.6;margin:9px 0}
-.auto-process{background:#fff;padding:clamp(65px,7vw,100px) 0}
+ .auto-precheck{padding:clamp(60px,7vw,95px) 0;background:#f8fafc}.auto-precheck .eyebrow{color:#0d7669}.auto-precheck h2{font-size:clamp(2rem,3.4vw,3.3rem);color:#102235;max-width:850px}.auto-precheck> .wrap > p{color:#43546b;max-width:900px;line-height:1.7}.auto-precheck-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:30px 0}.auto-precheck-grid article{background:#fff;border:1px solid #d5e0e9;border-radius:17px;padding:25px}.auto-precheck-grid b{color:#0b7669}.auto-precheck-grid h3{color:#142338}.auto-precheck-grid p{color:#40546a}.auto-precheck .button{display:inline-flex;padding:16px 22px;border-radius:12px;background:#0b7669;color:#fff;font-weight:800}.auto-precheck .micro{margin-top:16px;font-size:.83rem}@media(max-width:730px){.auto-precheck-grid{grid-template-columns:1fr}}\n.auto-process{background:#fff;padding:clamp(65px,7vw,100px) 0}
 .auto-process .section-head{text-align:center;margin:0 auto 44px}
 .auto-process .section-head .eyebrow{color:#0f766e}
 .auto-process .section-head h2{color:#0f172a;font-size:clamp(2rem,3.5vw,3.2rem)}

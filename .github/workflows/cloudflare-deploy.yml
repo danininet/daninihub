@@ -41,18 +41,22 @@ jobs:
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
           const locales = [
-            ['de','Fahrzeugkauf in Deutschland.'],
-            ['sr','Automobil iz Nemačke.']
+            ['de','Fahrzeugkauf in Deutschland.','Klare Prozesse. Bessere Entscheidungen.'],
+            ['sr','Automobil iz Nemačke.','Jasni procesi. Bolje odluke.']
           ];
-          for (const [locale,heading] of locales) {
-            const home=fs.readFileSync('dist/'+locale+'/index.html','utf8');
+          for (const [locale,heading,brandHeading] of locales) {
+            const home=fs.readFileSync('dist/'+locale+'/auto-check/index.html','utf8');
+            const brand=fs.readFileSync('dist/'+locale+'/index.html','utf8');
+            const business=fs.readFileSync('dist/'+locale+'/business/index.html','utf8');
             const advisor=fs.readFileSync('dist/'+locale+'/ai-savetnik/index.html','utf8');
-            assert.ok(home.includes(heading),'New buyer-focused Hero missing in '+locale);
-            assert.ok(home.includes('universal-advisor-form'),'Universal input missing in '+locale);
+            assert.ok(brand.includes(brandHeading),'DANINI two-line brand Hero missing in '+locale);
+            assert.ok(business.includes('DANINI Anfragebüro'),'DANINI Business offer missing in '+locale);
+            assert.ok(home.includes(heading),'AutoDanini Hero missing in '+locale);
+            assert.ok(home.includes('universal-advisor-form'),'Vehicle input missing in '+locale);
             assert.ok(advisor.includes('id="listing"'),'Advisor input missing in '+locale);
             assert.ok(advisor.includes('data-question'),'Advisor questions missing in '+locale);
           }
-          console.log('PASS: built SR/DE production HTML is the reviewed PR #208 Astro release');
+          console.log('PASS: built SR/DE DANINI brand, business and preserved AutoDanini HTML');
           NODE
       - name: Preserve current non-secret production bindings
         id: bindings
@@ -111,12 +115,17 @@ jobs:
             assert.match(html,/danini-advisor-client\.js/,path+' advisor client script');
             console.log('PASS',path,'HTTP 200');
           }
-          for (const [path,heading] of [['/de/','Fahrzeugkauf in Deutschland.'],['/sr/','Automobil iz Nemačke.']]){
+          for (const [path,heading] of [['/de/','Klare Prozesse. Bessere Entscheidungen.'],['/sr/','Jasni procesi. Bolje odluke.']]){
+            const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
+            assert.equal(r.status,200,path+' HTTP status');
+            assert.ok((await r.text()).includes(heading),path+' DANINI brand page not live');
+          }
+          for (const [path,heading] of [['/de/auto-check/','Fahrzeugkauf in Deutschland.'],['/sr/auto-check/','Automobil iz Nemačke.']]){
             const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
             assert.equal(r.status,200,path+' HTTP status');
             const html=await r.text();
-            assert.ok(html.includes(heading),path+' new Astro hero not live');
-            assert.ok(html.includes('universal-advisor-form'),path+' universal input missing');
+            assert.ok(html.includes(heading),path+' AutoDanini hero not live');
+            assert.ok(html.includes('universal-advisor-form'),path+' vehicle input missing');
           }
           const resp=await fetch(base+'/api/lead/status',{signal:AbortSignal.timeout(20000)});
           assert.equal(resp.status,200);

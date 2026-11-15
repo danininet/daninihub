@@ -41,6 +41,7 @@ const assert = require("node:assert/strict");
         assert.equal(home.lang, locale);
         assert.equal(home.choices, 2, locale + " two offers");
         assert.ok(home.businessLink && home.autoLink, locale + " business/auto choice");
+        await page.screenshot({ path: "outputs/b2b/" + locale + "-danini-" + width + ".png", fullPage: true });
         const businessResponse = await page.goto(base + "business/", { waitUntil: "networkidle" });
         assert.equal(businessResponse.status(), 200, locale + " business HTTP 200");
         const business = await page.evaluate(() => ({
@@ -59,6 +60,10 @@ const assert = require("node:assert/strict");
         assert.equal(business.offers, 3, locale + " offer cards");
         assert.ok(business.emailFallback, locale + " direct contact fallback");
         assert.ok(business.noFakeForm, locale + " must not expose unverified checkout/form");
+        const infoColor = await page.locator(".b-extra-grid p").evaluate(el => getComputedStyle(el).color);
+        const channels = (infoColor.match(/[0-9.]+/g) || []).slice(0, 3).map(Number);
+        assert.equal(channels.length, 3, locale + " supplemental copy CSS color");
+        assert.ok(Math.max(...channels) < 175, locale + " supplemental copy is too pale on white: " + infoColor);
         assert.deepEqual(errors, [], locale + " browser errors");
         await page.screenshot({ path: "outputs/b2b/" + locale + "-business-" + width + ".png", fullPage: true });
         results.push({ locale, width, home, business, errors });

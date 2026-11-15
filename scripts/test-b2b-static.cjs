@@ -3,6 +3,9 @@ const fs = require("fs"),
   assert = require("assert/strict");
 const root = path.resolve("dist");
 const locales = ["de", "sr"];
+const rootHtml = fs.readFileSync(path.join(root,"index.html"),"utf8");
+assert.ok(rootHtml.includes("Klare Prozesse. Bessere Entscheidungen."),"Root URL must lead with DANINI brand, not AutoDanini");
+assert.ok(rootHtml.includes("DANINI Business"),"Root URL must offer DANINI Business");
 let count = 0;
 for (const locale of locales)
   for (const slug of [

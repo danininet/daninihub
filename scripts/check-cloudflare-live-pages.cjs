@@ -43,6 +43,8 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
+  if (path === '/' && !isPullRequest && !/Klare Prozesse\\. Bessere Entscheidungen\\./.test(html))
+    throw new Error('Root URL does not present DANINI brand');
   if (path === '/de/' && !isPullRequest && !/Klare Prozesse\. Bessere Entscheidungen\./.test(html))
     throw new Error('Wrong /de/ release (expected localized page)');
   if (path === '/sr/' && !isPullRequest && !/Jasni procesi\. Bolje odluke\./.test(html))

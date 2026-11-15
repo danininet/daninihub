@@ -7,6 +7,9 @@ let count = 0;
 for (const locale of locales)
   for (const slug of [
     "",
+    "business",
+    "auto-check",
+    "ai-savetnik",
     "cbam",
     "subcontractor",
     "nearshoring",
@@ -55,7 +58,7 @@ for (const [locale, slugs] of Object.entries({de:["ueber-danini","danini-methode
     const html = fs.readFileSync(file, "utf8");
     assert.ok(html.includes(`lang="${locale}"`), file);
     assert.ok(!html.includes("noindex,follow"), file);
-    assert.ok(html.includes('mailto:info@daninihub.com') || html.includes('/#contact'), file);
+    assert.ok(html.includes('mailto:info@daninihub.com') || html.includes('/#kontakt'), file);
     assert.ok(html.includes('hreflang="de"') && html.includes('hreflang="sr"'), file);
     assert.ok((html.match(/<h1(?:\s|>)/g) || []).length === 1, file);
   }

@@ -43,8 +43,8 @@ jobs:
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
           const locales = [
-            ['de','Fahrzeugkauf in Deutschland.','Klare Prozesse. Bessere Entscheidungen.'],
-            ['sr','Automobil iz Nemačke.','Jasni procesi. Bolje odluke.']
+            ['de','Auto in Deutschland gefunden?','Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut.'],
+            ['sr','Našao si auto u Nemačkoj?','Nemački poslovni upiti i oglasi vozila. Jasna podrška.']
           ];
           for (const [locale,heading,brandHeading] of locales) {
             const home=fs.readFileSync('dist/'+locale+'/auto-check/index.html','utf8');
@@ -115,12 +115,12 @@ jobs:
             assert.match(html,/danini-advisor-client\.js/,path+' advisor client script');
             console.log('PASS',path,'HTTP 200');
           }
-          for (const [path,heading] of [['/de/','Klare Prozesse. Bessere Entscheidungen.'],['/sr/','Jasni procesi. Bolje odluke.']]){
+          for (const [path,heading] of [['/de/','Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut.'],['/sr/','Nemački poslovni upiti i oglasi vozila. Jasna podrška.']]){
             const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
             assert.equal(r.status,200,path+' HTTP status');
             assert.ok((await r.text()).includes(heading),path+' DANINI brand page not live');
           }
-          for (const [path,heading] of [['/de/auto-check/','Fahrzeugkauf in Deutschland.'],['/sr/auto-check/','Automobil iz Nemačke.']]){
+          for (const [path,heading] of [['/de/auto-check/','Auto in Deutschland gefunden?'],['/sr/auto-check/','Našao si auto u Nemačkoj?']]){
             const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
             assert.equal(r.status,200,path+' HTTP status');
             const html=await r.text();

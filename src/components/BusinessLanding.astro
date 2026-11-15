@@ -1,0 +1,110 @@
+---
+import Base from "../layouts/Base.astro";
+import type { Locale } from "../lib/content";
+const { locale } = Astro.props as { locale: Locale };
+const de = locale === "de";
+const offerings = de ? [
+  {title:"DANINI Business Check",desc:"Eine bestehende Anfrage- oder Verwaltungsroutine durchgehen, Datenlücken sichtbar machen und die nächsten Verbesserungen schriftlich festhalten.",output:"Ergebnis: strukturierte Analyse und konkrete Handlungsschritte."},
+  {title:"DANINI Anfragebüro",desc:"Einen klar abgegrenzten Ablauf für Anfrage, Qualifizierung, CRM-Erfassung und Antwortentwurf entwerfen und nach Freigabe umsetzen.",output:"Ergebnis: ein überprüfbarer Workflow mit menschlicher Freigabe."},
+  {title:"DANINI Office Betreuung",desc:"Bestehende, getestete Abläufe beobachten und in vereinbartem Umfang pflegen. Erst nach erfolgreicher Pilotphase als laufende Leistung.",output:"Ergebnis: kontrollierte Wartung und dokumentierte Verbesserungen."}
+] : [
+  {title:"DANINI Business Check",desc:"Pregled jednog postojećeg postupka za obradu upita ili administracije, identifikacija nedostataka i pisani predlog poboljšanja.",output:"Rezultat: strukturisana analiza i konkretni sledeći koraci."},
+  {title:"DANINI Anfragebüro",desc:"Priprema i, nakon odobrenja, uvođenje jednog procesa: upit, kvalifikacija, CRM evidencija i nacrt odgovora.",output:"Rezultat: proverljiv tok sa ljudskim odobravanjem."},
+  {title:"DANINI Office Betreuung",desc:"Praćenje i održavanje već testiranih procesa u dogovorenom obimu. Mesečna podrška tek nakon uspešnih pilot-implementacija.",output:"Rezultat: kontrolisano održavanje i dokumentovana poboljšanja."}
+];
+---
+<Base locale={locale} slug="business"
+  title={de ? "DANINI Business — digitale Anfrageprozesse für kleine Unternehmen" : "DANINI Business — digitalizacija upita za mala preduzeća"}
+  description={de ? "Strukturierte B2B-Anfragen, kontrollierte Abläufe und digitale Unterstützung für kleine Unternehmen in DACH und auf dem Balkan." : "Strukturisani poslovni upiti, kontrolisani digitalni procesi i operativna podrška za firme u DACH regionu i na Balkanu."}>
+  <section class="b-hero">
+    <div class="wrap b-grid">
+      <div>
+        <p class="b-eyebrow">DANINI BUSINESS · DACH ↔ BALKAN</p>
+        <h1>{de ? "Weniger verlorene Anfragen. Mehr Überblick im Betrieb." : "Manje izgubljenih upita. Više kontrole u poslovanju."}</h1>
+        <p class="b-intro">{de ? "Wenn Kundenanfragen in E-Mails, Formularen und Tabellen verteilt sind, fehlt schnell der Überblick. DANINI hilft, einen klaren und nachvollziehbaren Prozess vorzubereiten — von der ersten Anfrage bis zur freigegebenen Antwort." : "Kada su upiti rasuti između mejlova, formulara i tabela, poslovanje gubi preglednost. DANINI pomaže da se pripremi jasan postupak — od prvog zahteva do odobrenog odgovora."}</p>
+        <div class="b-actions">
+          <a class="b-btn" href="mailto:info@daninihub.com?subject=DANINI%20Business%20-%20Anfrage">{de ? "Projekt unverbindlich anfragen" : "Pošaljite poslovni upit"}</a>
+          <a class="b-secondary" href={de ? "/de/danini-methode/" : "/sr/danini-metoda/"}>{de ? "Unsere Methode" : "Naša metoda"} →</a>
+        </div>
+        <p class="b-note">{de ? "Eine Anfrage ist keine Bestellung. Umfang, Verfügbarkeit und Preis klären wir vorab schriftlich." : "Slanje upita nije narudžbina. Obim, dostupnost i cenu potvrđujemo pisanim putem pre angažovanja."}</p>
+      </div>
+      <aside class="b-side">
+        <span class="b-side-label">{de ? "BEISPIEL EINES ANFRAGEPROZESSES" : "PRIMER OBRADE POSLOVNOG UPITA"}</span>
+        <ol>
+          <li>{de ? "Anfrage erfassen" : "Prijem upita"}</li>
+          <li>{de ? "Fehlende Angaben erkennen" : "Utvrđivanje podataka koji nedostaju"}</li>
+          <li>{de ? "Antwortentwurf vorbereiten" : "Priprema nacrta odgovora"}</li>
+          <li>{de ? "Menschlich prüfen und freigeben" : "Ljudska provera i odobrenje"}</li>
+        </ol>
+        <small>{de ? "Schematische Darstellung, keine Behauptung einer bereits vollautomatischen Leistung." : "Šematski prikaz, ne tvrdnja da je čitav proces već automatizovan."}</small>
+      </aside>
+    </div>
+  </section>
+  <section class="b-section">
+    <div class="wrap">
+      <p class="b-eyebrow">{de ? "KLARE LEISTUNGEN" : "JASNO DEFINISANE USLUGE"}</p>
+      <h2>{de ? "Wir starten beim konkreten Problem, nicht beim KI-Werkzeug." : "Polazimo od konkretnog problema, ne od AI alata."}</h2>
+      <div class="b-cards">
+        {offerings.map((offer,i)=>(
+          <article class="b-card">
+            <span class="b-number">0{i+1}</span>
+            <h3>{offer.title}</h3>
+            <p>{offer.desc}</p>
+            <p class="b-output">{offer.output}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="b-section b-extra">
+    <div class="wrap b-extra-grid">
+      <div>
+        <p class="b-eyebrow">{de ? "ERGÄNZENDE B2B-UNTERSTÜTZUNG" : "DODATNA B2B PODRŠKA"}</p>
+        <h2>{de ? "Geschäftsvorbereitung zwischen DACH und Balkan." : "Priprema poslovne saradnje između DACH regiona i Balkana."}</h2>
+        <p>{de ? "Auf konkrete Anfrage unterstützen wir die strukturierte Vorbereitung von Lieferanten-/RFQ-Unterlagen sowie begrenzte CBAM- und Nachunternehmer-Dokumentation. Fachliche und rechtliche Prüfungen bleiben bei qualifizierten Stellen." : "Na konkretan zahtev pomažemo da se srede podaci o dobavljačima, RFQ zahtevi i ograničena priprema CBAM ili dokumentacije podizvođača. Stručne i pravne procene ostaju u nadležnosti kvalifikovanih lica."}</p>
+      </div>
+      <a class="b-extra-link" href="mailto:info@daninihub.com?subject=DANINI%20B2B%20-%20Anfrage">{de ? "Umfang anfragen" : "Zatražite procenu obima"} →</a>
+    </div>
+  </section>
+  <section class="b-section b-cta">
+    <div class="wrap">
+      <h2>{de ? "Welcher Ablauf kostet Ihr Team heute Zeit?" : "Koji postupak vašem timu oduzima najviše vremena?"}</h2>
+      <p>{de ? "Schildern Sie die Ausgangslage und das gewünschte Ergebnis. Wir prüfen, ob wir eine passende Leistung anbieten können." : "Opišite sadašnju situaciju i rezultat koji želite. Proverićemo da li možemo da ponudimo odgovarajuću uslugu."}</p>
+      <a class="b-btn" href="mailto:info@daninihub.com?subject=DANINI%20Business%20-%20Anfrage">info@daninihub.com</a>
+    </div>
+  </section>
+</Base>
+<style>
+.b-hero{background:linear-gradient(125deg,#101e31,#12364b);color:#fff;padding:clamp(64px,7vw,100px) 0}
+.b-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.8fr);align-items:center;gap:clamp(30px,5vw,80px)}
+.b-eyebrow{font-size:.72rem;letter-spacing:.13em;font-weight:800;color:#0b7669}
+.b-hero .b-eyebrow{color:#facc15}
+.b-hero h1{color:#fff;font-size:clamp(2.7rem,5vw,4.9rem);letter-spacing:-.055em}
+.b-intro{color:#d7e4ef;font-size:clamp(1.04rem,1.45vw,1.2rem)}
+.b-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:27px 0 15px}
+.b-btn{display:inline-flex;justify-content:center;align-items:center;padding:16px 23px;min-height:53px;border-radius:10px;background:#facc15;color:#102238;font-weight:800;text-align:center}
+.b-secondary{font-weight:800;color:#fff}
+.b-note{color:#b4cbd7;font-size:.8rem}
+.b-side{background:#ffffff12;border:1px solid #ffffff30;border-radius:20px;padding:clamp(25px,3vw,40px)}
+.b-side-label{font-size:.72rem;color:#facc15;font-weight:800;letter-spacing:.1em}
+.b-side ol{padding-left:27px;color:#fff;font-weight:700;line-height:1.8}
+.b-side li{padding:10px 0;border-bottom:1px solid #ffffff20}
+.b-side small{font-size:.78rem;line-height:1.5;color:#c9dce9;display:block;margin-top:18px}
+.b-section{padding:clamp(64px,7vw,95px) 0;background:#f5f8fc}
+.b-section h2{font-size:clamp(2rem,3.2vw,3.05rem);max-width:940px;color:#102238}
+.b-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:36px}
+.b-card{background:#fff;border:1px solid #d7e2eb;border-radius:16px;padding:clamp(22px,3vw,34px);display:flex;flex-direction:column;min-width:0}
+.b-number{color:#0f766e;font-weight:850;font-size:.9rem}
+.b-card h3{font-size:1.5rem;color:#12243b;line-height:1.25;margin:22px 0 9px}
+.b-card p{font-size:.9rem;color:#40546b}
+.b-card .b-output{margin-top:auto;padding-top:22px;color:#165c60;font-weight:750}
+.b-extra{background:white}
+.b-extra-grid{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center}
+.b-extra-grid p:not(.b-eyebrow){max-width:840px;color:#40546b;line-height:1.75}
+.b-extra-link{color:#085c54;font-weight:800}
+.b-cta{background:#112236;color:white}
+.b-cta h2{color:white}
+.b-cta p{color:#c7d3df;max-width:750px}
+@media(max-width:960px){.b-grid,.b-extra-grid{grid-template-columns:1fr}.b-cards{grid-template-columns:1fr}}
+@media(max-width:600px){.b-actions .b-btn,.b-cta .b-btn{width:100%}.b-section{padding:55px 0}}
+</style>

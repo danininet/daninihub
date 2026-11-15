@@ -1,14 +1,9 @@
 ---
 import type { Locale } from "../lib/content";
-
-interface Props {
-  locale: Locale;
-  slug?: string;
-}
-
+interface Props { locale: Locale; slug?: string; }
 const { locale, slug = "" } = Astro.props;
 const isDe = locale === "de";
-const home = isDe ? "/de/" : "/sr/";
+const home = "/" + locale + "/";
 const altSlug = (language: "de" | "sr") => {
   if (["ueber-danini", "o-danini"].includes(slug)) return language === "de" ? "ueber-danini" : "o-danini";
   if (["danini-methode", "danini-metoda"].includes(slug)) return language === "de" ? "danini-methode" : "danini-metoda";
@@ -16,65 +11,54 @@ const altSlug = (language: "de" | "sr") => {
 };
 const navItems = [
   { href: home, label: isDe ? "Startseite" : "Početna" },
-  { href: `${home}#ai-savetnik`, label: isDe ? "KI-Berater" : "AI Savetnik" },
-  { href: `${home}#provera-na-terenu`, label: isDe ? "Vor-Ort-Prüfung" : "Provera na terenu" },
-  { href: `${home}#contact`, label: "Kontakt" },
+  { href: home + "business/", label: "DANINI Business" },
+  { href: home + "auto-check/", label: "AutoDanini" },
+  { href: home + (isDe ? "danini-methode/" : "danini-metoda/"), label: isDe ? "Unsere Methode" : "Naša metoda" },
+  { href: home + (isDe ? "ueber-danini/" : "o-danini/"), label: isDe ? "Über DANINI" : "O DANINI" },
+  { href: "mailto:info@daninihub.com?subject=DANINI%20-%20Anfrage", label: "Kontakt" }
 ];
 ---
-
 <header>
   <div class="wrap nav danini-header">
     <a class="brand" href={home} aria-label={isDe ? "DANINI — Startseite" : "DANINI — Početna"}>
       <span class="mark" aria-hidden="true">D</span>
-      <span>DANINI<small>AUTODANINI · FAHRZEUGCHECK</small></span>
+      <span>DANINI<small>DACH ↔ BALKAN · BUSINESS & AUTO</small></span>
     </a>
-
     <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
-      {navItems.map((item) => (
-        <a href={item.href}>{item.label}</a>
-      ))}
+      {navItems.map(item => <a href={item.href}>{item.label}</a>)}
     </nav>
-
     <div class="lang" aria-label={isDe ? "Sprache" : "Jezik"}>
-      {(["de", "sr"] as const).map((language) => (
-        <a
-          href={`/${language}/${altSlug(language) ? altSlug(language) + "/" : ""}`}
-          lang={language}
-          aria-current={language === locale ? "page" : undefined}
-        >
-          {language.toUpperCase()}
-        </a>
+      {(["de","sr"] as const).map(language => (
+        <a href={"/" + language + "/" + (altSlug(language) ? altSlug(language) + "/" : "")}
+          lang={language} aria-current={language === locale ? "page" : undefined}>{language.toUpperCase()}</a>
       ))}
     </div>
   </div>
 </header>
-
 <style>
-  .danini-header{min-height:90px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(15px,2.2vw,34px);align-items:center}
-  .danini-header .brand{display:flex;gap:13px;align-items:center;min-width:0;color:#f4f8fc;font-weight:820;font-size:1.4rem;letter-spacing:.09em}
-  .danini-header .brand .mark{display:grid;place-items:center;width:45px;height:45px;flex:none;background:#0b756a;border:1px solid #2b9a8d;border-radius:13px;color:#fff;font-size:1.6rem;letter-spacing:0}
-  .danini-header .brand small{font-size:.61rem;letter-spacing:.08em;color:#aac7cf;margin-top:4px;white-space:nowrap}
-  .danini-header .business-nav{display:flex;gap:clamp(12px,1.7vw,30px);flex-wrap:nowrap;align-items:center;justify-content:center;min-width:0;margin:0}
-  .danini-header .business-nav a{color:#e5eef6;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;font-size:.88rem;font-weight:650;transition:color .15s ease}
-  .danini-header .business-nav a:hover{color:#8de0d0;text-decoration:underline;text-underline-offset:7px}
-  .danini-header .lang{display:flex;gap:5px;margin:0;border-left:1px solid #334758;padding-left:15px;flex-shrink:0}
-  .danini-header .lang a{display:grid;place-items:center;min-width:40px;min-height:40px;border-radius:8px;color:#d3e1eb;font-size:.82rem;font-weight:800}
-  .danini-header .lang [aria-current]{background:#134f4b;color:#c8fff1;text-decoration:none}
-  :global(header:has(.danini-header)){background:#0b1928;border-bottom:1px solid #294154}
-  @media(max-width:1100px){
-    .danini-header{grid-template-columns:1fr auto;row-gap:7px;padding-block:14px}
-    .danini-header .business-nav{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;justify-content:stretch;padding-top:10px;border-top:1px solid #2b4254}
-    .danini-header .business-nav a{white-space:normal;justify-content:center;text-align:center;line-height:1.3;padding:8px 4px;font-size:.81rem;min-height:44px}
-    .danini-header .lang{grid-column:2;grid-row:1}
-  }
-  @media(max-width:560px){
-    .danini-header{gap:12px}
-    .danini-header .brand{font-size:1.15rem;gap:8px}
-    .danini-header .brand .mark{width:39px;height:39px;font-size:1.3rem}
-    .danini-header .brand small{font-size:.47rem;letter-spacing:.045em}
-    .danini-header .lang{padding-left:9px}
-    .danini-header .lang a{min-width:33px;min-height:35px;font-size:.7rem}
-    .danini-header .business-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-    .danini-header .business-nav a{background:#15293b;border:1px solid #2b4254;border-radius:8px;padding:9px 6px;font-size:.83rem;min-height:45px}
-  }
+.danini-header{min-height:91px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(13px,1.9vw,27px);align-items:center}
+.danini-header .brand{display:flex;gap:11px;align-items:center;min-width:0;color:#f4f8fc;font-weight:820;font-size:1.33rem;letter-spacing:.08em}
+.danini-header .brand .mark{display:grid;place-items:center;width:44px;height:44px;flex:none;background:#0b756a;border-radius:12px;color:white;font-size:1.5rem}
+.danini-header .brand small{display:block;font-size:.57rem;letter-spacing:.055em;color:#aec4cf;margin-top:5px;white-space:nowrap}
+.danini-header .business-nav{display:flex;gap:clamp(9px,1.2vw,22px);align-items:center;justify-content:center;min-width:0;margin:0}
+.danini-header .business-nav a{color:#e8f1f6;white-space:nowrap;display:inline-flex;min-height:44px;align-items:center;font-size:.78rem;font-weight:680;line-height:1.3}
+.danini-header .business-nav a:hover,.danini-header .business-nav a:focus-visible{color:#facc15}
+.danini-header .lang{display:flex;gap:4px;margin:0;border-left:1px solid #344859;padding-left:12px;flex-shrink:0}
+.danini-header .lang a{display:grid;place-items:center;min-width:33px;min-height:38px;border-radius:7px;color:#dbe7ee;font-size:.76rem;font-weight:800}
+.danini-header .lang [aria-current]{background:#105954;color:#fff;text-decoration:none}
+:global(header:has(.danini-header)){background:#0b1928;border-bottom:1px solid #294154}
+@media(max-width:1210px){
+ .danini-header{grid-template-columns:1fr auto;row-gap:7px;padding-block:14px}
+ .danini-header .business-nav{grid-column:1/-1;grid-row:2;width:100%;padding-top:10px;border-top:1px solid #294154;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+ .danini-header .business-nav a{white-space:normal;justify-content:center;text-align:center;padding:8px 4px}
+ .danini-header .lang{grid-column:2;grid-row:1}
+}
+@media(max-width:700px){
+ .danini-header .brand{font-size:1.12rem}
+ .danini-header .brand .mark{width:38px;height:38px}
+ .danini-header .brand small{font-size:.49rem}
+ .danini-header .business-nav{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .danini-header .business-nav a{background:#15293b;border:1px solid #2b4254;border-radius:8px;font-size:.76rem;min-height:43px}
+}
+@media(max-width:390px){.danini-header .business-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.danini-header .brand small{font-size:.43rem}}
 </style>

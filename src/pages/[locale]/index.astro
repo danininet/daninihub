@@ -1,9 +1,8 @@
 ---
-import Home from "../../components/Home.astro";
+import DaniniLanding from "../../components/DaniniLanding.astro";
 export function getStaticPaths() {
   return ["de", "sr"].map((locale) => ({ params: { locale } }));
 }
 const locale = Astro.params.locale as "de" | "sr";
 ---
-
-<Home locale={locale} />
+<DaniniLanding locale={locale} />

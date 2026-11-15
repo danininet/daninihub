@@ -97,13 +97,10 @@ const de = locale === "de";
 
   <section class="auto-storage" aria-labelledby="storage-title">
     <div class="wrap">
-      <span class="eyebrow">DANINI · {de ? "WEITERE ANGEBOTE" : "OSTALE OBLASTI"}</span>
-      <h2 id="storage-title">{de ? "DANINI für Geschäftspartner" : "DANINI za poslovne partnere"}</h2>
-      <div class="auto-storage-grid">
-        <div><strong>{de ? "Marketplace / Auktionen" : "Marketplace / Aukcije"}</strong><p>{de ? "Angebot für Geschäftspartner in Vorbereitung." : "Ponuda za poslovne partnere u pripremi."}</p></div>
-        <div><strong>{de ? "Digitale Produkte" : "Digitalni proizvodi"}</strong><p>{de ? "Zusätzliche Werkzeuge und Informationen." : "Dodatni alati i informacije."}</p></div>
-        <div><strong>DANINI Business (B2B)</strong><p>{de ? "Weitere Geschäftsdienstleistungen" : "Dodatne poslovne usluge"}</p><a href={de ? "/de/danini-methode/" : "/sr/danini-metoda/"}>{de ? "Mehr erfahren" : "Saznajte više"} →</a></div>
-      </div>
+      <span class="eyebrow">DANINI · {de ? "FÜR UNTERNEHMEN" : "ZA PREDUZEĆA"}</span>
+      <h2 id="storage-title">{de ? "Auch für betriebliche Anfragen." : "Podrška i za poslovne upite."}</h2>
+      <p>{de ? "DANINI Business unterstützt kleine Unternehmen dabei, ihre Anfragen und Verwaltungsabläufe klarer zu strukturieren. Keine automatisierten Leistungen ohne vorherige Prüfung." : "DANINI Business pomaže malim preduzećima da organizuju poslovne upite i administrativne procese. Automatizaciju nudimo nakon provere izvodljivosti."}</p>
+      <a class="button" href={"/" + locale + "/business/"}>{de ? "DANINI Business kennenlernen" : "Upoznajte DANINI Business"}</a>
     </div>
   </section>
 </Base>

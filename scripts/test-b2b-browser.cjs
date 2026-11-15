@@ -60,7 +60,7 @@ const assert = require("node:assert/strict");
         assert.equal(business.offers, 3, locale + " offer cards");
         assert.ok(business.emailFallback, locale + " direct contact fallback");
         assert.ok(business.noFakeForm, locale + " must not expose unverified checkout/form");
-        const infoColor = await page.locator(".b-extra-grid p").evaluate(el => getComputedStyle(el).color);
+        const infoColor = await page.locator(".b-extra-grid p:not(.b-eyebrow)").evaluate(el => getComputedStyle(el).color);
         const channels = (infoColor.match(/[0-9.]+/g) || []).slice(0, 3).map(Number);
         assert.equal(channels.length, 3, locale + " supplemental copy CSS color");
         assert.ok(Math.max(...channels) < 175, locale + " supplemental copy is too pale on white: " + infoColor);

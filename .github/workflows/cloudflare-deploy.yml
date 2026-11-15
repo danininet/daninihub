@@ -1,9 +1,5 @@
 name: DANINI Cloudflare production deploy (guarded)
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/cloudflare-deploy.yml'
   workflow_dispatch:
 permissions:
   contents: read

@@ -40,6 +40,8 @@ test('DANINI navigation keeps both commercial lines and languages',()=>{
  const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
  const business=readFileSync('src/components/BusinessLanding.astro','utf8');
  const route=readFileSync('src/pages/[locale]/auto-check.astro','utf8');
+ const rootPage=readFileSync('src/pages/index.astro','utf8');
+ assert.match(rootPage,/DaniniLanding/);
  assert.match(brand,/Jasni procesi/);
  assert.match(brand,/Klare Prozesse/);
  assert.match(business,/DANINI Anfragebüro/);

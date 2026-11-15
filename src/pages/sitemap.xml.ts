@@ -7,7 +7,7 @@ export function GET() {
     "https://daninihub.com/sr/o-danini/",
     "https://daninihub.com/sr/danini-metoda/",
     ...["de", "sr"].flatMap((l) =>
-      ["", ...verticals, "impressum", "datenschutz", "agb"].map(
+      ["", "business", "auto-check", "ai-savetnik", ...verticals, "impressum", "datenschutz", "agb"].map(
         (s) => `https://daninihub.com/${l}/${s ? s + "/" : ""}`,
       ),
     ),

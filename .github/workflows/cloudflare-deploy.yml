@@ -1,6 +1,12 @@
 name: DANINI Cloudflare production deploy (guarded)
 on:
   workflow_dispatch:
+  # Explicit guarded release: a workflow-file change triggers this same checked deploy.
+  # Other source-code merges remain manual; no continuous automatic deployments.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cloudflare-deploy.yml'
 permissions:
   contents: read
 concurrency:

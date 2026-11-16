@@ -67,6 +67,31 @@ const offerings = de ? [
       <a class="b-extra-link" href="#anfrage">{de ? "Umfang anfragen" : "Zatražite procenu obima"} →</a>
     </div>
   </section>
+  <section class="b-section b-faq" aria-labelledby="business-faq-title">
+    <div class="wrap">
+      <p class="b-eyebrow">{de ? "HÄUFIGE FRAGEN" : "ČESTA PITANJA"}</p>
+      <h2 id="business-faq-title">{de ? "Was erhalten Sie konkret?" : "Šta konkretno dobijate?"}</h2>
+      <div class="b-faq-grid">
+        <details>
+          <summary>{de ? "Was umfasst der Business Check?" : "Šta obuhvata Business Check?"}</summary>
+          <p>{de ? "Wir betrachten einen vereinbarten Anfrage- oder Verwaltungsablauf anhand Ihrer Angaben. Sie erhalten eine schriftliche Übersicht zu Datenlücken, Risiken im Ablauf und drei priorisierten Verbesserungsmöglichkeiten. Eine rechtliche oder steuerliche Prüfung ist nicht enthalten." : "Analiziramo jedan dogovoreni postupak obrade upita ili administracije na osnovu vaših podataka. Dobijate pisani pregled nedostataka, rizika i tri prioritetna predloga poboljšanja. Pravna i poreska provera nisu uključene."}</p>
+        </details>
+        <details>
+          <summary>{de ? "Was wird beim Anfragebüro umgesetzt?" : "Šta se uvodi kroz Anfragebüro?"}</summary>
+          <p>{de ? "Nach einer schriftlichen Leistungsvereinbarung richten wir einen klar abgegrenzten Prozess ein: Anfrage erfassen, erforderliche Angaben strukturieren, Status dokumentieren und einen Antwortentwurf zur menschlichen Freigabe vorbereiten. Zusätzliche Systeme und Sonderintegrationen sind nicht automatisch enthalten." : "Posle pisane potvrde obima uvodimo jedan ograničen proces: prijem upita, sređivanje potrebnih podataka, evidenciju statusa i nacrt odgovora koji čovek odobrava. Dodatni sistemi i posebne integracije nisu automatski uključeni."}</p>
+        </details>
+        <details>
+          <summary>{de ? "Ist die Office Betreuung sofort buchbar?" : "Da li se Office Betreuung odmah ugovara?"}</summary>
+          <p>{de ? "Eine laufende Betreuung bieten wir nur nach Prüfung des bestehenden Ablaufs, des tatsächlichen Betreuungsbedarfs und unserer Kapazität an. Umfang, Prüfintervalle und Konditionen werden individuell schriftlich vereinbart. Es besteht kein automatisches Abonnement." : "Kontinuiranu podršku nudimo tek posle provere postojećeg procesa, realnih potreba i raspoloživog kapaciteta. Obim, intervali i uslovi definišu se pisanim dogovorom. Nema automatske pretplate."}</p>
+        </details>
+        <details>
+          <summary>{de ? "Entsteht durch eine Anfrage ein Auftrag?" : "Da li slanje upita znači narudžbinu?"}</summary>
+          <p>{de ? "Nein. Ihre Anfrage ist unverbindlich. Zuerst klären wir Ziel, Unterlagen und Machbarkeit. Preis, Zeitrahmen und Leistungsumfang bestätigen wir vor einer möglichen Beauftragung schriftlich. Eine bestimmte Anzahl neuer Kunden wird nicht garantiert." : "Ne. Upit nije obavezujući. Prvo razjašnjavamo cilj, dokumentaciju i izvodljivost. Cenu, rok i obim potvrđujemo pisano pre eventualnog angažovanja. Ne garantujemo broj novih kupaca."}</p>
+        </details>
+      </div>
+      <p class="b-faq-action"><a class="b-btn" href="#anfrage">{de ? "Unverbindliche Anfrage stellen" : "Pošaljite neobavezujući upit"}</a></p>
+    </div>
+  </section>
   <BusinessContact locale={locale} />
 </Base>
 <style>
@@ -102,4 +127,11 @@ const offerings = de ? [
 .b-cta p{color:#c7d3df;max-width:750px}
 @media(max-width:960px){.b-grid,.b-extra-grid{grid-template-columns:1fr}.b-cards{grid-template-columns:1fr}}
 @media(max-width:600px){.b-actions .b-btn,.b-cta .b-btn{width:100%}.b-section{padding:55px 0}}
+.b-faq{background:#eef3f8}
+.b-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:28px}
+.b-faq details{border:1px solid #c8d5e2;background:#fff;border-radius:12px;padding:20px;min-width:0}
+.b-faq summary{cursor:pointer;color:#102238;font-weight:800;line-height:1.5}
+.b-faq details p{color:#40546b;line-height:1.7;margin-bottom:0}
+.b-faq-action{margin-top:28px}
+@media(max-width:750px){.b-faq-grid{grid-template-columns:1fr}.b-faq-action .b-btn{width:100%}}
 </style>

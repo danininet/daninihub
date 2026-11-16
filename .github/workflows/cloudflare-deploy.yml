@@ -139,3 +139,5 @@ jobs:
           console.log('PASS production Turnstile and Brevo readiness; no customer email sent');
           NODE
 # PR208 production release trigger 2026-11-13: workflow content touched to start guarded main deployment.
+
+# P0 verified redeploy 2026-11-16: integrate PR223 Brevo trace, preserve DE/SR storefront.

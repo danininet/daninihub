@@ -57,6 +57,26 @@ const offerings = de ? [
       </div>
     </div>
   </section>
+  <section class="b-section b-proof" aria-labelledby="business-demo-title">
+    <div class="wrap b-demo-grid">
+      <div>
+        <p class="b-eyebrow">{de ? "BEISPIEL EINES ERGEBNISSES · FIKTIVER FALL" : "PRIMER REZULTATA · IZMIŠLJEN SLUČAJ"}</p>
+        <h2 id="business-demo-title">{de ? "Was bekommt ein Unternehmen konkret?" : "Šta firma konkretno dobija?"}</h2>
+        <p>{de ? "Beispiel: Ein Produktionsbetrieb vom Balkan möchte einem deutschen Einkäufer antworten. Vor einem Angebot fehlen Menge, Zeichnungsversion und Liefertermin. DANINI bereitet eine prüfbare Rückfrage und einen nächsten Schritt vor." : "Primer: proizvođač sa Balkana dobio je upit nemačkog kupca. Pre izrade ponude nedostaju količina, verzija tehničkog crteža i rok isporuke. DANINI priprema pregled nedostataka i nacrt odgovora na nemačkom."}</p>
+        <a class="b-btn" href="#anfrage">{de ? "Eigenen Geschäftsfall schildern" : "Opiši svoj poslovni slučaj"}</a>
+      </div>
+      <div class="b-demo-document">
+        <p class="b-demo-stamp">{de ? "DEMO · KEIN KUNDENPROJEKT" : "DEMO · NIJE STVARNI KLIJENT"}</p>
+        <strong>{de ? "Anfrageakte: Zulieferer → DE-Einkauf" : "Dosije upita: dobavljač → kupac iz DE"}</strong>
+        <div><span>{de ? "Vorliegend" : "Dostupno"}</span><b>{de ? "Produktbeschreibung, Ansprechpartner" : "Opis proizvoda, kontakt osoba"}</b></div>
+        <div><span>{de ? "Offen" : "Nedostaje"}</span><b>{de ? "Menge, Zeichnungsversion, Liefertermin" : "Količina, verzija crteža, rok isporuke"}</b></div>
+        <div><span>{de ? "Entwurf auf Deutsch" : "Nacrt na nemačkom"}</span><b>„Könnten Sie uns bitte die benötigte Menge, den aktuellen Zeichnungsstand und den gewünschten Liefertermin nennen?“</b></div>
+        <div><span>{de ? "Nächster Schritt" : "Sledeći korak"}</span><b>{de ? "Entwurf durch den Auftraggeber prüfen lassen" : "Korisnik odobrava nacrt pre slanja"}</b></div>
+        <small>{de ? "Illustratives Muster, keine zugesagte Leistung ohne individuelle Abstimmung." : "Ilustrativni prikaz, nije dokaz već isporučene usluge."}</small>
+      </div>
+    </div>
+  </section>
+
   <section class="b-section b-extra">
     <div class="wrap b-extra-grid">
       <div>
@@ -102,4 +122,16 @@ const offerings = de ? [
 .b-cta p{color:#c7d3df;max-width:750px}
 @media(max-width:960px){.b-grid,.b-extra-grid{grid-template-columns:1fr}.b-cards{grid-template-columns:1fr}}
 @media(max-width:600px){.b-actions .b-btn,.b-cta .b-btn{width:100%}.b-section{padding:55px 0}}
+
+.b-proof{background:#eaf1f6}
+.b-demo-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:clamp(22px,4vw,60px);align-items:center}
+.b-demo-grid>div>p:not(.b-eyebrow){color:#344b61;line-height:1.75}
+.b-demo-document{background:#fff;border:1px solid #b7c9d7;border-radius:18px;padding:clamp(20px,3vw,30px);box-shadow:0 18px 42px #12243b12;display:grid;gap:12px}
+.b-demo-document .b-demo-stamp{font-size:.72rem;color:#0b655c;font-weight:800;letter-spacing:.06em;margin:0}
+.b-demo-document>strong{font-size:1.16rem;color:#132a3c}
+.b-demo-document>div{display:grid;gap:5px;border-top:1px solid #dfe7ed;padding-top:12px}
+.b-demo-document span{font-size:.73rem;font-weight:800;color:#365f63;text-transform:uppercase;letter-spacing:.04em}
+.b-demo-document b{font-size:.9rem;color:#243b52;line-height:1.55;font-weight:600;overflow-wrap:anywhere}
+.b-demo-document small{color:#51687c;line-height:1.5}
+@media(max-width:900px){.b-demo-grid{grid-template-columns:1fr}}
 </style>

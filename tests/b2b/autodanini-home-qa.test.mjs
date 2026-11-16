@@ -29,6 +29,23 @@ test('Balkan-first copy and sample deliverables are labeled fictional in DE/SR',
  assert.doesNotMatch(home,/KI-Berater und Fahrzeugprüfung/);
 });
 
+test('AutoDanini DE/SR inquiry integrates existing protected lead API and preserves fallback',()=>{
+ const contact=readFileSync('src/components/AutoContact.astro','utf8');
+ assert.match(home,/import AutoContact from "\.\/AutoContact\.astro"/);
+ assert.match(home,/<AutoContact locale=\{locale\}/);
+ assert.match(contact,/id="contact"/);
+ assert.match(contact,/data-auto-enquiry data-locale=\{locale\}/);
+ assert.match(contact,/fetch\("\/api\/lead\/status"/);
+ assert.match(contact,/fetch\("\/api\/lead"/);
+ assert.match(contact,/kind:"vehicle"/);
+ assert.match(contact,/language:de\?"de":"sr"/);
+ assert.match(contact,/data-auto-captcha/);
+ assert.match(contact,/turnstileToken:token/);
+ assert.match(contact,/response\.status!==202/);
+ assert.match(contact,/mailto:auto@daninihub\.com/);
+ assert.match(contact,/href=\{"\/"\+locale\+"\/datenschutz\/"\}/);
+});
+
 test('client side handoff does not expose source in query or network',()=>{
  assert.match(home,/sessionStorage\.setItem\("danini-advisor-source-v1"/);
  assert.match(home,/window\.location\.assign/);

@@ -1,0 +1,24 @@
+name: DANINI production brand audit current DE-SR (read-only)
+on:
+  push:
+    branches:
+      - fix/p0-live-qa-current-brand-20261116
+    paths:
+      - '.github/workflows/danini-current-brand-live-audit.yml'
+permissions:
+  contents: read
+jobs:
+  current-brand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify current storefront on real Cloudflare production
+        run: |
+          node scripts/check-cloudflare-live-pages.cjs
+      - name: Inspect legacy and current design consistency without any writes
+        run: |
+          node scripts/audit-danini-live.mjs

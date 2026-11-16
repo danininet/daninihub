@@ -118,7 +118,13 @@ jobs:
           for (const [path,heading] of [['/de/','Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut.'],['/sr/','Nemački poslovni upiti i oglasi vozila. Jasna podrška.']]){
             const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
             assert.equal(r.status,200,path+' HTTP status');
-            assert.ok((await r.text()).includes(heading),path+' DANINI brand page not live');
+            const html=await r.text();
+            assert.ok(html.includes(heading),path+' DANINI brand page not live');
+            const locale=path==='/de/'?'de':'sr';
+            assert.ok(html.includes('href="/'+locale+'/business/#anfrage"'),path+' missing Business inquiry CTA');
+            assert.ok(html.includes('href="/'+locale+'/auto-check/#contact"'),path+' missing AutoDanini inquiry CTA');
+            assert.ok(html.includes('mailto:info@daninihub.com'),path+' missing direct email fallback');
+            console.log('PASS',path,'Business + AutoDanini conversion CTAs and email fallback');
           }
           for (const [path,heading] of [['/de/auto-check/','Auto in Deutschland gefunden?'],['/sr/auto-check/','Našao si auto u Nemačkoj?']]){
             const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
@@ -141,3 +147,5 @@ jobs:
 # PR208 production release trigger 2026-11-13: workflow content touched to start guarded main deployment.
 
 # P0 verified redeploy 2026-11-16: integrate PR223 Brevo trace, preserve DE/SR storefront.
+
+# Authorized guarded DANINI conversion release 2026-11-16: latest main source + bilingual live CTA checks.

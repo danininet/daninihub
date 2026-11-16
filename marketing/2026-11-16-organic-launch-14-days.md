@@ -8,7 +8,7 @@ Fokus rada 60% Business / 30% AutoDanini / 10% QA. Predloženi kanali nisu potvr
 
 ## Prodajna ponuda — upit i individualna ponuda, bez automatske naplate
 
-**Business Check:** Ein Anfrageprozess, drei priorisierte Verbesserungen. Kleine Betriebe können prüfen, wo Informationen verloren gehen, welche Zuständigkeiten fehlen und wann ein Entwurf menschlich freigegeben werden muss. Ergebnisidee: kurzer Ist-Ablauf, dokumentierte Lücken, drei Maßnahmen. Keine Rechts-/Steuerberatung, keine Garantie der Zeitersparnis, Anfragen sind möglich; ein kostenpflichtiger Auftrag entsteht erst nach individueller Abstimmung.
+**Business Check:** Ein Anfrageprozess, drei priorisierte Verbesserungen. Kleine Betriebe können prüfen, wo Informationen verloren gehen, welche Zuständigkeiten fehlen und wann ein Entwurf menschlich freigegeben werden muss. Ergebnisidee: kurzer Ist-Ablauf, dokumentierte Lücken, drei Maßnahmen. Keine Rechts-/Steuerberatung, keine Garantie der Zeitersparnis, Anfragen sind möglich. Ein kostenpflichtiger Auftrag entsteht erst nach individueller Abstimmung.
 
 **Digitales Anfragebüro:** Ein abgestimmter Kanal → Erfassung → Rückfragen → Bearbeitungsstatus → Antwortentwurf → menschliche Freigabe. Kein automatisch aktiver 24/7-Kundendienst, keine behauptete Produktivschaltung des erweiterten B2B-Workflows.
 
@@ -43,11 +43,11 @@ Drei Rückfragen können mehr Klarheit schaffen als zehn E-Mails: Was genau wird
 
 DANINI entwickelt eine Methode für kleinere Unternehmen: erst die richtigen Fragen, dann ein nachvollziehbarer nächster Schritt.
 
-Fiktive Demonstration. Keine Kundenreferenz, kein derzeit buchbares Angebot.
+Fiktive Demonstration, keine Kundenreferenz. Der konkrete Leistungsumfang wird vor einer Beauftragung geklärt.
 
-Mehr zur Methode: https://daninihub.com/de/danini-methode/
+Mehr zur Methode: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/danini-methode/ (informativno). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b01. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b01. **Objavljeno:** NE.
 
 ### 18.11.2026 — A01 — Auto — Facebook (SR)
 
@@ -57,9 +57,9 @@ Proveri tri stvari: Da li se VIN poklapa sa dokumentima? Postoje li servisni dok
 
 Oglas je tvrdnja prodavca, ne dokaz stanja vozila. AutoDanini objašnjava šta je poznato, a šta tek treba proveriti.
 
-Kako izgleda priprema odluke: https://daninihub.com/sr/auto-check/
+Kako izgleda priprema odluke: https://daninihub.com/sr/auto-check/#contact
 
-**Jedan CTA:** https://daninihub.com/sr/auto-check/ (informativno). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=a01. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/sr/auto-check/#contact (zahtev za uslugu). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=a01. **Objavljeno:** NE.
 
 ### 19.11.2026 — B02 — Business — LinkedIn (DE)
 
@@ -69,9 +69,9 @@ Vier Informationen gehören zusammen: Eingang, fehlende Angaben, zuständige Per
 
 In einem fiktiven DANINI-Demobeispiel wird daraus ein strukturierter Vorgang. Eine Antwort bleibt Entwurf, bis ein Mensch sie freigibt.
 
-Das Konzept: https://daninihub.com/de/business/
+Das Konzept: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/business/ (informativno). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b02. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b02. **Objavljeno:** NE.
 
 ### 20.11.2026 — B03 — Business — Facebook (DE)
 
@@ -81,9 +81,9 @@ Eine Anfrage kommt per E-Mail, eine Rückfrage per Telefon, die letzte Version l
 
 DANINI zeigt anhand eines fiktiven Beispiels, wie solche Schritte nachvollziehbar geordnet werden können. Keine vollautomatische Kundenbearbeitung. Für einen konkreten Ablauf können Sie eine Anfrage über die Business-Seite senden.
 
-Mehr erfahren: https://daninihub.com/de/business/
+Mehr erfahren: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/business/ (informativno). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=b03. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=b03. **Objavljeno:** NE.
 
 ### 21.11.2026 — A02 — Auto — Instagram (SR)
 
@@ -93,9 +93,9 @@ Traži VIN i dokumenta, servisne račune, zapis o oštećenjima i mogućnost pre
 
 Za demonstraciju kopiraj vidljivi tekst oglasa: link sam po sebi ne omogućava automatsko preuzimanje.
 
-Tri pitanja za kupca: https://daninihub.com/sr/ai-savetnik/
+Tri pitanja za kupca: https://daninihub.com/sr/auto-check/#contact
 
-**Jedan CTA:** https://daninihub.com/sr/ai-savetnik/ (informativno). **Plan UTM:** utm_source=instagram&utm_medium=organic&utm_campaign=danini_202611&utm_content=a02. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/sr/auto-check/#contact (zahtev za uslugu). **Plan UTM:** utm_source=instagram&utm_medium=organic&utm_campaign=danini_202611&utm_content=a02. **Objavljeno:** NE.
 
 ### 22.11.2026 — Q01 — QA/metod — LinkedIn (DE)
 
@@ -117,9 +117,9 @@ Fiktive Anfrage: „Wir brauchen das Material nächste Woche.“ Welche Menge, w
 
 Ein gutes Anfragebüro macht fehlende Angaben sichtbar und kennzeichnet die Antwort als Entwurf bis zur Freigabe durch einen Menschen.
 
-DANINI Business kennenlernen: https://daninihub.com/de/business/
+DANINI Business kennenlernen: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/business/ (informativno). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b04. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b04. **Objavljeno:** NE.
 
 ### 24.11.2026 — A03 — Auto — Facebook (DE)
 
@@ -129,9 +129,9 @@ Fragen Sie nach FIN, Zulassungsbescheinigungen, Serviceunterlagen, bekannten Sch
 
 AutoDanini hilft, Angaben und offene Fragen zu strukturieren. Externe Inseratslinks werden nicht automatisch ausgelesen – bitte den sichtbaren Text kopieren.
 
-Vorprüfung ansehen: https://daninihub.com/de/auto-check/
+Vorprüfung ansehen: https://daninihub.com/de/auto-check/#contact
 
-**Jedan CTA:** https://daninihub.com/de/auto-check/ (informativno). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=a03. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/auto-check/#contact (zahtev za uslugu). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=a03. **Objavljeno:** NE.
 
 ### 25.11.2026 — B05 — Business — LinkedIn (DE)
 
@@ -141,9 +141,9 @@ Im Modell eines digitalen Anfragebüros werden Daten geordnet, Zuständigkeiten 
 
 Dies ist ein Prozessbeispiel, keine Behauptung über eine bereits laufende Kundenautomation.
 
-Mehr über DANINI Business: https://daninihub.com/de/business/
+Mehr über DANINI Business: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/business/ (informativno). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b05. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b05. **Objavljeno:** NE.
 
 ### 26.11.2026 — B06 — Business — Facebook (DE)
 
@@ -153,9 +153,9 @@ Oft nicht bei der Kernarbeit, sondern beim Nachfragen, Zuordnen und Wiederfinden
 
 Keine behauptete Zeitersparnis, keine erfundene Kundenreferenz.
 
-Business-Ansatz ansehen: https://daninihub.com/de/business/
+Business-Ansatz ansehen: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/business/ (informativno). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=b06. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=facebook&utm_medium=organic&utm_campaign=danini_202611&utm_content=b06. **Objavljeno:** NE.
 
 ### 27.11.2026 — A04 — Auto — Instagram (DE)
 
@@ -165,9 +165,9 @@ Transport, unabhängige Prüfung und weitere Abgaben können hinzukommen. Unbeka
 
 Die AutoDanini-Demo addiert nur vom Nutzer eingetragene Beträge. Keine verbindliche Zoll-, Steuer- oder Transportkalkulation.
 
-Zum Beispiel: https://daninihub.com/de/ai-savetnik/
+Zum Beispiel: https://daninihub.com/de/auto-check/#contact
 
-**Jedan CTA:** https://daninihub.com/de/ai-savetnik/ (informativno). **Plan UTM:** utm_source=instagram&utm_medium=organic&utm_campaign=danini_202611&utm_content=a04. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/auto-check/#contact (zahtev za uslugu). **Plan UTM:** utm_source=instagram&utm_medium=organic&utm_campaign=danini_202611&utm_content=a04. **Objavljeno:** NE.
 
 ### 28.11.2026 — B07 — Business — LinkedIn (DE)
 
@@ -177,9 +177,9 @@ Schon eine kleine Übersicht kann unterscheiden: Anfrage eingegangen, Informatio
 
 DANINI entwickelt einen solchen nachvollziehbaren Ablauf – nicht eine beliebig große Liste autonomer KI-Agenten.
 
-Die Business-Methode: https://daninihub.com/de/business/
+Die Business-Methode: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/business/ (informativno). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b07. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b07. **Objavljeno:** NE.
 
 ### 29.11.2026 — Q02 — QA/metod — Facebook (SR)
 
@@ -201,14 +201,14 @@ Es beginnt mit vollständigen Angaben, einem klaren Status und einer verantwortl
 
 Der vollständige B2B-Workflow ist noch nicht für Kunden freigeschaltet. Wir zeigen das Konzept transparent und ohne erfundene Referenzen.
 
-Mehr erfahren: https://daninihub.com/de/business/
+Mehr erfahren: https://daninihub.com/de/business/#anfrage
 
-**Jedan CTA:** https://daninihub.com/de/business/ (informativno). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b08. **Objavljeno:** NE.
+**Jedan CTA:** https://daninihub.com/de/business/#anfrage (zahtev za uslugu). **Plan UTM:** utm_source=linkedin&utm_medium=organic&utm_campaign=danini_202611&utm_content=b08. **Objavljeno:** NE.
 
 ## Faceless video: gotovi kadrovi za montažu (tekst na ekranu)
 
 ### Business DE — 24 sekunde, format 9:16
-0–4 s: „Eine Anfrage. Fünf offene Punkte.“; 4–9 s: tri kartice „Was genau? / Welche Menge? / Bis wann?“; 9–15 s: „Eingang → Rückfrage → Status → Entwurf“; 15–20 s: „Menschliche Freigabe vor dem Versand“; 20–24 s: „DANINI Business: https://daninihub.com/de/business/“. Sitni tekst tokom videa: „Fiktive Demonstration · Keine aktive Kundenautomatisierung“.
+0–4 s: „Eine Anfrage. Fünf offene Punkte.“; 4–9 s: tri kartice „Was genau? / Welche Menge? / Bis wann?“; 9–15 s: „Eingang → Rückfrage → Status → Entwurf“; 15–20 s: „Menschliche Freigabe vor dem Versand“; 20–24 s: „DANINI Business: https://daninihub.com/de/business/#anfrage“. Sitni tekst tokom videa: „Fiktive Demonstration · Keine aktive Kundenautomatisierung“.
 
 ### Auto SR — 24 sekunde, format 9:16
 0–4 s: „Auto iz Nemačke? Ne počinji kaparom.“; 4–9 s: fiktivan oglas, veliki natpis DEMO „2018 · 143.000 km · 12.500 €“; 9–15 s: „VIN i dokumenta? / Servisni dokazi? / Nezavisan pregled?“; 15–20 s: „Navedeno / Nepoznato / Proveriti“; 20–24 s: „AutoDanini: https://daninihub.com/sr/auto-check/“. Sitni tekst: „Bez automatskog čitanja linka · Nije tehnički pregled“.

@@ -29,7 +29,7 @@ const assert = require("node:assert/strict");
         if (locale === "de") {
           const rootResponse = await page.goto("http://127.0.0.1:4321/",{waitUntil:"networkidle"});
           assert.equal(rootResponse.status(),200,"root URL HTTP 200");
-          assert.match(await page.locator("main h1").innerText(),/Deutsche Kundenanfragen/,"root URL DANINI brand");
+          assert.match(await page.locator("main h1").innerText(),/Für Unternehmen und Käufer vom Balkan/,"root URL DANINI brand");
         }
         const brandResponse = await page.goto(base, { waitUntil: "networkidle" });
         assert.equal(brandResponse.status(), 200, locale + " brand HTTP 200");
@@ -106,7 +106,44 @@ const assert = require("node:assert/strict");
         assert.ok(Math.max(...channels) < 175, locale + " supplemental copy is too pale on white: " + infoColor);
         assert.deepEqual(errors, [], locale + " browser errors");
         await page.screenshot({ path: "outputs/b2b/" + locale + "-business-" + width + ".png", fullPage: true });
-        results.push({ locale, width, home, business, errors });
+        // New AutoDanini inquiry: isolated browser simulation, no external delivery.
+        submitted = null;
+        const autoResponse = await page.goto(base + "auto-check/", { waitUntil: "networkidle" });
+        assert.equal(autoResponse.status(), 200, locale + " AutoDanini HTTP 200");
+        const auto = await page.evaluate(() => ({
+          overflow: document.documentElement.scrollWidth > innerWidth + 2,
+          h1: document.querySelectorAll("main h1").length,
+          lang: document.documentElement.lang,
+          demo: document.querySelector(".auto-example-stamp")?.textContent?.trim() || "",
+          form: !!document.querySelector("[data-auto-enquiry]"),
+          fallback: !!document.querySelector('a[href^="mailto:auto@daninihub.com"]'),
+          privacy: !!document.querySelector('form[data-auto-enquiry] a[href$="/datenschutz/"]')
+        }));
+        assert.equal(auto.overflow, false, locale + " AutoDanini overflow");
+        assert.equal(auto.h1, 1, locale + " AutoDanini H1");
+        assert.equal(auto.lang, locale);
+        assert.match(auto.demo, /DEMO/);
+        assert.ok(auto.form && auto.fallback && auto.privacy, locale + " AutoDanini contact and privacy");
+        const autoEnquiry = page.locator("[data-auto-enquiry]");
+        await page.waitForFunction(() => !document.querySelector("[data-auto-submit]")?.disabled, {timeout:10000});
+        await autoEnquiry.locator('[name="source"]').fill("Fiktive Fahrzeugangaben: 2018, 143000 km, Preis 12500 EUR.");
+        await autoEnquiry.locator('[name="location"]').fill("Duisburg");
+        await autoEnquiry.locator('[name="intent"]').selectOption("documents");
+        await autoEnquiry.locator('[name="name"]').fill("DANINI QA Tester");
+        await autoEnquiry.locator('[name="email"]').fill("qa-test@example.invalid");
+        await autoEnquiry.locator('[name="consent"]').check();
+        await autoEnquiry.locator("[data-auto-submit]").click();
+        await page.waitForFunction(() => (document.querySelector("[data-auto-status]")?.textContent || "").includes("DN-QA-BROWSER-ONLY"));
+        assert.equal(submitted.kind, "vehicle");
+        assert.equal(submitted.language, locale);
+        assert.equal(submitted.details.intent, "documents");
+        assert.equal(submitted.details.location, "Duisburg");
+        assert.match(submitted.message, /143000 km/);
+        assert.equal(submitted.consent, true);
+        assert.equal(submitted.turnstileToken, "QA_MOCK_TOKEN_NOT_VALID");
+        await page.screenshot({ path: "outputs/b2b/" + locale + "-auto-" + width + ".png", fullPage: true });
+        assert.deepEqual(errors, [], locale + " browser errors including AutoDanini");
+        results.push({ locale, width, home, business, auto, errors });
       }
       await page.close();
     }

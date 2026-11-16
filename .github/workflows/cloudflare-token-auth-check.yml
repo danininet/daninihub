@@ -44,7 +44,25 @@ jobs:
               // Never print raw response or token; only return sanitized PASS/FAIL.
               const payload = await response.json().catch(() => null);
               if (response.ok && payload?.success === true && payload?.result?.status === 'active') {
-                console.log('PASS: Cloudflare accepted the GitHub API token (active). No deployment performed.');
+                console.log('PASS: Cloudflare accepted the GitHub API token (active).');
+                const serviceController = new AbortController();
+                const serviceTimer = setTimeout(() => serviceController.abort(), 12000);
+                try {
+                  const service = await fetch('https://api.cloudflare.com/client/v4/accounts/c7c8ad399f1e851d1c3a8be34e66f822/workers/services/autodanini', {
+                    method: 'GET',
+                    headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
+                    signal: serviceController.signal
+                  });
+                  const body = await service.json().catch(() => null);
+                  if (service.ok && body?.success === true) {
+                    console.log('PASS: GitHub token can access existing autodanini Worker service (read-only). No deployment performed.');
+                  } else {
+                    console.error('FAIL: GitHub token cannot access autodanini Worker service (HTTP ' + service.status + '). No deployment performed.');
+                    process.exitCode = 1;
+                  }
+                } finally {
+                  clearTimeout(serviceTimer);
+                }
               } else {
                 console.error('FAIL: Cloudflare API token verification failed (HTTP ' + response.status + '). No deployment performed.');
                 process.exitCode = 1;

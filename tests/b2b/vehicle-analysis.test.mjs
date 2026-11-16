@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {handleVehicleAnalysis} from '../../workers/danini-vehicle-analysis.mjs';
+import {handleApi} from '../../workers/danini-intake.mjs';
+import {readFileSync} from 'node:fs';
 
 const longText='Volkswagen Golf Baujahr 2018, Diesel, Automatik, 143.000 km, 12.500 EUR. Unfallfrei laut Anbieter, scheckheftgepflegt. Weitere Angaben nach Rückfrage.';
 const make=(source,origin='https://daninihub.com',token='mock-token-long-enough')=>new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin,'content-type':'application/json','cf-connecting-ip':'192.0.2.1'},body:JSON.stringify({language:'de',source,turnstileToken:token})});
@@ -38,6 +40,28 @@ test('verified text extraction reports gaps and never claims AI',async()=>{
   assert.match(calls[0],/turnstile/);
  }finally{globalThis.fetch=original;}
 });
+test('listing price parser handles German and English decimal cents without inflating EUR amounts',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>Response.json({success:true,hostname:'daninihub.com'});
+ try{
+  for(const [price,expected] of [
+   ['12.500',12500],
+   ['12.500,00',12500],
+   ['12,500.00',12500],
+   ['12500,00',12500],
+   ['1250.50',1250.5]
+  ]){
+   const memory=new Map();
+   const env={DANINI_TURNSTILE_SECRET:'test',PARTNERS:{get:async k=>memory.get(k),put:async(k,v)=>memory.set(k,v)}};
+   const description=longText.replace('12.500 EUR',price+' EUR');
+   const response=await handleVehicleAnalysis(make(description),env);
+   assert.equal(response.status,200,price);
+   const parsed=await response.json();
+   assert.equal(parsed.fields.priceEur,expected,price);
+  }
+ }finally{globalThis.fetch=original;}
+});
+
 test('rate limiting caps repeated analyses',async()=>{
  const original=globalThis.fetch;
  globalThis.fetch=async()=>Response.json({success:true,hostname:'daninihub.com'});
@@ -47,4 +71,21 @@ test('rate limiting caps repeated analyses',async()=>{
   for(let i=0;i<5;i++)assert.equal((await handleVehicleAnalysis(make(longText),env)).status,200);
   assert.equal((await handleVehicleAnalysis(make(longText),env)).status,429);
  }finally{globalThis.fetch=original;}
+});
+
+test('public CAPTCHA sitekey remains available for analysis when contact sending is disabled',async()=>{
+ const env={DANINI_CONTACT_ACTIVE:'false',DANINI_TURNSTILE_SECRET:'configured-test-secret',DANINI_TURNSTILE_SITEKEY:'0xTEST_PUBLIC_SITEKEY'};
+ const r=await handleApi(new Request('https://daninihub.com/api/lead/status'),env);
+ assert.equal(r.status,200);
+ const body=await r.json();
+ assert.equal(body.enabled,false);
+ assert.equal(body.channel,'setup_required');
+ assert.equal(body.turnstileSiteKey,env.DANINI_TURNSTILE_SITEKEY);
+ const client=readFileSync('public/danini-advisor-client.js','utf8');
+ assert.match(client,/if \(data\?\.turnstileSiteKey\) loadTurnstile\(data\.turnstileSiteKey\)/);
+ assert.doesNotMatch(client,/if \(serviceEnabled\) loadTurnstile/);
+ const advisorCopy=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ assert.match(advisorCopy,/Text-Vorprüfung wird Ihr eingefügter Text an den DANINI-Server übermittelt/);
+ assert.match(advisorCopy,/kopirani tekst šalje se DANINI serveru/);
+ assert.doesNotMatch(advisorCopy,/nur innerhalb dieser Browser-Sitzung/);
 });

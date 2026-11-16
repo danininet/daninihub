@@ -10,6 +10,13 @@ const question={
  de:['Ist die FIN mit Fahrzeugbrief und Fahrzeug abgleichbar?','Gibt es Servicebelege und dokumentierte Kilometerstände?','Sind Unfallschäden und Reparaturen schriftlich dokumentiert?','Kann eine unabhängige Prüfung vor dem Kauf stattfinden?'],
  sr:['Da li se VIN poklapa na vozilu i u dokumentima?','Postoje li servisni računi i dokaz o kilometraži?','Da li su oštećenja i popravke dokumentovani?','Može li nezavisan pregled pre kupovine?']
 };
+function parsePriceEur(raw){
+ if(!raw)return null;
+ // German/Serbian prices may be 12.500,00 or 12,500.00; do not turn cents into extra euros.
+ const digits=raw.replace(/\D/g,'');
+ if(!digits)return null;
+ return Number(digits)/(/[.,]\d{2}$/.test(raw)?100:1);
+}
 function extract(text){
  const match=(re)=>text.match(re)?.[1]?.trim()||null;
  const rawPrice=match(/(?:€|EUR)\s*([\d.,]{3,14})\b/i)||match(/\b([\d.,]{3,14})\s*(?:€|EUR)\b/i);
@@ -20,7 +27,7 @@ function extract(text){
  const brands=['Volkswagen','VW','Audi','BMW','Mercedes','Opel','Ford','Škoda','Skoda','Toyota','Renault','Peugeot','Citroen','Citroën','Fiat','Hyundai','Kia','Seat','Volvo','Mazda','Nissan','Honda','Tesla','Dacia'];
  const brand=brands.find(b=>new RegExp('\\b'+b+'\\b','i').test(text))||null;
  const vin=match(/\b([A-HJ-NPR-Z0-9]{17})\b/i);
- return {brand,model:null,year:year?Number(year):null,mileageKm:km?Number(km.replace(/[^0-9]/g,'')):null,priceEur:rawPrice?Number(rawPrice.replace(/[^0-9]/g,'')):null,fuel,gearbox,engine:null,equipment:null,location:null,vinClaim:vin,description:text.slice(0,1500)};
+ return {brand,model:null,year:year?Number(year):null,mileageKm:km?Number(km.replace(/[^0-9]/g,'')):null,priceEur:parsePriceEur(rawPrice),fuel,gearbox,engine:null,equipment:null,location:null,vinClaim:vin,description:text.slice(0,1500)};
 }
 function normalizeFields(fields){
  if(fields.year && (fields.year<1950||fields.year>new Date().getUTCFullYear()+1))fields.year=null;

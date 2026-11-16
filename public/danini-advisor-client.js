@@ -184,8 +184,8 @@
     .then(r => r.ok ? r.json() : null)
     .then(data => {
       serviceEnabled = data?.enabled === true;
-      if (serviceEnabled) loadTurnstile(data.turnstileSiteKey);
-      else show(messages.unavailable);
+      if (data?.turnstileSiteKey) loadTurnstile(data.turnstileSiteKey);
+      if (!serviceEnabled) show(messages.unavailable);
     }).catch(() => show(messages.unavailable));
   cta.addEventListener('click', async () => {
     if (cta.disabled || !answers.every(a => a !== null) || busy) return;

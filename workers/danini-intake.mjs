@@ -191,7 +191,7 @@ export async function handleApi(request,env={}){
  const url=new URL(request.url);
  if(url.pathname==='/api/lead/status' && request.method==='GET'){
   return response({enabled:isReady(env),channel:isReady(env)?'brevo':'setup_required',
-   turnstileSiteKey:isReady(env)?env.DANINI_TURNSTILE_SITEKEY:null});
+   turnstileSiteKey:env.DANINI_TURNSTILE_SECRET && env.DANINI_TURNSTILE_SITEKEY ? env.DANINI_TURNSTILE_SITEKEY : null});
  }
  if(url.pathname==='/api/vehicle-analysis')return handleVehicleAnalysis(request,env);
  if(url.pathname==='/api/ai-intake')return handleAiIntake(request,env);

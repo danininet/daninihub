@@ -4,7 +4,7 @@ const fs = require("fs"),
 const root = path.resolve("dist");
 const locales = ["de", "sr"];
 const rootHtml = fs.readFileSync(path.join(root,"index.html"),"utf8");
-assert.ok(rootHtml.includes("Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut."),"Root URL must lead with DANINI brand, not AutoDanini");
+assert.ok(rootHtml.includes("Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen."),"Root URL must lead with DANINI brand, not AutoDanini");
 assert.ok(rootHtml.includes("DANINI Business"),"Root URL must offer DANINI Business");
 let count = 0;
 for (const locale of locales)

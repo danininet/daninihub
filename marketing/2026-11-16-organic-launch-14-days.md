@@ -1,6 +1,6 @@
 # DANINI — 14 dana organske kampanje: 17–30.11.2026.
 
-STATUS: NACRT, NIJE OBJAVLJENO. Pre objavljivanja proveriti Jobcenter/Gewerbe/poreski status, pravne tekstove, vlasnikovo odobrenje i odgovarajući povezani društveni nalog. Bez komercijalnih narudžbina, besplatnog individualnog pilota, neodobrenih cena, lažnih referenci ili oglašavanja nedostupne AI funkcije.
+STATUS: PRODAJNI NACRT, NIJE OBJAVLJENO. Cilj je stvarni interes potencijalnih kupaca i merljivi upiti, ne samo pregledi. Nema izmišljenih cena, referenci ili obećanja nedostupne AI funkcije. Objavljivanje na konkretnom povezanom nalogu i dalje zahteva pregled i odobrenje vlasnika; prodaja i naplata nisu automatski uključene.
 
 Izvori: Drive MASTER v1.0 i plan 2027–2029; docs/DANINI_BRAND_TWO_LINES_DECISION_2026-11-15.md; docs/b2b/READINESS.md; GitHub/Cloudflare provereno 16.11.2026.
 
@@ -13,6 +13,25 @@ Fokus rada 60% Business / 30% AutoDanini / 10% QA. Predloženi kanali nisu potvr
 **Digitales Anfragebüro:** Ein abgestimmter Kanal → Erfassung → Rückfragen → Bearbeitungsstatus → Antwortentwurf → menschliche Freigabe. Kein automatisch aktiver 24/7-Kundendienst, keine behauptete Produktivschaltung des erweiterten B2B-Workflows.
 
 **Drei fiktive Probleme:** (1) Anfrage ohne Mengenangabe, Termin und Ansprechpartner; (2) unklare Zuständigkeit bei der Angebotsvorbereitung; (3) ungeprüfter Textentwurf, der versehentlich als Zusage verstanden werden könnte.
+
+## Direktni prodajni CTA — odobriti pre javne objave
+
+**Business DE (LinkedIn/Facebook):**
+> Verlorene Kundenanfragen kosten Zeit. DANINI Business hilft, einen konkreten Anfrageprozess zu ordnen: Eingang, Rückfragen, Antwortentwurf und menschliche Freigabe. Sie möchten einen bestehenden Ablauf überprüfen oder ein digitales Anfragebüro aufbauen? Beschreiben Sie Ihr Anliegen im Business-Formular. Wir klären Leistungsumfang, Preis und Verfügbarkeit persönlich, bevor ein Auftrag entsteht.
+>
+> **Jetzt Business-Anfrage stellen:** https://daninihub.com/de/business/#anfrage
+
+**AutoDanini SR (Facebook/Instagram):**
+> Našli ste polovan auto u Nemačkoj i razmišljate o putu ili kapari? Pošaljite oglas i mesto vozila. AutoDanini može da pripremi pregled dostupnih informacija, pitanja za prodavca i sledeće korake. Tehničko stanje se ne potvrđuje bez nezavisnog pregleda; obim, dostupnost i cenu dogovaramo pre angažovanja.
+>
+> **Pošalji zahtev za proveru:** https://daninihub.com/sr/auto-check/#contact
+
+**AutoDanini DE (Facebook/Instagram):**
+> Gebrauchtwagen gefunden, aber Unterlagen und Verkäuferangaben sind unklar? Senden Sie den Inseratslink und den Standort. AutoDanini hilft, offene Informationen zu strukturieren und die nächsten Prüfschritte abzustimmen. Keine technische Zustandsbestätigung ohne unabhängige Prüfung; Umfang, Verfügbarkeit und Preis werden vor einer Beauftragung geklärt.
+>
+> **Fahrzeuganfrage senden:** https://daninihub.com/de/auto-check/#contact
+
+**Jedan prodajni cilj po objavi:** relevantan zainteresovan kupac otvara tačan servisni URL i šalje zahtev. Objave o metodi su podrška, a ne zamena za prodajni CTA. Form acceptance se ne računa kao konverzija bez potvrđenog API odgovora ili proverljivog dolaznog maila. Nema masovnog slanja ili automatskog zakazivanja.
 
 ## Tačni tekstovi, datum i predviđeni kanal
 

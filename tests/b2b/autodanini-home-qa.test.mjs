@@ -42,8 +42,8 @@ test('DANINI navigation keeps both commercial lines and languages',()=>{
  const route=readFileSync('src/pages/[locale]/auto-check.astro','utf8');
  const rootPage=readFileSync('src/pages/index.astro','utf8');
  assert.match(rootPage,/DaniniLanding/);
- assert.match(brand,/Nemački poslovni upiti/);
- assert.match(brand,/Deutsche Kundenanfragen/);
+ assert.match(brand,/Sa Balkana do pouzdanijih odluka/);
+ assert.match(brand,/Für Unternehmen und Käufer vom Balkan/);
  assert.match(business,/DANINI Anfragebüro/);
  assert.match(route,/slug="auto-check"/);
 });

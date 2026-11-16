@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {handleVehicleAnalysis} from '../../workers/danini-vehicle-analysis.mjs';
+import {handleApi} from '../../workers/danini-intake.mjs';
+import {readFileSync} from 'node:fs';
 
 const longText='Volkswagen Golf Baujahr 2018, Diesel, Automatik, 143.000 km, 12.500 EUR. Unfallfrei laut Anbieter, scheckheftgepflegt. Weitere Angaben nach Rückfrage.';
 const make=(source,origin='https://daninihub.com',token='mock-token-long-enough')=>new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin,'content-type':'application/json','cf-connecting-ip':'192.0.2.1'},body:JSON.stringify({language:'de',source,turnstileToken:token})});
@@ -47,4 +49,17 @@ test('rate limiting caps repeated analyses',async()=>{
   for(let i=0;i<5;i++)assert.equal((await handleVehicleAnalysis(make(longText),env)).status,200);
   assert.equal((await handleVehicleAnalysis(make(longText),env)).status,429);
  }finally{globalThis.fetch=original;}
+});
+
+test('public CAPTCHA sitekey remains available for analysis when contact sending is disabled',async()=>{
+ const env={DANINI_CONTACT_ACTIVE:'false',DANINI_TURNSTILE_SECRET:'configured-test-secret',DANINI_TURNSTILE_SITEKEY:'0xTEST_PUBLIC_SITEKEY'};
+ const r=await handleApi(new Request('https://daninihub.com/api/lead/status'),env);
+ assert.equal(r.status,200);
+ const body=await r.json();
+ assert.equal(body.enabled,false);
+ assert.equal(body.channel,'setup_required');
+ assert.equal(body.turnstileSiteKey,env.DANINI_TURNSTILE_SITEKEY);
+ const client=readFileSync('public/danini-advisor-client.js','utf8');
+ assert.match(client,/if \(data\?\.turnstileSiteKey\) loadTurnstile\(data\.turnstileSiteKey\)/);
+ assert.doesNotMatch(client,/if \(serviceEnabled\) loadTurnstile/);
 });

@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import AutoContact from "./AutoContact.astro";
 import type { Locale } from "../lib/content";
 const { locale = "de", slug = "" } = Astro.props as { locale: Locale; slug?: string };
 const de = locale === "de";
@@ -7,8 +8,8 @@ const de = locale === "de";
 <Base
   locale={locale}
   slug={slug}
-  title={de ? "Auto aus Deutschland sicherer kaufen — KI-Berater und Fahrzeugprüfung" : "Kupovina automobila iz Nemačke — AI Savetnik i provera vozila"}
-  description={de ? "Inserat prüfen lassen, Fragen klären und eine unabhängige Vor-Ort-Prüfung anfragen. Keine Garantie für ein risikofreies Fahrzeug." : "Proverite oglas, razjasnite rizike i zatražite proveru automobila na terenu. Bez obećanja o kupovini bez rizika."}
+  title={de ? "AutoDanini — Inserat und Unterlagen vor Reise oder Anzahlung einordnen" : "AutoDanini — dosije oglasa i dokumenata pre puta i kapare"}
+  description={de ? "Für Käufer vom Balkan: Fahrzeugangaben, offene Nachweise und Fragen an den Verkäufer vor einer Reise oder Anzahlung strukturieren. Kein technisches Gutachten." : "Za kupce sa Balkana: pregled dostupnih podataka, nedostajućih dokaza, pitanja prodavcu i sledećih koraka pre putovanja ili kapare."}
 >
   <section class="auto-hero">
     <div class="wrap auto-hero-grid">
@@ -56,7 +57,27 @@ const de = locale === "de";
           <p class="micro">{de ? "Dies ist eine vorsorgliche Checkliste, keine KI-Analyse, Betrugserkennung oder Prüfung des Verkäufers." : "Ovo je preventivna kontrolna lista, ne AI analiza, otkrivanje prevare niti provera prodavca."}</p>
           <a class="button secondary" href="#contact">{de ? "Persönliche Prüfung anfragen" : "Zatraži ličnu proveru"}</a>
         </div>
-        <p class="micro">{de ? "Die Eingabe öffnet den KI-Berater mit drei Prüffragen und einer Risikomatrix. Es erfolgt kein automatischer Abruf oder eine unabhängige Prüfung von Inseraten." : "Unos otvara AI Savetnika sa tri pitanja i matricom rizika. Sadržaj oglasa se ne preuzima niti nezavisno proverava automatski."}</p>
+        <p class="micro">{de ? "Der nächste Schritt öffnet drei Prüffragen und eine Risikomatrix. Ein Link allein wird nicht automatisch ausgelesen; für die Text-Vorprüfung den Inseratstext einfügen." : "Naredni korak otvara tri kontrolna pitanja i matricu rizika. Sam link se ne preuzima automatski; za preliminarnu analizu kopirajte tekst oglasa."}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section white auto-example" aria-labelledby="auto-example-title">
+    <div class="wrap auto-example-grid">
+      <div>
+        <span class="eyebrow">{de ? "BEISPIEL-DOSSIER · FIKTIVE DATEN" : "PRIMER DOSIJEA · IZMIŠLJENI PODACI"}</span>
+        <h2 id="auto-example-title">{de ? "Was steht vor einer Anzahlung wirklich fest?" : "Šta zaista znamo pre kapare?"}</h2>
+        <p>{de ? "An einem fiktiven Inserat zeigen wir, wie eine Entscheidung vorbereitet wird: Angaben des Verkäufers, fehlende Belege, konkrete Rückfragen und bekannte Kosten. Das ersetzt weder eine Fahrzeugbesichtigung noch die Prüfung der Originaldokumente." : "Na izmišljenom oglasu prikazujemo kako izgleda priprema odluke: tvrdnje prodavca, nedostajući dokazi, pitanja za prodavca i poznati troškovi. Dosije ne zamenjuje pregled vozila ni uvid u originalna dokumenta."}</p>
+        <a class="button" href="#ai-savetnik">{de ? "Eigenes Inserat eingeben" : "Unesi svoj oglas"}</a>
+      </div>
+      <div class="auto-example-file">
+        <span class="auto-example-stamp">{de ? "DEMO · KEIN ECHTES FAHRZEUG" : "DEMO · NIJE STVARNO VOZILO"}</span>
+        <strong>{de ? "Beispiel: Gebrauchtwagen · Deutschland" : "Primer: polovan automobil · Nemačka"}</strong>
+        <div><b>{de ? "Angegeben" : "Navedeno"}</b><p>{de ? "Baujahr 2018 · 143.000 km · 12.500 € (nur Inseratsangaben)" : "2018. godište · 143.000 km · 12.500 € (samo iz oglasa)"}</p></div>
+        <div><b>{de ? "Unbekannt" : "Nepoznato"}</b><p>{de ? "Servicebelege, Unfallschäden, Übereinstimmung der FIN" : "Servisni dokazi, istorija štete, poklapanje VIN-a"}</p></div>
+        <div><b>{de ? "Vor der Anzahlung fragen" : "Pitati pre kapare"}</b><p>{de ? "„Können Sie die FIN und Servicebelege vorab bestätigen und eine unabhängige Besichtigung ermöglichen?“" : "„Možete li potvrditi VIN, poslati servisne dokaze i omogućiti nezavisan pregled?“"}</p></div>
+        <div><b>{de ? "Bekannte Kosten" : "Poznati troškovi"}</b><p>{de ? "12.500 € laut Inserat; Transport, Prüfung und weitere Abgaben nicht ermittelt" : "12.500 € prema oglasu; prevoz, pregled i ostali troškovi nisu utvrđeni"}</p></div>
+        <small>{de ? "Fiktives Anschauungsbeispiel. Keine bestätigte Fahrzeughistorie oder technische Prüfung." : "Izmišljeni edukativni primer. Istorija i tehničko stanje nisu potvrđeni."}</small>
       </div>
     </div>
   </section>
@@ -101,14 +122,7 @@ const de = locale === "de";
     </div>
   </section>
 
-  <section class="section white auto-contact-section" id="contact">
-    <div class="wrap auto-contact">
-      <span class="eyebrow">{de ? "KONTAKT" : "KONTAKT"}</span>
-      <h2>{de ? "Fahrzeugprüfung persönlich abstimmen." : "Dogovorite proveru vozila."}</h2>
-      <p>{de ? "Senden Sie uns den Inseratslink und den gewünschten Prüfungsort. Wir melden uns mit den nächsten Schritten." : "Pošaljite link oglasa i mesto gde se vozilo nalazi. Javićemo vam naredne korake."}</p>
-      <a class="button" href="mailto:info@daninihub.com?subject=AutoDanini%20-%20Fahrzeugpruefung">info@daninihub.com</a>
-    </div>
-  </section>
+  <AutoContact locale={locale} />
 
   <section class="auto-storage" aria-labelledby="storage-title">
     <div class="wrap">
@@ -200,6 +214,19 @@ const de = locale === "de";
 @media(max-width:980px){.auto-hero-grid{grid-template-columns:1fr;gap:38px}.auto-hero-copy{max-width:800px}.auto-hero-panel{max-width:850px}.auto-inspection-grid{grid-template-columns:1fr;gap:24px}}
 @media(max-width:730px){.auto-hero{padding:48px 0 58px}.auto-hero h1{font-size:clamp(2.45rem,8.6vw,3.5rem)}.auto-benefits-inner{grid-template-columns:1fr;gap:10px;padding-block:22px}.auto-steps,.auto-storage-grid{grid-template-columns:1fr}.auto-process .section-head{text-align:left}.auto-inspection{padding-block:60px}.auto-advisor-box{padding:28px 23px}.auto-section-number{position:static;margin-bottom:16px}.auto-advisor-controls .button{width:100%;min-width:0}.auto-hero .actions{display:grid;grid-template-columns:1fr}.auto-hero .button{width:100%}.auto-contact .button{max-width:100%}}
 @media(prefers-reduced-motion:reduce){.auto-hero .button,.auto-advisor .button,.auto-inspection .button,.auto-contact .button{transition:none}}
+
+.auto-example{background:#eef5fa!important}
+.auto-example-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:clamp(24px,5vw,70px);align-items:center}
+.auto-example-grid h2{color:#10283d}
+.auto-example-grid>div>p{color:#3b5165;line-height:1.75}
+.auto-example-file{padding:clamp(20px,3vw,32px);background:#fff;border:1px solid #c4d4df;border-radius:19px;box-shadow:0 18px 44px #0f172a12;display:grid;gap:12px}
+.auto-example-file>strong{color:#10283d;font-size:1.2rem}
+.auto-example-stamp{font-size:.72rem;color:#0f766e;letter-spacing:.08em;font-weight:800}
+.auto-example-file>div{border-top:1px solid #dce6ee;padding-top:12px}
+.auto-example-file b{font-size:.79rem;text-transform:uppercase;letter-spacing:.055em;color:#0c635d}
+.auto-example-file p{color:#31465b;margin:5px 0 0;overflow-wrap:anywhere}
+.auto-example-file small{color:#526678;line-height:1.5}
+@media(max-width:900px){.auto-example-grid{grid-template-columns:1fr}}
 </style>
 
 <script>

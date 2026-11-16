@@ -1,0 +1,158 @@
+---
+import type { Locale } from "../lib/content";
+const { locale = "sr" } = Astro.props as { locale: Locale };
+const de = locale === "de";
+---
+<section id="contact" class="ac-section" aria-labelledby="ac-title">
+  <div class="wrap ac-layout">
+    <div class="ac-copy">
+      <span class="ac-eyebrow">AUTODANINI · {de ? "ANFRAGE VOR DER REISE" : "ZAHTEV PRE PUTA"}</span>
+      <h2 id="ac-title">{de ? "Ein Fahrzeug gefunden? Senden Sie uns die Angaben." : "Pronašli ste auto? Pošaljite nam podatke."}</h2>
+      <p>{de ? "Für Käufer vom Balkan: Nennen Sie den Inseratslink oder die Angaben und den Standort. Wir klären persönlich, welche Vorprüfung möglich ist und welchen Umfang und Preis wir vor einer Beauftragung anbieten können." : "Za kupce sa Balkana: pošaljite link ili opis oglasa i mesto gde se auto nalazi. Javljamo koji su koraci mogući, a obim i cenu potvrđujemo pre bilo kakvog angažovanja."}</p>
+      <p class="ac-disclaimer">{de ? "Eine Anfrage ist keine Bestellung oder technische Zustandsbestätigung. Bitte keine Ausweise, Zahlungsdaten oder personenbezogenen Dokumente einfügen." : "Upit nije narudžbina ni potvrda tehničkog stanja. Ne šaljite lične dokumente, podatke za plaćanje ili osetljive podatke."}</p>
+      <p class="ac-mail">{de ? "Alternativ per E-Mail:" : "Ili direktno mejlom:"} <a href="mailto:auto@daninihub.com?subject=AutoDanini%20-%20Fahrzeuganfrage">auto@daninihub.com</a></p>
+    </div>
+    <form class="ac-form" data-auto-enquiry data-locale={locale} aria-label={de ? "AutoDanini Fahrzeuganfrage" : "AutoDanini zahtev za vozilo"}>
+      <div class="ac-field">
+        <label for={"ac-source-"+locale}>{de ? "Inserat / Link / Fahrzeugangaben" : "Oglas / link / podaci o vozilu"} *</label>
+        <textarea id={"ac-source-"+locale} name="source" rows="4" minlength="10" maxlength="2300" required placeholder={de ? "Inseratslink oder Fahrzeugbeschreibung. Bei einem Link lesen wir das Inserat nicht automatisch aus." : "Link oglasa ili opis vozila. Oglas sa linka ne preuzimamo automatski."}></textarea>
+      </div>
+      <div class="ac-field">
+        <label for={"ac-place-"+locale}>{de ? "Standort des Fahrzeugs (falls bekannt)" : "Mesto vozila (ako znate)"}</label>
+        <input id={"ac-place-"+locale} name="location" maxlength="120" placeholder={de ? "Ort / Postleitzahl" : "Grad / poštanski broj"} />
+      </div>
+      <div class="ac-field">
+        <label for={"ac-intent-"+locale}>{de ? "Was möchten Sie als Nächstes klären?" : "Šta želite da razjasnite?"} *</label>
+        <select id={"ac-intent-"+locale} name="intent" required>
+          <option value="">{de ? "Bitte wählen" : "Izaberite"}</option>
+          <option value="documents">{de ? "Inserat, Dokumente und Fragen" : "Oglas, dokumenta i pitanja"}</option>
+          <option value="seller">{de ? "Rückfragen an den Verkäufer" : "Pitanja nemačkom prodavcu"}</option>
+          <option value="inspection">{de ? "Mögliche unabhängige Besichtigung" : "Mogućnost nezavisnog pregleda"}</option>
+        </select>
+      </div>
+      <div class="ac-two">
+        <div class="ac-field"><label for={"ac-name-"+locale}>{de ? "Ihr Name" : "Ime i prezime"} *</label><input id={"ac-name-"+locale} name="name" autocomplete="name" maxlength="90" required /></div>
+        <div class="ac-field"><label for={"ac-email-"+locale}>E-Mail *</label><input id={"ac-email-"+locale} name="email" type="email" autocomplete="email" maxlength="254" required /></div>
+      </div>
+      <label class="ac-consent"><input type="checkbox" name="consent" required /> <span>{de ? "Ich willige in die Verarbeitung dieser konkreten Anfrage ein und habe die " : "Saglasan/saglasna sam sa obradom ovog upita i pročitao/la sam "} <a href={"/"+locale+"/datenschutz/"}>{de ? "Datenschutzhinweise gelesen" : "pravila privatnosti"}</a> *</span></label>
+      <div class="ac-captcha" data-auto-captcha aria-label={de ? "Sicherheitsprüfung" : "Bezbednosna provera"}></div>
+      <button data-auto-submit type="submit" disabled>{de ? "Fahrzeuganfrage senden" : "Pošalji zahtev za vozilo"}</button>
+      <p class="ac-status" data-auto-status role="status" aria-live="polite">{de ? "Sicherheitsprüfung wird geladen …" : "Učitavanje bezbednosne provere …"}</p>
+    </form>
+  </div>
+</section>
+<script>
+  type Turnstile = {
+    render: (el: HTMLElement, options: Record<string, unknown>) => string;
+    getResponse: (widget: string) => string;
+    reset: (widget: string) => void;
+  };
+  const captchaApi = () => (window as Window & {turnstile?:Turnstile}).turnstile;
+  const labels:Record<string,string> = {documents:"AutoDanini — Inserat und Dokumente",seller:"AutoDanini — Verkäuferanfrage",inspection:"AutoDanini — unabhängige Besichtigung"};
+  for (const form of document.querySelectorAll<HTMLFormElement>("[data-auto-enquiry]")) {
+    const de = form.dataset.locale === "de";
+    const submit = form.querySelector<HTMLButtonElement>("[data-auto-submit]");
+    const status = form.querySelector<HTMLElement>("[data-auto-status]");
+    const captcha = form.querySelector<HTMLElement>("[data-auto-captcha]");
+    if (!submit || !status || !captcha) continue;
+    let widget: string | null = null;
+    let verified = false;
+    let busy = false;
+    const disabled = () => {
+      verified = false; submit.disabled = true;
+      status.textContent = de ? "Das Online-Formular ist nicht verfügbar. Schreiben Sie an auto@daninihub.com." : "Formular trenutno nije dostupan. Pišite na auto@daninihub.com.";
+    };
+    const reset = () => {
+      verified = false; submit.disabled = true;
+      try { if (widget) captchaApi()?.reset(widget); } catch { disabled(); }
+    };
+    const init = async () => {
+      try {
+        const response = await fetch("/api/lead/status", {cache:"no-store"});
+        if (!response.ok) throw Error("unavailable");
+        const config = await response.json() as {enabled?:boolean;turnstileSiteKey?:string};
+        if (config.enabled!==true || !config.turnstileSiteKey) throw Error("not_ready");
+        const script = document.createElement("script");
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        script.async = true;
+        script.onload = () => {
+          try {
+            if (!captchaApi()) throw Error("missing_turnstile");
+            widget = captchaApi()!.render(captcha, {
+              sitekey:config.turnstileSiteKey,
+              action:"business-contact",
+              language:de?"de":"sr",
+              callback:()=>{verified=true;if(!busy)submit.disabled=false;status.textContent="";},
+              "expired-callback":reset,
+              "error-callback":disabled
+            });
+            status.textContent = de?"Bitte die Sicherheitsprüfung abschließen.":"Završite bezbednosnu proveru.";
+          }catch{disabled();}
+        };
+        script.onerror=disabled;
+        document.head.appendChild(script);
+      }catch{disabled();}
+    };
+    form.addEventListener("submit",async event=>{
+      event.preventDefault();
+      if (!form.reportValidity() || !verified || !widget || busy) return;
+      const token=captchaApi()?.getResponse(widget);
+      if(!token){reset();return;}
+      const values=new FormData(form);
+      const intent=String(values.get("intent")||"");
+      if(!Object.hasOwn(labels,intent))return;
+      busy=true;submit.disabled=true;
+      status.textContent=de?"Ihre Fahrzeuganfrage wird gesendet …":"Slanje zahteva za vozilo …";
+      const source=String(values.get("source")||"").trim();
+      const location=String(values.get("location")||"").trim();
+      try {
+        const response=await fetch("/api/lead",{
+          method:"POST",headers:{"content-type":"application/json"},
+          body:JSON.stringify({
+            kind:"vehicle",
+            name:String(values.get("name")||"").trim(),
+            email:String(values.get("email")||"").trim(),
+            topic:labels[intent],
+            message:[source,...(location?["Standort / Mesto: "+location]:[])].join("\n"),
+            details:{intent,location},
+            language:de?"de":"sr",
+            consent:values.get("consent")==="on",
+            turnstileToken:token
+          })
+        });
+        const data=await response.json() as {accepted?:boolean;reference?:string;receiptAccepted?:boolean};
+        if(response.status!==202||data.accepted!==true||!data.reference)throw Error("unconfirmed");
+        status.textContent=(de?"Anfrage zur Bearbeitung angenommen. Referenz: ":"Upit je prihvaćen za obradu. Broj: ")+data.reference;
+        form.reset();
+      }catch{
+        status.textContent=de?"Versand nicht bestätigt. Bitte vor erneutem Senden per E-Mail nachfragen, ob Ihre Anfrage eingegangen ist.":"Prijem nije potvrđen. Pre ponovnog slanja proverite mejlom da li je zahtev stigao.";
+      }finally{busy=false;reset();}
+    });
+    void init();
+  }
+</script>
+<style>
+.ac-section{padding:clamp(54px,6vw,90px) 0;background:linear-gradient(130deg,#102439,#12374b);color:#fff}
+.ac-layout{display:grid;grid-template-columns:minmax(0,.87fr) minmax(0,1.13fr);gap:clamp(24px,5vw,65px);align-items:start}
+.ac-eyebrow{color:#facc15;font-size:.75rem;letter-spacing:.13em;font-weight:800}
+.ac-copy h2{color:#fff;font-size:clamp(2rem,3vw,3.1rem);line-height:1.15}
+.ac-copy p{color:#d6e5f0;line-height:1.75}
+.ac-copy .ac-disclaimer{font-size:.84rem;color:#bed2df}
+.ac-mail a{color:#facc15;font-weight:800;overflow-wrap:anywhere}
+.ac-form{background:white;color:#102439;border-radius:18px;padding:clamp(22px,3vw,35px);display:grid;gap:17px;min-width:0;box-shadow:0 22px 50px #0002}
+.ac-field{display:grid;gap:7px}
+.ac-field label,.ac-consent{font-size:.91rem;color:#122b3f;font-weight:730}
+.ac-field input,.ac-field select,.ac-field textarea{width:100%;border:1.5px solid #8aa2b4;border-radius:9px;background:#fcfdff;color:#122439;padding:12px;font:inherit}
+.ac-field textarea{resize:vertical;min-height:115px}
+.ac-field :is(input,select,textarea):focus{outline:3px solid #facc15;outline-offset:2px}
+.ac-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ac-consent{display:flex;align-items:flex-start;gap:10px;font-size:.83rem;line-height:1.5;font-weight:500}
+.ac-consent input{width:19px;height:19px;flex-shrink:0;accent-color:#0b7669;margin-top:2px}
+.ac-consent a{color:#0b615a;text-decoration:underline;font-weight:800}
+.ac-captcha{min-height:65px;overflow:hidden}
+.ac-form button{padding:14px 20px;min-height:53px;border:0;border-radius:10px;background:#facc15;color:#102439;font-weight:800;cursor:pointer}
+.ac-form button:disabled{background:#d5dde5;color:#4a5e6a;cursor:not-allowed}
+.ac-status{font-size:.85rem;font-weight:700;color:#305467;min-height:25px;margin:0;overflow-wrap:anywhere}
+@media(max-width:900px){.ac-layout{grid-template-columns:1fr}}
+@media(max-width:590px){.ac-two{grid-template-columns:1fr}}
+</style>

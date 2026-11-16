@@ -15,6 +15,37 @@ test('SR/DE automotive hero and universal source input',()=>{
  assert.match(home,/Kleinanzeigen/);
  assert.match(home,/Quoka/);
 });
+test('Balkan-first copy and sample deliverables are labeled fictional in DE/SR',()=>{
+ const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
+ const business=readFileSync('src/components/BusinessLanding.astro','utf8');
+ assert.match(brand,/Za firme sa Balkana/);
+ assert.match(business,/Vodite firmu na Balkanu/);
+ assert.match(business,/Geschäfte mit Deutschland vorbereiten/);
+ assert.match(business,/DEMO · NIJE STVARNI KLIJENT/);
+ assert.match(business,/DEMO · KEIN KUNDENPROJEKT/);
+ assert.match(home,/DEMO · NIJE STVARNO VOZILO/);
+ assert.match(home,/DEMO · KEIN ECHTES FAHRZEUG/);
+ assert.match(home,/Transport, Prüfung und weitere Abgaben nicht ermittelt/);
+ assert.doesNotMatch(home,/KI-Berater und Fahrzeugprüfung/);
+});
+
+test('AutoDanini DE/SR inquiry integrates existing protected lead API and preserves fallback',()=>{
+ const contact=readFileSync('src/components/AutoContact.astro','utf8');
+ assert.match(home,/import AutoContact from "\.\/AutoContact\.astro"/);
+ assert.match(home,/<AutoContact locale=\{locale\}/);
+ assert.match(contact,/id="contact"/);
+ assert.match(contact,/data-auto-enquiry data-locale=\{locale\}/);
+ assert.match(contact,/fetch\("\/api\/lead\/status"/);
+ assert.match(contact,/fetch\("\/api\/lead"/);
+ assert.match(contact,/kind:"vehicle"/);
+ assert.match(contact,/language:de\?"de":"sr"/);
+ assert.match(contact,/data-auto-captcha/);
+ assert.match(contact,/turnstileToken:token/);
+ assert.match(contact,/response\.status!==202/);
+ assert.match(contact,/mailto:auto@daninihub\.com/);
+ assert.match(contact,/href=\{"\/"\+locale\+"\/datenschutz\/"\}/);
+});
+
 test('client side handoff does not expose source in query or network',()=>{
  assert.match(home,/sessionStorage\.setItem\("danini-advisor-source-v1"/);
  assert.match(home,/window\.location\.assign/);
@@ -42,8 +73,8 @@ test('DANINI navigation keeps both commercial lines and languages',()=>{
  const route=readFileSync('src/pages/[locale]/auto-check.astro','utf8');
  const rootPage=readFileSync('src/pages/index.astro','utf8');
  assert.match(rootPage,/DaniniLanding/);
- assert.match(brand,/Nemački poslovni upiti/);
- assert.match(brand,/Deutsche Kundenanfragen/);
+ assert.match(brand,/Sa Balkana do pouzdanijih odluka/);
+ assert.match(brand,/Für Unternehmen und Käufer vom Balkan/);
  assert.match(business,/DANINI Anfragebüro/);
  assert.match(route,/slug="auto-check"/);
 });

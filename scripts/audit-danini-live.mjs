@@ -67,7 +67,7 @@ async function audit(){
    if(!s.includes('datenschutz@daninihub.com')||!s.includes('Fischerstr. 54'))note('ERROR',p,'Public privacy controller/contact not published');
   }
 
-  if(p==='/'){if(!s.includes('danini-header')||!s.includes('d-hero')||!s.includes('Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut.'))note('ERROR',p,'Current DANINI Astro masthead or approved DE offer absent');}
+  if(p==='/'){if(!s.includes('danini-header')||!s.includes('d-hero')||!s.includes('Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen.'))note('ERROR',p,'Current DANINI Astro masthead or approved DE offer absent');}
   const local=anchors(s).filter(h=>h.startsWith('/')).map(h=>h.split('#')[0].split('?')[0]).filter(Boolean);
   const dead=[...new Set(local.filter(h=>/^(?:\/danini.*\.html|\/contact\.html|\/buyers\.html|\/business\.html)$/.test(h)))].filter(h=>!pages.includes(h));
   if(dead.length)note('WARN',p,'Important internal URL outside audit: '+dead.join(', '));
@@ -88,7 +88,7 @@ async function audit(){
   }catch(error){note('ERROR',path,'Photo load failed: '+String(error));}
  }
  const sr=htmlByPath.get('/sr/')?.body||'',de=htmlByPath.get('/de/')?.body||'';
- if(!sr.includes('Nemački poslovni upiti i oglasi vozila. Jasna podrška.')||!de.includes('Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut.')||!sr.includes('d-cards')||!de.includes('d-cards')){
+ if(!sr.includes('Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom.')||!de.includes('Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen.')||!sr.includes('d-cards')||!de.includes('d-cards')){
   note('ERROR','/sr/ & /de/','Current localized DANINI two-offer storefront missing');
  }
  const icon=await get('/danini-favicon.svg');

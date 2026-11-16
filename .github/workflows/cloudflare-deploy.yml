@@ -43,8 +43,8 @@ jobs:
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
           const locales = [
-            ['de','Auto in Deutschland gefunden?','Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut.'],
-            ['sr','Našao si auto u Nemačkoj?','Nemački poslovni upiti i oglasi vozila. Jasna podrška.']
+            ['de','Auto in Deutschland gefunden?','Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen.'],
+            ['sr','Našao si auto u Nemačkoj?','Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom.']
           ];
           for (const [locale,heading,brandHeading] of locales) {
             const home=fs.readFileSync('dist/'+locale+'/auto-check/index.html','utf8');
@@ -115,7 +115,7 @@ jobs:
             assert.match(html,/danini-advisor-client\.js/,path+' advisor client script');
             console.log('PASS',path,'HTTP 200');
           }
-          for (const [path,heading] of [['/de/','Deutsche Kundenanfragen und Fahrzeugangebote. Klar betreut.'],['/sr/','Nemački poslovni upiti i oglasi vozila. Jasna podrška.']]){
+          for (const [path,heading] of [['/de/','Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen.'],['/sr/','Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom.']]){
             const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
             assert.equal(r.status,200,path+' HTTP status');
             const html=await r.text();

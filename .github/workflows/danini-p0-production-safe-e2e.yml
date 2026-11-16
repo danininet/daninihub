@@ -1,0 +1,86 @@
+name: DANINI P0 production safe E2E (no deploy, no email)
+
+on:
+  push:
+    branches:
+      - test/p0-production-safe-e2e-20261116
+    paths:
+      - '.github/workflows/danini-p0-production-safe-e2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safe-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run existing local vehicle analysis contract tests (mocked Turnstile, no email, no paid AI)
+        run: |
+          node --test tests/b2b/vehicle-analysis.test.mjs tests/b2b/vehicle-ai.test.mjs tests/b2b/ai-intake.test.mjs
+      - name: Verify live pages and safe API rejection paths (NO valid Turnstile, NO emails)
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const root='https://daninihub.com';
+          const synthetic='Volkswagen Golf Baujahr 2018, Diesel, Automatik, 143.000 km, 12.500 EUR. Unfallfrei laut Anbieter, scheckheftgepflegt. Weitere Angaben nach Rückfrage.';
+          const checks=[];
+          const request=async(path,opts={})=>{
+            const r=await fetch(root+path,{
+              redirect:'error',
+              signal:AbortSignal.timeout(18000),
+              cache:'no-store',
+              ...opts,
+              headers:{accept:'application/json,text/html;q=0.9','cache-control':'no-cache',...(opts.headers||{})}
+            });
+            const t=await r.text();
+            return {status:r.status,text:t,headers:r.headers,json:()=>JSON.parse(t)};
+          };
+          const check=(label,ok,detail)=>{
+            checks.push({label,status:ok?'PASS':'FAIL',detail});
+            console.log((ok?'PASS':'FAIL')+' | '+label+' | '+detail);
+            assert.ok(ok,label+': '+detail);
+          };
+          for(const locale of ['de','sr']){
+            const home=await request('/'+locale+'/auto-check/');
+            check(locale+' AutoDanini page',home.status===200 && home.text.includes('universal-advisor-form'), 'HTTP '+home.status+'; form '+home.text.includes('universal-advisor-form'));
+            const advisor=await request('/'+locale+'/ai-savetnik/');
+            check(locale+' advisor page',advisor.status===200 && advisor.text.includes('advisor-turnstile') && advisor.text.includes('id="listing"') && (advisor.text.match(/data-question=/g)||[]).length===3,'HTTP '+advisor.status+'; Turnstile / text field / 3 questions');
+          }
+          const client=await request('/danini-advisor-client.js');
+          check('Advisor client JS',client.status===200 && client.text.includes('/api/vehicle-analysis') && client.text.includes('/api/ai-intake'),'HTTP '+client.status+'; both existing API routes wired');
+          const leadStatus=await request('/api/lead/status');
+          const lead=leadStatus.json();
+          check('Live lead status',leadStatus.status===200 && lead.enabled===true && lead.channel==='brevo' && typeof lead.turnstileSiteKey==='string','HTTP '+leadStatus.status+'; Brevo configured, NOT delivery proof');
+          const payload={language:'de',source:synthetic,turnstileToken:'invalid-qa-no-email-proof-20261116'};
+          const post=(path,body,origin=root)=>request(path,{
+            method:'POST',
+            headers:{'content-type':'application/json',origin},
+            body:JSON.stringify(body)
+          });
+          const badOrigin=await post('/api/vehicle-analysis',payload,'https://untrusted.example.invalid');
+          check('Vehicle analysis blocks forged Origin',badOrigin.status===403 && badOrigin.json().error==='invalid_origin','HTTP '+badOrigin.status);
+          const urlOnly=await post('/api/vehicle-analysis',{...payload,source:'https://www.mobile.de/fahrzeuge/details.html?id=123'});
+          check('Vehicle analysis does not scrape listing URLs',urlOnly.status===422 && urlOnly.json().error==='text_required','HTTP '+urlOnly.status);
+          const missingProof=await post('/api/vehicle-analysis',{...payload,turnstileToken:''});
+          check('Vehicle analysis requires Turnstile',missingProof.status===403 && missingProof.json().error==='human_verification_required','HTTP '+missingProof.status);
+          const fakeProof=await post('/api/vehicle-analysis',payload);
+          check('Vehicle analysis rejects fake Turnstile',fakeProof.status===403 && fakeProof.json().error==='human_verification_failed','HTTP '+fakeProof.status);
+          const contact={kind:'vehicle',name:'DANINI QA',email:'no-delivery@example.invalid',topic:'Negative QA: do not deliver',message:'This is only a security-negative test, no delivery.',consent:true,language:'de',turnstileToken:'invalid-qa-no-email-proof-20261116'};
+          const contactBad=await post('/api/lead',contact,'https://untrusted.example.invalid');
+          check('Contact API blocks forged Origin',contactBad.status===403 && contactBad.json().error==='invalid_origin','HTTP '+contactBad.status);
+          const contactCaptcha=await post('/api/lead',contact);
+          check('Contact API rejects fake Turnstile',contactCaptcha.status===400 && contactCaptcha.json().error==='human_verification_failed','HTTP '+contactCaptcha.status);
+          console.log('LIMITATION: live VALID Turnstile -> actual vehicle dossier not exercised; real contact delivery not exercised.');
+          console.log('PASS: safe production checks completed; NO authorized customer lead, email, payment, AI inference, or deployment.');
+          if(process.env.GITHUB_STEP_SUMMARY){
+            const fs=await import('node:fs');
+            const rows=['# DANINI P0 Safe Production E2E','',...checks.map(x=>'- **'+x.status+'** '+x.label+' — '+x.detail),'','**Not tested:** valid human Turnstile end-to-end analysis, actual Brevo/Gmail delivery.','**No changes:** production, DNS, secrets, billing, customer data.'];
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,rows.join('\n')+'\n');
+          }
+          NODE

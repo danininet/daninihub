@@ -40,6 +40,28 @@ test('verified text extraction reports gaps and never claims AI',async()=>{
   assert.match(calls[0],/turnstile/);
  }finally{globalThis.fetch=original;}
 });
+test('listing price parser handles German and English decimal cents without inflating EUR amounts',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>Response.json({success:true,hostname:'daninihub.com'});
+ try{
+  for(const [price,expected] of [
+   ['12.500',12500],
+   ['12.500,00',12500],
+   ['12,500.00',12500],
+   ['12500,00',12500],
+   ['1250.50',1250.5]
+  ]){
+   const memory=new Map();
+   const env={DANINI_TURNSTILE_SECRET:'test',PARTNERS:{get:async k=>memory.get(k),put:async(k,v)=>memory.set(k,v)}};
+   const description=longText.replace('12.500 EUR',price+' EUR');
+   const response=await handleVehicleAnalysis(make(description),env);
+   assert.equal(response.status,200,price);
+   const parsed=await response.json();
+   assert.equal(parsed.fields.priceEur,expected,price);
+  }
+ }finally{globalThis.fetch=original;}
+});
+
 test('rate limiting caps repeated analyses',async()=>{
  const original=globalThis.fetch;
  globalThis.fetch=async()=>Response.json({success:true,hostname:'daninihub.com'});

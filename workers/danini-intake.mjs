@@ -185,7 +185,7 @@ export async function handleAiIntake(request,env={}){
   // Correlation only: no recipient address, customer content or provider credentials.
   console.info('DANINI_MAIL_ACCEPTED',JSON.stringify({flow:'ai-intake',reference,messageId:operatorMessageId}));
  }catch(error){
-  const match=String(error?.message||'').match(/^BREVO_REJECTED_(\\d{3})$/);
+  const match=String(error?.message||'').match(/^BREVO_REJECTED_(\d{3})$/);
   console.error('DANINI_MAIL_REJECTED',JSON.stringify({flow:'ai-intake',reference,providerStatus:match?Number(match[1]):null}));
   return response({error:'mail_provider_unavailable'},502);
  }
@@ -204,7 +204,7 @@ export async function handleAiIntake(request,env={}){
   receiptAccepted=true;
   console.info('DANINI_MAIL_ACCEPTED',JSON.stringify({flow:'ai-intake-receipt',reference,messageId:receiptMessageId}));
  }catch(error){
-  const match=String(error?.message||'').match(/^BREVO_REJECTED_(\\d{3})$/);
+  const match=String(error?.message||'').match(/^BREVO_REJECTED_(\d{3})$/);
   console.error('DANINI_MAIL_REJECTED',JSON.stringify({flow:'ai-intake-receipt',reference,providerStatus:match?Number(match[1]):null}));
  }
  return response({accepted:true,reference,receiptAccepted},202);

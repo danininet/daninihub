@@ -15,6 +15,20 @@ test('SR/DE automotive hero and universal source input',()=>{
  assert.match(home,/Kleinanzeigen/);
  assert.match(home,/Quoka/);
 });
+test('Balkan-first copy and sample deliverables are labeled fictional in DE/SR',()=>{
+ const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
+ const business=readFileSync('src/components/BusinessLanding.astro','utf8');
+ assert.match(brand,/Za firme sa Balkana/);
+ assert.match(business,/Vodite firmu na Balkanu/);
+ assert.match(business,/Geschäfte mit Deutschland vorbereiten/);
+ assert.match(business,/DEMO · NIJE STVARNI KLIJENT/);
+ assert.match(business,/DEMO · KEIN KUNDENPROJEKT/);
+ assert.match(home,/DEMO · NIJE STVARNO VOZILO/);
+ assert.match(home,/DEMO · KEIN ECHTES FAHRZEUG/);
+ assert.match(home,/Transport, Prüfung und weitere Abgaben nicht ermittelt/);
+ assert.doesNotMatch(home,/KI-Berater und Fahrzeugprüfung/);
+});
+
 test('client side handoff does not expose source in query or network',()=>{
  assert.match(home,/sessionStorage\.setItem\("danini-advisor-source-v1"/);
  assert.match(home,/window\.location\.assign/);

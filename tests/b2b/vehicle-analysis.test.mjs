@@ -84,4 +84,8 @@ test('public CAPTCHA sitekey remains available for analysis when contact sending
  const client=readFileSync('public/danini-advisor-client.js','utf8');
  assert.match(client,/if \(data\?\.turnstileSiteKey\) loadTurnstile\(data\.turnstileSiteKey\)/);
  assert.doesNotMatch(client,/if \(serviceEnabled\) loadTurnstile/);
+ const advisorCopy=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ assert.match(advisorCopy,/Text-Vorprüfung wird Ihr eingefügter Text an den DANINI-Server übermittelt/);
+ assert.match(advisorCopy,/kopirani tekst šalje se DANINI serveru/);
+ assert.doesNotMatch(advisorCopy,/nur innerhalb dieser Browser-Sitzung/);
 });

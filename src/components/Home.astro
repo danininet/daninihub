@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import AutoContact from "./AutoContact.astro";
 import type { Locale } from "../lib/content";
 const { locale = "de", slug = "" } = Astro.props as { locale: Locale; slug?: string };
 const de = locale === "de";
@@ -121,14 +122,7 @@ const de = locale === "de";
     </div>
   </section>
 
-  <section class="section white auto-contact-section" id="contact">
-    <div class="wrap auto-contact">
-      <span class="eyebrow">{de ? "KONTAKT" : "KONTAKT"}</span>
-      <h2>{de ? "Fahrzeugprüfung persönlich abstimmen." : "Dogovorite proveru vozila."}</h2>
-      <p>{de ? "Senden Sie uns den Inseratslink und den gewünschten Prüfungsort. Wir melden uns mit den nächsten Schritten." : "Pošaljite link oglasa i mesto gde se vozilo nalazi. Javićemo vam naredne korake."}</p>
-      <a class="button" href="mailto:info@daninihub.com?subject=AutoDanini%20-%20Fahrzeugpruefung">info@daninihub.com</a>
-    </div>
-  </section>
+  <AutoContact locale={locale} />
 
   <section class="auto-storage" aria-labelledby="storage-title">
     <div class="wrap">

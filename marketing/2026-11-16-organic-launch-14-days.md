@@ -6,9 +6,9 @@ Izvori: Drive MASTER v1.0 i plan 2027–2029; docs/DANINI_BRAND_TWO_LINES_DECISI
 
 Fokus rada 60% Business / 30% AutoDanini / 10% QA. Predloženi kanali nisu potvrđeni kao povezani: ništa nije zakazano niti poslato.
 
-## Ponuda za poslovni pregled (informativni opis, ne aktivna prodaja)
+## Prodajna ponuda — upit i individualna ponuda, bez automatske naplate
 
-**Business Check:** Ein Anfrageprozess, drei priorisierte Verbesserungen. Kleine Betriebe können prüfen, wo Informationen verloren gehen, welche Zuständigkeiten fehlen und wann ein Entwurf menschlich freigegeben werden muss. Ergebnisidee: kurzer Ist-Ablauf, dokumentierte Lücken, drei Maßnahmen. Keine Rechts-/Steuerberatung, keine Garantie der Zeitersparnis, keine bestätigte öffentliche Buchung.
+**Business Check:** Ein Anfrageprozess, drei priorisierte Verbesserungen. Kleine Betriebe können prüfen, wo Informationen verloren gehen, welche Zuständigkeiten fehlen und wann ein Entwurf menschlich freigegeben werden muss. Ergebnisidee: kurzer Ist-Ablauf, dokumentierte Lücken, drei Maßnahmen. Keine Rechts-/Steuerberatung, keine Garantie der Zeitersparnis, Anfragen sind möglich; ein kostenpflichtiger Auftrag entsteht erst nach individueller Abstimmung.
 
 **Digitales Anfragebüro:** Ein abgestimmter Kanal → Erfassung → Rückfragen → Bearbeitungsstatus → Antwortentwurf → menschliche Freigabe. Kein automatisch aktiver 24/7-Kundendienst, keine behauptete Produktivschaltung des erweiterten B2B-Workflows.
 
@@ -79,7 +79,7 @@ Kleine Betriebe brauchen nicht immer mehr Software. Oft fehlt zuerst ein klarer 
 
 Eine Anfrage kommt per E-Mail, eine Rückfrage per Telefon, die letzte Version liegt in einer Tabelle. Wer sieht den aktuellen Stand?
 
-DANINI zeigt anhand eines fiktiven Beispiels, wie solche Schritte nachvollziehbar geordnet werden können. Keine aktive Kundenautomatisierung und noch keine öffentliche Buchung.
+DANINI zeigt anhand eines fiktiven Beispiels, wie solche Schritte nachvollziehbar geordnet werden können. Keine vollautomatische Kundenbearbeitung. Für einen konkreten Ablauf können Sie eine Anfrage über die Business-Seite senden.
 
 Mehr erfahren: https://daninihub.com/de/business/
 
@@ -221,6 +221,6 @@ Kreirati interni dnevnik: date, channel, content_id, language, landing_url, utm_
 
 Izvor poseta: postojeći Cloudflare Web Analytics (ako njegov izveštaj potvrđuje odgovarajući prikaz, UTM se ne pretpostavlja). Lead i reference: postojeći API/Brevo/Gmail tek kada se dokaže tok i zakonito dopušteno prikupljanje. Potvrđeni PayPal prihod isključivo uz nezavisan provider dokaz. Prazno polje znači neizmereno, ne nula. Bez ličnih podataka u UTM/event logu. Besplatni DOI marketing ≠ transakcioni mejl.
 
-## Go / Hold
+## Završna kontrola pre promocije
 
-**HOLD:** nepotvrđen Jobcenter/Gewerbe/porez i pravni pregled; nedokazan validan Turnstile → Brevo → Gmail E2E; AutoDanini PR #219 nije spojen; društveni nalozi i odobrenje objavljivanja nisu potvrđeni. Publikacija, prodaja, novi servis i slanje poruka trećima zabranjeni do pojedinačne potvrde.
+Prva poslovna konverzija = proverljiv zahtev za uslugu preko /de/business/#anfrage ili /sr/business/#anfrage, uz mailto fallback. Auto konverzija = proverljiv zahtev preko /de/auto-check/#contact ili /sr/auto-check/#contact. Niko ne plaća automatski: obim, rok i cenu potvrđuje čovek pre ponude i naplate. Ne tvrditi da je Brevo/Gmail isporuka potvrđena dok nema stvarnog E2E dokaza. PR #219 je spojen u main; za javne kodne promene i objave postoji odvojeno odobravanje. Ne masovno slati poruke, ne objavljivati sa nepotvrđenih profila.

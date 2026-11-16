@@ -77,7 +77,11 @@ export async function tokenValid(env,record,token,now=Date.now()){
  if(bits.length!==3||bits[0]!==record.reference||Number(bits[1])!==deadline)return false;
  const sig=bits[2];
  if(!/^[A-Za-z0-9_-]{43}$/.test(sig))return false;
- const decoded=Uint8Array.from(atob(sig.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+ let decoded;
+ try{decoded=Uint8Array.from(atob(sig.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));}
+ catch{return false;}
+ // Reject non-canonical base64url spellings of the same HMAC bytes.
+ if(decoded.length!==32||b64url(decoded)!==sig)return false;
  return crypto.subtle.verify('HMAC',await signingKey(env),decoded,encode(record.reference+'.'+deadline));
 }
 async function getOrder(env,ref){return env.DANINI_DB.prepare('SELECT * FROM danini_digital_orders WHERE reference=?').bind(ref).first();}

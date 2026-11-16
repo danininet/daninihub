@@ -69,11 +69,16 @@ test('AI intake routes three validated answers to contact mailbox only after Tur
     const result = await response.json();
     assert.equal(result.accepted, true);
     assert.match(result.reference, /^DN-AI-/);
-    assert.equal(calls.length, 2);
+    assert.equal(calls.length, 3);
     const email = JSON.parse(calls[1].options.body);
     assert.equal(email.to[0].email, env.DANINI_NOTIFY_TO);
     assert.match(email.textContent, /mobile.de/);
     assert.match(email.textContent, /RED \/ REQUIRES HUMAN REVIEW/);
+    assert.equal(result.receiptAccepted, true);
+    const receipt = JSON.parse(calls[2].options.body);
+    assert.equal(receipt.to[0].email, payload.email);
+    assert.equal(receipt.templateId, 41);
+    assert.equal(receipt.params.REFERENCE, result.reference);
     assert.doesNotMatch(JSON.stringify(result), /test-only-secret/);
   } finally { globalThis.fetch = before; }
 });
@@ -92,4 +97,40 @@ test('AI intake rejects incomplete matrix after passing captcha', async () => {
     assert.equal(response.status, 400);
     assert.equal(sends, 0);
   } finally { globalThis.fetch = before; }
+});
+
+test('AI intake operator message accepted but receipt failure is visible without losing accepted inquiry', async () => {
+  const before = globalThis.fetch;
+  let sends = 0;
+  globalThis.fetch = async url => {
+    if (String(url).includes('siteverify'))
+      return Response.json({success:true,hostname:'daninihub.com'});
+    sends++;
+    if (sends === 1) return Response.json({messageId:'mock-operator-accepted'});
+    return Response.json({code:'blocked'}, {status:400});
+  };
+  try {
+    const response = await handleAiIntake(request(payload),env);
+    assert.equal(response.status,202);
+    const result=await response.json();
+    assert.equal(result.accepted,true);
+    assert.equal(result.receiptAccepted,false);
+    assert.equal(sends,2);
+  } finally {globalThis.fetch = before;}
+});
+
+test('AI intake does not acknowledge if Brevo rejects operator notification', async () => {
+  const before = globalThis.fetch;
+  let sends = 0;
+  globalThis.fetch=async url => {
+    if(String(url).includes('siteverify'))return Response.json({success:true,hostname:'daninihub.com'});
+    sends++;
+    return Response.json({code:'invalid_sender'},{status:400});
+  };
+  try{
+    const response=await handleAiIntake(request(payload),env);
+    assert.equal(response.status,502);
+    assert.deepEqual(await response.json(),{error:'mail_provider_unavailable'});
+    assert.equal(sends,1);
+  }finally{globalThis.fetch=before;}
 });

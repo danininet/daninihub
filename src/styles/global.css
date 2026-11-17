@@ -796,3 +796,7 @@ body:has(.auto-hero) .auto-inspection .button {
 }
 .advisor-page .advisor-analysis-button:focus-visible { outline: 3px solid #0f172a; outline-offset: 3px; }
 .advisor-page .advisor-analysis-button:disabled { background: #475569; border-color: #475569; cursor: wait; }
+
+/* Dynamic Business results are outside Astro scoped selectors. */
+.bc-form .bc-preliminary p { color: #102238; }
+.bc-form .bc-preliminary a { color: #075e58; font-weight: 700; text-decoration: underline; }

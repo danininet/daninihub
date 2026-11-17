@@ -173,6 +173,7 @@ const de = locale === "de";
         status.textContent = (de ? "Anfrage zur Bearbeitung angenommen. Referenz: " : "Upit je prihvaćen za obradu. Broj: ") + response.reference;
         if (b2b && response.caseId && response.accessToken) {
           const panel = document.createElement("section");
+          panel.className = "bc-preliminary";
           panel.setAttribute("aria-label", de ? "Vorläufige Geschäftsanalyse" : "Preliminarna poslovna analiza");
           panel.style.cssText = "color:#102238;background:#f1f5f9;padding:20px;border-radius:12px;overflow-wrap:anywhere";
           form.appendChild(panel);

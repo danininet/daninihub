@@ -180,3 +180,5 @@ jobs:
 # Release 2026-11-17: fix browser-verified Business result contrast.
 
 # Authorized guarded release 2026-11-17: PR #239 Serbian DANINI Business knowledge articles; PR CI passed all five checks.
+
+# Guarded release 2026-11-18: approved DANINI original raster logo from brand assets v1, PR #241; four safety CI checks passed.

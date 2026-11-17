@@ -2,11 +2,12 @@
 import Base from "../../../layouts/Base.astro";
 import {guides} from "../../../lib/knowledge";
 import {originalEvergreen} from "../../../lib/original-evergreen";
+import {srBusinessEvergreen} from "../../../lib/sr-business-evergreen";
 export function getStaticPaths(){return ["de","sr"].map(locale=>({params:{locale}}));}
 const locale=Astro.params.locale as "de"|"sr"; const de=locale==="de";
 const autoGuides=guides.filter(g=>g.category==="auto");
 const businessGuides=guides.filter(g=>g.category==="business");
-const originals=originalEvergreen.filter(o=>o.locale===locale);
+const originals=[...originalEvergreen,...srBusinessEvergreen].filter(o=>o.locale===locale);
 ---
 <Base locale={locale} slug="wissen" title={de?"DANINI Wissen & Ratgeber":"DANINI Vodiči i saveti"} description={de?"Fahrzeugkauf, Dokumente und digitale Büroprozesse verständlich erklärt.":"Kupovina vozila, dokumentacija i digitalni poslovni procesi na jednom mestu."}>
 <section class="section white"><div class="wrap knowledge-home">

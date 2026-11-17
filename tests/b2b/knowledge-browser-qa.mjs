@@ -27,10 +27,10 @@ assert.equal(await page.locator(".glossary-item").count(),24);
 assert.equal(await page.locator('.glossary-item a[href^="#begriff-"]').count(),48);
 await page.goto("http://127.0.0.1:4321/"+locale+"/wissen/");
 assert.equal(await page.locator(".knowledge-vertical").count(),2);
-assert.equal(await page.locator(".manuscript").count(),3,locale+" missing source manuscripts");
+assert.equal(await page.locator(".manuscript").count(),locale==="sr"?6:3,locale+" missing source manuscripts");
 const originals=locale==="de"
 ?[["anfragemanagement-kleine-unternehmen",true],["ki-angebotsvorbereitung",true],["dsgvo-kundenanfragen-ki",false]]
-:[["fahrzeugbrief-fahrzeugschein-coc-hu",true],["privatni-prodavac-ili-auto-kuca-nemacka",false],["eur1-poreklo-vozila-uvoz-nemacka-srbija",true]];
+:[["fahrzeugbrief-fahrzeugschein-coc-hu",true],["privatni-prodavac-ili-auto-kuca-nemacka",false],["eur1-poreklo-vozila-uvoz-nemacka-srbija",true],["upravljanje-upitima-malih-firmi",true],["ai-priprema-poslovne-ponude",true],["gdpr-ai-obrada-upita-klijenata",false]];
 for(const [slug,indexable] of originals){
  const url="/"+locale+"/wissen/"+slug+"/";
  const r=await page.goto(baseUrl+url,{waitUntil:"networkidle"});

@@ -1,13 +1,15 @@
 ---
 import Base from "../layouts/Base.astro";
 import {originalEvergreen} from "../lib/original-evergreen";
+import {srBusinessEvergreen} from "../lib/sr-business-evergreen";
+const allEvergreen = [...originalEvergreen, ...srBusinessEvergreen];
 interface Props { articleKey: string }
 const {articleKey}=Astro.props;
-const article=originalEvergreen.find(a=>a.key===articleKey)!;
+const article=allEvergreen.find(a=>a.key===articleKey)!;
 const locale=article.locale;
 const de=locale==="de";
 const visibleLines=article.lines.slice(article.key==="auto-docs"?5:article.key==="b2b-inquiry"?3:article.key==="b2b-offer"?3:0);
-const peers=originalEvergreen.filter(a=>a.locale===locale && a.key!==article.key);
+const peers=allEvergreen.filter(a=>a.locale===locale && a.key!==article.key);
 const sourceTitle=article.title;
 const schema={"@context":"https://schema.org","@type":"Article",headline:sourceTitle,inLanguage:locale,dateModified:"2026-11-17",mainEntityOfPage:"https://daninihub.com/"+locale+"/wissen/"+article.slug+"/",isAccessibleForFree:true};
 const heading=(s:string)=>/^\d{1,2}\.\s+/.test(s) || (/^[^.!?]{8,95}$/.test(s) && !s.includes("http") && !s.includes("☐") && !s.includes(" | "));

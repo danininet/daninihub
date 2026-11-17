@@ -13,6 +13,8 @@ for(const language of ['de','sr'])test(`business ${language}: recorded case, gro
  e.AI_ENABLED='true';e.DANINI_AI_LIVE_APPROVED='true';
  e.AI={run:async(_model,body)=>{
    assert.ok(!body.messages[1].content.includes(input.email));
+   assert.equal(body.response_format.type,'json_schema');
+   assert.deepEqual(body.response_format.json_schema.required,['summary','questions','missingData','limitations']);
    return {response:{summary:'Preliminarni zahtev za poslovno istraživanje.',questions:['Koje količine i rokove očekujete?'],missingData:['Količine'],limitations:['Dobavljači još nisu provereni.']}};
  }};
  globalThis.fetch=captcha;

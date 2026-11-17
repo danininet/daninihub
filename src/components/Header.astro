@@ -10,12 +10,12 @@ const altSlug = (language: "de" | "sr") => {
   return slug;
 };
 const navItems = [
-  { href: home, label: isDe ? "Startseite" : "Početna" },
-  { href: home + "business/", label: "DANINI Business" },
-  { href: home + "auto-check/", label: "AutoDanini" },
-  { href: home + (isDe ? "danini-methode/" : "danini-metoda/"), label: isDe ? "Unsere Methode" : "Naša metoda" },
-  { href: home + (isDe ? "ueber-danini/" : "o-danini/"), label: isDe ? "Über DANINI" : "O DANINI" },
-  { href: "mailto:info@daninihub.com?subject=DANINI%20-%20Anfrage", label: "Kontakt" }
+  { href: home, label: isDe ? "Startseite" : "Početna", active: !slug },
+  { href: home + "business/", label: "DANINI Business", active: slug === "business" },
+  { href: home + "auto-check/", label: "AutoDanini", active: slug === "auto-check" },
+  { href: home + (isDe ? "danini-methode/" : "danini-metoda/"), label: isDe ? "Unsere Methode" : "Naša metoda", active: ["danini-methode", "danini-metoda"].includes(slug) },
+  { href: home + (isDe ? "ueber-danini/" : "o-danini/"), label: isDe ? "Über DANINI" : "O DANINI", active: ["ueber-danini", "o-danini"].includes(slug) },
+  { href: home + "#kontakt", label: "Kontakt", active: false }
 ];
 ---
 <header>
@@ -25,7 +25,7 @@ const navItems = [
       <span>DANINI<small>DACH ↔ BALKAN · BUSINESS & AUTO</small></span>
     </a>
     <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
-      {navItems.map(item => <a href={item.href}>{item.label}</a>)}
+      {navItems.map(item => <a href={item.href} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     </nav>
     <div class="lang" aria-label={isDe ? "Sprache" : "Jezik"}>
       {(["de","sr"] as const).map(language => (
@@ -43,6 +43,7 @@ const navItems = [
 .danini-header .business-nav{display:flex;gap:clamp(9px,1.2vw,22px);align-items:center;justify-content:center;min-width:0;margin:0}
 .danini-header .business-nav a{color:#e8f1f6;white-space:nowrap;display:inline-flex;min-height:44px;align-items:center;font-size:.78rem;font-weight:680;line-height:1.3}
 .danini-header .business-nav a:hover,.danini-header .business-nav a:focus-visible{color:#facc15}
+.danini-header .business-nav a[aria-current="page"]{color:#facc15;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 .danini-header .lang{display:flex;gap:4px;margin:0;border-left:1px solid #344859;padding-left:12px;flex-shrink:0}
 .danini-header .lang a{display:grid;place-items:center;min-width:33px;min-height:38px;border-radius:7px;color:#dbe7ee;font-size:.76rem;font-weight:800}
 .danini-header .lang [aria-current]{background:#105954;color:#fff;text-decoration:none}
@@ -58,7 +59,7 @@ const navItems = [
  .danini-header .brand .mark{width:38px;height:38px}
  .danini-header .brand small{font-size:.49rem}
  .danini-header .business-nav{grid-template-columns:repeat(3,minmax(0,1fr))}
- .danini-header .business-nav a{background:#15293b;border:1px solid #2b4254;border-radius:8px;font-size:.76rem;min-height:43px}
+ .danini-header .business-nav a{background:#15293b;border:1px solid #2b4254;border-radius:8px;font-size:.76rem;min-height:44px}
 }
 @media(max-width:390px){.danini-header .business-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.danini-header .brand small{font-size:.43rem}}
 </style>

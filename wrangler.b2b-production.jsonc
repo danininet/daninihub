@@ -25,7 +25,7 @@
     }
   ],
   "vars": {
-    "B2B_ACTIVE": "false",
+    "B2B_ACTIVE": "true",
     "AI_ENABLED": "true",
     "SITE_ORIGIN": "https://daninihub.com",
     "RETENTION_DAYS": "30",

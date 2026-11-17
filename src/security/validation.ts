@@ -4,7 +4,7 @@ export interface IntakeData {
   company: string;
   email: string;
   country: "DE" | "AT" | "CH";
-  vertical: "cbam" | "subcontractor" | "nearshoring";
+  vertical: "cbam" | "subcontractor" | "nearshoring" | "business";
   language: "de" | "sr";
   message: string;
   consent: true;
@@ -28,7 +28,7 @@ export function validateIntake(value: unknown): IntakeData {
   if (
     b.consent !== true ||
     !["DE", "AT", "CH"].includes(b.country) ||
-    !["cbam", "subcontractor", "nearshoring"].includes(b.vertical) ||
+    !["cbam", "subcontractor", "nearshoring", "business"].includes(b.vertical) ||
     !["de", "sr"].includes(b.language)
   )
     throw new HttpError(400, "invalid_fields");

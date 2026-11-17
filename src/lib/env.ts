@@ -13,6 +13,8 @@ export interface Env {
   RATE_SECRET?: string;
   RETENTION_DAYS?: string;
   AI_ENABLED?: string;
+  DANINI_AI_LIVE_APPROVED?: string;
+  AI?: { run(model: string, input: unknown): Promise<any> };
   AI_ENDPOINT?: string;
   AI_API_KEY?: string;
   AI_MODEL?: string;

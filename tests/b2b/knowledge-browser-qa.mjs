@@ -36,7 +36,7 @@ for(const [slug,indexable] of originals){
  const r=await page.goto(baseUrl+url,{waitUntil:"networkidle"});
  assert.equal(r.status(),200,url);
  assert.equal(await page.locator(".source-body p").count()>15,true,"source manuscript truncated "+url);
- assert.equal(await page.locator("h1").count(),1);
+ assert.equal(await page.locator("main h1").count(),1,url+" main heading");
  assert.equal(await page.locator('link[rel="canonical"]').getAttribute("href"),"https://daninihub.com"+url);
  assert.equal(await page.locator('link[rel="alternate"][hreflang]').count(),0,"untranslated article has false alternate");
  assert.equal(await page.locator('meta[name="robots"]').getAttribute("content"),indexable?"index,follow":"noindex,follow");

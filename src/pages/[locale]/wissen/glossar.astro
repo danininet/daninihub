@@ -1,0 +1,9 @@
+---
+import Base from "../../../layouts/Base.astro";
+import {glossary} from "../../../lib/knowledge";
+export function getStaticPaths(){return ["de","sr"].map(locale=>({params:{locale}}));}
+const locale=Astro.params.locale as "de"|"sr";const de=locale==="de";
+---
+<Base locale={locale} slug="wissen/glossar" title={de?"Glossar – Auto & Business":"Rečnik – Auto i Business"} description={de?"24 Begriffe mit Erklärungen und Praxisbezug.":"24 pojma sa objašnjenjima i praktičnom primenom."}>
+<section class="section white"><div class="wrap"><h1>{de?"Glossar":"Rečnik pojmova"}</h1><p><a href={`/${locale}/wissen/`}>{de?"Alle Ratgeber":"Svi vodiči"}</a></p>{glossary.map((g,i)=><article id={`begriff-${i+1}`} style="padding:1rem 0;border-bottom:1px solid #ddd"><small>{g.category==="auto"?"AutoDanini":"DANINI Business"}</small><h2>{g.name}</h2><p>{g[locale]}</p><p><strong>{de?"Praxis":"Primer primene"}:</strong> {de?"Vor einer Entscheidung Belege und offene Fragen dokumentieren.":"Pre odluke evidentirati dokaze i otvorena pitanja."} <a href={`/${locale}/wissen/${g.guide}/`}>{de?"Passender Ratgeber":"Povezani vodič"}</a></p></article>)}</div></section>
+</Base>

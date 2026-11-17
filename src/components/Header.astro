@@ -1,5 +1,6 @@
 ---
 import type { Locale } from "../lib/content";
+import {daniniBrandLogo} from "../lib/danini-brand-logo";
 import {originalEvergreen} from "../lib/original-evergreen";
 import {srBusinessEvergreen} from "../lib/sr-business-evergreen";
 interface Props { locale: Locale; slug?: string; }
@@ -25,8 +26,7 @@ const navItems = [
 <header>
   <div class="wrap nav danini-header">
     <a class="brand" href={home} aria-label={isDe ? "DANINI — Startseite" : "DANINI — Početna"}>
-      <img class="brand-logo" src="/danini-favicon.svg" width="44" height="44" alt="" aria-hidden="true" decoding="async" />
-      <span>DANINI<small>DACH ↔ BALKAN · BUSINESS & AUTO</small></span>
+      <span class="brand-lockup"><img class="brand-logo" src={daniniBrandLogo} width="360" height="120" alt="DANINI" decoding="async" /><small>DACH ↔ BALKAN · BUSINESS & AUTO</small></span>
     </a>
     <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
       {navItems.map(item => <a href={item.href} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
@@ -42,8 +42,9 @@ const navItems = [
 <style>
 .danini-header{min-height:91px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(13px,1.9vw,27px);align-items:center}
 .danini-header .brand{display:flex;gap:11px;align-items:center;min-width:0;color:#f4f8fc;font-weight:820;font-size:1.33rem;letter-spacing:.08em}
-.danini-header .brand .brand-logo{display:grid;place-items:center;width:44px;height:44px;flex:none;background:#0b756a;border-radius:12px;color:white;font-size:1.5rem}
-.danini-header .brand small{display:block;font-size:.57rem;letter-spacing:.055em;color:#aec4cf;margin-top:5px;white-space:nowrap}
+.danini-header .brand .brand-lockup{display:flex;flex-direction:column;align-items:center;width:clamp(155px,16vw,210px);min-width:0}
+.danini-header .brand .brand-logo{display:block;width:100%;height:auto;aspect-ratio:3/1;object-fit:contain;background:#fff;border-radius:9px;padding:2px 8px;flex:none}
+.danini-header .brand small{display:block;font-size:.46rem;letter-spacing:.02em;color:#aec4cf;margin-top:3px;white-space:nowrap;text-align:center}
 .danini-header .business-nav{display:flex;gap:clamp(9px,1.2vw,22px);align-items:center;justify-content:center;min-width:0;margin:0}
 .danini-header .business-nav a{color:#e8f1f6;white-space:nowrap;display:inline-flex;min-height:44px;align-items:center;font-size:.78rem;font-weight:680;line-height:1.3}
 .danini-header .business-nav a:hover,.danini-header .business-nav a:focus-visible{color:#facc15}
@@ -60,10 +61,10 @@ const navItems = [
 }
 @media(max-width:700px){
  .danini-header .brand{font-size:1.12rem}
- .danini-header .brand .brand-logo{width:38px;height:38px}
- .danini-header .brand small{font-size:.49rem}
+ .danini-header .brand .brand-lockup{width:clamp(135px,36vw,180px)}
+ .danini-header .brand small{font-size:.41rem}
  .danini-header .business-nav{grid-template-columns:repeat(3,minmax(0,1fr))}
  .danini-header .business-nav a{background:#15293b;border:1px solid #2b4254;border-radius:8px;font-size:.76rem;min-height:44px}
 }
-@media(max-width:390px){.danini-header .business-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.danini-header .brand small{font-size:.43rem}}
+@media(max-width:390px){.danini-header .business-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.danini-header .brand small{font-size:.38rem}}
 </style>

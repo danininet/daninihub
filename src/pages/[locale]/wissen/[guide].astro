@@ -11,6 +11,7 @@ const parts=editorial.blocks.map(pair=>pair[de?0:1]);
 const seoTitle=guide[locale];
 const description=parts[0][1].slice(0,155);
 const dated="17.11.2026";
+const primaryOriginal=(de&&guide.slug==="kundenanfragen")?"/de/wissen/anfragemanagement-kleine-unternehmen/":(!de&&guide.slug==="fahrzeugpapiere")?"/sr/wissen/fahrzeugbrief-fahrzeugschein-coc-hu/":null;
 const schema={ "@context":"https://schema.org", "@type":"Article", headline:guide[locale], inLanguage:locale, dateModified:"2026-11-17", datePublished:"2026-11-17", mainEntityOfPage:`https://daninihub.com/${locale}/wissen/${guide.slug}/`, author:{"@type":"Organization",name:"DANINI"}, publisher:{"@type":"Organization",name:"DANINI"}, isAccessibleForFree:true };
 const photoByGuide:Record<string,string>={
 "gebrauchtwagen-anzahlung":"DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg",
@@ -21,12 +22,12 @@ const photoByGuide:Record<string,string>={
 "ki-buero":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg"
 };
 ---
-<Base locale={locale} slug={`wissen/${guide.slug}`} title={seoTitle} description={description}>
+<Base locale={locale} slug={`wissen/${guide.slug}`} title={seoTitle} description={description} noindex={primaryOriginal!==null}>
 <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 <article class="section white"><div class="wrap knowledge-article">
 <p class="breadcrumb"><a href={`/${locale}/wissen/`}>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</a> / {guide.category==="auto"?"AutoDanini":"DANINI Business"}</p>
 <p class="eyebrow">{de?"Praxisleitfaden":"Praktični vodič"} · {dated}</p>
-<h1>{seoTitle}</h1>
+<h1>{seoTitle}</h1>{primaryOriginal&&<p class="editorial-pointer"><strong>{de?"Ausführlicher Ratgeber:":"Detaljniji izvorni vodič:"}</strong> <a href={primaryOriginal}>{de?"Vollständigen Fachartikel lesen":"Pročitajte originalni puni članak"}</a></p>}
 <figure class="guide-cover"><img src={"/images/"+photoByGuide[guide.slug]} alt={de?`Symbolfoto zu ${guide.de}`:`Ilustrativna fotografija: ${guide.sr}`} width="960" height="560" loading="lazy" decoding="async" /><figcaption>{de?"Illustration aus dem DANINI-Medienbestand; keine Kundenreferenz.":"Ilustracija iz DANINI medijskih resursa, nije referenca klijenta."}</figcaption></figure>
 <p class="intro">{parts[0][1]}</p>
 <nav class="contents" aria-label={de?"Inhalt":"Sadržaj"}><strong>{de?"Inhalt":"Sadržaj"}</strong><ol>{parts.map((part,i)=><li><a href={`#abschnitt-${i+1}`}>{part[0]}</a></li>)}</ol></nav>

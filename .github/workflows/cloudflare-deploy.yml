@@ -168,3 +168,5 @@ jobs:
 # Authorized guarded DANINI conversion release 2026-11-16: latest main source + bilingual live CTA checks.
 
 # Workers AI binding release trigger 2026-11-17: PR229 merged; guarded deploy and live binding verification.
+
+# Authorized P0 release 2026-11-17: accept structured Workers AI results and copied listing inquiries.

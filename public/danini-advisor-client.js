@@ -37,15 +37,15 @@
   const status = el('advisor-status');
   const input = el('listing');
   try { const saved = sessionStorage.getItem('danini-advisor-source-v1'); if (saved) { input.value = saved.slice(0,6000); sessionStorage.removeItem('danini-advisor-source-v1'); } } catch {}
-  // Optional preliminary evidence extraction. No third-party scraping and no paid AI calls.
+  // Protected Workers AI analysis with an explicitly labelled rules fallback.
   const analysisPanel = document.createElement('section');
   analysisPanel.setAttribute('aria-label', lang === 'de' ? 'Inserat-Vorprüfung' : 'Preliminarna provera oglasa');
   analysisPanel.style.cssText='margin:1rem 0;padding:1rem;border:1px solid currentColor;border-radius:0.75rem;overflow-wrap:anywhere';
   const analysisButton = document.createElement('button');
   analysisButton.type='button';
-  analysisButton.textContent=lang==='de'?'Inserat analysieren (Text-Vorprüfung)':'Analiziraj oglas (provera teksta)';
+  analysisButton.textContent=lang==='de'?'Inserat mit KI analysieren':'Analiziraj oglas uz AI';
   const analysisHelp=document.createElement('p');
-  analysisHelp.textContent=lang==='de'?'Kopieren Sie den Inseratstext in das Feld oben. Links allein werden nicht automatisch abgerufen. Die Vorprüfung ist keine KI-Bewertung.':'Nalepite tekst oglasa u polje iznad. Linkovi se ne preuzimaju automatski. Ova preliminarna provera nije AI procena.';
+  analysisHelp.textContent=lang==='de'?'Kopieren Sie den Inseratstext in das Feld oben. Links allein werden nicht automatisch abgerufen. KI prüft die Angaben im Text; dies ersetzt keine unabhängige Fahrzeugprüfung.':'Nalepite tekst oglasa u polje iznad. Linkovi se ne preuzimaju automatski. AI proverava navode u tekstu; ovo ne zamenjuje nezavisan pregled vozila.';
   const analysisOutput=document.createElement('div');
   analysisOutput.setAttribute('role','status');
   analysisOutput.setAttribute('aria-live','polite');
@@ -76,7 +76,7 @@
       const names={brand:'Marka',model:'Model',year:'Godina',mileageKm:'Kilometraža (km)',priceEur:'Cena (EUR)',fuel:'Gorivo',gearbox:'Menjač'};
       const deNames={brand:'Marke',model:'Modell',year:'Baujahr',mileageKm:'Kilometer',priceEur:'Preis (EUR)',fuel:'Kraftstoff',gearbox:'Getriebe'};
       for(const [key,label] of Object.entries(lang==='de'?deNames:names))line(label,data.fields?.[key]);
-      line(lang==='de'?'Fehlende Angaben':'Nedostajući podaci',(data.missing||[]).join(', ')||'—');
+      line(lang==='de'?'Fehlende Angaben':'Nedostajući podaci',(data.missing||[]).map(key => (lang==='de'?deNames:names)[key] || key).join(', ')||'—');
       for(const risk of data.warnings||[])line(lang==='de'?'Hinweis':'Napomena',risk);
       if(data.aiUsed===true){
         line(lang==='de'?'KI-Status':'AI status',lang==='de'?'KI-Auswertung des kopierten Inseratstextes':'AI analiza kopiranog teksta oglasa');
@@ -93,6 +93,11 @@
       const ul=document.createElement('ul');
       for(const q of data.questions||[]){const li=document.createElement('li');li.textContent=q;ul.append(li);}
       analysisOutput.append(ul);
+      const next=document.createElement('a');
+      next.href='#advisor-contact';
+      next.textContent=lang==='de'?'Detailliertes Fahrzeugdossier anfragen':'Zatraži detaljan dosije vozila';
+      next.className='advisor-email-fallback';
+      analysisOutput.append(next);
     }catch{analysisOutput.textContent=lang==='de'?'Verbindung fehlgeschlagen. Bitte erneut versuchen.':'Veza nije uspela. Pokušajte ponovo.';}
     finally{analysisButton.disabled=false;captchaToken='';if(window.turnstile&&captchaWidget!==null)window.turnstile.reset(captchaWidget);}
   });
@@ -191,8 +196,6 @@
     if (cta.disabled || !answers.every(a => a !== null) || busy) return;
     const source = input.value.trim();
     if (!validSource(source)) { show(messages.invalid); input.focus(); return; }
-    // Protected backend still accepts URL/VIN only; never send copied text until updated.
-    if (!/^[A-HJ-NPR-Z0-9]{17}$/i.test(source) && !/^https:\/\//i.test(source)) { show(lang === 'de' ? 'Textprüfung bleibt lokal. Kontaktieren Sie uns für eine manuelle Prüfung.' : 'Provera teksta ostaje lokalna. Kontaktirajte nas za ručnu proveru.'); return; }
     if (!form.reportValidity() || !el('advisor-consent').checked) { show(messages.contact); return; }
     if (!serviceEnabled) { show(messages.unavailable); return; }
     if (!captchaToken) { show(messages.captcha); return; }

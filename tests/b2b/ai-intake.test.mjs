@@ -28,6 +28,25 @@ const request = (body, origin = 'https://daninihub.com') => new Request('https:/
   headers: { 'content-type': 'application/json', origin },
   body: JSON.stringify(body)
 });
+test('copied listing reaches the protected dossier inquiry without truncation or URL fetch',async()=>{
+ const before=globalThis.fetch, sent=[];
+ const source='DEMO Volkswagen Golf, 2017, 145000 km. Servisna dokumentacija nedostaje. '.repeat(12);
+ globalThis.fetch=async(url,options)=>{
+  if(String(url).includes('siteverify'))return Response.json({success:true,hostname:'daninihub.com'});
+  assert.match(String(url),/api.brevo.com/);
+  sent.push(JSON.parse(options.body));
+  return Response.json({messageId:'mock-dossier-inquiry'});
+ };
+ try{
+  const response=await handleAiIntake(request({...payload,source}),env);
+  assert.equal(response.status,202);
+  assert.ok(sent[0].textContent.includes(source.trim()));
+  assert.equal(sent.length,2);
+  const oversized=await handleAiIntake(request({...payload,source:'a'.repeat(6001)}),env);
+  assert.equal(oversized.status,400);
+  assert.equal(sent.length,2);
+ }finally{globalThis.fetch=before;}
+});
 test('AI intake rejects missing configuration without exposing keys', async () => {
   const response = await handleAiIntake(request(payload), {});
   assert.equal(response.status, 503);

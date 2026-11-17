@@ -77,7 +77,7 @@ test('signed token is valid only for paid order for 72 hours',async()=>{
  const token=await downloadToken(env,fakePaid);
  assert.equal(await tokenValid(env,fakePaid,token),true);
  assert.equal(await tokenValid(env,{...fakePaid,status:'CREATED'},token),false);
- assert.equal(await tokenValid(env,fakePaid,token.slice(0,-1)+'A'),false);
+ assert.equal(await tokenValid(env,fakePaid,token.slice(0,-1)+(token.endsWith('A')?'B':'A')),false);
  assert.equal(await tokenValid(env,fakePaid,token,Date.now()+73*3600000),false);
 });
 test('offline simulated checkout -> PayPal capture -> D1 -> private PDF -> email',async()=>{

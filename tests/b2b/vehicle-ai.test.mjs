@@ -3,6 +3,14 @@ import assert from 'node:assert/strict';
 import {evaluateListingWithAI,isAiConfigured} from '../../workers/danini-vehicle-ai.mjs';
 const listing='Volkswagen Golf: Baujahr 2018; Diesel; 143000 km. Der Verkäufer schreibt: unfallfrei und scheckheftgepflegt.';
 const fields={brand:'Volkswagen',model:null,year:2018,mileageKm:143000,priceEur:null,fuel:'Diesel',gearbox:null};
+for(const shape of ['object','completion'])test(`Workers AI ${shape} response preserves grounded analysis`,async()=>{
+ const content={risks:[{evidence:'unfallfrei',concern:'Belege über Unfallschäden anfordern'},{evidence:'invented evidence',concern:'Must not reach the customer'}],sellerQuestions:['Sind Reparaturrechnungen vorhanden?']};
+ const raw=shape==='object'?{response:content}:{choices:[{message:{content:JSON.stringify(content)}}]};
+ const result=await evaluateListingWithAI(listing,fields,'de',{AI_ENABLED:'true',DANINI_AI_LIVE_APPROVED:'true',AI:{run:async()=>raw}});
+ assert.equal(result.aiUsed,true);
+ assert.deepEqual(result.aiRisks,[content.risks[0]]);
+ assert.deepEqual(result.aiSellerQuestions,content.sellerQuestions);
+});
 test('AI inference is disabled without explicit cost approval flag',async()=>{
  let calls=0;
  const env={AI_ENABLED:'true',AI:{run:async()=>{calls++;return {response:'{}'};}}};

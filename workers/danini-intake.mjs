@@ -108,7 +108,8 @@ function bodyText(d,ref){
 function validateAiIntake(body){
  if(!body||typeof body!=='object'||Array.isArray(body)||body.consent!==true)return null;
  if(body.language!=='de'&&body.language!=='sr')return null;
- const source=safeField(body.source,500);
+ if(typeof body.source!=='string'||body.source.length>6000)return null;
+ const source=safeField(body.source,6000);
  const vin=/^[A-HJ-NPR-Z0-9]{17}$/i.test(source);
  let httpsUrl=false;
  if(!vin){
@@ -117,7 +118,8 @@ function validateAiIntake(body){
    httpsUrl=u.protocol==='https:' && !!u.hostname && !u.username && !u.password && source.length<=500;
   }catch{}
  }
- if(!vin&&!httpsUrl)return null;
+ const copiedText=source.length>=30 && !/^https?:\/\//i.test(source);
+ if(!vin&&!httpsUrl&&!copiedText)return null;
  const name=safeField(body.name,90);
  const email=safeField(body.email,254).toLowerCase();
  if(!name||!validEmail(email))return null;

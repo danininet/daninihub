@@ -43,6 +43,7 @@
   analysisPanel.style.cssText='margin:1rem 0;padding:1rem;border:1px solid currentColor;border-radius:0.75rem;overflow-wrap:anywhere';
   const analysisButton = document.createElement('button');
   analysisButton.type='button';
+  analysisButton.className='advisor-analysis-button';
   analysisButton.textContent=lang==='de'?'Inserat mit KI analysieren':'Analiziraj oglas uz AI';
   const analysisHelp=document.createElement('p');
   analysisHelp.textContent=lang==='de'?'Kopieren Sie den Inseratstext in das Feld oben. Links allein werden nicht automatisch abgerufen. KI prüft die Angaben im Text; dies ersetzt keine unabhängige Fahrzeugprüfung.':'Nalepite tekst oglasa u polje iznad. Linkovi se ne preuzimaju automatski. AI proverava navode u tekstu; ovo ne zamenjuje nezavisan pregled vozila.';

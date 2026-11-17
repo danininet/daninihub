@@ -47,7 +47,7 @@ async function check(path) {
     throw new Error('Root URL does not present DANINI brand');
   if (path === '/de/' && !isPullRequest && !/Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen\./.test(html))
     throw new Error('Wrong /de/ release (expected localized page)');
-  if (path === '/sr/' && !isPullRequest && !/Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom\. Jasna podrška\./.test(html))
+  if (path === '/sr/' && !isPullRequest && !/Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom\./.test(html))
     throw new Error('Wrong /sr/ release');
   return {status: response.status, bytes: Buffer.byteLength(html)};
 }

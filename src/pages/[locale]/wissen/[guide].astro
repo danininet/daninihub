@@ -1,0 +1,42 @@
+---
+import Base from "../../../layouts/Base.astro";
+import {guides} from "../../../lib/knowledge";
+import {editorialGuides} from "../../../lib/editorial-guides";
+export function getStaticPaths(){return ["de","sr"].flatMap(locale=>guides.map(g=>({params:{locale,guide:g.slug}})));}
+const locale=Astro.params.locale as "de"|"sr";
+const de=locale==="de";
+const guide=guides.find(g=>g.slug===Astro.params.guide)!;
+const editorial=editorialGuides.find(g=>g.slug===guide.slug)!;
+const parts=editorial.blocks.map(pair=>pair[de?0:1]);
+const seoTitle=guide[locale];
+const description=parts[0][1].slice(0,155);
+const dated="17.11.2026";
+const schema={ "@context":"https://schema.org", "@type":"Article", headline:guide[locale], inLanguage:locale, dateModified:"2026-11-17", datePublished:"2026-11-17", mainEntityOfPage:`https://daninihub.com/${locale}/wissen/${guide.slug}/`, author:{"@type":"Organization",name:"DANINI"}, publisher:{"@type":"Organization",name:"DANINI"}, isAccessibleForFree:true };
+const photoByGuide:Record<string,string>={
+"gebrauchtwagen-anzahlung":"DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg",
+"fahrzeugpapiere":"DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg",
+"auto-deutschland-serbien":"DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg",
+"kundenanfragen":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg",
+"email-formular-crm":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg",
+"ki-buero":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg"
+};
+---
+<Base locale={locale} slug={`wissen/${guide.slug}`} title={seoTitle} description={description}>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+<article class="section white"><div class="wrap knowledge-article">
+<p class="breadcrumb"><a href={`/${locale}/wissen/`}>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</a> / {guide.category==="auto"?"AutoDanini":"DANINI Business"}</p>
+<p class="eyebrow">{de?"Praxisleitfaden":"Praktični vodič"} · {dated}</p>
+<h1>{seoTitle}</h1>
+<figure class="guide-cover"><img src={"/images/"+photoByGuide[guide.slug]} alt={de?`Symbolfoto zu ${guide.de}`:`Ilustrativna fotografija: ${guide.sr}`} width="960" height="560" loading="lazy" decoding="async" /><figcaption>{de?"Illustration aus dem DANINI-Medienbestand; keine Kundenreferenz.":"Ilustracija iz DANINI medijskih resursa, nije referenca klijenta."}</figcaption></figure>
+<p class="intro">{parts[0][1]}</p>
+<nav class="contents" aria-label={de?"Inhalt":"Sadržaj"}><strong>{de?"Inhalt":"Sadržaj"}</strong><ol>{parts.map((part,i)=><li><a href={`#abschnitt-${i+1}`}>{part[0]}</a></li>)}</ol></nav>
+{parts.map((part,i)=><section id={`abschnitt-${i+1}`} class="guide-part"><h2>{part[0]}</h2><p>{part[1]}</p><h3>{de?"Beispiel und Handlung":"Primer i postupak"}</h3><p>{part[2]}</p></section>)}
+<section class="guide-part"><h2>{de?"Checkliste vor der Entscheidung":"Kontrolna lista pre odluke"}</h2><ul><li>{de?"Prüfgegenstand, Quelle und Datum notieren":"Zabeležite predmet, izvor i datum provere"}</li><li>{de?"Bestätigte Fakten von offenen Fragen und Annahmen trennen":"Odvojite potvrđene činjenice od otvorenih pitanja i pretpostavki"}</li><li>{de?"Widersprüche mit der zuständigen Person schriftlich klären":"Razjasnite neslaganja pisanim putem sa odgovornom osobom"}</li><li>{de?"Wichtige Zahlungen, Zusagen oder Freigaben erst nach Prüfung":"Važne uplate, obećanja i odobrenja tek nakon provere"}</li></ul></section>
+<section class="guide-part"><h2>{de?"Quellen und Aktualität":"Izvori i ažurnost"}</h2><p>{de?"Redaktionelle Fassung vom 17.11.2026. Rechtslage, Gebühren und behördliche Anforderungen können sich ändern; amtliche Aktualität vor der Entscheidung prüfen. Die Links sind Quellenhinweise und keine Bestätigung einer aktuellen Einzelprüfung.":"Redakcijska verzija od 17.11.2026. Propisi, takse i administrativni uslovi mogu se menjati; proveriti zvanične informacije neposredno pre odluke. Linkovi su upućivanja na izvore, a ne potvrda aktuelne pojedinačne provere."}</p><ul>{editorial.sources.map((source)=><li><a href={source} rel="noopener noreferrer">{new URL(source).hostname}</a></li>)}</ul></section>
+<aside class="guide-part"><h2>{de?"Nächster Schritt":"Sledeći korak"}</h2><p><a href={`/${locale}/wissen/glossar/`}>{de?"Fachbegriffe verständlich erklärt":"Objašnjenja pojmova u rečniku"}</a> · <a href={`/${locale}/wissen/dokumente/`}>{de?"Dokumente und Vorlagen":"Dokumenti i obrasci"}</a></p><a class="button" href={guide.category==="auto"?`/${locale}/auto-check/`:`/${locale}/business/`}>{de?"Passende DANINI-Leistung ansehen":"Pogledajte odgovarajuću DANINI uslugu"}</a></aside>
+<p><small>{de?"Informationsangebot, keine individuelle Rechts-, Zoll- oder Steuerberatung; keine unabhängige technische Begutachtung.":"Informativni sadržaj, bez individualnog pravnog, carinskog ili poreskog savetovanja i nezavisnog tehničkog pregleda."}</small></p>
+</div></article>
+<style>
+.knowledge-article{max-width:880px}.guide-cover{margin:1.5rem 0 2rem}.guide-cover img{display:block;width:100%;height:auto;aspect-ratio:12/7;object-fit:cover;border-radius:14px}.guide-cover figcaption{font-size:.8rem;color:#495b65;margin-top:.5rem}.knowledge-article .intro{max-width:72ch}.guide-part{padding:1.4rem 0;border-top:1px solid #d6e2e6}.guide-part p,.guide-part li{line-height:1.8}.contents{padding:1rem 1.5rem;margin:1.5rem 0;background:#eef4f5;border-radius:14px;color:#142a37}.contents a,.breadcrumb a,.guide-part a:not(.button){color:#075b72;text-decoration:underline;text-underline-offset:3px}.guide-part{scroll-margin-top:2rem}
+</style>
+</Base>

@@ -1,3 +1,4 @@
+import { guides } from "../lib/knowledge";
 import { verticals } from "../lib/content";
 export function GET() {
   const urls = [
@@ -6,6 +7,7 @@ export function GET() {
     "https://daninihub.com/de/danini-methode/",
     "https://daninihub.com/sr/o-danini/",
     "https://daninihub.com/sr/danini-metoda/",
+    ...["de", "sr"].flatMap((l) => ["wissen", "wissen/glossar", "wissen/dokumente", ...guides.map(g => "wissen/" + g.slug)].map(s => `https://daninihub.com/${l}/${s}/`)),
     ...["de", "sr"].flatMap((l) =>
       ["", "business", "auto-check", "ai-savetnik", ...verticals, "impressum", "datenschutz", "agb"].map(
         (s) => `https://daninihub.com/${l}/${s ? s + "/" : ""}`,

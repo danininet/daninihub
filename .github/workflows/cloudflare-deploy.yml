@@ -92,6 +92,10 @@ jobs:
           config.kv_namespaces=prod.kv_namespaces;
           config.workflows=prod.workflows;
           config.keep_vars=true;
+          // Owner confirmed Workers Free (2026-11-17); free Workers AI quota has no paid overages.
+          // Keep all existing non-AI vars and bindings while enabling the approved inference path.
+          config.vars={...prod.vars,AI_ENABLED:'true',DANINI_AI_LIVE_APPROVED:'true'};
+          assert.equal(config.ai.binding,'AI','AI binding required for live inference');
           const names=['BREVO_API_KEY','DANINI_CONTACT_ACTIVE','DANINI_TURNSTILE_SECRET','DANINI_TURNSTILE_SITEKEY','DANINI_NOTIFY_TO','DANINI_BREVO_SENDER'];
           config.secrets={required:names};
           fs.writeFileSync('wrangler.production-ci.jsonc',JSON.stringify(config,null,2)+'\n');

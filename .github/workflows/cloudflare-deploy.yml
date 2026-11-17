@@ -52,6 +52,8 @@ jobs:
             const business=fs.readFileSync('dist/'+locale+'/business/index.html','utf8');
             const advisor=fs.readFileSync('dist/'+locale+'/ai-savetnik/index.html','utf8');
             assert.ok(brand.includes(brandHeading),'DANINI two-line brand Hero missing in '+locale);
+            assert.ok(brand.includes('d-visual-service'),'DANINI visual service paths missing in '+locale);
+            assert.ok(brand.includes('d-card-media'),'DANINI service card visuals missing in '+locale);
             assert.ok(business.includes('DANINI Anfragebüro'),'DANINI Business offer missing in '+locale);
             assert.ok(home.includes(heading),'AutoDanini Hero missing in '+locale);
             assert.ok(home.includes('universal-advisor-form'),'Vehicle input missing in '+locale);

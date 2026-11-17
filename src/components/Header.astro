@@ -1,6 +1,7 @@
 ---
 import type { Locale } from "../lib/content";
 import {originalEvergreen} from "../lib/original-evergreen";
+import {srBusinessEvergreen} from "../lib/sr-business-evergreen";
 interface Props { locale: Locale; slug?: string; }
 const { locale, slug = "" } = Astro.props;
 const isDe = locale === "de";
@@ -8,7 +9,7 @@ const home = "/" + locale + "/";
 const altSlug = (language: "de" | "sr") => {
   if (["ueber-danini", "o-danini"].includes(slug)) return language === "de" ? "ueber-danini" : "o-danini";
   if (["danini-methode", "danini-metoda"].includes(slug)) return language === "de" ? "danini-methode" : "danini-metoda";
-  if (originalEvergreen.some(a => "wissen/" + a.slug === slug && a.locale !== language)) return "wissen";
+  if ([...originalEvergreen,...srBusinessEvergreen].some(a => "wissen/" + a.slug === slug && a.locale !== language)) return "wissen";
   return slug;
 };
 const navItems = [

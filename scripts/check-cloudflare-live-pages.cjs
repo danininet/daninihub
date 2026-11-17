@@ -43,11 +43,11 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
-  if (path === '/' && !isPullRequest && !/Deutsche Kundenanfragen und Fahrzeugangebote\. Klar betreut\./.test(html))
+  if (path === '/' && !isPullRequest && !/Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen\./.test(html))
     throw new Error('Root URL does not present DANINI brand');
-  if (path === '/de/' && !isPullRequest && !/Deutsche Kundenanfragen und Fahrzeugangebote\. Klar betreut\./.test(html))
+  if (path === '/de/' && !isPullRequest && !/Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen\./.test(html))
     throw new Error('Wrong /de/ release (expected localized page)');
-  if (path === '/sr/' && !isPullRequest && !/Nemački poslovni upiti i oglasi vozila\. Jasna podrška\./.test(html))
+  if (path === '/sr/' && !isPullRequest && !/Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom\. Jasna podrška\./.test(html))
     throw new Error('Wrong /sr/ release');
   return {status: response.status, bytes: Buffer.byteLength(html)};
 }

@@ -48,6 +48,9 @@ const logo=await page.locator(".brand-logo");
 assert.equal(await logo.count(),1,"DANINI actual logo missing");
 await logo.scrollIntoViewIfNeeded();
 assert.equal(await logo.evaluate(el=>el.complete&&el.naturalWidth>0),true,"broken DANINI logo");
+assert.equal(await logo.getAttribute("alt"),"DANINI","approved full logo must have accessible name");
+assert.equal((await logo.getAttribute("src")).startsWith("data:image/png;base64,"),true,"wrong brand asset: original approved raster expected");
+assert.equal(await logo.evaluate(el=>el.naturalWidth>=300&&el.naturalHeight>=100),true,"approved logo resolution missing");
 await page.goto(baseUrl+"/"+locale+"/wissen/");
 
 const img=page.locator(".knowledge-vertical img");

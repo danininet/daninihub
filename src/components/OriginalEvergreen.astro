@@ -13,7 +13,7 @@ const schema={"@context":"https://schema.org","@type":"Article",headline:sourceT
 const heading=(s:string)=>/^\d{1,2}\.\s+/.test(s) || (/^[^.!?]{8,95}$/.test(s) && !s.includes("http") && !s.includes("☐") && !s.includes(" | "));
 const item=(s:string)=>s.startsWith("☐") || /^[-•]\s/.test(s);
 ---
-<Base locale={locale} slug={`wissen/${article.slug}`} title={article.seoTitle} description={article.description} noindex={!article.index} alternateLocales={false}>
+<Base locale={locale} slug={`wissen/${article.slug}`} title={article.seoTitle} description={article.description} noindex={!article.index} alternateLocales={false} ogImage={"/images/"+article.image}>
 <script type="application/ld+json" set:html={JSON.stringify(schema)}/>
 <article class="section white"><div class="wrap source-article">
 <p class="breadcrumbs"><a href={`/${locale}/wissen/`}>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</a> / {article.key.startsWith("auto")?"AutoDanini":"DANINI Business"}</p>

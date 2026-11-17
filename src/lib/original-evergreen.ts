@@ -5,7 +5,7 @@ export const originalEvergreen = [
     "slug": "fahrzeugbrief-fahrzeugschein-coc-hu",
     "index": true,
     "title": "Fahrzeugbrief, Fahrzeugschein, COC i HU/TÜV",
-    "description": "Dokumenta za kupovinu auta u Nemačkoj: Fahrzeugbrief, Fahrzeugschein, COC i HU/TÜV. Proverite VIN i rizike pre kapare.",
+    "description": "Koja nemačka dokumenta proveriti pre kupovine auta? Objašnjenje Teil I, Teil II, COC i HU, razlike, rizici i kontrolna lista pre kapare.",
     "image": "DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg",
     "sourceId": "1X5rV4uFncIHT6GYwdWiwYyc73t8_heG7",
     "lines": [
@@ -92,7 +92,8 @@ export const originalEvergreen = [
       "ADAC — COC — https://www.adac.de/rund-ums-fahrzeug/auto-kaufen-verkaufen/import-export/coc-papiere/",
       "ADAC — polovan automobil — https://www.adac.de/rund-ums-fahrzeug/auto-kaufen-verkaufen/gebrauchtwagenkauf/gebrauchtwagen-kaufen/",
       "Napomena za objavu: Nemački izvori potvrđuju osnovne funkcije dokumenata. Specifične obaveze pri uvozu, ispitivanju i registraciji u Srbiji moraju se proveriti prema važećoj praksi nadležnih srpskih organa za konkretno vozilo."
-    ]
+    ],
+    "seoTitle": "Fahrzeugbrief, Fahrzeugschein, COC i TÜV: vodič"
   },
   {
     "key": "auto-seller",
@@ -100,7 +101,7 @@ export const originalEvergreen = [
     "slug": "privatni-prodavac-ili-auto-kuca-nemacka",
     "index": false,
     "title": "Privatni prodavac ili auto-kuća u Nemačkoj",
-    "description": "Privatni prodavac ili auto-kuća u Nemačkoj: razlike u odgovornosti, Gewährleistung, Garantie i ugovornim rizicima.",
+    "description": "Kupujete polovan auto u Nemačkoj? Proverite ko je prodavac, šta znači Gewährleistung, koje klauzule u ugovoru traže oprez i kako zaštititi kaparu.",
     "image": "DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg",
     "sourceId": "1xDGlumEJ15RQgJL8H4fG-ndZKCNuw7l9",
     "lines": [
@@ -183,7 +184,8 @@ export const originalEvergreen = [
       "ADAC — Kaufvertrag, privat/gebraucht — https://www.adac.de/rund-ums-fahrzeug/auto-kaufen-verkaufen/gebrauchtwagenkauf/kfz-kaufvertrag/",
       "Verbraucherzentrale — Kaufvertrag und Gebrauchtware — https://www.verbraucherzentrale.de/wissen/vertraege-reklamation/kundenrechte/regeln-beim-kaufvertrag-das-muessen-sie-wissen-5032",
       "Provereno 17.11.2026. Pred samu objavu proveriti eventualne izmene propisa i primenljivost na kupce iz Srbije. Ovo nije individualni pravni savet."
-    ]
+    ],
+    "seoTitle": "Privatni prodavac ili auto-kuća u Nemačkoj: prava kupca"
   },
   {
     "key": "auto-eur1",
@@ -191,7 +193,7 @@ export const originalEvergreen = [
     "slug": "eur1-poreklo-vozila-uvoz-nemacka-srbija",
     "index": true,
     "title": "EUR.1 i poreklo vozila",
-    "description": "EUR.1 i poreklo vozila: kada je moguća povlašćena carina, koje dokaze tražiti i šta proveriti pre uvoza iz Nemačke.",
+    "description": "Šta je EUR.1, kada je carina 0%, kako dokazati poreklo vozila i šta proveriti pre kapare. Vodič, kontrolna lista i praktični primeri.",
     "image": "DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg",
     "sourceId": "1mYKGkuFGiYRfgl58moa26zTO9ONSO7wf",
     "lines": [
@@ -385,7 +387,8 @@ export const originalEvergreen = [
       "Evropska komisija — Proof of origin: https://taxation-customs.ec.europa.eu/customs/rules-origin-goods/preferential-rules-origin/proof-origin_en",
       "Evropska komisija — Pan-Euro-Med pravila i dokazi porekla: https://taxation-customs.ec.europa.eu/customs/international-affairs/pan-euro-mediterranean-cumulation-and-pem-convention_en",
       "Datum provere zvaničnih internet izvora: 17.11.2026. Proveriti eventualne izmene propisa pri objavi i ažuriranju članka."
-    ]
+    ],
+    "seoTitle": "EUR.1 i poreklo vozila: uvoz auta iz Nemačke u Srbiju"
   },
   {
     "key": "b2b-inquiry",
@@ -393,7 +396,7 @@ export const originalEvergreen = [
     "slug": "anfragemanagement-kleine-unternehmen",
     "index": true,
     "title": "Kundenanfragen strukturiert bearbeiten",
-    "description": "Kundenanfragen systematisch bearbeiten: Eingänge, Status, Zuständigkeiten, Freigabe und Wiedervorlage. Praxisleitfaden mit Checkliste.",
+    "description": "Anfragemanagement für kleine Unternehmen: Anfragen erfassen, Rückfragen klären, Antworten freigeben und Vorgänge nachverfolgen. Mit Checkliste.",
     "image": "DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg",
     "sourceId": "1SggnUQUvbFX78sF8sDB3Udp7N5gGcm3F",
     "lines": [
@@ -478,7 +481,8 @@ export const originalEvergreen = [
       "EDPB, Verantwortlicher oder Auftragsverarbeiter: https://www.edpb.europa.eu/sme/learn-the-basics/data-controller-or-data-processor_de",
       "IHK Halle-Dessau, FAQ zur Umsetzung der DSGVO: https://www.ihk.de/halle/recht/datenschutz/eu-datenschutzgrundverordnung/faq-zur-umsetzung-der-eu-datenschutzgrundverordnung-4155122",
       "Quellenprüfung: 17.11.2026. Illustrative Praxisvorschläge und Statusbezeichnungen sind redaktionelle Empfehlungen, keine gesetzliche Vorschrift."
-    ]
+    ],
+    "seoTitle": "Kundenanfragen bearbeiten: Leitfaden für kleine Betriebe"
   },
   {
     "key": "b2b-offer",
@@ -486,7 +490,7 @@ export const originalEvergreen = [
     "slug": "ki-angebotsvorbereitung",
     "index": true,
     "title": "KI-gestützte Angebotsvorbereitung",
-    "description": "Angebote mit KI vorbereiten: fehlende Angaben erkennen, Entwürfe strukturieren, Datenschutz und menschliche Freigabe beachten.",
+    "description": "Kundenanfragen mit KI in strukturierte Angebotsentwürfe verwandeln: fehlende Angaben, Freigabe, Datenschutz und praktische Checkliste.",
     "image": "DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg",
     "sourceId": "1Dc18fJGUhzDP89PTsdhU9RfTLobW79c3",
     "lines": [
@@ -560,7 +564,8 @@ export const originalEvergreen = [
       "EDPB, Artificial Intelligence: https://www.edpb.europa.eu/topics/ai-and-technology/artificial-intelligence_en",
       "Google Search Central, nutzerorientierte Inhalte: https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
       "Quellen recherchiert am 17.11.2026. Allgemeine Informationen; keine individuelle Rechtsberatung."
-    ]
+    ],
+    "seoTitle": "KI-Angebotsentwurf erstellen: Kundenanfragen richtig bearbeiten"
   },
   {
     "key": "b2b-gdpr",
@@ -568,7 +573,7 @@ export const originalEvergreen = [
     "slug": "dsgvo-kundenanfragen-ki",
     "index": false,
     "title": "DSGVO bei Kundenanfragen und KI",
-    "description": "DSGVO bei Kundenanfragen und KI: Rechtsgrundlage, Datenminimierung, AVV, Anbieterprüfung und menschliche Freigabe.",
+    "description": "Kundenanfragen mit KI bearbeiten: Rechtsgrundlage, AV-Vertrag, Datenschutz und sichere Freigabe. Praxischeck für kleine Unternehmen.",
     "image": "DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg",
     "sourceId": "1VYpO3_sOvyNlVsClehq-5mE0QDoCjoXe",
     "lines": [
@@ -661,6 +666,7 @@ export const originalEvergreen = [
       "EU-Kommission: DSGVO für Unternehmen — https://commission.europa.eu/law/law-topic/data-protection/information-business-and-organisations/application-gdpr_en",
       "EUR-Lex: KI-Verordnung, konsolidierte Fassung — https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "Promotionspaket (Entwurf, nicht veröffentlicht)"
-    ]
+    ],
+    "seoTitle": "DSGVO bei Kundenanfragen & KI: Praxisleitfaden"
   }
 ] as const;

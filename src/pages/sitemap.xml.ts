@@ -1,4 +1,5 @@
 import { guides } from "../lib/knowledge";
+import { originalEvergreen } from "../lib/original-evergreen";
 import { verticals } from "../lib/content";
 export function GET() {
   const urls = [
@@ -7,7 +8,8 @@ export function GET() {
     "https://daninihub.com/de/danini-methode/",
     "https://daninihub.com/sr/o-danini/",
     "https://daninihub.com/sr/danini-metoda/",
-    ...["de", "sr"].flatMap((l) => ["wissen", "wissen/glossar", "wissen/dokumente", ...guides.map(g => "wissen/" + g.slug)].map(s => `https://daninihub.com/${l}/${s}/`)),
+    ...originalEvergreen.filter(a=>a.index).map(a=>`https://daninihub.com/${a.locale}/wissen/${a.slug}/`),
+    ...["de", "sr"].flatMap((l) => ["wissen", "wissen/glossar", "wissen/dokumente", ...guides.filter(g=>!(l==="de"&&g.slug==="kundenanfragen")&&!(l==="sr"&&g.slug==="fahrzeugpapiere")).map(g => "wissen/" + g.slug)].map(s => `https://daninihub.com/${l}/${s}/`)),
     ...["de", "sr"].flatMap((l) =>
       ["", "business", "auto-check", "ai-savetnik", ...verticals, "impressum", "datenschutz", "agb"].map(
         (s) => `https://daninihub.com/${l}/${s ? s + "/" : ""}`,

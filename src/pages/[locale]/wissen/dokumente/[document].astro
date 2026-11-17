@@ -1,6 +1,6 @@
 ---
-import Base from "../../../layouts/Base.astro";
-import {documentDrafts} from "../../../lib/document-drafts";
+import Base from "../../../../layouts/Base.astro";
+import {documentDrafts} from "../../../../lib/document-drafts";
 export function getStaticPaths(){return ["de","sr"].flatMap(locale=>documentDrafts.map(doc=>({params:{locale,document:doc.slug}})));}
 const locale=Astro.params.locale as "de"|"sr";
 const de=locale==="de";

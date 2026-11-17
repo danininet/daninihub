@@ -11,12 +11,21 @@ const parts=editorial.blocks.map(pair=>pair[de?0:1]);
 const seoTitle=guide[locale];
 const description=parts[0][1].slice(0,155);
 const dated="17.11.2026";
+const photoByGuide:Record<string,string>={
+"gebrauchtwagen-anzahlung":"DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg",
+"fahrzeugpapiere":"DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg",
+"auto-deutschland-serbien":"DANINI_Kartica_03_Dovoz_Transport_Srbija.jpg",
+"kundenanfragen":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg",
+"email-formular-crm":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg",
+"ki-buero":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg"
+};
 ---
 <Base locale={locale} slug={`wissen/${guide.slug}`} title={seoTitle} description={description}>
 <article class="section white"><div class="wrap knowledge-article">
 <p class="breadcrumb"><a href={`/${locale}/wissen/`}>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</a> / {guide.category==="auto"?"AutoDanini":"DANINI Business"}</p>
 <p class="eyebrow">{de?"Praxisleitfaden":"Praktični vodič"} · {dated}</p>
 <h1>{seoTitle}</h1>
+<figure class="guide-cover"><img src={"/images/"+photoByGuide[guide.slug]} alt={de?`Symbolfoto zu ${guide.de}`:`Ilustrativna fotografija: ${guide.sr}`} width="960" height="560" loading="lazy" decoding="async" /><figcaption>{de?"Illustration aus dem DANINI-Medienbestand; keine Kundenreferenz.":"Ilustracija iz DANINI medijskih resursa, nije referenca klijenta."}</figcaption></figure>
 <p class="intro">{parts[0][1]}</p>
 <nav class="contents" aria-label={de?"Inhalt":"Sadržaj"}><strong>{de?"Inhalt":"Sadržaj"}</strong><ol>{parts.map((part,i)=><li><a href={`#abschnitt-${i+1}`}>{part[0]}</a></li>)}</ol></nav>
 {parts.map((part,i)=><section id={`abschnitt-${i+1}`} class="guide-part"><h2>{part[0]}</h2><p>{part[1]}</p><h3>{de?"Beispiel und Handlung":"Primer i postupak"}</h3><p>{part[2]}</p></section>)}
@@ -26,6 +35,6 @@ const dated="17.11.2026";
 <p><small>{de?"Informationsangebot, keine individuelle Rechts-, Zoll- oder Steuerberatung; keine unabhängige technische Begutachtung.":"Informativni sadržaj, bez individualnog pravnog, carinskog ili poreskog savetovanja i nezavisnog tehničkog pregleda."}</small></p>
 </div></article>
 <style>
-.knowledge-article{max-width:880px}.knowledge-article .intro{max-width:72ch}.guide-part{padding:1.4rem 0;border-top:1px solid #d6e2e6}.guide-part p,.guide-part li{line-height:1.8}.contents{padding:1rem 1.5rem;margin:1.5rem 0;background:#eef4f5;border-radius:14px;color:#142a37}.contents a,.breadcrumb a,.guide-part a:not(.button){color:#075b72;text-decoration:underline;text-underline-offset:3px}.guide-part{scroll-margin-top:2rem}
+.knowledge-article{max-width:880px}.guide-cover{margin:1.5rem 0 2rem}.guide-cover img{display:block;width:100%;height:auto;aspect-ratio:12/7;object-fit:cover;border-radius:14px}.guide-cover figcaption{font-size:.8rem;color:#495b65;margin-top:.5rem}.knowledge-article .intro{max-width:72ch}.guide-part{padding:1.4rem 0;border-top:1px solid #d6e2e6}.guide-part p,.guide-part li{line-height:1.8}.contents{padding:1rem 1.5rem;margin:1.5rem 0;background:#eef4f5;border-radius:14px;color:#142a37}.contents a,.breadcrumb a,.guide-part a:not(.button){color:#075b72;text-decoration:underline;text-underline-offset:3px}.guide-part{scroll-margin-top:2rem}
 </style>
 </Base>

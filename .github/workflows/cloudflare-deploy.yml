@@ -172,3 +172,5 @@ jobs:
 # Authorized P0 release 2026-11-17: accept structured Workers AI results and copied listing inquiries.
 
 # Authorized Business intake release: existing D1/R2/Workflow and bound Workers AI.
+
+# Release 2026-11-17: publish tested PR233 Business JSON schema and mobile AI action.

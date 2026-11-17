@@ -1,0 +1,24 @@
+---
+import Base from "../../../layouts/Base.astro";
+import {documentDrafts} from "../../../lib/document-drafts";
+export function getStaticPaths(){return ["de","sr"].flatMap(locale=>documentDrafts.map(doc=>({params:{locale,document:doc.slug}})));}
+const locale=Astro.params.locale as "de"|"sr";
+const de=locale==="de";
+const doc=documentDrafts.find(d=>d.slug===Astro.params.document)!;
+const title=doc.name[de?0:1];
+const sections=doc.sections.map(pair=>pair[de?0:1]);
+---
+<Base locale={locale} slug={`wissen/dokumente/${doc.slug}`} noindex={true} title={title} description={de?"Unverbindlicher Entwurf zur rechtlichen Prüfung, nicht zur Unterschrift freigegeben.":"Neobavezujući nacrt za pravnu proveru, nije odobren za potpis."}>
+<article class="section white"><div class="wrap contract-doc">
+<p><a href={`/${locale}/wissen/dokumente/`}>{de?"Alle Dokumente":"Svi dokumenti"}</a></p>
+<p class="draft-warning"><strong>{de?"ENTWURF · NICHT FREIGEGEBEN · KEIN VERTRAGSANGEBOT":"NACRT · NIJE ODOBRENO · NIJE UGOVORNA PONUDA"}</strong></p>
+<h1>{title}</h1>
+<p>{de?"Arbeitsvorlage zur fachlichen und rechtlichen Prüfung. Platzhalter sind vollständig zu prüfen und zu ergänzen. Kein Dokument ist ohne individuelle Vereinbarung und rechtliche Freigabe verbindlich.":"Radni obrazac za stručnu i pravnu proveru. Potrebno je proveriti i popuniti sva prazna polja. Dokument nije obavezujući bez pojedinačnog dogovora i pravnog odobrenja."}</p>
+{sections.map((s,i)=><section class="contract-section"><h2>{i+1}. {s[0]}</h2><p>{s[1]}</p><p class="note">{s[2]}</p></section>)}
+<section class="contract-section"><h2>{de?"Kontrolle und Freigabe":"Kontrola i odobrenje"}</h2><p>{de?"Bearbeitungsstand: 17.11.2026. Fach- und Rechtsprüfung ausstehend. Keine Rechtsberatung, kein öffentlich freigegebener Geschäftsvertrag.":"Verzija: 17.11.2026. Stručna i pravna provera nisu završene. Nije pravni savet niti odobren poslovni ugovor."}</p></section>
+<p class="screen-only"><button class="button" type="button" onclick="window.print()">{de?"Entwurf drucken":"Odštampaj nacrt"}</button></p>
+</div></article>
+<style>
+.contract-doc{max-width:880px;color:#182b36}.draft-warning{padding:1rem;border:2px solid #92600e;background:#fff5d9;color:#553a10;border-radius:8px}.contract-section{margin:1.6rem 0;padding-bottom:1.2rem;border-bottom:1px solid #ccd8df}.contract-section p{line-height:1.7}.note{padding:1rem;border-left:4px solid #536e7e;background:#f1f5f6}@media print{header,footer,.screen-only,.skip{display:none!important}.section{padding:0!important}body{background:white!important}.contract-doc{max-width:none;font-size:11pt}.draft-warning{border:1px solid #777}.contract-section{break-inside:avoid}} 
+</style>
+</Base>

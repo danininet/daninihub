@@ -11,6 +11,7 @@ const parts=editorial.blocks.map(pair=>pair[de?0:1]);
 const seoTitle=guide[locale];
 const description=parts[0][1].slice(0,155);
 const dated="17.11.2026";
+const schema={ "@context":"https://schema.org", "@type":"Article", headline:guide[locale], inLanguage:locale, dateModified:"2026-11-17", datePublished:"2026-11-17", mainEntityOfPage:`https://daninihub.com/${locale}/wissen/${guide.slug}/`, author:{"@type":"Organization",name:"DANINI"}, publisher:{"@type":"Organization",name:"DANINI"}, isAccessibleForFree:true };
 const photoByGuide:Record<string,string>={
 "gebrauchtwagen-anzahlung":"DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg",
 "fahrzeugpapiere":"DANINI_Kartica_02_Uvoz_Dokumentacija_EUR1.jpg",
@@ -21,6 +22,7 @@ const photoByGuide:Record<string,string>={
 };
 ---
 <Base locale={locale} slug={`wissen/${guide.slug}`} title={seoTitle} description={description}>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
 <article class="section white"><div class="wrap knowledge-article">
 <p class="breadcrumb"><a href={`/${locale}/wissen/`}>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</a> / {guide.category==="auto"?"AutoDanini":"DANINI Business"}</p>
 <p class="eyebrow">{de?"Praxisleitfaden":"Praktični vodič"} · {dated}</p>

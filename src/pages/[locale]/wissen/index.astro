@@ -1,0 +1,9 @@
+---
+import Base from "../../../layouts/Base.astro";
+import {guides} from "../../../lib/knowledge";
+export function getStaticPaths(){return ["de","sr"].map(locale=>({params:{locale}}));}
+const locale=Astro.params.locale as "de"|"sr"; const de=locale==="de";
+---
+<Base locale={locale} slug="wissen" title={de?"DANINI Wissen & Ratgeber":"DANINI Vodiči i saveti"} description={de?"Praktische Orientierung für Fahrzeugprüfung und digitale Geschäftsprozesse.":"Praktični vodiči za proveru vozila i digitalne poslovne procese."}>
+<section class="section white"><div class="wrap"><h1>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</h1><p>{de?"Zwei Themenbereiche, konkrete Beispiele und klare Grenzen.":"Dve oblasti, praktični primeri i jasna ograničenja."}</p><p><a href={`/${locale}/wissen/glossar/`}>{de?"Glossar öffnen":"Otvori rečnik"}</a> · <a href={`/${locale}/wissen/dokumente/`}>{de?"Dokumente & Vorlagen":"Dokumenti i obrasci"}</a></p>{guides.map(g=><article style="padding:1rem 0;border-bottom:1px solid #ccc"><small>{g.category==="auto"?"AutoDanini":"DANINI Business"}</small><h2><a href={`/${locale}/wissen/${g.slug}/`}>{g[locale]}</a></h2></article>)}</div></section>
+</Base>

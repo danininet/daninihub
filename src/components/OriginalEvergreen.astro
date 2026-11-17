@@ -1,0 +1,35 @@
+---
+import Base from "../layouts/Base.astro";
+import {originalEvergreen} from "../lib/original-evergreen";
+interface Props { articleKey: string }
+const {articleKey}=Astro.props;
+const article=originalEvergreen.find(a=>a.key===articleKey)!;
+const locale=article.locale;
+const de=locale==="de";
+const visibleLines=article.lines.slice(article.key==="auto-docs"?5:article.key==="b2b-inquiry"?3:article.key==="b2b-offer"?3:0);
+const peers=originalEvergreen.filter(a=>a.locale===locale && a.key!==article.key);
+const sourceTitle=article.title;
+const schema={"@context":"https://schema.org","@type":"Article",headline:sourceTitle,inLanguage:locale,dateModified:"2026-11-17",mainEntityOfPage:"https://daninihub.com/"+locale+"/wissen/"+article.slug+"/",isAccessibleForFree:true};
+const heading=(s:string)=>/^\d{1,2}\.\s+/.test(s) || (/^[^.!?]{8,95}$/.test(s) && !s.includes("http") && !s.includes("☐") && !s.includes(" | "));
+const item=(s:string)=>s.startsWith("☐") || /^[-•]\s/.test(s);
+---
+<Base locale={locale} slug={`wissen/${article.slug}`} title={sourceTitle} description={article.description} noindex={!article.index} alternateLocales={false}>
+<script type="application/ld+json" set:html={JSON.stringify(schema)}/>
+<article class="section white"><div class="wrap source-article">
+<p class="breadcrumbs"><a href={`/${locale}/wissen/`}>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</a> / {article.key.startsWith("auto")?"AutoDanini":"DANINI Business"}</p>
+<p class="eyebrow">{de?"Fachartikel":"Detaljan vodič"} · 17.11.2026</p>
+<h1>{sourceTitle}</h1>
+<p class="intro">{article.description}</p>
+{!article.index && <p class="review-notice">{de?"Redaktioneller Fachentwurf: rechtliche Endprüfung ausstehend.":"Redakcijski nacrt: završna stručna i pravna provera nije završena."}</p>}
+{article.key.startsWith("auto")
+?<figure><img src={"/images/"+article.image} alt={de?"Symbolbild zur Fahrzeugprüfung":"Ilustracija dokumentacije i provere vozila"} width="960" height="560" loading="lazy" decoding="async"/><figcaption>{de?"DANINI Illustration":"DANINI ilustracija"} · {de?"Beispielfoto, keine Kundenreferenz":"Ilustrativna fotografija, nije referenca klijenta"}</figcaption></figure>
+:<figure><div class="business-figure" role="img" aria-label={de?"Schematischer Anfrageprozess mit menschlicher Freigabe":"Proces upita sa ljudskim odobrenjem"}><span>{de?"Anfrage":"Upit"}</span><b aria-hidden="true">→</b><span>{de?"Prüfung":"Provera"}</span><b aria-hidden="true">→</b><span>{de?"Freigabe":"Odobrenje"}</span></div><figcaption>{de?"Original-Schema: keine reale Kundenakte oder automatisierte Freigabe":"Originalna shema, nije stvarni predmet klijenta"}</figcaption></figure>}
+<div class="source-body">
+{visibleLines.map((line,i)=> heading(line) ? <h2 id={`teil-${i}`}>{line}</h2> : item(line) ? <p class="checkline">{line}</p> : <p>{line}</p>)}
+</div>
+<section class="related-content"><h2>{de?"Weiterführende DANINI-Ratgeber":"Povezani DANINI vodiči"}</h2><ul>{peers.map(a=><li><a href={`/${locale}/wissen/${a.slug}/`}>{a.title}</a></li>)}</ul><p><a href={`/${locale}/wissen/glossar/`}>{de?"Glossar: Begriffe verstehen":"Rečnik pojmova"}</a> · <a href={`/${locale}/wissen/dokumente/`}>{de?"Dokumente & Vorlagen":"Dokumenti i obrasci"}</a></p><a class="button" href={`/${locale}/${article.key.startsWith("auto")?"auto-check":"business"}/`}>{de?"DANINI-Leistungen ansehen":"Pogledajte DANINI usluge"}</a></section>
+</div></article>
+<style>
+.source-article{max-width:900px}.source-article h1{overflow-wrap:anywhere}.source-body p,.source-body li{max-width:78ch;line-height:1.78;margin:.75rem 0}.source-body h2{font-size:clamp(1.25rem,2.7vw,1.75rem);margin:2.2rem 0 .8rem;overflow-wrap:anywhere}.source-article a{color:#075c71;text-decoration:underline;text-underline-offset:3px}.source-article a.button{color:white;text-decoration:none}.source-article figure{margin:2rem 0}.source-article figure img,.business-figure{display:block;max-width:100%;width:100%;height:auto;aspect-ratio:12/7;object-fit:cover;border-radius:16px}.source-article figcaption{color:#526570;font-size:.82rem;margin-top:.6rem}.related-content{border-top:1px solid #d4e1e5;padding:2rem 0;margin-top:2rem}.related-content li{margin:.7rem 0}.review-notice{padding:1rem;background:#fff6e3;color:#644717;border-left:4px solid #ba8c30}.business-figure{background:linear-gradient(135deg,#102737,#17606b);display:flex;gap:1rem;align-items:center;justify-content:center;padding:1rem;color:white}.business-figure span{background:#255364;border:1px solid #8cbdc7;border-radius:12px;padding:1.2rem;font-weight:700;text-align:center}.business-figure b{font-size:1.5rem}@media(max-width:520px){.business-figure{gap:.35rem}.business-figure span{font-size:.74rem;padding:.7rem .3rem}.source-article{overflow-wrap:anywhere}}
+</style>
+</Base>

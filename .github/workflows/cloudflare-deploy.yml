@@ -153,3 +153,5 @@ jobs:
 # P0 verified redeploy 2026-11-16: integrate PR223 Brevo trace, preserve DE/SR storefront.
 
 # Authorized guarded DANINI conversion release 2026-11-16: latest main source + bilingual live CTA checks.
+
+# Workers AI binding release trigger 2026-11-17: PR229 merged; guarded deploy and live binding verification.

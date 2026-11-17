@@ -189,11 +189,24 @@ export async function caseStatus(request: Request, env: Env, id: string) {
   if (!(await verifyHmac(env.TOKEN_SECRET, `case:${id}`, token)))
     return json({ error: "not_found" }, 404);
   const row = await env.DANINI_DB.prepare(
-    "SELECT reference,status,created_at,expires_at FROM cases WHERE id=? AND expires_at>?",
+    "SELECT reference,status,created_at,expires_at,draft_hash FROM cases WHERE id=? AND expires_at>?",
   )
     .bind(id, Math.floor(Date.now() / 1000))
-    .first();
-  return row ? json(row) : json({ error: "not_found" }, 404);
+    .first<any>();
+  if (!row) return json({ error: "not_found" }, 404);
+  let preliminary = null;
+  if (row.draft_hash) {
+    const object = await env.DOCUMENTS.get(`cases/${id}/draft.json`);
+    if (object) {
+      const text = await object.text();
+      if (await digest(text) === row.draft_hash) {
+        const draft = JSON.parse(text);
+        preliminary = { generatedBy: draft.generatedBy, language: draft.language, summary: draft.summary, questions: draft.questions, missingData: draft.missingData, limitations: draft.limitations, requiresHumanReview: true };
+      }
+    }
+  }
+  const { draft_hash, ...publicStatus } = row;
+  return json({ ...publicStatus, preliminary });
 }
 export async function approve(request: Request, env: Env, id: string) {
   const data = await readJson(request, 2000);

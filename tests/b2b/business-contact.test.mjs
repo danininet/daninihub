@@ -6,17 +6,18 @@ import legacy from "../../workers/danini-intake.mjs";
 const component = readFileSync("src/components/BusinessContact.astro","utf8");
 const landing = readFileSync("src/components/BusinessLanding.astro","utf8");
 
-test("DANINI Business uses existing protected Brevo route, not unapproved AI or B2B workflow",()=>{
+test("DANINI Business uses the existing intake workflow with protected legacy fallback",()=>{
   assert.match(landing,/BusinessContact locale=\{locale\}/);
   assert.match(landing,/href="#anfrage"/);
   assert.match(component,/data-business-enquiry/);
   assert.match(component,/\/api\/lead\/status/);
-  assert.match(component,/fetch\("\/api\/lead"/);
+  assert.match(component,/\/api\/intake/);
+  assert.match(component,/idempotency-key/);
   assert.match(component,/turnstileToken:token/);
   assert.match(component,/consent:values\.get\("consent"\)==="on"/);
   assert.match(component,/\/datenschutz\//);
   assert.match(component,/mailto:info@daninihub\.com/);
-  assert.doesNotMatch(component,/\/api\/intake|env\.AI\.run|api\.openai\.com|checkout/);
+  assert.doesNotMatch(component,/env\.AI\.run|api\.openai\.com|checkout/);
 });
 
 const env={

@@ -170,3 +170,5 @@ jobs:
 # Workers AI binding release trigger 2026-11-17: PR229 merged; guarded deploy and live binding verification.
 
 # Authorized P0 release 2026-11-17: accept structured Workers AI results and copied listing inquiries.
+
+# Authorized Business intake release: existing D1/R2/Workflow and bound Workers AI.

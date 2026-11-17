@@ -33,6 +33,10 @@ const de = locale === "de";
         <input id={"bc-company-"+locale} name="company" autocomplete="organization" maxlength="120"/>
       </div>
       <div class="bc-fieldset">
+        <label for={"bc-country-"+locale}>{de ? "Zielland" : "Ciljno tržište"}</label>
+        <select id={"bc-country-"+locale} name="country"><option value="DE">Deutschland / Nemačka</option><option value="AT">Österreich / Austrija</option><option value="CH">Schweiz / Švajcarska</option></select>
+      </div>
+      <div class="bc-fieldset">
         <label for={"bc-service-"+locale}>{de ? "Gewünschte Leistung" : "Usluga koja vas interesuje"} *</label>
         <select id={"bc-service-"+locale} name="service" required>
           <option value="">{de ? "Bitte auswählen" : "Izaberite uslugu"}</option>
@@ -82,6 +86,8 @@ const de = locale === "de";
     const challenge = form.querySelector<HTMLElement>("[data-business-captcha]");
     if (!status || !submit || !challenge) continue;
     let widget: string | null = null;
+    let b2b = false;
+    let requestId = crypto.randomUUID();
     let active = false;
     let sending = false;
     const unavailable = () => {
@@ -98,6 +104,9 @@ const de = locale === "de";
     };
     const initialize = async () => {
       try {
+        const tenantResponse = await fetch("/api/tenant-config", {cache:"no-store"});
+        const tenant = (tenantResponse.ok ? await tenantResponse.json() : null) as {enabled?:boolean} | null;
+        b2b = tenant?.enabled === true;
         const response = await fetch("/api/lead/status", {cache:"no-store"});
         if (!response.ok) throw Error("lead_unavailable");
         const data = await response.json() as {enabled?:boolean;turnstileSiteKey?:string};
@@ -111,7 +120,7 @@ const de = locale === "de";
             if (!turnstile) throw Error("turnstile_missing");
             widget = turnstile.render(challenge, {
               sitekey: data.turnstileSiteKey,
-              action: "business-contact",
+              action: b2b ? "b2b-intake" : "business-contact",
               language: de ? "de" : "sr",
               callback: () => {
                 active = true;
@@ -141,14 +150,16 @@ const de = locale === "de";
       submit.disabled = true;
       status.textContent = de ? "Ihre Anfrage wird sicher übermittelt …" : "Vaš upit se bezbedno šalje …";
       try {
-        const result = await fetch("/api/lead", {
+        const result = await fetch(b2b ? "/api/intake" : "/api/lead", {
           method:"POST",
-          headers:{"content-type":"application/json"},
+          headers:{"content-type":"application/json", ...(b2b ? {"idempotency-key":requestId} : {})},
           body:JSON.stringify({
             kind:"business",
             name:String(values.get("name")||"").trim(),
             email:String(values.get("email")||"").trim(),
-            company:String(values.get("company")||"").trim(),
+            company:String(values.get("company")|| (de ? "Nicht angegeben" : "Nije navedeno")).trim(),
+            country:String(values.get("country")||"DE"),
+            vertical:service === "crossborder" ? "nearshoring" : "business",
             topic:serviceLabels[service],
             message:String(values.get("message")||"").trim(),
             language:de?"de":"sr",
@@ -157,9 +168,42 @@ const de = locale === "de";
             turnstileToken:token
           })
         });
-        const response = await result.json() as {accepted?:boolean;reference?:string;receiptAccepted?:boolean};
+        const response = await result.json() as {accepted?:boolean;reference?:string;receiptAccepted?:boolean;caseId?:string;accessToken?:string};
         if (result.status!==202 || response.accepted!==true || !response.reference) throw Error("delivery_unconfirmed");
         status.textContent = (de ? "Anfrage zur Bearbeitung angenommen. Referenz: " : "Upit je prihvaćen za obradu. Broj: ") + response.reference;
+        if (b2b && response.caseId && response.accessToken) {
+          const panel = document.createElement("section");
+          panel.setAttribute("aria-label", de ? "Vorläufige Geschäftsanalyse" : "Preliminarna poslovna analiza");
+          panel.style.cssText = "color:#102238;background:#f1f5f9;padding:20px;border-radius:12px;overflow-wrap:anywhere";
+          form.appendChild(panel);
+          const reference = response.reference;
+          const updateResult = async () => {
+            const check = await fetch("/api/case/"+response.caseId, { headers: {authorization:"Bearer "+response.accessToken},cache:"no-store" });
+            if (!check.ok) throw Error("status_unavailable");
+            const current = await check.json() as {preliminary?:{generatedBy:string;summary:string;questions:string[]}};
+            panel.replaceChildren();
+            const p = document.createElement("p");
+            p.textContent = current.preliminary ? ((current.preliminary.generatedBy === "ai" ? (de ? "KI-Vorprüfung: " : "AI preliminarna analiza: ") : (de ? "Strukturierte Vorprüfung: " : "Strukturisana predanaliza: ")) + current.preliminary.summary) : (de ? "Ihr Vorgang wird verarbeitet. " : "Vaš predmet se obrađuje. ")+reference;
+            panel.appendChild(p);
+            if (current.preliminary) {
+              for (const question of current.preliminary.questions || []) {const item=document.createElement("p");item.textContent=question;panel.appendChild(item);}
+              const note=document.createElement("p");note.textContent=de?"Vorläufig, nicht unabhängig recherchiert. Ein detaillierter Bericht erfordert eine gesonderte Vereinbarung.":"Preliminarno, bez nezavisnog istraživanja. Detaljan izveštaj zahteva zaseban dogovor.";panel.appendChild(note);
+              const link=document.createElement("a");link.textContent=de?"DANINI Business Research Report anfragen":"Zatraži DANINI Business Research Report";
+              link.href="mailto:info@daninihub.com?subject="+encodeURIComponent("DANINI Business Research Report | "+reference);panel.appendChild(link);
+              return true;
+            }
+            return false;
+          };
+          const refresh=document.createElement("button");refresh.type="button";refresh.textContent=de?"Bearbeitungsstand aktualisieren":"Osveži status predmeta";
+          refresh.addEventListener("click",()=>{void updateResult().catch(()=>{panel.textContent=de?"Status derzeit nicht verfügbar. Referenz: "+reference:"Status trenutno nije dostupan. Referenca: "+reference;});});
+          form.appendChild(refresh);
+          // Bounded polling; never resubmit the intake or duplicate the workflow.
+          for (let attempt=0;attempt<8;attempt++) {
+            if (await updateResult().catch(()=>false)) break;
+            await new Promise(resolve=>setTimeout(resolve,2500));
+          }
+          requestId=crypto.randomUUID();
+        }
         form.reset();
       } catch {
         status.textContent = de

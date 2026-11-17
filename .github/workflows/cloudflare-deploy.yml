@@ -77,7 +77,10 @@ jobs:
           config.main=prod.main;
           // Workers AI binding must be part of the actual integrated production Worker.
           // It does not enable inference; runtime gates remain disabled until authorized.
-          config.ai={binding:'AI'};
+          assert.equal(prod.ai?.binding,'AI','Canonical production config missing Workers AI binding; abort');
+          assert.equal(prod.vars?.AI_ENABLED,'true','Canonical production AI_ENABLED must remain approved true; abort');
+          assert.equal(prod.vars?.DANINI_AI_LIVE_APPROVED,'true','Canonical production approval gate missing; abort');
+          config.ai=prod.ai;
           assert.equal(config.ai.binding,'AI','Workers AI binding missing; abort');
           config.assets.run_worker_first=prod.assets.run_worker_first;
           assert.equal(config.name,prod.name,'Worker name mismatch; abort');
@@ -94,8 +97,14 @@ jobs:
           config.keep_vars=true;
           // Owner confirmed Workers Free (2026-11-17); free Workers AI quota has no paid overages.
           // Keep all existing non-AI vars and bindings while enabling the approved inference path.
-          config.vars={...prod.vars,AI_ENABLED:'true',DANINI_AI_LIVE_APPROVED:'true'};
+          config.vars={...prod.vars};
           assert.equal(config.ai.binding,'AI','AI binding required for live inference');
+          assert.equal(config.vars.AI_ENABLED,'true','AI gate disabled in GENERATED production config');
+          assert.equal(config.vars.DANINI_AI_LIVE_APPROVED,'true','AI approval gate disabled in GENERATED production config');
+          for(const binding of ['DANINI_DB','PARTNERS','DOCUMENTS','INTAKE_WORKFLOW']){
+            const entries=[...(config.d1_databases||[]),...(config.kv_namespaces||[]),...(config.r2_buckets||[]),...(config.workflows||[])];
+            assert.ok(entries.some(x=>x.binding===binding),'Missing '+binding+' in GENERATED production config');
+          }
           const names=['BREVO_API_KEY','DANINI_CONTACT_ACTIVE','DANINI_TURNSTILE_SECRET','DANINI_TURNSTILE_SITEKEY','DANINI_NOTIFY_TO','DANINI_BREVO_SENDER'];
           config.secrets={required:names};
           fs.writeFileSync('wrangler.production-ci.jsonc',JSON.stringify(config,null,2)+'\n');

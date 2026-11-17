@@ -8,18 +8,28 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/portal/*"],
+    "run_worker_first": [
+      "/api/*",
+      "/portal/*"
+    ],
     "not_found_handling": "404-page"
   },
   "routes": [
-    { "pattern": "daninihub.com", "custom_domain": true },
-    { "pattern": "www.daninihub.com", "custom_domain": true }
+    {
+      "pattern": "daninihub.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.daninihub.com",
+      "custom_domain": true
+    }
   ],
   "vars": {
     "B2B_ACTIVE": "false",
-    "AI_ENABLED": "false",
+    "AI_ENABLED": "true",
     "SITE_ORIGIN": "https://daninihub.com",
-    "RETENTION_DAYS": "30"
+    "RETENTION_DAYS": "30",
+    "DANINI_AI_LIVE_APPROVED": "true"
   },
   "d1_databases": [
     {
@@ -47,5 +57,8 @@
       "binding": "INTAKE_WORKFLOW",
       "class_name": "IntakeWorkflow"
     }
-  ]
+  ],
+  "ai": {
+    "binding": "AI"
+  }
 }

@@ -13,6 +13,7 @@ const navItems = [
   { href: home, label: isDe ? "Startseite" : "Početna", active: !slug },
   { href: home + "business/", label: "DANINI Business", active: slug === "business" },
   { href: home + "auto-check/", label: "AutoDanini", active: slug === "auto-check" },
+  { href: home + "wissen/", label: isDe ? "Wissen & Ratgeber" : "Vodiči i saveti", active: slug.startsWith("wissen") },
   { href: home + (isDe ? "danini-methode/" : "danini-metoda/"), label: isDe ? "Unsere Methode" : "Naša metoda", active: ["danini-methode", "danini-metoda"].includes(slug) },
   { href: home + (isDe ? "ueber-danini/" : "o-danini/"), label: isDe ? "Über DANINI" : "O DANINI", active: ["ueber-danini", "o-danini"].includes(slug) },
   { href: home + "#kontakt", label: "Kontakt", active: false }
@@ -50,7 +51,7 @@ const navItems = [
 :global(header:has(.danini-header)){background:#0b1928;border-bottom:1px solid #294154}
 @media(max-width:1210px){
  .danini-header{grid-template-columns:1fr auto;row-gap:7px;padding-block:14px}
- .danini-header .business-nav{grid-column:1/-1;grid-row:2;width:100%;padding-top:10px;border-top:1px solid #294154;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+ .danini-header .business-nav{grid-column:1/-1;grid-row:2;width:100%;padding-top:10px;border-top:1px solid #294154;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
  .danini-header .business-nav a{white-space:normal;justify-content:center;text-align:center;padding:8px 4px}
  .danini-header .lang{grid-column:2;grid-row:1}
 }

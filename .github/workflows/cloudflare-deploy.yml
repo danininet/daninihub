@@ -75,6 +75,10 @@ jobs:
           // Use the existing integrated Worker entrypoint: it exports IntakeWorkflow,
           // routes B2B/portal endpoints, and delegates legacy AutoDanini/Brevo APIs.
           config.main=prod.main;
+          // Workers AI binding must be part of the actual integrated production Worker.
+          // It does not enable inference; runtime gates remain disabled until authorized.
+          config.ai={binding:'AI'};
+          assert.equal(config.ai.binding,'AI','Workers AI binding missing; abort');
           config.assets.run_worker_first=prod.assets.run_worker_first;
           assert.equal(config.name,prod.name,'Worker name mismatch; abort');
           assert.deepEqual(config.assets.run_worker_first,['/api/*','/portal/*']);

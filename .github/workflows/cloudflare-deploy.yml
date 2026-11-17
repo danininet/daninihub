@@ -2,6 +2,7 @@ name: DANINI Cloudflare production deploy (guarded)
 on:
   workflow_dispatch:
   # Explicit guarded release: a workflow-file change triggers this same checked deploy.
+  # Authorized DANINI knowledge-centre release after PR #237 QA, 2026-11-17.
   # Other source-code merges remain manual; no continuous automatic deployments.
   push:
     branches: [main]

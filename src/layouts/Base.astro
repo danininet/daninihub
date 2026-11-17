@@ -10,8 +10,9 @@ interface Props {
   slug?: string;
   noindex?: boolean;
   alternateLocales?: boolean;
+  ogImage?: string;
 }
-const { title, description, locale, slug = "", noindex = false, alternateLocales = true } = Astro.props;
+const { title, description, locale, slug = "", noindex = false, alternateLocales = true, ogImage } = Astro.props;
 const canonical = new URL(
   `/${locale}/${slug ? slug + "/" : ""}`,
   "https://daninihub.com",
@@ -51,6 +52,8 @@ const localizedSlug = (language: "de" | "sr") => {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={new URL(ogImage,"https://daninihub.com").toString()} />}
+    <meta name="twitter:card" content={ogImage ? "summary_large_image" : "summary"} />
     <meta property="og:locale" content={isDe ? "de_DE" : "sr_RS"} />
   </head>
   <body>

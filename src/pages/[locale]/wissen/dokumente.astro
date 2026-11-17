@@ -1,0 +1,9 @@
+---
+import Base from "../../../layouts/Base.astro";
+export function getStaticPaths(){return ["de","sr"].map(locale=>({params:{locale}}));}
+const locale=Astro.params.locale as "de"|"sr";const de=locale==="de";
+const docs=de?["AutoDanini: Muster-Dienstleistungsvereinbarung","AutoDanini: Leistungsbeschreibung","AutoDanini: Checkliste Fahrzeugkaufvertrag","DANINI Business: Muster-Dienstleistungsvereinbarung","DANINI Business: Leistungsbeschreibung","DANINI Business: Muster-Auftragsbeschreibung (SOW)"]:["AutoDanini: nacrt ugovora o usluzi","AutoDanini: opis obima usluge","AutoDanini: kontrolna lista kupoprodajnog ugovora","DANINI Business: nacrt ugovora o usluzi","DANINI Business: opis obima usluge","DANINI Business: opis posla (SOW)"];
+---
+<Base locale={locale} slug="wissen/dokumente" title={de?"Dokumente & Vorlagen – DANINI":"Dokumenti i obrasci – DANINI"} description={de?"Dokumentenübersicht; Vertragsmuster noch nicht zur Nutzung freigegeben.":"Pregled dokumenata; ugovorni obrasci nisu odobreni za korišćenje."}>
+<section class="section white"><div class="wrap"><h1>{de?"Dokumente & Vorlagen":"Dokumenti i obrasci"}</h1><p><strong>{de?"Status: Entwürfe in Vorbereitung – keine verbindlichen Vertragsvorlagen veröffentlicht.":"Status: nacrti u pripremi – obavezujući ugovorni obrasci nisu objavljeni."}</strong></p>{docs.map(d=><p>{d} — {de?"noch nicht freigegeben":"nije odobreno"}</p>)}<p>{de?"DANINI prüft bereitgestellte Angaben und Unterlagen, verkauft keine Fahrzeuge und führt keine unabhängige technische Inspektion durch.":"DANINI proverava dostavljene informacije i dokumente, ne prodaje vozila i ne vrši nezavisni tehnički pregled."}</p><a href={`/${locale}/wissen/`}>{de?"Ratgeber":"Vodiči"}</a></div></section>
+</Base>

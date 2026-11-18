@@ -98,13 +98,29 @@
       if(data.sourceType==='user_supplied_screenshot'){
         line(lang==='de'?'Bildverarbeitung':'Obrada slike',lang==='de'?'Sichtbare Inseratsangaben aus Ihrem Screenshot, nicht unabhängig bestätigt.':'Izdvojeni vidljivi podaci sa screenshota; bez nezavisne potvrde.');
       }
+      if(data.sourceType==='licensed_listing'){
+        line(lang==='de'?'Datenquelle':'Izvor podataka',lang==='de'?'mobile.de Search API (Inseratsangaben, ungeprüft)':'mobile.de Search API (navodi oglasa, nepotvrđeno)');
+        const open=document.createElement('a');open.href=data.sourceUrl;open.target='_blank';open.rel='noopener noreferrer';
+        open.textContent=lang==='de'?'Originalinserat öffnen':'Otvori originalni oglas';open.className='advisor-email-fallback';analysisOutput.append(open);
+      }
       if(data.sourceType==='listing_url'){
         line(lang==='de'?'Erkannte Quelle':'Prepoznat izvor',data.sourcePlatform);
-        line(lang==='de'?'Inhalt abgerufen':'Sadržaj preuzet',lang==='de'?'Nein – nicht behauptet':'Ne – nije preuzet');
+        line(lang==='de'?'Inhalt abgerufen':'Sadržaj preuzet',lang==='de'?'Nein – keine Fahrzeugdaten verfügbar':'Ne – podaci o vozilu nisu dostupni');
+        if(data.sourcePlatform==='mobile.de'&&data.providerStatus==='not_configured')
+          line(lang==='de'?'Mobile.de API':'Mobile.de API',lang==='de'?'Noch kein lizenzierter Datenzugang eingerichtet':'Licencirani pristup podacima još nije podešen');
         const open=document.createElement('a');open.href=data.sourceUrl;open.target='_blank';open.rel='noopener noreferrer';open.textContent=lang==='de'?'Originalinserat beim Anbieter öffnen':'Otvori originalni oglas';analysisOutput.append(open);
         const screenshots=document.createElement('a');
         screenshots.href='mailto:auto@daninihub.com?subject='+encodeURIComponent('AutoDanini – Screenshots zum Inserat')+'&body='+encodeURIComponent((lang==='de'?'Bitte fügen Sie Screenshots manuell als Anhang hinzu. Inserat: ':'Dodajte screenshotove kao prilog e-mailu. Oglas: ')+data.sourceUrl);
         screenshots.textContent=lang==='de'?'Screenshots per E-Mail zur manuellen Prüfung senden':'Pošalji screenshotove za ručnu proveru mejlom';screenshots.className='advisor-email-fallback';analysisOutput.append(screenshots);
+      }
+      if(data.sourceType==='listing_url'&&!data.listingFetched){
+        const note=document.createElement('p');note.className='advisor-source-fallback';
+        note.textContent=lang==='de'
+          ?'Für diesen Link liegen DANINI keine lesbaren Fahrzeugangaben vor. Bitte wählen Sie oben einen Screenshot des Inserats und klicken Sie erneut auf „Inserat oder Link prüfen“. Daraus kann die KI sichtbare Daten auslesen.'
+          :'Za ovaj link DANINI nema dostupne podatke o vozilu. Izaberite screenshot oglasa iznad i ponovo kliknite „Proveri oglas ili link“. AI tada može da izdvoji vidljive podatke.';
+        analysisOutput.append(note);
+        if(screenshotInput){const upload=document.createElement('button');upload.type='button';upload.textContent=lang==='de'?'Screenshot auswählen':'Izaberi screenshot';upload.className='advisor-analysis-button';upload.addEventListener('click',()=>screenshotInput.click());analysisOutput.append(upload);}
+        return;
       }
       const names={brand:'Marka',model:'Model',year:'Godina',mileageKm:'Kilometraža (km)',priceEur:'Cena (EUR)',fuel:'Gorivo',gearbox:'Menjač'};
       const deNames={brand:'Marke',model:'Modell',year:'Baujahr',mileageKm:'Kilometer',priceEur:'Preis (EUR)',fuel:'Kraftstoff',gearbox:'Getriebe'};

@@ -22,8 +22,9 @@ const photoByGuide:Record<string,string>={
 "ki-buero":"DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg"
 };
 ---
-<Base locale={locale} slug={`wissen/${guide.slug}`} title={seoTitle} description={description} noindex={primaryOriginal!==null}>
+<Base locale={locale} slug={`wissen/${guide.slug}`} title={seoTitle} description={description} noindex={primaryOriginal!==null} alternateLocales={primaryOriginal===null} ogImage={"/images/"+photoByGuide[guide.slug]}>
 <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+<script type="application/ld+json" set:html={JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:de?"Wissen & Ratgeber":"Vodiči i saveti",item:`https://daninihub.com/${locale}/wissen/`},{"@type":"ListItem",position:2,name:seoTitle,item:`https://daninihub.com/${locale}/wissen/${guide.slug}/`}]})} />
 <article class="section white"><div class="wrap knowledge-article">
 <p class="breadcrumb"><a href={`/${locale}/wissen/`}>{de?"Wissen & Ratgeber":"Vodiči i saveti"}</a> / {guide.category==="auto"?"AutoDanini":"DANINI Business"}</p>
 <p class="eyebrow">{de?"Praxisleitfaden":"Praktični vodič"} · {dated}</p>

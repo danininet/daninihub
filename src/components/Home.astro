@@ -123,6 +123,17 @@ const de = locale === "de";
   </section>
 
   <section class="section white" aria-labelledby="auto-guides-title"><div class="wrap"><h2 id="auto-guides-title">{de?"Wissen vor dem Fahrzeugkauf":"Detaljni vodiči pre kupovine vozila"}</h2><p>{de?"Dokumente, Verkäuferangaben und Importkosten vor Anreise und Anzahlung prüfen.":"Proverite dokumenta, prodavca i carinske rizike pre puta i kapare."}</p><ul><li><a href={de?"/de/wissen/fahrzeugpapiere/":"/sr/wissen/fahrzeugbrief-fahrzeugschein-coc-hu/"}>{de?"FIN, Zulassungsbescheinigung und HU":"Fahrzeugbrief, Fahrzeugschein, COC i HU/TÜV"}</a></li><li><a href={de?"/de/wissen/gebrauchtwagen-anzahlung/":"/sr/wissen/privatni-prodavac-ili-auto-kuca-nemacka/"}>{de?"Vor einer Anzahlung prüfen":"Privatni prodavac ili auto-kuća – rizici"}</a></li><li><a href={de?"/de/wissen/auto-deutschland-serbien/":"/sr/wissen/eur1-poreklo-vozila-uvoz-nemacka-srbija/"}>{de?"Autoexport nach Serbien":"EUR.1 i poreklo vozila"}</a></li></ul><a href={`/${locale}/wissen/`}>{de?"Alle Ratgeber ansehen":"Svi vodiči i saveti"}</a></div></section>
+  <section class="section white auto-faq" aria-labelledby="auto-faq-title">
+    <div class="wrap">
+      <p class="eyebrow">AUTODANINI · FAQ</p>
+      <h2 id="auto-faq-title">{de ? "Häufige Fragen vor Reise und Anzahlung" : "Česta pitanja pre puta i kapare"}</h2>
+      <details><summary>{de ? "Prüft AutoDanini das Fahrzeug persönlich?" : "Da li AutoDanini fizički pregleda vozilo?"}</summary><p>{de ? "Wir ordnen die übermittelten Inseratsangaben, Dokumente und offenen Fragen ein. Das ist keine technische Fahrzeuguntersuchung. Eine unabhängige Prüfung vor Ort kann separat angefragt werden." : "Analiziramo dostavljene podatke oglasa, dokumentaciju i otvorena pitanja. To nije tehnički pregled vozila. Nezavisnu proveru na lokaciji moguće je posebno razmotriti."}</p></details>
+      <details><summary>{de ? "Kann ein Inseratslink automatisch alle Fahrzeugdaten liefern?" : "Da li sam link oglasa potvrđuje podatke o automobilu?"}</summary><p>{de ? "Nein. Nicht jeder Anbieter gestattet den automatisierten Abruf. Wenn Angaben fehlen, können Sie Text oder einen selbst angefertigten Screenshot für die vorhandene Analyse bereitstellen. Angaben des Verkäufers bleiben unbestätigt." : "Ne. Pristup oglasima zavisi od izvora i dozvola. Kada podaci nedostaju, možete dostaviti tekst ili sopstveni screenshot kroz postojeći alat. Tvrdnje iz oglasa ostaju nepotvrđene dok se nezavisno ne provere."}</p></details>
+      <details><summary>{de ? "Was bekomme ich als Ergebnis?" : "Šta dobijam kao rezultat?"}</summary><p>{de ? "Eine strukturierte Übersicht der angegebenen Fakten, fehlenden Nachweise, Fragen an den Verkäufer und nächsten Prüfschritte. Umfang, Termin und Preis einer persönlichen Leistung werden vor Beauftragung vereinbart." : "Strukturisan pregled navedenih podataka, dokaza koji nedostaju, pitanja prodavcu i sledećih provera. Obim, rok i cena individualne usluge dogovaraju se pre angažovanja."}</p></details>
+      <details><summary>{de ? "Ist das Anfrageformular bereits eine Bestellung?" : "Da li slanje formulara znači naručivanje i plaćanje?"}</summary><p>{de ? "Nein. Eine Anfrage verpflichtet nicht zum Kauf. Das vorhandene geschützte Formular sendet erst nach erfolgreicher Sicherheitsprüfung; falls es nicht verfügbar ist, nutzen Sie die angegebene E-Mail-Adresse." : "Ne. Upit nije narudžbina ni plaćanje. Postojeći zaštićeni formular šalje zahtev tek nakon bezbednosne provere; ako nije dostupan, koristite navedeni e-mail."}</p></details>
+      <p><a class="button" href="#contact">{de ? "Fahrzeuganfrage stellen" : "Pošaljite upit za vozilo"}</a></p>
+    </div>
+  </section>
   <AutoContact locale={locale} />
 
   <section class="auto-storage" aria-labelledby="storage-title">
@@ -228,6 +239,7 @@ const de = locale === "de";
 .auto-example-file p{color:#31465b;margin:5px 0 0;overflow-wrap:anywhere}
 .auto-example-file small{color:#526678;line-height:1.5}
 @media(max-width:900px){.auto-example-grid{grid-template-columns:1fr}}
+ .auto-faq .wrap{max-width:900px}.auto-faq details{border-bottom:1px solid #cbd5e1;padding:1.1rem 0;color:#1b3348}.auto-faq summary{font-weight:750;cursor:pointer}.auto-faq details p{line-height:1.75;color:#334155}.auto-faq .button{margin-top:1.5rem}
 </style>
 
 <script>

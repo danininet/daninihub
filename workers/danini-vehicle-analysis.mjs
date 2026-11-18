@@ -35,6 +35,43 @@ function normalizeFields(fields){
  if(fields.mileageKm && fields.mileageKm>3000000)fields.mileageKm=null;
  return fields;
 }
+
+// Official mobile.de Search API only. Fixed host and numeric ad ID prevent SSRF.
+// Never use consumer-site HTML scraping or substitute guessed vehicle details.
+async function readLicensedMobileAd(url,env){
+ const host=url.hostname.toLowerCase();
+ if(!(host==='mobile.de'||host.endsWith('.mobile.de')))return {status:'unsupported'};
+ if(!env.MOBILE_DE_SEARCH_USER||!env.MOBILE_DE_SEARCH_PASSWORD)return {status:'not_configured'};
+ const id=url.searchParams.get('id');
+ if(!id||!/^[0-9]{5,18}$/.test(id))return {status:'invalid_ad_id'};
+ const auth='Basic '+btoa(env.MOBILE_DE_SEARCH_USER+':'+env.MOBILE_DE_SEARCH_PASSWORD);
+ try{
+  const resp=await fetch('https://services.mobile.de/search-api/ad/'+encodeURIComponent(id),{
+   method:'GET',headers:{Authorization:auth,Accept:'application/vnd.de.mobil.api+json'},
+   signal:AbortSignal.timeout(7000),redirect:'error'
+  });
+  if(resp.status===401||resp.status===403)return {status:'permission_denied'};
+  if(resp.status===404)return {status:'not_found'};
+  if(!resp.ok)return {status:'provider_unavailable'};
+  const body=await resp.text();
+  if(body.length>300000)return {status:'provider_unavailable'};
+  const obj=JSON.parse(body);
+  const ad=obj.ad??obj;
+  if(String(ad.mobileAdId??id)!==id)return {status:'unverified_identifier'};
+  const safe=(x,max=120)=>typeof x==='string'?x.trim().slice(0,max):null;
+  const num=(x,max)=>{const v=Number(x);return x!=null&&x!==''&&Number.isFinite(v)&&v>=0&&v<=max?v:null};
+  const fields={
+   brand:safe(ad.make),model:safe(ad.model),
+   year:num(String(ad.firstRegistration??'').slice(0,4),new Date().getUTCFullYear()+1),
+   mileageKm:num(ad.mileage,3000000),
+   priceEur:ad.price?.currency==='EUR'?num(ad.price?.consumerPriceGross,10000000):null,
+   fuel:safe(ad.fuel),gearbox:safe(ad.gearbox)
+  };
+  const missing=Object.entries(fields).filter(([,v])=>v==null).map(([key])=>key);
+  return {status:'ok',fields,missing,id,modelDescription:safe(ad.modelDescription,240)};
+ }catch{return {status:'provider_unavailable'}}
+}
+
 export async function handleVehicleAnalysis(request,env={}){
  if(request.method!=='POST')return json({error:'method_not_allowed'},405);
  if(!allowed.map(h=>'https://'+h).includes(request.headers.get('origin')))return json({error:'invalid_origin'},403);
@@ -135,6 +172,16 @@ export async function handleVehicleAnalysis(request,env={}){
  // URL-only mode: return verifiable source information and next steps, not invented
  // vehicle attributes, fabricated AI findings or covert scraping.
  if(listingUrl){
+  const licensed=await readLicensedMobileAd(listingUrl,env);
+  if(licensed.status==='ok'){
+   const questions=question[language];
+   return json({status:'licensed_listing_data',method:'mobile_de_search_api',aiUsed:false,
+    aiStatus:'not_applicable',sourceType:'licensed_listing',sourcePlatform:'mobile.de',
+    sourceUrl:listingUrl.href,listingFetched:true,fields:licensed.fields,missing:licensed.missing,
+    warnings:[language==='de'?'Die Angaben stammen aus einer über die mobile.de Search API abgerufenen Anzeige; sie sind nicht unabhängig bestätigt.':'Podaci su preuzeti iz oglasa putem mobile.de Search API-ja i nisu nezavisno potvrđeni.'],
+    questions,independentVerificationRequired:true,
+    disclaimer:language==='de'?'Aus mobile.de Inseratsdaten ausgelesen, nicht unabhängig geprüft. Keine Bestätigung von Zustand, Eigentum, Unfallhistorie oder Echtheit.':'Podaci iz oglasa preuzeti putem mobile.de API-ja, bez nezavisne potvrde stanja, vlasništva, istorije štete ili autentičnosti.'});
+  }
   const host=listingUrl.hostname.toLowerCase();
   const known=host==='mobile.de'||host.endsWith('.mobile.de')?'mobile.de':
    host==='autoscout24.de'||host.endsWith('.autoscout24.de')?'AutoScout24':
@@ -142,6 +189,7 @@ export async function handleVehicleAnalysis(request,env={}){
    host;
   return json({
    status:'source_received',method:'url_metadata_only',aiUsed:false,aiStatus:'not_applicable',
+   providerStatus:licensed.status,
    sourceType:'listing_url',sourcePlatform:known,sourceUrl:listingUrl.href,
    listingFetched:false,
    fields:{brand:null,model:null,year:null,mileageKm:null,priceEur:null,fuel:null,gearbox:null},

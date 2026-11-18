@@ -44,9 +44,9 @@
   const analysisButton = document.createElement('button');
   analysisButton.type='button';
   analysisButton.className='advisor-analysis-button';
-  analysisButton.textContent=lang==='de'?'Inserat mit KI analysieren':'Analiziraj oglas uz AI';
+  analysisButton.textContent=lang==='de'?'Inserat oder Link prüfen':'Proveri oglas ili link';
   const analysisHelp=document.createElement('p');
-  analysisHelp.textContent=lang==='de'?'Kopieren Sie den Inseratstext in das Feld oben. Links allein werden nicht automatisch abgerufen. KI prüft die Angaben im Text; dies ersetzt keine unabhängige Fahrzeugprüfung.':'Nalepite tekst oglasa u polje iznad. Linkovi se ne preuzimaju automatski. AI proverava navode u tekstu; ovo ne zamenjuje nezavisan pregled vozila.';
+  analysisHelp.textContent=lang==='de'?'Ein Link reicht für die Quellenprüfung. Der Portalinhalt wird nur mit erlaubtem Zugriff gelesen; ohne diesen bleiben Fahrzeugdaten offen. Für eine inhaltliche Prüfung können Sie Text eingeben oder Screenshots per E-Mail senden.':'Sam link je dovoljan za proveru izvora. Sadržaj oglasa se ne preuzima bez dozvoljenog pristupa; tada podaci o vozilu ostaju nepoznati. Za detaljniju proveru unesite tekst ili pošaljite screenshotove mejlom.';
   const analysisOutput=document.createElement('div');
   analysisOutput.setAttribute('role','status');
   analysisOutput.setAttribute('aria-live','polite');
@@ -55,14 +55,14 @@
   analysisButton.addEventListener('click',async()=>{
     if(analysisButton.disabled)return;
     analysisButton.disabled=true;
-    analysisOutput.textContent=lang==='de'?'Inseratstext wird geprüft …':'Provera teksta oglasa …';
+    analysisOutput.textContent=lang==='de'?'Eingabe wird sicher geprüft …':'Bezbedna provera unosa …';
     try{
       const source=input.value.trim();
       if(!captchaToken){analysisOutput.textContent=messages.captcha;return;}
       const res=await fetch('/api/vehicle-analysis',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},credentials:'same-origin',body:JSON.stringify({language:lang,source,turnstileToken:captchaToken})});
       const data=await res.json();
       if(!res.ok){
-        analysisOutput.textContent=data.message||(data.error==='text_required'?(lang==='de'?'Bitte Inseratstext statt URL einfügen.':'Nalepite tekst oglasa umesto URL-a.'):(lang==='de'?'Prüfung nicht möglich: ':'Provera nije uspela: ')+String(data.error||res.status));
+        analysisOutput.textContent=data.message||(lang==='de'?'Prüfung nicht möglich: ':'Provera nije uspela: ')+String(data.error||res.status);
         return;
       }
       analysisOutput.replaceChildren();
@@ -74,6 +74,14 @@
         analysisOutput.append(p);
       };
       line(lang==='de'?'Verfahren':'Metod',data.disclaimer);
+      if(data.sourceType==='listing_url'){
+        line(lang==='de'?'Erkannte Quelle':'Prepoznat izvor',data.sourcePlatform);
+        line(lang==='de'?'Inhalt abgerufen':'Sadržaj preuzet',lang==='de'?'Nein – nicht behauptet':'Ne – nije preuzet');
+        const open=document.createElement('a');open.href=data.sourceUrl;open.target='_blank';open.rel='noopener noreferrer';open.textContent=lang==='de'?'Originalinserat beim Anbieter öffnen':'Otvori originalni oglas';analysisOutput.append(open);
+        const screenshots=document.createElement('a');
+        screenshots.href='mailto:auto@daninihub.com?subject='+encodeURIComponent('AutoDanini – Screenshots zum Inserat')+'&body='+encodeURIComponent((lang==='de'?'Bitte fügen Sie Screenshots manuell als Anhang hinzu. Inserat: ':'Dodajte screenshotove kao prilog e-mailu. Oglas: ')+data.sourceUrl);
+        screenshots.textContent=lang==='de'?'Screenshots per E-Mail zur manuellen Prüfung senden':'Pošalji screenshotove za ručnu proveru mejlom';screenshots.className='advisor-email-fallback';analysisOutput.append(screenshots);
+      }
       const names={brand:'Marka',model:'Model',year:'Godina',mileageKm:'Kilometraža (km)',priceEur:'Cena (EUR)',fuel:'Gorivo',gearbox:'Menjač'};
       const deNames={brand:'Marke',model:'Modell',year:'Baujahr',mileageKm:'Kilometer',priceEur:'Preis (EUR)',fuel:'Kraftstoff',gearbox:'Getriebe'};
       for(const [key,label] of Object.entries(lang==='de'?deNames:names))line(label,data.fields?.[key]);
@@ -87,7 +95,7 @@
         const aiUl=document.createElement('ul');
         for(const q of data.aiSellerQuestions||[]){const li=document.createElement('li');li.textContent=q;aiUl.append(li);}
         analysisOutput.append(aiUl);
-      }else{
+      }else if(data.sourceType!=='listing_url'){
         line(lang==='de'?'KI nicht verfügbar':'AI nije dostupan',lang==='de'?'Nur regelbasierte Vorprüfung; keine KI-Analyse ausgeführt.':'Prikazana je samo preliminarna provera; AI analiza nije izvršena.');
       }
       const h=document.createElement('strong');h.textContent=lang==='de'?'Fragen an den Verkäufer':'Pitanja za prodavca';analysisOutput.append(h);

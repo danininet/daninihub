@@ -17,7 +17,8 @@ assert.equal(response.status(),200,locale+" "+route);
 assert.equal(await page.locator("main h1").count(),1,locale+" "+route+" heading");
 assert.equal(await page.locator("body").evaluate(el=>el.scrollWidth<=innerWidth+2),true,locale+" "+route+" overflow");
 assert.equal((await page.locator('link[rel="canonical"]').getAttribute("href")).includes("/"+locale+"/"+route),true);
-assert.equal(await page.locator('link[hreflang]').count()>=2,true);
+const intentionalDuplicate = locale==="de" && route==="wissen/kundenanfragen/";
+assert.equal(await page.locator('link[hreflang]').count(),intentionalDuplicate?0:3,locale+" "+route+" correct hreflang for indexable versus noindex content");
 assert.deepEqual(errors,[],locale+" "+route+" JS");
 passed++;
 }

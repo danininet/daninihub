@@ -169,6 +169,17 @@ test('rate limiting caps repeated analyses',async()=>{
  }finally{globalThis.fetch=original;}
 });
 
+test('tab capture is an explicit one-frame browser-tab action with no screen/window capture',()=>{
+ const client=readFileSync('public/danini-advisor-client.js','utf8');
+ const page=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ assert.match(page,/id="listing-capture-tab"/);
+ assert.match(page,/id="listing-capture-preview"/);
+ assert.match(client,/navigator\.mediaDevices\.getDisplayMedia/);
+ assert.match(client,/track\.getSettings\(\)\.displaySurface!=='browser'/);
+ assert.match(client,/stream\?\.getTracks\(\)\.forEach\(track=>track\.stop\(\)\)/);
+ assert.match(client,/capturedTabImage\|\|await compressScreenshot\(file\)/);
+ assert.doesNotMatch(client,/navigator\.mediaDevices\.getUserMedia/);
+});
 test('public CAPTCHA sitekey remains available for analysis when contact sending is disabled',async()=>{
  const env={DANINI_CONTACT_ACTIVE:'false',DANINI_TURNSTILE_SECRET:'configured-test-secret',DANINI_TURNSTILE_SITEKEY:'0xTEST_PUBLIC_SITEKEY'};
  const r=await handleApi(new Request('https://daninihub.com/api/lead/status'),env);

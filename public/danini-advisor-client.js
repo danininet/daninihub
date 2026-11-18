@@ -113,6 +113,15 @@
         screenshots.href='mailto:auto@daninihub.com?subject='+encodeURIComponent('AutoDanini – Screenshots zum Inserat')+'&body='+encodeURIComponent((lang==='de'?'Bitte fügen Sie Screenshots manuell als Anhang hinzu. Inserat: ':'Dodajte screenshotove kao prilog e-mailu. Oglas: ')+data.sourceUrl);
         screenshots.textContent=lang==='de'?'Screenshots per E-Mail zur manuellen Prüfung senden':'Pošalji screenshotove za ručnu proveru mejlom';screenshots.className='advisor-email-fallback';analysisOutput.append(screenshots);
       }
+      if(data.sourceType==='listing_url'&&!data.listingFetched){
+        const note=document.createElement('p');note.className='advisor-source-fallback';
+        note.textContent=lang==='de'
+          ?'Für diesen Link liegen DANINI keine lesbaren Fahrzeugangaben vor. Bitte wählen Sie oben einen Screenshot des Inserats und klicken Sie erneut auf „Inserat oder Link prüfen“. Daraus kann die KI sichtbare Daten auslesen.'
+          :'Za ovaj link DANINI nema dostupne podatke o vozilu. Izaberite screenshot oglasa iznad i ponovo kliknite „Proveri oglas ili link“. AI tada može da izdvoji vidljive podatke.';
+        analysisOutput.append(note);
+        if(screenshotInput){const upload=document.createElement('button');upload.type='button';upload.textContent=lang==='de'?'Screenshot auswählen':'Izaberi screenshot';upload.className='advisor-analysis-button';upload.addEventListener('click',()=>screenshotInput.click());analysisOutput.append(upload);}
+        return;
+      }
       const names={brand:'Marka',model:'Model',year:'Godina',mileageKm:'Kilometraža (km)',priceEur:'Cena (EUR)',fuel:'Gorivo',gearbox:'Menjač'};
       const deNames={brand:'Marke',model:'Modell',year:'Baujahr',mileageKm:'Kilometer',priceEur:'Preis (EUR)',fuel:'Kraftstoff',gearbox:'Getriebe'};
       for(const [key,label] of Object.entries(lang==='de'?deNames:names))line(label,data.fields?.[key]);

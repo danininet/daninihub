@@ -28,6 +28,11 @@ const questions=de?[
      <h2>01 / {de?"Fahrzeugangaben":"Podaci o vozilu"}</h2>
      <label for="listing">{de?"Inserat / FIN / kopierter Text":"Oglas / VIN / kopirani tekst"}</label>
      <textarea id="listing" maxlength="6000" rows="6" placeholder={de?"Inserat aus beliebiger Quelle, FIN oder Beschreibung":"Oglas sa bilo koje platforme, VIN ili opis vozila"}></textarea>
+     <div class="advisor-screenshot-field">
+      <label for="listing-screenshot">{de?"Oder Screenshot des Inserats auswählen (JPG, PNG, WebP)":"Ili izaberi screenshot oglasa (JPG, PNG, WebP)"}</label>
+      <input id="listing-screenshot" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="screenshot-safety" />
+      <p class="micro" id="screenshot-safety">{de?"Maximal 5 MB vor Komprimierung; das Bild wird vor der Übertragung verkleinert. Bitte keine Ausweise, Gesichter, Kontaktdaten oder Kennzeichen hochladen. Keine unabhängige Fahrzeugprüfung.":"Najviše 5 MB pre smanjivanja slike. Ne šaljite lična dokumenta, lica, kontakte ili registarske tablice. Slika će biti smanjena pre slanja. Ovo nije nezavisan pregled vozila."}</p>
+     </div>
      <p id="vehicle-identifier" class="source-preview">—</p>
      <p class="micro">{de?"Eingegebene Links und Texte werden für diese Prüfung an DANINI übermittelt. Ein Link allein liefert keine bestätigten Fahrzeugdaten; geschützte Portale werden nicht umgangen.":"Uneti link i tekst šalju se DANINI serveru radi provere. Sam link ne dokazuje podatke o vozilu; ne zaobilazimo zaštitu oglasnika."}</p>
      <div class="advisor-warning">
@@ -116,6 +121,9 @@ const questions=de?[
 .advisor-panel label{display:block;color:#142338;font-weight:700;font-size:.9rem;margin:10px 0 9px}
 .advisor-panel :is(input,textarea){font:inherit;background:#fcfdff;color:#13253b;border:1.5px solid #a1b3c3;border-radius:11px;padding:12px 15px;width:100%}
 .advisor-panel textarea{min-height:167px;resize:vertical;font-size:1rem;line-height:1.6}
+.advisor-screenshot-field{margin:16px 0;padding:16px;border:1px dashed #879db0;border-radius:12px;background:#f5f8fb}
+.advisor-screenshot-field input{background:white;padding:12px;min-height:48px}
+.advisor-screenshot-field .micro{font-size:.8rem;color:#43566b}
 .advisor-panel textarea::placeholder{color:#64748b;opacity:1}
 .source-preview{overflow-wrap:anywhere;max-height:125px;overflow:auto;font-size:.79rem;padding:8px 0;color:#41556a}
 .advisor-warning{background:#fffaea;border:1px solid #eadbaa;border-radius:13px;padding:20px;margin-top:20px;font-size:.88rem;color:#513e17}

@@ -22,14 +22,14 @@ const questions=de?[
   <div class="wrap advisor-wrap">
    <span class="eyebrow">AUTODANINI · {de?"KI-BERATER":"AI SAVETNIK"}</span>
    <h1>{de?"Ihr Auto. Ihre Fragen. Ein klarer Prüfweg.":"Tvoj automobil. Tri pitanja. Jasnija odluka."}</h1>
-   <p class="advisor-lead">{de?"Erfassen Sie das Inserat, beantworten Sie drei konkrete Fragen und sehen Sie offene Risiken und bekannte Kosten auf einen Blick. Keine automatische Auswertung externer Verkaufsportale.":"Unesi oglas, odgovori na tri konkretna pitanja i pogledaj šta treba dodatno proveriti i koliko iznose poznati troškovi. Bez automatskog čitanja oglasnika."}</p>
+   <p class="advisor-lead">{de?"Erfassen Sie das Inserat, beantworten Sie drei konkrete Fragen und sehen Sie offene Risiken und bekannte Kosten auf einen Blick. Ein Link ermöglicht zunächst eine Quellenprüfung; Fahrzeugdaten werden nur aus tatsächlich zugänglichen Informationen bewertet.":"Unesi oglas, odgovori na tri konkretna pitanja i pogledaj šta treba dodatno proveriti i koliko iznose poznati troškovi. Link najpre omogućava proveru izvora; podaci o vozilu analiziraju se samo ako su stvarno dostupni."}</p>
    <div class="advisor-grid">
     <section class="advisor-panel">
      <h2>01 / {de?"Fahrzeugangaben":"Podaci o vozilu"}</h2>
      <label for="listing">{de?"Inserat / FIN / kopierter Text":"Oglas / VIN / kopirani tekst"}</label>
      <textarea id="listing" maxlength="6000" rows="6" placeholder={de?"Inserat aus beliebiger Quelle, FIN oder Beschreibung":"Oglas sa bilo koje platforme, VIN ili opis vozila"}></textarea>
      <p id="vehicle-identifier" class="source-preview">—</p>
-     <p class="micro">{de?"Für die Text-Vorprüfung wird Ihr eingefügter Text an den DANINI-Server übermittelt. Externe Inseratsportale werden nicht automatisch abgerufen.":"Za preliminarnu proveru kopirani tekst šalje se DANINI serveru. Spoljni oglasnici se ne preuzimaju automatski."}</p>
+     <p class="micro">{de?"Eingegebene Links und Texte werden für diese Prüfung an DANINI übermittelt. Ein Link allein liefert keine bestätigten Fahrzeugdaten; geschützte Portale werden nicht umgangen.":"Uneti link i tekst šalju se DANINI serveru radi provere. Sam link ne dokazuje podatke o vozilu; ne zaobilazimo zaštitu oglasnika."}</p>
      <div class="advisor-warning">
       <strong>{de?"Zusätzliche Prüfpunkte":"Dodatne tačke provere"}</strong>
       <p id="source-caution">{de?"Verkäuferstatus und Eigentum sind nicht bestätigt.":"Status prodavca i vlasništvo nisu potvrđeni."}</p>
@@ -72,6 +72,7 @@ const questions=de?[
       <label class="advisor-check"><input type="checkbox" id="advisor-consent" required /> {de?"Ich stimme der Verarbeitung meiner Angaben zur Beantwortung dieser Anfrage zu.":"Saglasan/saglasna sam sa obradom podataka radi odgovora na upit."}</label>
       <a href={`/${locale}/datenschutz/`}>{de?"Datenschutz":"Privatnost"}</a>
      </form>
+     <p class="micro advisor-safe-note">{de?"Die Prüfung ist unverbindlich. Wir lesen keine geschützten Portaldaten aus, bestätigen weder Eigentum noch Unfallschäden und ersetzen keine Besichtigung. Missbrauchsschutz: Cloudflare Turnstile. Keine Ausweisfotos oder Zahlungsdaten hochladen.":"Provera je informativna. Ne čitamo zaštićene podatke sa oglasnika, ne potvrđujemo vlasništvo ni istoriju štete i ne zamenjujemo pregled vozila. Zaštita od zloupotrebe: Cloudflare Turnstile. Ne dostavljajte lična dokumenta ni podatke za plaćanje."} <a href={`/${locale}/datenschutz/`}>{de?"Datenschutzhinweise":"Politika privatnosti"}</a></p>
      <div id="advisor-turnstile"></div>
      <button id="advisor-cta" class="button" type="button" disabled>{de?"Detailliertes Fahrzeugdossier anfragen":"Zatraži detaljan dosije vozila"}</button>
      <a class="advisor-email-fallback" href="mailto:info@daninihub.com?subject=AutoDanini%20-%20Fahrzeugpruefung">{de?"Anfrage stattdessen per E-Mail senden":"Pošalji zahtev putem e-maila"}</a>

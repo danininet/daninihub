@@ -30,6 +30,45 @@ test('URL-only input rejects unsafe HTTP or credential-bearing URLs',async()=>{
   assert.equal(r.status,400);
  }
 });
+test('screenshot vision extracts seller-supplied fields without visiting listing portal',async()=>{
+ const old=globalThis.fetch,calls=[];
+ globalThis.fetch=async url=>{calls.push(String(url));return Response.json({success:true,hostname:'daninihub.com'});};
+ const memory=new Map(),models=[];
+ const env={DANINI_TURNSTILE_SECRET:'test',AI_ENABLED:'true',DANINI_AI_LIVE_APPROVED:'true',
+  AI:{run:async(model,payload)=>{models.push(model);assert.match(payload.image,/^data:image\/png;base64,/);
+   return {response:JSON.stringify({brand:'Volkswagen',model:'Golf',year:2018,mileageKm:143000,priceEur:12500,fuel:'Diesel',gearbox:'Automatik',visibleClaims:['unfallfrei laut Anbieter'],questions:['Sind Unfallbelege vorhanden?']})};}},
+  PARTNERS:{get:async k=>memory.get(k),put:async(k,v)=>memory.set(k,v)}
+ };
+ const req=new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin:'https://daninihub.com','content-type':'application/json','cf-connecting-ip':'192.0.2.4'},body:JSON.stringify({language:'sr',source:'https://www.mobile.de/fahrzeuge/details.html?id=123',image:'data:image/png;base64,aGVsbG8=',turnstileToken:'mock-token-long-enough'})});
+ try{
+  const response=await handleVehicleAnalysis(req,env);
+  assert.equal(response.status,200);
+  const body=await response.json();
+  assert.equal(body.sourceType,'user_supplied_screenshot');
+  assert.equal(body.fields.brand,'Volkswagen');
+  assert.equal(body.fields.priceEur,12500);
+  assert.equal(body.listingFetched,false);
+  assert.equal(body.aiUsed,true);
+  assert.equal(models[0],'@cf/meta/llama-3.2-11b-vision-instruct');
+  assert.equal(calls.length,1);
+  assert.match(calls[0],/siteverify/);
+ }finally{globalThis.fetch=old;}
+});
+test('screenshot rejects unsupported types and invalid base64 before inference',async()=>{
+ for(const image of ['data:image/svg+xml;base64,aGVsbG8=','data:image/png;base64,NOT*BASE64','data:image/png;base64,'+'A'.repeat(1250004)]){
+  const r=await handleVehicleAnalysis(new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin:'https://daninihub.com','content-type':'application/json'},body:JSON.stringify({language:'sr',source:'',image})}));
+  assert.equal(r.status,400);
+ }
+});
+test('screenshot is refused when vision AI is not approved',async()=>{
+ const old=globalThis.fetch;
+ globalThis.fetch=async()=>Response.json({success:true,hostname:'daninihub.com'});
+ const map=new Map();
+ try{
+  const r=await handleVehicleAnalysis(new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin:'https://daninihub.com','content-type':'application/json','cf-connecting-ip':'192.0.2.5'},body:JSON.stringify({language:'sr',source:'',image:'data:image/png;base64,aGVsbG8=',turnstileToken:'mock-token-long-enough'})}),{DANINI_TURNSTILE_SECRET:'test',PARTNERS:{get:async k=>map.get(k),put:async(k,v)=>map.set(k,v)}});
+  assert.equal(r.status,503);assert.equal((await r.json()).error,'vision_unavailable');
+ }finally{globalThis.fetch=old}
+});
 test('blocks cross-origin before verification',async()=>{
  const r=await handleVehicleAnalysis(make(longText,'https://attacker.example'));
  assert.equal(r.status,403);

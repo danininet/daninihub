@@ -46,8 +46,70 @@
   analysisButton.className='advisor-analysis-button';
   analysisButton.textContent=lang==='de'?'Inserat oder Link prüfen':'Proveri oglas ili link';
   const analysisHelp=document.createElement('p');
-  analysisHelp.textContent=lang==='de'?'Ein Link reicht für die Quellenprüfung. Der Portalinhalt wird nur mit erlaubtem Zugriff gelesen; ohne diesen bleiben Fahrzeugdaten offen. Für eine inhaltliche Prüfung können Sie Text eingeben oder Screenshots per E-Mail senden.':'Sam link je dovoljan za proveru izvora. Sadržaj oglasa se ne preuzima bez dozvoljenog pristupa; tada podaci o vozilu ostaju nepoznati. Za detaljniju proveru unesite tekst ili pošaljite screenshotove mejlom.';
+  analysisHelp.textContent=lang==='de'?'Ein Link reicht für die Quellenprüfung. Der Portalinhalt wird nur mit erlaubtem Zugriff gelesen; ohne diesen bleiben Fahrzeugdaten offen. Für die Auswertung sichtbarer Daten wählen Sie einen Screenshot oder erfassen Sie einmalig den geöffneten Inserat-Tab.':'Sam link je dovoljan za proveru izvora. Sadržaj oglasa se ne preuzima bez dozvoljenog pristupa; tada podaci o vozilu ostaju nepoznati. Za analizu vidljivih podataka izaberite screenshot ili preuzmite jednu sliku otvorenog taba.';
   const screenshotInput=el('listing-screenshot');
+  const captureButton=el('listing-capture-tab');
+  const captureStatus=el('listing-capture-status');
+  const capturePreview=el('listing-capture-preview');
+  let capturedTabImage=null;
+  const clearCapturedTab=()=>{
+    capturedTabImage=null;
+    if(capturePreview){capturePreview.hidden=true;capturePreview.removeAttribute('src');}
+  };
+  screenshotInput?.addEventListener('change',clearCapturedTab);
+  // User-initiated, one-frame capture of a browser TAB. Never run continuously,
+  // silently capture a screen/window, or pull the third-party page with fetch.
+  captureButton?.addEventListener('click',async()=>{
+    if(!navigator.mediaDevices?.getDisplayMedia){
+      captureStatus.textContent=lang==='de'?'Tab-Freigabe wird in diesem Browser nicht unterstützt. Bitte Screenshot auswählen.':'Ovaj browser ne podržava deljenje taba. Izaberite screenshot.';
+      return;
+    }
+    clearCapturedTab();
+    let stream=null;
+    captureButton.disabled=true;
+    try{
+      stream=await navigator.mediaDevices.getDisplayMedia({
+        video:{displaySurface:'browser'},
+        audio:false,
+        preferCurrentTab:false,
+        selfBrowserSurface:'exclude',
+        surfaceSwitching:'exclude'
+      });
+      const track=stream.getVideoTracks()[0];
+      if(!track||track.getSettings().displaySurface!=='browser'){
+        throw Error('tab_required');
+      }
+      const video=document.createElement('video');
+      video.muted=true;
+      video.playsInline=true;
+      video.srcObject=stream;
+      await video.play();
+      if(!video.videoWidth||!video.videoHeight)throw Error('empty_frame');
+      const scale=Math.min(1,1400/Math.max(video.videoWidth,video.videoHeight));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(video.videoWidth*scale));
+      canvas.height=Math.max(1,Math.round(video.videoHeight*scale));
+      canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
+      let quality=.78;
+      let image=canvas.toDataURL('image/jpeg',quality);
+      while(image.length>1100000&&quality>.4){
+        quality-=.12;
+        image=canvas.toDataURL('image/jpeg',quality);
+      }
+      if(image.length>1100000)throw Error('image_too_large');
+      capturedTabImage=image;
+      capturePreview.src=image;
+      capturePreview.hidden=false;
+      captureStatus.textContent=lang==='de'?'Ein Bild des ausgewählten Tabs wurde erfasst. Prüfen Sie die Vorschau und klicken Sie auf „Inserat oder Link prüfen“.':'Jedna slika izabranog taba je preuzeta. Proverite prikaz i kliknite „Proveri oglas ili link“.';
+    }catch(error){
+      captureStatus.textContent=error?.message==='tab_required'
+        ?(lang==='de'?'Bitte ausschließlich einen Browser-Tab auswählen, nicht den Bildschirm oder ein Fenster.':'Izaberite samo browser tab, ne ceo ekran ili prozor.')
+        :(lang==='de'?'Tab-Erfassung nicht möglich. Bitte Screenshot auswählen.':'Nije moguće preuzeti tab. Izaberite screenshot.');
+    }finally{
+      stream?.getTracks().forEach(track=>track.stop());
+      captureButton.disabled=false;
+    }
+  });
   const compressScreenshot=async file=>{
     if(!file) return null;
     if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)throw Error('invalid_image');
@@ -77,9 +139,9 @@
     try{
       const source=input.value.trim();
       const file=screenshotInput?.files?.[0];
-      if(!source&&!file){analysisOutput.textContent=lang==='de'?'Bitte Link, Text oder Screenshot eingeben.':'Unesite link, tekst ili screenshot.';return;}
+      if(!source&&!file&&!capturedTabImage){analysisOutput.textContent=lang==='de'?'Bitte Link, Text oder Screenshot eingeben.':'Unesite link, tekst ili screenshot.';return;}
       if(!captchaToken){analysisOutput.textContent=messages.captcha;return;}
-      const image=await compressScreenshot(file);
+      const image=capturedTabImage||await compressScreenshot(file);
       const res=await fetch('/api/vehicle-analysis',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},credentials:'same-origin',body:JSON.stringify({language:lang,source,...(image?{image}:{}),turnstileToken:captchaToken})});
       const data=await res.json();
       if(!res.ok){
@@ -120,6 +182,7 @@
           :'Za ovaj link DANINI nema dostupne podatke o vozilu. Izaberite screenshot oglasa iznad i ponovo kliknite „Proveri oglas ili link“. AI tada može da izdvoji vidljive podatke.';
         analysisOutput.append(note);
         if(screenshotInput){const upload=document.createElement('button');upload.type='button';upload.textContent=lang==='de'?'Screenshot auswählen':'Izaberi screenshot';upload.className='advisor-analysis-button';upload.addEventListener('click',()=>screenshotInput.click());analysisOutput.append(upload);}
+        if(captureButton){const takeTab=document.createElement('button');takeTab.type='button';takeTab.textContent=lang==='de'?'Geöffnetes Inserat-Tab erfassen':'Preuzmi sliku otvorenog taba';takeTab.className='advisor-analysis-button';takeTab.addEventListener('click',()=>captureButton.click());analysisOutput.append(takeTab);}
         return;
       }
       const names={brand:'Marka',model:'Model',year:'Godina',mileageKm:'Kilometraža (km)',priceEur:'Cena (EUR)',fuel:'Gorivo',gearbox:'Menjač'};

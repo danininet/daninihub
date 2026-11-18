@@ -35,7 +35,7 @@ test('screenshot vision extracts seller-supplied fields without visiting listing
  globalThis.fetch=async url=>{calls.push(String(url));return Response.json({success:true,hostname:'daninihub.com'});};
  const memory=new Map(),models=[];
  const env={DANINI_TURNSTILE_SECRET:'test',AI_ENABLED:'true',DANINI_AI_LIVE_APPROVED:'true',
-  AI:{run:async(model,payload)=>{models.push(model);assert.match(payload.image,/^data:image\/png;base64,/);
+  AI:{run:async(model,payload)=>{models.push(model);assert.match(payload.messages[1].content[1].image_url.url,/^data:image\/png;base64,/);
    return {response:JSON.stringify({brand:'Volkswagen',model:'Golf',year:2018,mileageKm:143000,priceEur:12500,fuel:'Diesel',gearbox:'Automatik',visibleClaims:['unfallfrei laut Anbieter'],questions:['Sind Unfallbelege vorhanden?']})};}},
   PARTNERS:{get:async k=>memory.get(k),put:async(k,v)=>memory.set(k,v)}
  };
@@ -49,7 +49,7 @@ test('screenshot vision extracts seller-supplied fields without visiting listing
   assert.equal(body.fields.priceEur,12500);
   assert.equal(body.listingFetched,false);
   assert.equal(body.aiUsed,true);
-  assert.equal(models[0],'@cf/meta/llama-3.2-11b-vision-instruct');
+  assert.equal(models[0],'@cf/qwen/qwen3.8-27b');
   assert.equal(calls.length,1);
   assert.match(calls[0],/siteverify/);
  }finally{globalThis.fetch=old;}

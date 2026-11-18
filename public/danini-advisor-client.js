@@ -47,6 +47,24 @@
   analysisButton.textContent=lang==='de'?'Inserat oder Link prüfen':'Proveri oglas ili link';
   const analysisHelp=document.createElement('p');
   analysisHelp.textContent=lang==='de'?'Ein Link reicht für die Quellenprüfung. Der Portalinhalt wird nur mit erlaubtem Zugriff gelesen; ohne diesen bleiben Fahrzeugdaten offen. Für eine inhaltliche Prüfung können Sie Text eingeben oder Screenshots per E-Mail senden.':'Sam link je dovoljan za proveru izvora. Sadržaj oglasa se ne preuzima bez dozvoljenog pristupa; tada podaci o vozilu ostaju nepoznati. Za detaljniju proveru unesite tekst ili pošaljite screenshotove mejlom.';
+  const screenshotInput=el('listing-screenshot');
+  const compressScreenshot=async file=>{
+    if(!file) return null;
+    if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)throw Error('invalid_image');
+    const bmp=await createImageBitmap(file);
+    try{
+      const scale=Math.min(1,1400/Math.max(bmp.width,bmp.height));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(bmp.width*scale));
+      canvas.height=Math.max(1,Math.round(bmp.height*scale));
+      canvas.getContext('2d').drawImage(bmp,0,0,canvas.width,canvas.height);
+      let quality=.78;
+      let data=canvas.toDataURL('image/jpeg',quality);
+      while(data.length>1100000&&quality>.4){quality-=.12;data=canvas.toDataURL('image/jpeg',quality);}
+      if(data.length>1100000)throw Error('image_too_large');
+      return data;
+    }finally{bmp.close();}
+  };
   const analysisOutput=document.createElement('div');
   analysisOutput.setAttribute('role','status');
   analysisOutput.setAttribute('aria-live','polite');
@@ -58,8 +76,11 @@
     analysisOutput.textContent=lang==='de'?'Eingabe wird sicher geprüft …':'Bezbedna provera unosa …';
     try{
       const source=input.value.trim();
+      const file=screenshotInput?.files?.[0];
+      if(!source&&!file){analysisOutput.textContent=lang==='de'?'Bitte Link, Text oder Screenshot eingeben.':'Unesite link, tekst ili screenshot.';return;}
       if(!captchaToken){analysisOutput.textContent=messages.captcha;return;}
-      const res=await fetch('/api/vehicle-analysis',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},credentials:'same-origin',body:JSON.stringify({language:lang,source,turnstileToken:captchaToken})});
+      const image=await compressScreenshot(file);
+      const res=await fetch('/api/vehicle-analysis',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},credentials:'same-origin',body:JSON.stringify({language:lang,source,...(image?{image}:{}),turnstileToken:captchaToken})});
       const data=await res.json();
       if(!res.ok){
         analysisOutput.textContent=data.message||(lang==='de'?'Prüfung nicht möglich: ':'Provera nije uspela: ')+String(data.error||res.status);
@@ -74,6 +95,9 @@
         analysisOutput.append(p);
       };
       line(lang==='de'?'Verfahren':'Metod',data.disclaimer);
+      if(data.sourceType==='user_supplied_screenshot'){
+        line(lang==='de'?'Bildverarbeitung':'Obrada slike',lang==='de'?'Sichtbare Inseratsangaben aus Ihrem Screenshot, nicht unabhängig bestätigt.':'Izdvojeni vidljivi podaci sa screenshota; bez nezavisne potvrde.');
+      }
       if(data.sourceType==='listing_url'){
         line(lang==='de'?'Erkannte Quelle':'Prepoznat izvor',data.sourcePlatform);
         line(lang==='de'?'Inhalt abgerufen':'Sadržaj preuzet',lang==='de'?'Nein – nicht behauptet':'Ne – nije preuzet');

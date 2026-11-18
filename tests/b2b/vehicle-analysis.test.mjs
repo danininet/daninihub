@@ -24,6 +24,44 @@ test('URL-only input returns honest source screening with no third-party fetch',
   assert.deepEqual(calls.map(url=>new URL(url).hostname),['challenges.cloudflare.com']);
  }finally{globalThis.fetch=original;}
 });
+test('licensed mobile.de API extracts actual advertised fields from fixed official endpoint',async()=>{
+ const original=globalThis.fetch,calls=[];
+ globalThis.fetch=async(url,options={})=>{
+  calls.push({url:String(url),auth:options.headers?.Authorization});
+  if(String(url).includes('siteverify'))return Response.json({success:true,hostname:'daninihub.com'});
+  return Response.json({mobileAdId:'48234555768960',make:'BMW',model:'320',firstRegistration:'2020-02',mileage:107500,
+   price:{consumerPriceGross:'18990.00',currency:'EUR'},fuel:'DIESEL',gearbox:'AUTOMATIC_GEAR'});
+ };
+ const map=new Map();
+ const env={DANINI_TURNSTILE_SECRET:'test',MOBILE_DE_SEARCH_USER:'licensed-test',MOBILE_DE_SEARCH_PASSWORD:'dummy-password',
+  PARTNERS:{get:async k=>map.get(k),put:async(k,v)=>map.set(k,v)}};
+ try{
+  const response=await handleVehicleAnalysis(make('https://suchen.mobile.de/fahrzeuge/details.html?id=48234555768960&utm_source=linkcopy'),env);
+  assert.equal(response.status,200);
+  const data=await response.json();
+  assert.equal(data.status,'licensed_listing_data');assert.equal(data.listingFetched,true);
+  assert.equal(data.fields.brand,'BMW');assert.equal(data.fields.model,'320');
+  assert.equal(data.fields.year,2020);assert.equal(data.fields.mileageKm,107500);
+  assert.equal(data.fields.priceEur,18990);
+  assert.equal(calls[1].url,'https://services.mobile.de/search-api/ad/48234555768960');
+  assert.match(calls[1].auth,/^Basic /);
+  assert.equal(data.aiUsed,false);
+ }finally{globalThis.fetch=original}
+});
+test('mobile.de lookup without licensed credentials never fetches third-party domains',async()=>{
+ const original=globalThis.fetch,calls=[];
+ globalThis.fetch=async url=>{calls.push(String(url));return Response.json({success:true,hostname:'daninihub.com'});};
+ const map=new Map();
+ try{
+  const response=await handleVehicleAnalysis(make('https://suchen.mobile.de/fahrzeuge/details.html?id=48234555768960'),{
+   DANINI_TURNSTILE_SECRET:'test',PARTNERS:{get:async k=>map.get(k),put:async(k,v)=>map.set(k,v)}
+  });
+  const data=await response.json();
+  assert.equal(data.sourceType,'listing_url');
+  assert.equal(data.providerStatus,'not_configured');
+  assert.equal(calls.length,1);
+ }finally{globalThis.fetch=original}
+});
 test('URL-only input rejects unsafe HTTP or credential-bearing URLs',async()=>{
  for(const url of ['http://www.mobile.de/fahrzeuge/details.html?id=123','https://user:pass@mobile.de/car']){
   const r=await handleVehicleAnalysis(make(url));

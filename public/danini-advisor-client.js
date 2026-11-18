@@ -98,9 +98,16 @@
       if(data.sourceType==='user_supplied_screenshot'){
         line(lang==='de'?'Bildverarbeitung':'Obrada slike',lang==='de'?'Sichtbare Inseratsangaben aus Ihrem Screenshot, nicht unabhängig bestätigt.':'Izdvojeni vidljivi podaci sa screenshota; bez nezavisne potvrde.');
       }
+      if(data.sourceType==='licensed_listing'){
+        line(lang==='de'?'Datenquelle':'Izvor podataka',lang==='de'?'mobile.de Search API (Inseratsangaben, ungeprüft)':'mobile.de Search API (navodi oglasa, nepotvrđeno)');
+        const open=document.createElement('a');open.href=data.sourceUrl;open.target='_blank';open.rel='noopener noreferrer';
+        open.textContent=lang==='de'?'Originalinserat öffnen':'Otvori originalni oglas';open.className='advisor-email-fallback';analysisOutput.append(open);
+      }
       if(data.sourceType==='listing_url'){
         line(lang==='de'?'Erkannte Quelle':'Prepoznat izvor',data.sourcePlatform);
-        line(lang==='de'?'Inhalt abgerufen':'Sadržaj preuzet',lang==='de'?'Nein – nicht behauptet':'Ne – nije preuzet');
+        line(lang==='de'?'Inhalt abgerufen':'Sadržaj preuzet',lang==='de'?'Nein – keine Fahrzeugdaten verfügbar':'Ne – podaci o vozilu nisu dostupni');
+        if(data.sourcePlatform==='mobile.de'&&data.providerStatus==='not_configured')
+          line(lang==='de'?'Mobile.de API':'Mobile.de API',lang==='de'?'Noch kein lizenzierter Datenzugang eingerichtet':'Licencirani pristup podacima još nije podešen');
         const open=document.createElement('a');open.href=data.sourceUrl;open.target='_blank';open.rel='noopener noreferrer';open.textContent=lang==='de'?'Originalinserat beim Anbieter öffnen':'Otvori originalni oglas';analysisOutput.append(open);
         const screenshots=document.createElement('a');
         screenshots.href='mailto:auto@daninihub.com?subject='+encodeURIComponent('AutoDanini – Screenshots zum Inserat')+'&body='+encodeURIComponent((lang==='de'?'Bitte fügen Sie Screenshots manuell als Anhang hinzu. Inserat: ':'Dodajte screenshotove kao prilog e-mailu. Oglas: ')+data.sourceUrl);

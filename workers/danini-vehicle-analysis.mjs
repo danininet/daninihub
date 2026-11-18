@@ -47,13 +47,19 @@ export async function handleVehicleAnalysis(request,env={}){
  const language=body.language==='de'?'de':body.language==='sr'?'sr':null;
  const source=typeof body.source==='string'?body.source.trim():'';
  if(!language||source.length>12000)return json({error:'invalid_fields'},400);
+ // A URL is a valid starting point for a source-only screening. Never dereference it:
+ // listing-platform permissions, SSRF and false claims about an unseen vehicle matter.
+ let listingUrl=null;
  if(/^https?:\/\//i.test(source)){
-  let url;try{url=new URL(source)}catch{return json({error:'invalid_url'},400)}
-  if(url.protocol!=='https:'||url.username||url.password)return json({error:'invalid_url'},400);
-  // URL is never fetched or dereferenced. This prevents SSRF and unauthorized scraping.
-  return json({error:'text_required',message:language==='de'?'Bitte den öffentlich sichtbaren Inseratstext kopieren und hier einfügen.':'Kopirajte javno vidljiv tekst oglasa i nalepite ga ovde.'},422);
+  try{
+   const candidate=new URL(source);
+   if(candidate.protocol!=='https:'||candidate.username||candidate.password||
+      !candidate.hostname.includes('.')||candidate.hostname.length>253||source.length>1000)
+     return json({error:'invalid_url'},400);
+   listingUrl=candidate;
+  }catch{return json({error:'invalid_url'},400)}
  }
- if(source.length<80)return json({error:'text_too_short'},422);
+ if(!listingUrl&&source.length<80)return json({error:'text_too_short'},422);
  if(!env.DANINI_TURNSTILE_SECRET)return json({error:'verification_unavailable'},503);
  const token=typeof body.turnstileToken==='string'?body.turnstileToken:'';
  if(token.length<10||token.length>2048)return json({error:'human_verification_required'},403);
@@ -76,6 +82,29 @@ export async function handleVehicleAnalysis(request,env={}){
   if(count>=5)return json({error:'rate_limited'},429);
   await env.PARTNERS.put(key,String(count+1),{expirationTtl:3600});
  }catch{return json({error:'rate_limit_unavailable'},503)}
+ // URL-only mode: return verifiable source information and next steps, not invented
+ // vehicle attributes, fabricated AI findings or covert scraping.
+ if(listingUrl){
+  const host=listingUrl.hostname.toLowerCase();
+  const known=host==='mobile.de'||host.endsWith('.mobile.de')?'mobile.de':
+   host==='autoscout24.de'||host.endsWith('.autoscout24.de')?'AutoScout24':
+   host==='kleinanzeigen.de'||host.endsWith('.kleinanzeigen.de')?'Kleinanzeigen':
+   host;
+  return json({
+   status:'source_received',method:'url_metadata_only',aiUsed:false,aiStatus:'not_applicable',
+   sourceType:'listing_url',sourcePlatform:known,sourceUrl:listingUrl.href,
+   listingFetched:false,
+   fields:{brand:null,model:null,year:null,mileageKm:null,priceEur:null,fuel:null,gearbox:null},
+   missing:['brand','model','year','mileageKm','priceEur','fuel','gearbox'],
+   warnings:[language==='de'
+    ?'Der Link wurde erkannt. Fahrzeugdaten wurden nicht vom Portal abgerufen; es liegt keine inhaltliche Inseratsprüfung vor.'
+    :'Link je prepoznat. Podaci o vozilu nisu preuzeti sa oglasnika; sadržaj oglasa nije analiziran.'],
+   questions:question[language],independentVerificationRequired:true,
+   disclaimer:language==='de'
+    ?'Nur die Quelle wurde erkannt. Keine KI-Analyse des Inserats, keine Fahrzeugprüfung und keine Bestätigung von Eigentum oder Historie.'
+    :'Prepoznat je samo izvor. Nije izvršena AI analiza oglasa, pregled vozila niti provera vlasništva ili istorije.'
+  });
+ }
  // Additional daily inference cap (best-effort KV; protects ordinary usage, not a strict monetary ceiling).
  let aiBudgetOk=false;
  if(isAiConfigured(env)){

@@ -45,7 +45,7 @@ const de = locale === "de";
         <form class="auto-advisor-form" id="universal-advisor-form" data-locale={locale}>
           <label for="vehicle-source">{de ? "Inseratslink, FIN oder Anzeigentext" : "Link oglasa, VIN ili tekst opisa"}</label>
           <textarea id="vehicle-source" name="source" required maxlength="6000" rows="4" placeholder={de ? "Link eines beliebigen Inserats (mobile.de, Kleinanzeigen...) oder FIN / Beschreibung einfügen..." : "Zalepite link bilo kog oglasnika (mobile.de, Kleinanzeigen...) ili unesite VIN / opis automobila..."} autocomplete="off" aria-describedby="source-privacy" ></textarea>
-          <p id="source-privacy" class="micro">{de ? "Keine Ausweisbilder, Telefonnummern, Adressen oder Zahlungsdaten einfügen. Die Eingabe bleibt bei dieser Vorprüfung im Browser." : "Ne unosite slike dokumenata, brojeve telefona, adrese ni podatke za plaćanje. Unos za ovu preliminarnu proveru ostaje u pregledaču."}</p>
+          <p id="source-privacy" class="micro">{de ? "Keine Ausweisbilder, Telefonnummern, Adressen oder Zahlungsdaten einfügen. Der eingegebene Link wird bei der Prüfung an den DANINI-Server übermittelt." : "Ne unosite slike dokumenata, brojeve telefona, adrese ni podatke za plaćanje. Uneti link se pri proveri šalje DANINI serveru."}</p>
           <div class="auto-advisor-controls">
             <button class="button" type="submit">{de ? "Weiter zur 3-Fragen-Prüfung" : "Nastavi na 3 pitanja"}</button>
           </div>
@@ -57,7 +57,7 @@ const de = locale === "de";
           <p class="micro">{de ? "Dies ist eine vorsorgliche Checkliste, keine KI-Analyse, Betrugserkennung oder Prüfung des Verkäufers." : "Ovo je preventivna kontrolna lista, ne AI analiza, otkrivanje prevare niti provera prodavca."}</p>
           <a class="button secondary" href="#contact">{de ? "Persönliche Prüfung anfragen" : "Zatraži ličnu proveru"}</a>
         </div>
-        <p class="micro">{de ? "Der nächste Schritt öffnet drei Prüffragen und eine Risikomatrix. Ein Link allein wird nicht automatisch ausgelesen; für die Text-Vorprüfung den Inseratstext einfügen." : "Naredni korak otvara tri kontrolna pitanja i matricu rizika. Sam link se ne preuzima automatski; za preliminarnu analizu kopirajte tekst oglasa."}</p>
+        <p class="micro">{de ? "Der nächste Schritt prüft die Quelle und zeigt offene Fragen. Fahrzeugangaben werden nur ausgewertet, wenn der tatsächliche Inseratstext verfügbar ist. Geschützte Portale werden nicht umgangen." : "Naredni korak prepoznaje izvor oglasa i prikazuje šta još treba proveriti. Podaci o vozilu analiziraju se samo kada je sadržaj dostupan; zaštita oglasnika se ne zaobilazi."}</p>
       </div>
     </div>
   </section>

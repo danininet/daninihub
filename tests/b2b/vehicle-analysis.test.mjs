@@ -6,10 +6,29 @@ import {readFileSync} from 'node:fs';
 
 const longText='Volkswagen Golf Baujahr 2018, Diesel, Automatik, 143.000 km, 12.500 EUR. Unfallfrei laut Anbieter, scheckheftgepflegt. Weitere Angaben nach Rückfrage.';
 const make=(source,origin='https://daninihub.com',token='mock-token-long-enough')=>new Request('https://daninihub.com/api/vehicle-analysis',{method:'POST',headers:{origin,'content-type':'application/json','cf-connecting-ip':'192.0.2.1'},body:JSON.stringify({language:'de',source,turnstileToken:token})});
-test('URL never fetched; asks for copied ad text',async()=>{
- const r=await handleVehicleAnalysis(make('https://www.mobile.de/fahrzeuge/details.html?id=123'));
- assert.equal(r.status,422);
- assert.equal((await r.json()).error,'text_required');
+test('URL-only input returns honest source screening with no third-party fetch',async()=>{
+ const original=globalThis.fetch,calls=[];
+ globalThis.fetch=async (url)=>{calls.push(String(url));return Response.json({success:true,hostname:'daninihub.com'});};
+ const memory=new Map();
+ const env={DANINI_TURNSTILE_SECRET:'test',PARTNERS:{get:async k=>memory.get(k),put:async(k,v)=>memory.set(k,v)}};
+ try {
+  const r=await handleVehicleAnalysis(make('https://www.mobile.de/fahrzeuge/details.html?id=123'),env);
+  assert.equal(r.status,200);
+  const result=await r.json();
+  assert.equal(result.sourceType,'listing_url');
+  assert.equal(result.sourcePlatform,'mobile.de');
+  assert.equal(result.listingFetched,false);
+  assert.equal(result.aiUsed,false);
+  assert.equal(result.fields.brand,null);
+  assert.ok(result.questions.length>0);
+  assert.deepEqual(calls.map(url=>new URL(url).hostname),['challenges.cloudflare.com']);
+ }finally{globalThis.fetch=original;}
+});
+test('URL-only input rejects unsafe HTTP or credential-bearing URLs',async()=>{
+ for(const url of ['http://www.mobile.de/fahrzeuge/details.html?id=123','https://user:pass@mobile.de/car']){
+  const r=await handleVehicleAnalysis(make(url));
+  assert.equal(r.status,400);
+ }
 });
 test('blocks cross-origin before verification',async()=>{
  const r=await handleVehicleAnalysis(make(longText,'https://attacker.example'));
@@ -85,7 +104,7 @@ test('public CAPTCHA sitekey remains available for analysis when contact sending
  assert.match(client,/if \(data\?\.turnstileSiteKey\) loadTurnstile\(data\.turnstileSiteKey\)/);
  assert.doesNotMatch(client,/if \(serviceEnabled\) loadTurnstile/);
  const advisorCopy=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
- assert.match(advisorCopy,/Text-Vorprüfung wird Ihr eingefügter Text an den DANINI-Server übermittelt/);
- assert.match(advisorCopy,/kopirani tekst šalje se DANINI serveru/);
+ assert.match(advisorCopy,/Eingegebene Links und Texte werden für diese Prüfung an DANINI übermittelt/);
+ assert.match(advisorCopy,/Uneti link i tekst šalju se DANINI serveru/);
  assert.doesNotMatch(advisorCopy,/nur innerhalb dieser Browser-Sitzung/);
 });

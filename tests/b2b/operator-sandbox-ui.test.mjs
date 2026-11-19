@@ -17,6 +17,6 @@ test('operator checkout uses existing protected sandbox API and exact PayPal ori
  assert.match(page,/sku:'guide'/);
  assert.match(page,/termsAccepted:/);
  assert.match(page,/instantDeliveryConsent:/);
- assert.match(page,/s\.mode==='sandbox'/);
+ assert.match(page,/state\.mode==='sandbox'/);
  assert.doesNotMatch(page,/PAYPAL_CLIENT_SECRET|PAYPAL_CLIENT_ID/);
 });

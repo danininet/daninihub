@@ -186,3 +186,5 @@ jobs:
 # Authorized P1 SEO and conversion deploy 2026-11-18: merged PR #248; six CI checks passed on head 10c2e54.
 
 # Controlled P0 release 2026-11-19: PR #249 tested (eight CI SUCCESS); ad URL recognition and internal PayPal Sandbox operator UI. Public checkout remains disabled.
+
+# P0 2026-11-19: publish tested AutoScout24 adapter (contract-and-cost guards remain OFF), PR #251 nine CI SUCCESS.

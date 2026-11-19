@@ -45,12 +45,12 @@
   // Users often paste mobile share links without a scheme or with http://.
   const normalizedSource = raw => {
     const value = raw.trim();
-    if (!value || /\\s/.test(value) || value.length > 6000) return value;
-    if (/^https?:\\/\\//i.test(value)) {
+    if (!value || /\s/.test(value) || value.length > 6000) return value;
+    if (/^https?:\/\//i.test(value)) {
       try { const u = new URL(value); if (u.protocol === 'http:' && u.username === '' && u.password === '') { u.protocol = 'https:'; return u.href; } } catch {}
       return value;
     }
-    if (/^(?:www\\.)?[a-z0-9-]+(?:\\.[a-z0-9-]+)+(?:[\\/?#][^\\s]*)?$/i.test(value)) {
+    if (/^(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:[\/?#][^\s]*)?$/i.test(value)) {
       try { const u = new URL('https://' + value); if (!u.username && !u.password) return u.href; } catch {}
     }
     return value;
@@ -59,7 +59,7 @@
   const previewListingUrl = source => {
     try { const u = new URL(source);
       if (u.protocol !== 'https:' || !u.hostname.includes('.') || u.username || u.password) return null;
-      if (u.hostname === 'localhost' || /^(?:127|10|192\\.168)\\./.test(u.hostname)) return null;
+      if (u.hostname === 'localhost' || /^(?:127|10|192\.168)\./.test(u.hostname)) return null;
       return u;
     } catch { return null; }
   };
@@ -167,7 +167,7 @@
       // not a fabricated vehicle analysis; a screenshot/text is needed for actual data.
       const preview=previewListingUrl(source);
       if(preview && !file && !capturedTabImage){
-        const hostname=preview.hostname.replace(/^www\\./,'');
+        const hostname=preview.hostname.replace(/^www\./,'');
         const platform=hostname.endsWith('mobile.de')?'mobile.de':hostname.endsWith('autoscout24.de')?'AutoScout24':hostname.endsWith('kleinanzeigen.de')?'Kleinanzeigen':hostname;
         analysisOutput.replaceChildren();
         const p=document.createElement('p');
@@ -182,7 +182,7 @@
         upload.addEventListener('click',()=>screenshotInput?.click());analysisOutput.append(upload);
         return;
       }
-      if(source && !preview && /^https?:\\/\\//i.test(source)) {analysisOutput.textContent=messages.invalid;return;}
+      if(source && !preview && /^https?:\/\//i.test(source)) {analysisOutput.textContent=messages.invalid;return;}
       if(!captchaToken){analysisOutput.textContent=messages.captcha;return;}
       const image=capturedTabImage||await compressScreenshot(file);
       const res=await fetch('/api/vehicle-analysis',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},credentials:'same-origin',body:JSON.stringify({language:lang,source,...(image?{image}:{}),turnstileToken:captchaToken})});

@@ -24,7 +24,7 @@ const de = locale === "de";
         <p class="micro auto-hero-note">{de ? "Klare Prüffragen statt falscher Versprechen. Ein Inserat allein ist kein Fahrzeugnachweis." : "Jasna pitanja i provere, bez lažnih garancija. Oglas nije dokaz o stanju vozila."}</p>
       </div>
       <div class="auto-hero-panel" aria-label={de ? "Drei Schritte zur informierten Kaufentscheidung" : "Tri koraka do informisane odluke"}>
-        <span class="eyebrow">{de ? "SO LÄUFT IHRE PRÜFUNG" : "KAKO IZGLEDA PROVERA"}</span><h2 class="auto-panel-title">{de ? "Drei Schritte. Eine klarere Entscheidung." : "Tri koraka. Sigurnija odluka."}</h2>
+        <span class="eyebrow">{de ? "SO LÄUFT IHRE PRÜFUNG" : "KAKO IZGLEDA PROVERA"}</span><h2 class="auto-panel-title">{de ? "Drei Schritte. Eine klarere Entscheidung." : "Tri koraka. Jasnija odluka."}</h2>
         <div class="auto-panel-step"><span>01</span><div><strong>{de ? "Inserat erfassen" : "Unesi oglas"}</strong><small>{de ? "Link, FIN oder Anzeigentext" : "Link, VIN ili tekst oglasa"}</small></div></div>
         <div class="auto-panel-step"><span>02</span><div><strong>{de ? "Risiken eingrenzen" : "Razjasni rizike"}</strong><small>{de ? "Drei konkrete Prüffragen" : "Tri konkretna pitanja"}</small></div></div>
         <div class="auto-panel-step"><span>03</span><div><strong>{de ? "Nächsten Schritt wählen" : "Izaberi sledeći korak"}</strong><small>{de ? "Dokumente, Kosten, Besichtigung" : "Dokumenta, troškovi, pregled"}</small></div></div>
@@ -41,13 +41,13 @@ const de = locale === "de";
         <div class="auto-section-number">01 / {de ? "IHRE FAHRZEUGANGABEN" : "PODACI O VOZILU"}</div>
         <span class="eyebrow">{de ? "SCHRITT 1 · INSERAT / FIN" : "KORAK 1 · OGLAS / VIN"}</span>
         <h2>{de ? "Starten Sie mit Ihrem Inserat." : "Počni od svog oglasa."}</h2>
-        <p>{de ? "Fügen Sie einen Link von einem beliebigen deutschen Autoportal oder Kleinanzeigenmarkt (z. B. mobile.de, Kleinanzeigen, Quoka, lokale Händler) ein — alternativ FIN oder kopierten Anzeigentext." : "Zalepite link bilo kog nemačkog oglasnika (mobile.de, Kleinanzeigen, Quoka, lokalni oglasi) ili unesite VIN odnosno kopirani opis automobila."}</p>
+        <p>{de ? "Geben Sie einen Inseratslink, eine FIN oder einen Beschreibungstext ein. Die Quelle wird erkannt; Fahrzeugdaten können nur bei tatsächlichem Zugriff ausgewertet werden." : "Unesite link oglasa, VIN ili tekst opisa. Sistem prvo prepoznaje izvor; detalji vozila biće analizirani samo ako su podaci stvarno dostupni."}</p>
         <form class="auto-advisor-form" id="universal-advisor-form" data-locale={locale}>
           <label for="vehicle-source">{de ? "Inseratslink, FIN oder Anzeigentext" : "Link oglasa, VIN ili tekst opisa"}</label>
-          <textarea id="vehicle-source" name="source" required maxlength="6000" rows="4" placeholder={de ? "Link eines beliebigen Inserats (mobile.de, Kleinanzeigen...) oder FIN / Beschreibung einfügen..." : "Zalepite link bilo kog oglasnika (mobile.de, Kleinanzeigen...) ili unesite VIN / opis automobila..."} autocomplete="off" aria-describedby="source-privacy" ></textarea>
+          <textarea id="vehicle-source" name="source" required maxlength="6000" rows="4" placeholder={de ? "Inseratslink, FIN oder Beschreibung einfügen..." : "Zalepite link oglasa, VIN ili opis vozila..."} autocomplete="off" aria-describedby="source-privacy" ></textarea>
           <p id="source-privacy" class="micro">{de ? "Keine Ausweisbilder, Telefonnummern, Adressen oder Zahlungsdaten einfügen. Der eingegebene Link wird bei der Prüfung an den DANINI-Server übermittelt." : "Ne unosite slike dokumenata, brojeve telefona, adrese ni podatke za plaćanje. Uneti link se pri proveri šalje DANINI serveru."}</p>
           <div class="auto-advisor-controls">
-            <button class="button" type="submit">{de ? "Weiter zur 3-Fragen-Prüfung" : "Nastavi na 3 pitanja"}</button>
+            <button class="button" type="submit">{de ? "Zur kostenlosen Vorprüfung" : "Pokreni besplatnu predproveru"}</button>
           </div>
         </form>
         <div class="auto-risk-result" id="universal-risk-result" hidden role="status" aria-live="polite">
@@ -59,6 +59,20 @@ const de = locale === "de";
         </div>
         <p class="micro">{de ? "Der nächste Schritt prüft die Quelle und zeigt offene Fragen. Fahrzeugangaben werden nur ausgewertet, wenn der tatsächliche Inseratstext verfügbar ist. Geschützte Portale werden nicht umgangen." : "Naredni korak prepoznaje izvor oglasa i prikazuje šta još treba proveriti. Podaci o vozilu analiziraju se samo kada je sadržaj dostupan; zaštita oglasnika se ne zaobilazi."}</p>
       </div>
+    </div>
+  </section>
+
+  <section class="section white auto-offer-clarity" aria-labelledby="auto-offer-heading">
+    <div class="wrap">
+      <span class="eyebrow">{de ? "KOSTENLOSER EINSTIEG UND PERSÖNLICHER SERVICE" : "BESPLATNO I UZ LIČNU PODRŠKU"}</span>
+      <h2 id="auto-offer-heading">{de ? "Was ist kostenlos – und wofür lohnt sich ein Auftrag?" : "Šta je besplatno, a šta dobijate dodatnom uslugom?"}</h2>
+      <div class="auto-precheck-grid">
+        <article><b>01 / {de ? "KOSTENLOS" : "BESPLATNO"}</b><h3>{de ? "Erste Orientierung" : "Prva orijentacija"}</h3><p>{de ? "Quelle erkennen, verfügbare Angaben ordnen und offene Prüffragen sehen. Das ist keine bestätigte Fahrzeughistorie." : "Prepoznavanje izvora, pregled stvarno dostupnih navoda i pitanja za proveru. Ovo nije potvrđena istorija vozila."}</p></article>
+        <article><b>02 / {de ? "AUF ANFRAGE" : "NA ZAHTEV"}</b><h3>{de ? "Entscheidungsdossier" : "Dosije pre odluke"}</h3><p>{de ? "Individuelle Sichtung zugänglicher Belege, Widerspruchsliste, deutsche Verkäuferfragen und nachvollziehbare nächste Schritte. Umfang und Preis vor Auftrag schriftlich vereinbaren." : "Individualni pregled dostupnih dokaza, lista neslaganja, pitanja prodavcu na nemačkom i preporuka narednih koraka. Obim i cena se potvrđuju pre ugovaranja."}</p></article>
+        <article><b>03 / {de ? "OPTIONAL" : "OPCIONO"}</b><h3>{de ? "Verkäuferkontakt und Prüfung" : "Komunikacija i pregled"}</h3><p>{de ? "Deutschsprachige Rückfragen oder Koordination einer unabhängigen technischen Prüfung nur nach Zustimmung, Verfügbarkeit und gesonderter Vereinbarung." : "Pitanja i komunikacija sa prodavcem ili organizacija nezavisnog tehničkog pregleda samo uz odobrenje, dostupnost i poseban dogovor."}</p></article>
+      </div>
+      <p class="micro">{de ? "Datenschutz: Das Formular übermittelt Angaben nur zur Bearbeitung der Anfrage. Eine Sicherheitsprüfung schützt vor automatisiertem Missbrauch. Keine Zahlung durch das Einfügen eines Links." : "Privatnost: unos se obrađuje radi konkretnog zahteva. Bezbednosna provera štiti formular od zloupotrebe. Sam unos linka ne pokreće naplatu."}</p>
+      <a class="button" href="#contact">{de ? "Unverbindlich den Prüfumfang anfragen" : "Zatraži ponudu za konkretnu proveru"}</a>
     </div>
   </section>
 

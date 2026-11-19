@@ -52,7 +52,7 @@
   let ready=false;
   fetch('/api/danini/digital/status',{cache:'no-store',headers:{accept:'application/json'}})
     .then(async r=>{if(!r.ok)throw Error('status');return r.json();})
-    .then((s:{mode?:string})=>{ready=s.mode==='sandbox';form.hidden=!ready;
+    .then(s=>{const state=s as {mode?:string};ready=state.mode==='sandbox';form.hidden=!ready;
       status.textContent=ready?'Sandbox okruženje je dostupno. Test zahteva postojeći operator pristup i tvoje odobrenje u PayPal-u.':'Sandbox nije potvrđen ili nije konfigurisan. Nijedna naplata nije pokrenuta.';})
     .catch(()=>{status.textContent='Nije moguće proveriti Sandbox stanje. Nijedna naplata nije pokrenuta.';});
   form.addEventListener('submit',async e=>{

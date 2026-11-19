@@ -193,3 +193,5 @@ jobs:
 # P0 2026-11-19: publish tested AutoScout24 adapter (contract-and-cost guards remain OFF), PR #251 nine CI SUCCESS.
 
 # P1 controlled release 2026-11-19: PR #254 validated across five GitHub CI suites; two-way B2B, truthful vehicle tiers, approved logo display and intake clarity. No price/payments/DNS/legal changes.
+
+# P0 header visual correction release 2026-11-19: merged PR #256, five CI SUCCESS. Logo uses original artwork with no white card via blend on navy. No prices, payment, legal or DNS changes.

@@ -166,14 +166,14 @@
       // Link-only preview is free of CAPTCHA/network calls. It is source recognition,
       // not a fabricated vehicle analysis; a screenshot/text is needed for actual data.
       const preview=previewListingUrl(source);
-      if(preview && !file && !capturedTabImage){
+      if(preview && !file && !capturedTabImage && !captchaToken){
         const hostname=preview.hostname.replace(/^www\./,'');
         const platform=hostname.endsWith('mobile.de')?'mobile.de':hostname.endsWith('autoscout24.de')?'AutoScout24':hostname.endsWith('kleinanzeigen.de')?'Kleinanzeigen':hostname;
         analysisOutput.replaceChildren();
         const p=document.createElement('p');
         p.textContent=lang==='de'
-          ? 'Link erkannt ('+platform+'). Das Inserat wurde nicht ausgelesen. Für eine Datenanalyse Screenshot hochladen oder sichtbaren Inserattext einfügen.'
-          : 'Link prihvaćen ('+platform+'). Sadržaj oglasa nije preuzet. Za analizu podataka dodajte screenshot ili kopirajte vidljivi tekst oglasa.';
+          ? 'Link erkannt ('+platform+'). Bitte Sicherheitsprüfung bestätigen und erneut auf Prüfen klicken, damit verfügbare Inseratdaten geprüft werden können.'
+          : 'Link prihvaćen ('+platform+'). Potvrdite bezbednosnu proveru i ponovo kliknite Proveri da se analiziraju dostupni podaci oglasa.';
         analysisOutput.append(p);
         const open=document.createElement('a');open.href=preview.href;open.target='_blank';open.rel='noopener noreferrer';
         open.textContent=lang==='de'?'Originalinserat öffnen':'Otvori originalni oglas';analysisOutput.append(open);
@@ -203,8 +203,8 @@
       if(data.sourceType==='user_supplied_screenshot'){
         line(lang==='de'?'Bildverarbeitung':'Obrada slike',lang==='de'?'Sichtbare Inseratsangaben aus Ihrem Screenshot, nicht unabhängig bestätigt.':'Izdvojeni vidljivi podaci sa screenshota; bez nezavisne potvrde.');
       }
-      if(data.sourceType==='licensed_listing'){
-        line(lang==='de'?'Datenquelle':'Izvor podataka',lang==='de'?'mobile.de Search API (Inseratsangaben, ungeprüft)':'mobile.de Search API (navodi oglasa, nepotvrđeno)');
+      if(data.sourceType==='licensed_listing'||data.sourceType==='authorized_listing'){
+        line(lang==='de'?'Datenquelle':'Izvor podataka',data.sourcePlatform+' — '+(lang==='de'?'ausgelesene Inseratsangaben, nicht unabhängig geprüft':'izdvojeni navodi iz oglasa, nezavisno nepotvrđeni'));
         const open=document.createElement('a');open.href=data.sourceUrl;open.target='_blank';open.rel='noopener noreferrer';
         open.textContent=lang==='de'?'Originalinserat öffnen':'Otvori originalni oglas';open.className='advisor-email-fallback';analysisOutput.append(open);
       }

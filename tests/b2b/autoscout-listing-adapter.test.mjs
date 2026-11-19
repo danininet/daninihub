@@ -43,7 +43,7 @@ test('normalizes exactly one AutoScout24 individual ad and drops tracking',()=>{
 test('extracts confirmed ad claims, highlights Unfallfahrzeug Repariert',()=>{
  const result=parseAutoScoutMarkdown(markdown);
  assert.equal(result.fields.brand,'Audi');
- assert.equal(result.fields.model,'A4');
+ assert.equal(result.fields.model,'A4 allroad');
  assert.equal(result.fields.year,2023);
  assert.equal(result.fields.mileageKm,85251);
  assert.equal(result.fields.priceEur,25980);

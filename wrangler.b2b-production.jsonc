@@ -10,6 +10,7 @@
     "binding": "ASSETS",
     "run_worker_first": [
       "/api/*",
+      "/portal",
       "/portal/*"
     ],
     "not_found_handling": "404-page"
@@ -29,7 +30,10 @@
     "AI_ENABLED": "true",
     "SITE_ORIGIN": "https://daninihub.com",
     "RETENTION_DAYS": "30",
-    "DANINI_AI_LIVE_APPROVED": "true"
+    "DANINI_AI_LIVE_APPROVED": "true",
+    "ACCESS_TEAM_DOMAIN": "https://danininet.cloudflareaccess.com",
+    "ACCESS_AUD": "202a450ca6a61daca3012f0472cb24f4461a69df9693904ee288e76211f244d6",
+    "DIRECTOR_EMAIL": "dragangaganet@gmail.com"
   },
   "d1_databases": [
     {

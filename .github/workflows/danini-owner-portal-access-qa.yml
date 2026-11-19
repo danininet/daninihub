@@ -38,7 +38,8 @@ jobs:
             const body=await res.text();
             assert.ok([302,401,403].includes(res.status),path+' must be protected by Access, got HTTP '+res.status);
             if(res.status===302){
-              assert.match(res.headers.get('location')||'',/cloudflareaccess\\.com|\\/cdn-cgi\\/access\\//i,path+' must redirect to Access');
+              const location=res.headers.get('location')||'';
+              assert.ok(location.includes('cloudflareaccess.com')||location.includes('/cdn-cgi/access/'),path+' must redirect to Access');
             }
             assert.doesNotMatch(body,/Pregled poslovnih zahteva|<nav id="cases"/,path+' private UI exposed');
             console.log('PASS protected',path,res.status);

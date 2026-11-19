@@ -37,7 +37,7 @@ jobs:
       - name: Build Astro SR/DE static pages
         run: npm run build:b2b
       - name: Install isolated browser for visual QA
-        run: npx playwright install chromium --with-deps
+        run: npx playwright install chromium
       - name: Browser E2E and responsive screenshots (SR/DE)
         run: |
           npm run dev:b2b -- --port 4321 > /tmp/autodanini-astro-preview.log 2>&1 &

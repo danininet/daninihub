@@ -1,0 +1,52 @@
+name: DANINI owner portal Access perimeter QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/danini-owner-portal-access-qa.yml'
+      - 'wrangler.b2b-production.jsonc'
+      - 'src/security/access.ts'
+      - 'src/portal/page.ts'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/danini-owner-portal-access-qa.yml'
+      - 'wrangler.b2b-production.jsonc'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify owner-only Access protects exact portal and all case routes
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const base='https://daninihub.com';
+          const privateRoutes=[
+            '/portal','/portal/','/portal/cases',
+            '/portal/case/00000000-0000-0000-0000-000000000000',
+            '/portal/revise/00000000-0000-0000-0000-000000000000',
+            '/portal/approve/00000000-0000-0000-0000-000000000000'
+          ];
+          for(const path of privateRoutes){
+            const res=await fetch(base+path,{redirect:'manual',signal:AbortSignal.timeout(12000)});
+            const body=await res.text();
+            assert.ok([302,401,403].includes(res.status),path+' must be protected by Access, got HTTP '+res.status);
+            if(res.status===302){
+              assert.match(res.headers.get('location')||'',/cloudflareaccess\\.com|\\/cdn-cgi\\/access\\//i,path+' must redirect to Access');
+            }
+            assert.doesNotMatch(body,/Pregled poslovnih zahteva|<nav id="cases"/,path+' private UI exposed');
+            console.log('PASS protected',path,res.status);
+          }
+          for(const path of ['/de/business/','/sr/business/']){
+            const res=await fetch(base+path,{signal:AbortSignal.timeout(12000)});
+            assert.equal(res.status,200,path+' public Business page must remain accessible');
+            console.log('PASS public',path);
+          }
+          console.log('PASS owner-only edge perimeter (unauthenticated). Authenticated E2E remains separate.');
+          JS

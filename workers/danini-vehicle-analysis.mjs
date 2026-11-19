@@ -1,4 +1,5 @@
 import {evaluateListingWithAI,isAiConfigured} from './danini-vehicle-ai.mjs';
+import {readPermittedAutoScoutAd} from './danini-autoscout-data.mjs';
 /** Safe, clearly labelled NON-AI listing text extraction.
  * Never fetch third-party URLs: listing-site consent and SSRF safety take precedence.
  * AI activation requires separate reviewed provider binding and spending approval.
@@ -182,6 +183,29 @@ export async function handleVehicleAnalysis(request,env={}){
     questions,independentVerificationRequired:true,
     disclaimer:language==='de'?'Aus mobile.de Inseratsdaten ausgelesen, nicht unabhängig geprüft. Keine Bestätigung von Zustand, Eigentum, Unfallhistorie oder Echtheit.':'Podaci iz oglasa preuzeti putem mobile.de API-ja, bez nezavisne potvrde stanja, vlasništva, istorije štete ili autentičnosti.'});
   }
+  // Explicitly authorized one-ad retrieval. No scraping until both permission
+  // and browser cost flags are independently approved by the operator.
+  const autoscout=await readPermittedAutoScoutAd(listingUrl,env);
+  if(autoscout.status==='ok'){
+   const data=autoscout.record;
+   const warnings=data.warnings.includes('accident_reported')
+    ?[language==='de'?'Das Inserat bezeichnet das Fahrzeug als Unfallfahrzeug. Reparaturumfang und Belege vor Anzahlung prüfen.':'Oglas navodi da je vozilo havarisano (Unfallfahrzeug). Pre kapare proveriti obim štete i račune popravke.']:[];
+   let ai={aiUsed:false,aiStatus:'disabled'};
+   if(isAiConfigured(env)){
+    try{
+     const k='vehicle-ai-daily:'+new Date().toISOString().slice(0,10);
+     const n=Number(await env.PARTNERS.get(k)||0);
+     if(n<20){await env.PARTNERS.put(k,String(n+1),{expirationTtl:90000});ai=await evaluateListingWithAI(data.sourceExcerpt,data.fields,language,env);}
+     else ai.aiStatus='daily_limit';
+    }catch{ai.aiStatus='provider_unavailable'}
+   }
+   return json({status:ai.aiUsed?'ai_assisted':'listing_data',method:ai.aiUsed?'permitted_browser_markdown_plus_workers_ai':'permitted_browser_markdown',
+    aiUsed:ai.aiUsed,aiStatus:ai.aiStatus,...(ai.aiUsed?{aiModel:ai.aiModel,aiRisks:ai.aiRisks,aiSellerQuestions:ai.aiSellerQuestions}:{}),
+    sourceType:'authorized_listing',sourcePlatform:'AutoScout24',sourceUrl:listingUrl.href,listingFetched:true,
+    fields:data.fields,missing:Object.entries(data.fields).filter(([,v])=>v==null).map(([k])=>k),
+    warnings,questions:question[language],independentVerificationRequired:true,
+    disclaimer:language==='de'?'Aus dem Inserat extrahierte, nicht unabhängig bestätigte Anbieterangaben. Keine physische Prüfung, keine Bestätigung von Eigentum, Unfallschaden-Umfang oder Dokumentenechtheit.':'Podaci su izdvojeni iz oglasa i nisu nezavisno potvrđeni. Nije izvršen fizički pregled niti provera vlasništva, obima štete ili autentičnosti dokumenata.'});
+  }
   const host=listingUrl.hostname.toLowerCase();
   const known=host==='mobile.de'||host.endsWith('.mobile.de')?'mobile.de':
    host==='autoscout24.de'||host.endsWith('.autoscout24.de')?'AutoScout24':
@@ -189,7 +213,7 @@ export async function handleVehicleAnalysis(request,env={}){
    host;
   return json({
    status:'source_received',method:'url_metadata_only',aiUsed:false,aiStatus:'not_applicable',
-   providerStatus:licensed.status,
+   providerStatus:autoscout.status==='unsupported'?licensed.status:autoscout.status,
    sourceType:'listing_url',sourcePlatform:known,sourceUrl:listingUrl.href,
    listingFetched:false,
    fields:{brand:null,model:null,year:null,mileageKm:null,priceEur:null,fuel:null,gearbox:null},

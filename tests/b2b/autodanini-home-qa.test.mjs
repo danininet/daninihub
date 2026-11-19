@@ -13,7 +13,7 @@ test('SR/DE automotive hero and universal source input',()=>{
  assert.match(home,/<textarea id="vehicle-source"/);
  assert.match(home,/maxlength="6000"/);
  assert.match(home,/podaci stvarno dostupni/);
- assert.match(home,/Quoka/);
+ assert.match(home,/pristup podacima/);
 });
 test('Balkan-first copy and sample deliverables are labeled fictional in DE/SR',()=>{
  const brand=readFileSync('src/components/DaniniLanding.astro','utf8');

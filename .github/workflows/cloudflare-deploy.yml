@@ -191,3 +191,5 @@ jobs:
 # Controlled P0 release 2026-11-19: PR #249 tested (eight CI SUCCESS); ad URL recognition and internal PayPal Sandbox operator UI. Public checkout remains disabled.
 
 # P0 2026-11-19: publish tested AutoScout24 adapter (contract-and-cost guards remain OFF), PR #251 nine CI SUCCESS.
+
+# P1 controlled release 2026-11-19: PR #254 validated across five GitHub CI suites; two-way B2B, truthful vehicle tiers, approved logo display and intake clarity. No price/payments/DNS/legal changes.

@@ -33,8 +33,17 @@ const de = locale === "de";
         <input id={"bc-company-"+locale} name="company" autocomplete="organization" maxlength="120"/>
       </div>
       <div class="bc-fieldset">
-        <label for={"bc-country-"+locale}>{de ? "Zielland" : "Ciljno tržište"}</label>
+        <label for={"bc-country-"+locale}>{de ? "DACH-Bezug (Ausgangs- oder Zielmarkt)" : "DACH tržište (polazno ili ciljno)"}</label>
         <select id={"bc-country-"+locale} name="country"><option value="DE">Deutschland / Nemačka</option><option value="AT">Österreich / Austrija</option><option value="CH">Schweiz / Švajcarska</option></select>
+      </div>
+      <div class="bc-fieldset">
+        <label for={"bc-direction-"+locale}>{de ? "Geschäftsrichtung (optional)" : "Smer poslovne saradnje (opciono)"}</label>
+        <select id={"bc-direction-"+locale} name="direction">
+          <option value="">{de ? "Noch offen / bitte klären" : "Još nije definisano"}</option>
+          <option value="balkan-to-dach">{de ? "Balkan → DACH: Kunden oder Partner ansprechen" : "Balkan → DACH: tražim kupce ili partnere"}</option>
+          <option value="dach-to-balkan">{de ? "DACH → Balkan: Lieferanten oder Partner prüfen" : "DACH → Balkan: tražim dobavljače ili partnere"}</option>
+        </select>
+        <small>{de ? "Beide Richtungen werden unterstützt. Wir prüfen zuerst Ihren Bedarf und die verfügbaren Informationen." : "Oba smera su moguća. Prvo proveravamo vaš zahtev i raspoloživu dokumentaciju."}</small>
       </div>
       <div class="bc-fieldset">
         <label for={"bc-service-"+locale}>{de ? "Gewünschte Leistung" : "Usluga koja vas interesuje"} *</label>
@@ -43,8 +52,9 @@ const de = locale === "de";
           <option value="check">DANINI Business Check</option>
           <option value="intake">DANINI Anfragebüro</option>
           <option value="support">DANINI Office Betreuung</option>
-          <option value="crossborder">{de ? "DACH–Balkan B2B-Unterstützung" : "DACH–Balkan B2B podrška"}</option>
+          <option value="crossborder">{de ? "DACH–Balkan Geschäftsanbahnung & Lieferantenanfrage" : "DACH–Balkan poslovno povezivanje i upiti dobavljačima"}</option>
         </select>
+        <small class="bc-clarity">{de ? "Wählen Sie die passende Aufgabe. Bei B2B-Anbahnung unterstützen wir die Vorbereitung von Anforderungen und Rückfragen; wir versprechen keine Geschäftspartner oder Abschlüsse." : "Odaberite zadatak. Za DACH–Balkan povezivanje pripremamo zahtev i pitanja; ne obećavamo partnera ili zaključen posao."}</small>
       </div>
       <div class="bc-fieldset">
         <label for={"bc-message-"+locale}>{de ? "Was ist das Problem und was möchten Sie erreichen?" : "Šta je problem i koji rezultat želite?"} *</label>
@@ -58,7 +68,9 @@ const de = locale === "de";
           <a href={"/"+locale+"/datenschutz/"}>{de ? "Datenschutz" : "Politika privatnosti"}</a> *</span>
       </label>
       <div class="bc-captcha" data-business-captcha aria-label={de ? "Sicherheitsprüfung" : "Bezbednosna provera"}></div>
-      <button type="submit" data-business-submit disabled>{de ? "Anfrage sicher senden" : "Pošalji bezbedno upit"}</button>
+      <div class="bc-trust" aria-label={de ? "Schutz und Transparenz" : "Zaštita i transparentnost"}><span>{de ? "Turnstile-Spamschutz" : "Turnstile zaštita od spama"}</span><span>{de ? "Keine automatische Zahlung" : "Bez automatske naplate"}</span><span>{de ? "Freigabe vor Dritt-Kontakt" : "Odobrenje pre kontakta sa trećima"}</span></div>
+      <button type="submit" data-business-submit disabled>{de ? "Unverbindliche Anfrage absenden" : "Pošalji neobavezujući upit"}</button>
+      <p class="bc-action-note">{de ? "Nächster Schritt: Wir prüfen die Angaben und klären den Umfang per E-Mail. Es erfolgt keine automatische Bestellung und keine Zahlung." : "Sledeći korak: pregledamo podatke i mejlom preciziramo obim. Slanje nije narudžbina niti pokretanje naplate."}</p>
       <p class="bc-status" data-business-status role="status" aria-live="polite">
         {de ? "Sicherheitsprüfung wird vorbereitet …" : "Priprema bezbednosne provere …"}
       </p>
@@ -161,7 +173,7 @@ const de = locale === "de";
             country:String(values.get("country")||"DE"),
             vertical:service === "crossborder" ? "nearshoring" : "business",
             topic:serviceLabels[service],
-            message:String(values.get("message")||"").trim(),
+            message:[String(values.get("message")||"").trim(), ...(String(values.get("direction")||"") ? ["B2B-Richtung / Smer: "+String(values.get("direction"))] : [])].join("\n"),
             language:de?"de":"sr",
             consent:values.get("consent")==="on",
             details:{service},
@@ -241,6 +253,8 @@ const de = locale === "de";
 .bc-captcha{min-height:66px;max-width:100%;overflow:hidden}
 .bc-form button[type=submit]{background:#facc15;color:#102238;border:0;border-radius:10px;min-height:52px;padding:14px 19px;font-weight:800;font:inherit;cursor:pointer}
 .bc-form button[type=submit]:disabled{background:#d6dde4;color:#485b70;cursor:not-allowed}
+.bc-trust{display:flex;flex-wrap:wrap;gap:8px}.bc-trust span{display:inline-block;font-size:.7rem;line-height:1.35;color:#164b55;background:#eaf6f3;border:1px solid #b6d8ce;border-radius:8px;padding:7px 9px;font-weight:720}
+.bc-action-note{font-size:.8rem;color:#435a70;line-height:1.6;margin:0}
 .bc-status{font-size:.84rem;font-weight:670;color:#30536a;min-height:24px;margin:0}
 .bc-disclaimer{color:#4d6174;font-size:.75rem;margin:0;line-height:1.6}
 @media(max-width:960px){.bc-layout{grid-template-columns:1fr}.bc-intro{max-width:770px}}

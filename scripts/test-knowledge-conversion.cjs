@@ -33,7 +33,8 @@ for(const lang of ['de','sr']){
   assert.match(checklist,/cl-square/,'Actual checkbox design absent');
   const count=(checklist.match(/class="cl-square"/g)||[]).length;
   assert.equal(count,12,'Must have exactly 12 checklist items in '+lang);
-  assert.ok(checklist.includes('/'+lang+'/auto-check/'),'Lead handoff missing');
+  assert.match(checklist,/data-auto-enquiry/,'Existing protected enquiry form missing');
+  assert.match(checklist,/href="#contact"/,'Lead CTA must focus the real enquiry form');
   assert.ok(products.includes('49 €'),'Established PDF price omitted');
   assert.match(products,/149(?:\s*€|-€)/,'Disabled proposed software status omitted');
   assert.match(products,/\/digital\.html/,'Existing digital product not linked');

@@ -11,7 +11,7 @@ test('B2B guide links use the published Serbian evergreen slugs',()=>{
 test('two-direction commercial offer is scoped honestly',()=>{
  assert.match(business,/Unternehmen in Deutschland/);
  assert.match(business,/oba smera/);
- assert.match(business,/keine Vermittlungs- oder Abschlussgarantie/);
+ assert.match(business,/Keine Vermittlungs- oder Abschlussgarantie/);
  assert.match(form,/DACH–Balkan poslovno povezivanje/);
 });
 test('forms explain their next step and not a payment',()=>{

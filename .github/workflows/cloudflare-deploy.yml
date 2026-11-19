@@ -85,6 +85,9 @@ jobs:
           assert.equal(prod.vars?.AI_ENABLED,'true','Canonical production AI_ENABLED must remain approved true; abort');
           assert.equal(prod.vars?.DANINI_AI_LIVE_APPROVED,'true','Canonical production approval gate missing; abort');
           config.ai=prod.ai;
+          assert.equal(prod.browser?.binding,'BROWSER','Canonical Browser Rendering binding missing; abort');
+          config.browser=prod.browser;
+          assert.equal(config.browser.binding,'BROWSER','Browser Rendering binding not preserved; abort');
           assert.equal(config.ai.binding,'AI','Workers AI binding missing; abort');
           config.assets.run_worker_first=prod.assets.run_worker_first;
           assert.equal(config.name,prod.name,'Worker name mismatch; abort');

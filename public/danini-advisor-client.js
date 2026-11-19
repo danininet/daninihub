@@ -41,6 +41,28 @@
   const analysisPanel = document.createElement('section');
   analysisPanel.setAttribute('aria-label', lang === 'de' ? 'Inserat-Vorprüfung' : 'Preliminarna provera oglasa');
   analysisPanel.style.cssText='margin:1rem 0;padding:1rem;border:1px solid currentColor;border-radius:0.75rem;overflow-wrap:anywhere';
+  // Normalize user-pasted public listing addresses without fetching protected portals.
+  // Users often paste mobile share links without a scheme or with http://.
+  const normalizedSource = raw => {
+    const value = raw.trim();
+    if (!value || /\\s/.test(value) || value.length > 6000) return value;
+    if (/^https?:\\/\\//i.test(value)) {
+      try { const u = new URL(value); if (u.protocol === 'http:' && u.username === '' && u.password === '') { u.protocol = 'https:'; return u.href; } } catch {}
+      return value;
+    }
+    if (/^(?:www\\.)?[a-z0-9-]+(?:\\.[a-z0-9-]+)+(?:[\\/?#][^\\s]*)?$/i.test(value)) {
+      try { const u = new URL('https://' + value); if (!u.username && !u.password) return u.href; } catch {}
+    }
+    return value;
+  };
+  const listingSource = () => normalizedSource(input.value);
+  const previewListingUrl = source => {
+    try { const u = new URL(source);
+      if (u.protocol !== 'https:' || !u.hostname.includes('.') || u.username || u.password) return null;
+      if (u.hostname === 'localhost' || /^(?:127|10|192\\.168)\\./.test(u.hostname)) return null;
+      return u;
+    } catch { return null; }
+  };
   const analysisButton = document.createElement('button');
   analysisButton.type='button';
   analysisButton.className='advisor-analysis-button';
@@ -137,9 +159,30 @@
     analysisButton.disabled=true;
     analysisOutput.textContent=lang==='de'?'Eingabe wird sicher geprüft …':'Bezbedna provera unosa …';
     try{
-      const source=input.value.trim();
+      const source=listingSource();
       const file=screenshotInput?.files?.[0];
+      if (source !== input.value.trim()) { input.value = source; input.dispatchEvent(new Event('input', {bubbles:true})); }
       if(!source&&!file&&!capturedTabImage){analysisOutput.textContent=lang==='de'?'Bitte Link, Text oder Screenshot eingeben.':'Unesite link, tekst ili screenshot.';return;}
+      // Link-only preview is free of CAPTCHA/network calls. It is source recognition,
+      // not a fabricated vehicle analysis; a screenshot/text is needed for actual data.
+      const preview=previewListingUrl(source);
+      if(preview && !file && !capturedTabImage){
+        const hostname=preview.hostname.replace(/^www\\./,'');
+        const platform=hostname.endsWith('mobile.de')?'mobile.de':hostname.endsWith('autoscout24.de')?'AutoScout24':hostname.endsWith('kleinanzeigen.de')?'Kleinanzeigen':hostname;
+        analysisOutput.replaceChildren();
+        const p=document.createElement('p');
+        p.textContent=lang==='de'
+          ? 'Link erkannt ('+platform+'). Das Inserat wurde nicht ausgelesen. Für eine Datenanalyse Screenshot hochladen oder sichtbaren Inserattext einfügen.'
+          : 'Link prihvaćen ('+platform+'). Sadržaj oglasa nije preuzet. Za analizu podataka dodajte screenshot ili kopirajte vidljivi tekst oglasa.';
+        analysisOutput.append(p);
+        const open=document.createElement('a');open.href=preview.href;open.target='_blank';open.rel='noopener noreferrer';
+        open.textContent=lang==='de'?'Originalinserat öffnen':'Otvori originalni oglas';analysisOutput.append(open);
+        const upload=document.createElement('button');upload.type='button';upload.className='advisor-analysis-button';
+        upload.textContent=lang==='de'?'Screenshot hinzufügen':'Dodaj screenshot';
+        upload.addEventListener('click',()=>screenshotInput?.click());analysisOutput.append(upload);
+        return;
+      }
+      if(source && !preview && /^https?:\\/\\//i.test(source)) {analysisOutput.textContent=messages.invalid;return;}
       if(!captchaToken){analysisOutput.textContent=messages.captcha;return;}
       const image=capturedTabImage||await compressScreenshot(file);
       const res=await fetch('/api/vehicle-analysis',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},credentials:'same-origin',body:JSON.stringify({language:lang,source,...(image?{image}:{}),turnstileToken:captchaToken})});
@@ -306,7 +349,8 @@
     }).catch(() => show(messages.unavailable));
   cta.addEventListener('click', async () => {
     if (cta.disabled || !answers.every(a => a !== null) || busy) return;
-    const source = input.value.trim();
+    const source = listingSource();
+    if (source !== input.value.trim()) { input.value = source; input.dispatchEvent(new Event('input', {bubbles:true})); }
     if (!validSource(source)) { show(messages.invalid); input.focus(); return; }
     if (!form.reportValidity() || !el('advisor-consent').checked) { show(messages.contact); return; }
     if (!serviceEnabled) { show(messages.unavailable); return; }

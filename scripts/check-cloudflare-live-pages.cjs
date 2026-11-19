@@ -144,6 +144,20 @@ async function main(){
       throw Error('Sandbox must never advertise public paid checkout');
     console.log('PASS /api/danini/digital/status',res.status,
       'mode='+data.mode,'public_checkout='+data.enabled,'software_enabled=false');
+    if(data.mode==='sandbox'){
+      // Safe negative security probe: a deliberately invalid operator header
+      // is rejected before any PayPal order can be created.
+      // Never use a real operator token or customer information in CI.
+      const denied=await fetch(new URL('/api/danini/digital/paypal/sandbox/checkout',root),{
+        method:'POST',cache:'no-store',signal:AbortSignal.timeout(12000),
+        headers:{'content-type':'application/json','X-Danini-Sandbox-Access':'QA-INVALID-NOT-A-SECRET'},
+        body:JSON.stringify({sku:'guide',language:'sr',termsAccepted:true,instantDeliveryConsent:true})
+      });
+      if(denied.status!==404)throw Error('Sandbox access guard unexpected HTTP '+denied.status);
+      const body=await denied.json();
+      if(body.error!=='NOT_FOUND')throw Error('Sandbox access guard unexpected response');
+      console.log('PASS /api/danini/digital/paypal/sandbox/checkout unauthorized operator access rejected (404); NO PayPal order');
+    }
   }catch(error){
     apiFailures.push({path:'/api/danini/digital/status',pass:false,error:error.message});
     console.error('FAIL /api/danini/digital/status',error.message);

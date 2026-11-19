@@ -27,7 +27,14 @@ const path=require('node:path');
       main:!!document.querySelector('main'),
       clickable:[...document.querySelectorAll('main a')].filter(a=>a.getAttribute('href')?.startsWith('/')).length
      }));
-     if(actual.scroll>actual.view+2)throw Error('Horizontal overflow '+url+' '+width+' got '+actual.scroll);
+     if(actual.scroll>actual.view+2){
+      const offenders=await page.evaluate(()=>[...document.querySelectorAll('*')].map(el=>{
+        const r=el.getBoundingClientRect();return {tag:el.tagName,cls:el.className?.toString().slice(0,70),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)};
+      }).filter(x=>x.right>innerWidth+3).sort((a,b)=>b.right-a.right).slice(0,12));
+      console.error('OVERFLOW OFFENDERS',url,width,JSON.stringify(offenders));
+      await page.screenshot({path:path.join(output,'knowledge-overflow-'+lang+'-'+(route||'index').replace('/','')+'-'+width+'.png'),fullPage:true});
+      throw Error('Horizontal overflow '+url+' '+width+' got '+actual.scroll);
+     }
      if(!actual.main||!actual.h1||actual.h1.length<8)throw Error('Missing semantic content '+url);
      if(actual.clickable<2)throw Error('Missing internal CTAs '+url);
      if(errors.length)throw Error('Browser error '+url+': '+errors.join('; '));

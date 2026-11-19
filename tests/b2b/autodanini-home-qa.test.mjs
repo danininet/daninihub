@@ -12,14 +12,14 @@ test('SR/DE automotive hero and universal source input',()=>{
  assert.match(home,/Auto in Deutschland gefunden?/);
  assert.match(home,/<textarea id="vehicle-source"/);
  assert.match(home,/maxlength="6000"/);
- assert.match(home,/Kleinanzeigen/);
+ assert.match(home,/podaci stvarno dostupni/);
  assert.match(home,/Quoka/);
 });
 test('Balkan-first copy and sample deliverables are labeled fictional in DE/SR',()=>{
  const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
  const business=readFileSync('src/components/BusinessLanding.astro','utf8');
  assert.match(brand,/Za firme sa Balkana/);
- assert.match(business,/Vodite firmu na Balkanu/);
+ assert.match(business,/DANINI pomaže u oba smera/);
  assert.match(business,/Geschäfte mit Deutschland vorbereiten/);
  assert.match(business,/DEMO · NIJE STVARNI KLIJENT/);
  assert.match(business,/DEMO · KEIN KUNDENPROJEKT/);

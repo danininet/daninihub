@@ -18,7 +18,7 @@ test('forms explain their next step and not a payment',()=>{
  assert.match(form,/Slanje nije narudžbina niti pokretanje naplate/);
  assert.match(form,/Unverbindliche Anfrage absenden/);
  assert.match(home,/Sam unos linka ne pokreće naplatu/);
- assert.match(home,/Nema naplate bez/);
+ assert.match(home,/Zatraži ponudu za konkretnu proveru/);
 });
 test('approved brand artwork remains used, not favicon substitute',()=>{
  assert.match(header,/src={daniniBrandLogo}/);

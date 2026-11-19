@@ -33,8 +33,17 @@ const de = locale === "de";
         <input id={"bc-company-"+locale} name="company" autocomplete="organization" maxlength="120"/>
       </div>
       <div class="bc-fieldset">
-        <label for={"bc-country-"+locale}>{de ? "Zielland" : "Ciljno tržište"}</label>
+        <label for={"bc-country-"+locale}>{de ? "DACH-Bezug (Ausgangs- oder Zielmarkt)" : "DACH tržište (polazno ili ciljno)"}</label>
         <select id={"bc-country-"+locale} name="country"><option value="DE">Deutschland / Nemačka</option><option value="AT">Österreich / Austrija</option><option value="CH">Schweiz / Švajcarska</option></select>
+      </div>
+      <div class="bc-fieldset">
+        <label for={"bc-direction-"+locale}>{de ? "Geschäftsrichtung (optional)" : "Smer poslovne saradnje (opciono)"}</label>
+        <select id={"bc-direction-"+locale} name="direction">
+          <option value="">{de ? "Noch offen / bitte klären" : "Još nije definisano"}</option>
+          <option value="balkan-to-dach">{de ? "Balkan → DACH: Kunden oder Partner ansprechen" : "Balkan → DACH: tražim kupce ili partnere"}</option>
+          <option value="dach-to-balkan">{de ? "DACH → Balkan: Lieferanten oder Partner prüfen" : "DACH → Balkan: tražim dobavljače ili partnere"}</option>
+        </select>
+        <small>{de ? "Beide Richtungen werden unterstützt. Wir prüfen zuerst Ihren Bedarf und die verfügbaren Informationen." : "Oba smera su moguća. Prvo proveravamo vaš zahtev i raspoloživu dokumentaciju."}</small>
       </div>
       <div class="bc-fieldset">
         <label for={"bc-service-"+locale}>{de ? "Gewünschte Leistung" : "Usluga koja vas interesuje"} *</label>
@@ -164,7 +173,7 @@ const de = locale === "de";
             country:String(values.get("country")||"DE"),
             vertical:service === "crossborder" ? "nearshoring" : "business",
             topic:serviceLabels[service],
-            message:String(values.get("message")||"").trim(),
+            message:[String(values.get("message")||"").trim(), ...(String(values.get("direction")||"") ? ["B2B-Richtung / Smer: "+String(values.get("direction"))] : [])].join("\n"),
             language:de?"de":"sr",
             consent:values.get("consent")==="on",
             details:{service},

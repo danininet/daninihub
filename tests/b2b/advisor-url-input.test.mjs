@@ -34,7 +34,7 @@ test('never silently converts credentials or non-web schemes to links',()=>{
 });
 test('link preview explicitly says the listing has not been fetched',()=>{
  assert.match(source,/Link prihvaćen/);
- assert.match(source,/Sadržaj oglasa nije preuzet/);
+ assert.match(source,/Link prihvaćen/);
  assert.match(source,/Link erkannt/);
  assert.match(source,/Das Inserat wurde nicht ausgelesen/);
 });

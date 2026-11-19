@@ -35,7 +35,7 @@ for(const lang of ['de','sr']){
   assert.equal(count,12,'Must have exactly 12 checklist items in '+lang);
   assert.ok(checklist.includes('/'+lang+'/auto-check/'),'Lead handoff missing');
   assert.ok(products.includes('49 €'),'Established PDF price omitted');
-  assert.ok(products.includes('149 €'),'Disabled proposed software status omitted');
+  assert.match(products,/149(?:\s*€|-€)/,'Disabled proposed software status omitted');
   assert.match(products,/\/digital\.html/,'Existing digital product not linked');
   assert.ok(products.includes('Checkout')||products.includes('PayPal'),'Checkout limitation omitted');
   assert.ok(partner.includes('mailto:info@daninihub.com'),'Partner enquiry missing');

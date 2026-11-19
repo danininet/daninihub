@@ -1,5 +1,8 @@
 import type { Env } from "../lib/env";
 export interface Draft {
+  facts?: string[];
+  unknowns?: string[];
+  auri?: { status: "PASS" | "NEEDS_REVIEW" | "STOP"; reason: string };
   schemaVersion: 1;
   generatedBy: "rules" | "ai";
   model: string;
@@ -21,6 +24,7 @@ export function validateDraft(value: any): value is Draft {
     ["de", "sr"].includes(value.language) &&
     ["cbam", "subcontractor", "nearshoring", "business"].includes(value.vertical) &&
     typeof value.summary === "string" &&
+    value.summary.trim().length > 0 &&
     value.summary.length <= 5000 &&
     ["missingData", "questions", "limitations"].every(
       (k) =>
@@ -96,6 +100,16 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
   };
   base.missingData = lists[input.vertical] || [];
   base.questions = base.missingData.slice(0, 3);
+  base.facts = [
+    de ? "Kundenangaben (nicht unabhängig geprüft)." : "Navodi kupca (nisu nezavisno provereni).",
+  ];
+  base.unknowns = [
+    de ? "Richtigkeit der Angaben, fachliche Prüfung und Arbeitsumfang unbestätigt." : "Tačnost podataka, stručna provera i obim rada nisu potvrđeni.",
+  ];
+  base.auri = {
+    status: "NEEDS_REVIEW",
+    reason: de ? "Menschliche Prüfung notwendig. Keine externe Recherche." : "Potrebna ljudska provera. Nije izvršeno nezavisno istraživanje.",
+  };
   // Disabled means rules-based document triage, never a falsely labelled AI analysis.
   if (env.AI_ENABLED !== "true") return base;
   // Reuse the approved Workers AI binding; no second provider or credentials.
@@ -195,5 +209,24 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
     promptVersion: "b2b-v1",
     createdAt: base.createdAt,
     limitations: [...base.limitations, ...output.limitations].slice(0, 10),
+  };
+}
+
+// This filter checks workflow quality and approval, never regulatory compliance.
+export function auriFilter(draft: unknown, approved = false, cycles = 0) {
+  if (cycles > 3 || !validateDraft(draft))
+    return {
+      status: "STOP" as const,
+      reason: "Invalid draft or clarification limit exceeded.",
+    };
+  if (!approved)
+    return {
+      status: "NEEDS_REVIEW" as const,
+      reason: "Human review of the exact draft is required.",
+    };
+  return {
+    status: "PASS" as const,
+    reason:
+      "Valid draft and recorded approval; not a legal or regulatory clearance.",
   };
 }

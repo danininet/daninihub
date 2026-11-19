@@ -52,7 +52,7 @@
   let ready=false;
   fetch('/api/danini/digital/status',{cache:'no-store',headers:{accept:'application/json'}})
     .then(async r=>{if(!r.ok)throw Error('status');return r.json();})
-    .then(s=>{ready=s.mode==='sandbox';form.hidden=!ready;
+    .then((s:{mode?:string})=>{ready=s.mode==='sandbox';form.hidden=!ready;
       status.textContent=ready?'Sandbox okruženje je dostupno. Test zahteva postojeći operator pristup i tvoje odobrenje u PayPal-u.':'Sandbox nije potvrđen ili nije konfigurisan. Nijedna naplata nije pokrenuta.';})
     .catch(()=>{status.textContent='Nije moguće proveriti Sandbox stanje. Nijedna naplata nije pokrenuta.';});
   form.addEventListener('submit',async e=>{
@@ -66,7 +66,7 @@
         credentials:'same-origin',cache:'no-store',
         body:JSON.stringify({sku:'guide',language:'sr',termsAccepted:(document.getElementById('terms') as HTMLInputElement).checked,instantDeliveryConsent:(document.getElementById('delivery') as HTMLInputElement).checked})
       });
-      const data=await response.json();
+      const data=await response.json() as {ok?:boolean;checkoutUrl?:string;error?:string};
       if(!response.ok||data.ok!==true||typeof data.checkoutUrl!=='string')throw Error(String(data.error||'CHECKOUT_UNAVAILABLE'));
       const target=new URL(data.checkoutUrl);
       if(target.protocol!=='https:'||target.origin!=='https://www.sandbox.paypal.com')throw Error('INVALID_PAYPAL_DESTINATION');

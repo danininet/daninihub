@@ -14,7 +14,7 @@ export function canonicalAutoScoutUrl(raw){
   const u=new URL(raw);
   if(u.protocol!=='https:'||u.username||u.password||u.port)return null;
   if(!['www.autoscout24.de','autoscout24.de'].includes(u.hostname.toLowerCase()))return null;
-  if(!/^\/angebote\/[a-z0-9-]{10,230}-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/?$/i.test(u.pathname))return null;
+  if(!/^\/angebote\/[a-z0-9_-]{10,230}-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/?$/i.test(u.pathname))return null;
   return 'https://www.autoscout24.de'+u.pathname.replace(/\/$/,'');
  }catch{return null}
 }

@@ -68,7 +68,7 @@
   analysisButton.className='advisor-analysis-button';
   analysisButton.textContent=lang==='de'?'Inserat oder Link prüfen':'Proveri oglas ili link';
   const analysisHelp=document.createElement('p');
-  analysisHelp.textContent=lang==='de'?'Ein Link reicht für die Quellenprüfung. Der Portalinhalt wird nur mit erlaubtem Zugriff gelesen; ohne diesen bleiben Fahrzeugdaten offen. Für die Auswertung sichtbarer Daten wählen Sie einen Screenshot oder erfassen Sie einmalig den geöffneten Inserat-Tab.':'Sam link je dovoljan za proveru izvora. Sadržaj oglasa se ne preuzima bez dozvoljenog pristupa; tada podaci o vozilu ostaju nepoznati. Za analizu vidljivih podataka izaberite screenshot ili preuzmite jednu sliku otvorenog taba.';
+  analysisHelp.textContent=lang==='de'?'Inseratlink einfügen und prüfen: zugängliche Fahrzeugdaten werden automatisch ausgewertet. Ist kein berechtigter Zugriff möglich, zeigen wir den Grund klar an. Keine Zahlung ohne eine tatsächliche Prüfung.':'Nalepite link i pokrenite proveru: dostupni podaci vozila analiziraju se automatski. Ako pristup podacima nije dozvoljen, jasno prikazujemo razlog. Nema naplate bez stvarne analize.';
   const screenshotInput=el('listing-screenshot');
   const captureButton=el('listing-capture-tab');
   const captureStatus=el('listing-capture-status');
@@ -163,23 +163,20 @@
       const file=screenshotInput?.files?.[0];
       if (source !== input.value.trim()) { input.value = source; input.dispatchEvent(new Event('input', {bubbles:true})); }
       if(!source&&!file&&!capturedTabImage){analysisOutput.textContent=lang==='de'?'Bitte Link, Text oder Screenshot eingeben.':'Unesite link, tekst ili screenshot.';return;}
-      // Link-only preview is free of CAPTCHA/network calls. It is source recognition,
-      // not a fabricated vehicle analysis; a screenshot/text is needed for actual data.
+      // If Turnstile has not completed, show an honest preview. Never claim
+      // vehicle analysis without a real provider response.
       const preview=previewListingUrl(source);
-      if(preview && !file && !capturedTabImage){
+      if(preview && !file && !capturedTabImage && !captchaToken){
         const hostname=preview.hostname.replace(/^www\./,'');
         const platform=hostname.endsWith('mobile.de')?'mobile.de':hostname.endsWith('autoscout24.de')?'AutoScout24':hostname.endsWith('kleinanzeigen.de')?'Kleinanzeigen':hostname;
         analysisOutput.replaceChildren();
         const p=document.createElement('p');
         p.textContent=lang==='de'
-          ? 'Link erkannt ('+platform+'). Das Inserat wurde nicht ausgelesen. Für eine Datenanalyse Screenshot hochladen oder sichtbaren Inserattext einfügen.'
-          : 'Link prihvaćen ('+platform+'). Sadržaj oglasa nije preuzet. Za analizu podataka dodajte screenshot ili kopirajte vidljivi tekst oglasa.';
+          ? 'Link erkannt ('+platform+'). Bitte Sicherheitsprüfung bestätigen und erneut auf Prüfen klicken, damit verfügbare Inseratdaten geprüft werden können.'
+          : 'Link prihvaćen ('+platform+'). Potvrdite bezbednosnu proveru i ponovo kliknite Proveri da se analiziraju dostupni podaci oglasa.';
         analysisOutput.append(p);
         const open=document.createElement('a');open.href=preview.href;open.target='_blank';open.rel='noopener noreferrer';
         open.textContent=lang==='de'?'Originalinserat öffnen':'Otvori originalni oglas';analysisOutput.append(open);
-        const upload=document.createElement('button');upload.type='button';upload.className='advisor-analysis-button';
-        upload.textContent=lang==='de'?'Screenshot hinzufügen':'Dodaj screenshot';
-        upload.addEventListener('click',()=>screenshotInput?.click());analysisOutput.append(upload);
         return;
       }
       if(source && !preview && /^https?:\/\//i.test(source)) {analysisOutput.textContent=messages.invalid;return;}
@@ -203,8 +200,8 @@
       if(data.sourceType==='user_supplied_screenshot'){
         line(lang==='de'?'Bildverarbeitung':'Obrada slike',lang==='de'?'Sichtbare Inseratsangaben aus Ihrem Screenshot, nicht unabhängig bestätigt.':'Izdvojeni vidljivi podaci sa screenshota; bez nezavisne potvrde.');
       }
-      if(data.sourceType==='licensed_listing'){
-        line(lang==='de'?'Datenquelle':'Izvor podataka',lang==='de'?'mobile.de Search API (Inseratsangaben, ungeprüft)':'mobile.de Search API (navodi oglasa, nepotvrđeno)');
+      if(data.sourceType==='licensed_listing'||data.sourceType==='authorized_listing'){
+        line(lang==='de'?'Datenquelle':'Izvor podataka',data.sourcePlatform+' — '+(lang==='de'?'ausgelesene Inseratsangaben, nicht unabhängig geprüft':'izdvojeni navodi iz oglasa, nezavisno nepotvrđeni'));
         const open=document.createElement('a');open.href=data.sourceUrl;open.target='_blank';open.rel='noopener noreferrer';
         open.textContent=lang==='de'?'Originalinserat öffnen':'Otvori originalni oglas';open.className='advisor-email-fallback';analysisOutput.append(open);
       }

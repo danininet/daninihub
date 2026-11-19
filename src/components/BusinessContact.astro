@@ -59,6 +59,7 @@ const de = locale === "de";
           <a href={"/"+locale+"/datenschutz/"}>{de ? "Datenschutz" : "Politika privatnosti"}</a> *</span>
       </label>
       <div class="bc-captcha" data-business-captcha aria-label={de ? "Sicherheitsprüfung" : "Bezbednosna provera"}></div>
+      <div class="bc-trust" aria-label={de ? "Schutz und Transparenz" : "Zaštita i transparentnost"}><span>{de ? "Turnstile-Spamschutz" : "Turnstile zaštita od spama"}</span><span>{de ? "Keine automatische Zahlung" : "Bez automatske naplate"}</span><span>{de ? "Freigabe vor Dritt-Kontakt" : "Odobrenje pre kontakta sa trećima"}</span></div>
       <button type="submit" data-business-submit disabled>{de ? "Unverbindliche Anfrage absenden" : "Pošalji neobavezujući upit"}</button>
       <p class="bc-action-note">{de ? "Nächster Schritt: Wir prüfen die Angaben und klären den Umfang per E-Mail. Es erfolgt keine automatische Bestellung und keine Zahlung." : "Sledeći korak: pregledamo podatke i mejlom preciziramo obim. Slanje nije narudžbina niti pokretanje naplate."}</p>
       <p class="bc-status" data-business-status role="status" aria-live="polite">
@@ -243,6 +244,8 @@ const de = locale === "de";
 .bc-captcha{min-height:66px;max-width:100%;overflow:hidden}
 .bc-form button[type=submit]{background:#facc15;color:#102238;border:0;border-radius:10px;min-height:52px;padding:14px 19px;font-weight:800;font:inherit;cursor:pointer}
 .bc-form button[type=submit]:disabled{background:#d6dde4;color:#485b70;cursor:not-allowed}
+.bc-trust{display:flex;flex-wrap:wrap;gap:8px}.bc-trust span{display:inline-block;font-size:.7rem;line-height:1.35;color:#164b55;background:#eaf6f3;border:1px solid #b6d8ce;border-radius:8px;padding:7px 9px;font-weight:720}
+.bc-action-note{font-size:.8rem;color:#435a70;line-height:1.6;margin:0}
 .bc-status{font-size:.84rem;font-weight:670;color:#30536a;min-height:24px;margin:0}
 .bc-disclaimer{color:#4d6174;font-size:.75rem;margin:0;line-height:1.6}
 @media(max-width:960px){.bc-layout{grid-template-columns:1fr}.bc-intro{max-width:770px}}

@@ -1,3 +1,4 @@
+import { authorizeOwner } from "./access";
 import type { Env } from "../lib/env";
 import { digest, verifyHmac, HttpError } from "./http";
 // Dedicated director signing key, never delivered to the browser. A signed request
@@ -7,6 +8,8 @@ export async function authorizeDirector(
   env: Env,
   body: string,
 ) {
+  if (request.headers.has("cf-access-jwt-assertion"))
+    return authorizeOwner(request, env);
   if (!env.DIRECTOR_HMAC_SECRET || env.DIRECTOR_HMAC_SECRET.length < 32)
     throw new HttpError(503, "director_not_configured");
   const time = request.headers.get("x-danini-timestamp") || "",
@@ -33,4 +36,5 @@ export async function authorizeDirector(
     .bind(nonce, Math.floor(Date.now() / 1000) + 600)
     .run();
   if (r.meta.changes !== 1) throw new HttpError(409, "replayed_request");
+  return "director";
 }

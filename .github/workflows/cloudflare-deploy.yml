@@ -91,7 +91,10 @@ jobs:
           assert.equal(config.ai.binding,'AI','Workers AI binding missing; abort');
           config.assets.run_worker_first=prod.assets.run_worker_first;
           assert.equal(config.name,prod.name,'Worker name mismatch; abort');
-          assert.deepEqual(config.assets.run_worker_first,['/api/*','/portal/*']);
+          assert.deepEqual(config.assets.run_worker_first,['/api/*','/portal','/portal/*']);
+          assert.equal(prod.vars.ACCESS_TEAM_DOMAIN,'https://danininet.cloudflareaccess.com','Access issuer mismatch; abort');
+          assert.equal(prod.vars.ACCESS_AUD,'202a450ca6a61daca3012f0472cb24f4461a69df9693904ee288e76211f244d6','Production owner Access audience mismatch; abort');
+          assert.equal(prod.vars.DIRECTOR_EMAIL,'dragangaganet@gmail.com','Owner allowlist mismatch; abort');
           assert.equal(config.main,'src/index.ts','Incorrect integrated entrypoint; abort');
           assert.equal(config.d1_databases[0].database_id,prod.d1_databases[0].database_id,'D1 mismatch; abort');
           assert.equal(prod.d1_databases[0].database_id,'9c3fc741-5cb0-432f-82ca-c75e8220c435','Unexpected D1 target; abort');
@@ -166,6 +169,19 @@ jobs:
           const js=await fetch(base+'/danini-advisor-client.js',{signal:AbortSignal.timeout(20000)});
           assert.equal(js.status,200);
           assert.match(await js.text(),/challenges\.cloudflare\.com\/turnstile/);
+          // Test both the exact portal and private subpaths through Cloudflare Access.
+          // Intentionally unauthenticated, without sensitive cookies or customer data.
+          for(const path of ['/portal','/portal/','/portal/cases',
+            '/portal/case/00000000-0000-0000-0000-000000000000']){
+            const response=await fetch(base+path,{redirect:'manual',signal:AbortSignal.timeout(15000)});
+            assert.ok([302,401,403].includes(response.status),path+' exposed without Access: HTTP '+response.status);
+            const location=response.headers.get('location')||'';
+            if(response.status===302)assert.ok(location.includes('cloudflareaccess.com')||location.includes('/cdn-cgi/access/'),path+' login redirect missing');
+            const body=await response.text();
+            assert.ok(!body.includes('Pregled poslovnih zahteva'),path+' private portal HTML leaked');
+            assert.ok(!body.includes('"cases"'),path+' private case data leaked');
+            console.log('PASS Access blocks',path,response.status);
+          }
           console.log('PASS production Turnstile and Brevo readiness; no customer email sent');
           NODE
 # PR208 production release trigger 2026-11-13: workflow content touched to start guarded main deployment.
@@ -195,3 +211,5 @@ jobs:
 # P1 controlled release 2026-11-19: PR #254 validated across five GitHub CI suites; two-way B2B, truthful vehicle tiers, approved logo display and intake clarity. No price/payments/DNS/legal changes.
 
 # P0 header visual correction release 2026-11-19: merged PR #256, five CI SUCCESS. Logo uses original artwork with no white card via blend on navy. No prices, payment, legal or DNS changes.
+
+# Authorized P0 secure DANINI owner portal release 2026-11-19: PR #260, requires all predeploy gates and Access checks.

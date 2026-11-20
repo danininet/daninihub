@@ -5,7 +5,7 @@
  * Read-only; never changes DNS, site configuration, mail or payments.
  */
 const pages = [
-  '/', '/sr/', '/de/', '/de/business/', '/sr/business/', '/de/auto-check/', '/sr/auto-check/',
+  '/', '/sr/', '/de/', '/de/business/', '/sr/business/', '/de/auto-check/', '/sr/auto-check/', '/operator/sandbox-checkout/',
   '/index.html', '/buyers.html', '/dealers.html', '/live.html',
   '/inspection.html', '/import.html', '/exclusive.html', '/tender.html',
   '/auctions.html', '/guides.html', '/digital.html', '/ai-solutions.html', '/business.html', '/cnc.html', '/selbstimport.html', '/uvoz-vodic.html', '/about.html', '/contact.html',
@@ -49,6 +49,13 @@ async function check(path) {
     throw new Error('Wrong /de/ release (expected localized page)');
   if (path === '/sr/' && !isPullRequest && !/Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom\./.test(html))
     throw new Error('Wrong /sr/ release');
+  if (path === '/operator/sandbox-checkout/') {
+    // This is a noindex operator-only Sandbox interface, NOT a public checkout.
+    // GET only: never submit payment credentials, orders or a customer email.
+    if (!/noindex\s*,\s*nofollow/i.test(html)) throw Error('Operator checkout must remain noindex');
+    if (!/PayPal Sandbox/i.test(html) || !/operator-access/i.test(html))
+      throw Error('Operator Sandbox form missing from production page');
+  }
   return {status: response.status, bytes: Buffer.byteLength(html)};
 }
 async function withRetries(path) {
@@ -121,6 +128,39 @@ async function main(){
         else await sleep(12000);
       }
     }
+  }
+  // Read-only checkout readiness probe. Do not POST or perform a payment.
+  // Tests the existing Cloudflare digital runtime without exposing secrets.
+  try {
+    const res=await fetch(new URL('/api/danini/digital/status',root),{
+      headers:{accept:'application/json'},cache:'no-store',signal:AbortSignal.timeout(12000)
+    });
+    if(res.status!==200)throw Error('HTTP '+res.status);
+    const data=await res.json();
+    if(data.ok!==true||typeof data.enabled!=='boolean'||
+      !['sandbox','live','disabled'].includes(data.mode)||
+      data.softwareEnabled!==false)throw Error('Unexpected digital status contract');
+    if(data.mode==='sandbox'&&data.enabled!==false)
+      throw Error('Sandbox must never advertise public paid checkout');
+    console.log('PASS /api/danini/digital/status',res.status,
+      'mode='+data.mode,'public_checkout='+data.enabled,'software_enabled=false');
+    if(data.mode==='sandbox'){
+      // Safe negative security probe: a deliberately invalid operator header
+      // is rejected before any PayPal order can be created.
+      // Never use a real operator token or customer information in CI.
+      const denied=await fetch(new URL('/api/danini/digital/paypal/sandbox/checkout',root),{
+        method:'POST',cache:'no-store',signal:AbortSignal.timeout(12000),
+        headers:{'content-type':'application/json','X-Danini-Sandbox-Access':'QA-INVALID-NOT-A-SECRET'},
+        body:JSON.stringify({sku:'guide',language:'sr',termsAccepted:true,instantDeliveryConsent:true})
+      });
+      if(denied.status!==404)throw Error('Sandbox access guard unexpected HTTP '+denied.status);
+      const body=await denied.json();
+      if(body.error!=='NOT_FOUND')throw Error('Sandbox access guard unexpected response');
+      console.log('PASS /api/danini/digital/paypal/sandbox/checkout unauthorized operator access rejected (404); NO PayPal order');
+    }
+  }catch(error){
+    apiFailures.push({path:'/api/danini/digital/status',pass:false,error:error.message});
+    console.error('FAIL /api/danini/digital/status',error.message);
   }
   // This hostname may still point to Hostinger. Report separately; avoid hiding it.
   try {

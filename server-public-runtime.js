@@ -249,4 +249,4 @@ function mountPublicRuntime(app){
   });
 }
 
-module.exports={mountPublicRuntime,ROUTES,home,ownerPage,shell,seoPage};
+module.exports={mountPublicRuntime,ROUTES,home,ownerPage,shell,seoPage,legalPage};

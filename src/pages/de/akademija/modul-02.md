@@ -2,7 +2,7 @@
 layout: ../../../layouts/AcademyLessonLayout.astro
 ---
 
-**Status:** vollständiger redaktioneller Lerntext, noch nicht öffentlich integriert. **Sprache:** DE. **Übungsdauer:** ungefähr 60–90 Minuten (Schätzung).
+**Status:** kostenlose Praxislektion. **Sprache:** DE. **Übungsdauer:** ungefähr 60–90 Minuten (Schätzung).
 
 ### Ihr konkretes Ergebnis
 Sie erstellen ein erstes Recherche-Dossier: eine klar definierte Zielgruppe, drei dokumentierte Problemsignale, drei Wettbewerber bzw. Alternativen, eine Trennung von Fakten und Annahmen sowie einen kleinen Validierungstest. Fehlende Evidenz ist ein zulässiges Ergebnis. KI-Antworten allein belegen weder Nachfrage noch Zahlungsbereitschaft.

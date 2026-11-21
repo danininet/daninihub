@@ -59,6 +59,9 @@ const fs=require('node:fs');
        const input=page.locator('.ed-fields textarea').first();
        await input.fill('Test poslovne niše '+locale);
        assert.equal(await input.inputValue(),'Test poslovne niše '+locale,'worksheet input broken');
+       const palette=await input.evaluate(el=>({foreground:getComputedStyle(el).color,background:getComputedStyle(el).backgroundColor}));
+       assert.equal(palette.background,'rgb(255, 255, 255)','worksheet textarea must be readable on a light background');
+       assert.equal(palette.foreground,'rgb(23, 56, 74)','worksheet textarea text must contrast with its background');
      }else{
        assert.equal(await page.locator('a[href="/'+locale+'/akademija/"]').count()>0,true,'homepage academy path missing');
      }

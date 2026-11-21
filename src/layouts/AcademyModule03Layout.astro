@@ -11,9 +11,34 @@ const de=locale==="de";
   <h1>{de?"Mit KI ein konkretes Geschäftsangebot entwickeln.":"Kako uz AI napraviti konkretnu poslovnu ponudu."}</h1>
   <a href={"/"+locale+"/akademija/"}>{de?"Zurück zur Akademie":"Nazad na Akademiju"} ↗</a>
  </div></section>
+ <section class="academyl-method" aria-label={de?"Drei Schritte vom Problem zum überprüfbaren Angebot":"Tri koraka od problema do proverljive ponude"}>
+  <div class="wrap">
+   <p class="academyl-method-label">{de?"DIE METHODE AUF EINEN BLICK":"METODA NA JEDNOM MESTU"}</p>
+   <ol class="academyl-flow">
+    <li><span>01</span><strong>{de?"Kundenproblem":"Problem kupca"}</strong><small>{de?"Nachweise prüfen":"Proveri dokaze"}</small></li>
+    <li><span>02</span><strong>{de?"Leistungsumfang":"Obim ponude"}</strong><small>{de?"Ergebnis & Grenzen":"Rezultat i granice"}</small></li>
+    <li><span>03</span><strong>{de?"Kleiner Markttest":"Mali tržišni test"}</strong><small>{de?"Messwert & STOP-Regel":"Merilo i STOP pravilo"}</small></li>
+   </ol>
+  </div>
+ </section>
  <section class="academyl-content"><article class="wrap academyl-article"><slot /><div class="academy-downloads"><p><strong>{de?"Arbeitsblätter herunterladen":"Preuzmi radne listove"}</strong></p><a href="/downloads/akademija/danini-modul03-ponuda-angebot.csv" download>CSV · {de?"Tabellen-Arbeitsblatt":"Tabela za popunjavanje"}</a> · <a href="/downloads/akademija/danini-modul03-offer-worksheet-de-sr.md" download>{de?"Textvorlage DE/SR":"Šablon DE/SR"}</a></div><button data-lesson-print type="button">{de?"Arbeitsblatt als PDF speichern":"Sačuvaj radnu svesku kao PDF"}</button></article></section>
 </Base>
 <script>document.querySelector("[data-lesson-print]")?.addEventListener("click",()=>window.print());</script>
 <style>
 .academyl-hero{background:linear-gradient(135deg,#0b1728,#10515b);color:white;padding:60px 0}.academyl-hero h1{color:white;font-size:clamp(2.2rem,4.5vw,4rem);max-width:1050px}.academyl-hero p{color:#f4cc76;letter-spacing:.12em;font-weight:800;font-size:.78rem}.academyl-hero a{color:#facc15;font-weight:800;text-decoration:underline}.academyl-content{padding:55px 0;background:#f6f9fb}.academyl-article{max-width:920px;background:white;border:1px solid #d5e1e8;border-radius:16px;padding:clamp(20px,4vw,46px);color:#213e52;overflow-wrap:anywhere}.academyl-article :global(h2){color:#163a50}.academyl-article :global(h3){color:#17566b}.academyl-article :global(blockquote){margin:20px 0;background:#ecf5f6;border-left:4px solid #127b7c;padding:16px 21px;color:#234b5a}.academyl-article :global(table){border-collapse:collapse;width:100%;font-size:.88rem;display:block;overflow-x:auto}.academyl-article :global(th),.academyl-article :global(td){border:1px solid #b5cdd5;padding:10px;text-align:left;min-width:130px}.academyl-article :global(p),.academyl-article :global(li){color:#34576b;line-height:1.73}.academyl-article button{background:#facc15;color:#122940;border:0;padding:14px 22px;border-radius:9px;font-weight:800;margin-top:18px;cursor:pointer}@media print{@page{size:A4;margin:12mm}header,footer,.academyl-hero,.academyl-article button{display:none!important}.academyl-content{padding:0;background:white}.academyl-article{border:0;padding:0}.academyl-article :global(table){overflow:visible;font-size:.8rem}}
-.academy-downloads{margin-top:26px;padding:18px;background:#edf6f6;border-radius:10px}.academy-downloads a{color:#084e71;text-decoration:underline;font-weight:700}</style>
+.academy-downloads{margin-top:26px;padding:18px;background:#edf6f6;border-radius:10px}.academy-downloads a{color:#084e71;text-decoration:underline;font-weight:700}
+/* Accessible learning diagram: source-backed process, not an invented metric. */
+.academyl-method{background:#e9f3f5;padding:25px 0 36px;border-bottom:1px solid #c5dce5}
+.academyl-method-label{font-size:.77rem;letter-spacing:.11em;font-weight:850;color:#164e5d;margin:0 0 15px}
+.academyl-flow{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.academyl-flow li{min-width:0;display:grid;grid-template-columns:43px minmax(0,1fr);gap:3px 12px;align-items:center;background:white;border:1px solid #b7d1da;border-radius:12px;padding:15px;color:#183a4e}
+.academyl-flow span{grid-row:span 2;background:#0b5b61;color:#fff;display:grid;place-items:center;font-weight:850;width:42px;height:42px;border-radius:10px}
+.academyl-flow strong{font-size:1rem;color:#173e50}
+.academyl-flow small{font-size:.84rem;color:#36596c}
+.academyl-article :global(th){background:#e4f1f3;color:#173a4c}
+.academyl-article :global(a){text-underline-offset:3px}
+.academy-downloads a:focus-visible,.academyl-article button:focus-visible,.academyl-hero a:focus-visible{outline:3px solid #0b7377;outline-offset:4px}
+.academyl-hero a:focus-visible{outline-color:#facc15}
+@media(max-width:760px){.academyl-flow{grid-template-columns:1fr}.academyl-method{padding:20px 0}}
+@media print{.academyl-method{display:none!important}}
+</style>

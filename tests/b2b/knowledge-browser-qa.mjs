@@ -11,7 +11,7 @@ for(const [device,width,height] of [["mobile",390,844],["desktop",1440,900]]){
 const context=await browser.newContext({viewport:{width,height}});
 const page=await context.newPage();
 const errors=[];page.on("pageerror",e=>errors.push(e.message));
-for(const route of ["wissen/","wissen/glossar/","wissen/dokumente/","wissen/gebrauchtwagen-anzahlung/","wissen/kundenanfragen/","wissen/dokumente/auto-dienstleistungsvereinbarung/","wissen/dokumente/business-sow/"]){
+for(const route of ["wissen/","wissen/checkliste/","wissen/produkte/","wissen/partner/","wissen/glossar/","wissen/dokumente/","wissen/gebrauchtwagen-anzahlung/","wissen/kundenanfragen/","wissen/dokumente/auto-dienstleistungsvereinbarung/","wissen/dokumente/business-sow/"]){
 const response=await page.goto("http://127.0.0.1:4321/"+locale+"/"+route,{waitUntil:"networkidle"});
 assert.equal(response.status(),200,locale+" "+route);
 assert.equal(await page.locator("main h1").count(),1,locale+" "+route+" heading");
@@ -27,8 +27,8 @@ await page.goto("http://127.0.0.1:4321/"+locale+"/wissen/glossar/");
 assert.equal(await page.locator(".glossary-item").count(),24);
 assert.equal(await page.locator('.glossary-item a[href^="#begriff-"]').count(),48);
 await page.goto("http://127.0.0.1:4321/"+locale+"/wissen/");
-assert.equal(await page.locator(".knowledge-vertical").count(),2);
-assert.equal(await page.locator(".manuscript").count(),locale==="sr"?6:3,locale+" missing source manuscripts");
+assert.equal(await page.locator(".kh-path").count(),2,"new knowledge problem-led verticals");
+assert.equal(await page.locator(".kh-article").count(),locale==="sr"?6:3,locale+" missing source manuscripts");
 const originals=locale==="de"
 ?[["anfragemanagement-kleine-unternehmen",true],["ki-angebotsvorbereitung",true],["dsgvo-kundenanfragen-ki",false]]
 :[["fahrzeugbrief-fahrzeugschein-coc-hu",true],["privatni-prodavac-ili-auto-kuca-nemacka",false],["eur1-poreklo-vozila-uvoz-nemacka-srbija",true],["upravljanje-upitima-malih-firmi",true],["ai-priprema-poslovne-ponude",true],["gdpr-ai-obrada-upita-klijenata",false]];
@@ -54,7 +54,7 @@ assert.equal((await logo.getAttribute("src")).startsWith("data:image/png;base64,
 assert.equal(await logo.evaluate(el=>el.naturalWidth>=300&&el.naturalHeight>=100),true,"approved logo resolution missing");
 await page.goto(baseUrl+"/"+locale+"/wissen/");
 
-const img=page.locator(".knowledge-vertical img");
+const img=page.locator(".kh-path img").first();
 await img.scrollIntoViewIfNeeded();
 assert.equal(await img.evaluate(el=>el.complete&&el.naturalWidth>0),true,"missing first-party image");
 await page.screenshot({path:"qa-screenshots/"+locale+"-"+device+"-knowledge.png",fullPage:true});

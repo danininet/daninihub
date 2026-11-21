@@ -34,6 +34,7 @@ jobs:
           test "$(curl -s -o /tmp/b2b-disabled.json -w '%{http_code}' -X POST http://127.0.0.1:4321/api/intake)" = "503"
           node scripts/test-b2b-browser.cjs
           node scripts/test-knowledge-browser.cjs
+          node scripts/test-danini-education-browser.cjs
           node --import tsx scripts/test-owner-portal.mjs
           export CHROME_PATH=$(node -e "console.log(require('@playwright/test').chromium.executablePath())")
           npx lighthouse http://127.0.0.1:4321/de/ --chrome-flags="--headless --no-sandbox" --output=json --output-path=outputs/b2b/lighthouse.json --quiet

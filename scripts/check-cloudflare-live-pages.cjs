@@ -6,7 +6,7 @@
  */
 const pages = [
   '/', '/sr/', '/de/', '/de/business/', '/sr/business/', '/de/auto-check/', '/sr/auto-check/',
-  '/index.html', '/buyers.html', '/dealers.html', '/live.html',
+  '/de/akademija/', '/sr/akademija/', '/index.html', '/buyers.html', '/dealers.html', '/live.html',
   '/inspection.html', '/import.html', '/exclusive.html', '/tender.html',
   '/auctions.html', '/guides.html', '/digital.html', '/ai-solutions.html', '/business.html', '/cnc.html', '/selbstimport.html', '/uvoz-vodic.html', '/about.html', '/contact.html',
   '/impressum.html', '/privacy.html', '/terms.html', '/cookies.html',
@@ -43,11 +43,11 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
-  if (path === '/' && !isPullRequest && !/Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen\./.test(html))
+  if (path === '/' && !isPullRequest && !/Mit KI ein eigenes Online-Business entwickeln\. Schritt für Schritt\./.test(html))
     throw new Error('Root URL does not present DANINI brand');
-  if (path === '/de/' && !isPullRequest && !/Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen\./.test(html))
+  if (path === '/de/' && !isPullRequest && !/Mit KI ein eigenes Online-Business entwickeln\. Schritt für Schritt\./.test(html))
     throw new Error('Wrong /de/ release (expected localized page)');
-  if (path === '/sr/' && !isPullRequest && !/Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom\./.test(html))
+  if (path === '/sr/' && !isPullRequest && !/Nauči kako da uz AI izgradiš sopstveno online preduzeće\./.test(html))
     throw new Error('Wrong /sr/ release');
   return {status: response.status, bytes: Buffer.byteLength(html)};
 }

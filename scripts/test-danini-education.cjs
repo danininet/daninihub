@@ -50,3 +50,31 @@ for(const lang of ['de','sr']){
  assert.ok(sitemap.includes('https://daninihub.com/'+lang+'/akademija/modul-03/'),'missing Module 03 sitemap '+lang);
 }
 console.log('PASS DANINI academy sitemap / de sr');
+
+
+/* Visual regression guard: Academy 3-step diagrams, light knowledge sections,
+   and measurable AA contrast. No brittle screenshot-only assertion. */
+const academySource=fs.readFileSync(path.join(__dirname,'../src/pages/[locale]/akademija/index.astro'),'utf8');
+const lesson03Source=fs.readFileSync(path.join(__dirname,'../src/layouts/AcademyModule03Layout.astro'),'utf8');
+const knowledgeSource=fs.readFileSync(path.join(__dirname,'../src/pages/[locale]/wissen/index.astro'),'utf8');
+assert.match(academySource,/class="ed-map-grid"/,'three-step graphic missing');
+assert.match(academySource,/class="ed-map-caption"/,'infographic disclosure missing');
+assert.match(academySource,/ed-map-grid li/,'infographic styling missing');
+assert.match(lesson03Source,/class="academyl-flow"/,'Module 03 graphic missing');
+assert.match(knowledgeSource,/section white kh-section-light/g,'knowledge light section styling missing');
+assert.equal((knowledgeSource.match(/section white kh-section-light/g)||[]).length,2,'both knowledge light panels required');
+assert.match(knowledgeSource,/\.section\.white\.kh-section-light\{background:#f4f8fb/,'knowledge background override missing');
+function contrastRatio(fg,bg){
+ const lum=h=>{const rgb=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);
+ return rgb.map((x,i)=>(x<=.04045?x/12.92:((x+.055)/1.055)**2.4)*[.2126,.7152,.0722][i]).reduce((a,b)=>a+b,0);};
+ const a=lum(fg),b=lum(bg);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+}
+for(const [fg,bg,label] of [
+ ['#102d41','#f4f8fb','knowledge headings'],
+ ['#365468','#f4f8fb','knowledge descriptions'],
+ ['#75520b','#f4f8fb','gold kicker on light background'],
+ ['#f5f9fb','#102c41','Academy method text'],
+ ['#e2edf3','#102c41','Academy method supporting text'],
+ ['#173e50','#ffffff','Module 03 diagram titles']
+])assert.ok(contrastRatio(fg,bg)>=4.5,label+' WCAG AA failed: '+contrastRatio(fg,bg).toFixed(2));
+console.log('PASS visual source and WCAG contrast baseline for Academy + Wissen');

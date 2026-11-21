@@ -1,0 +1,65 @@
+name: DANINI production knowledge mobile desktop visual QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/danini-knowledge-live-visual-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Capture 8 public live pages in Chromium at mobile and desktop sizes
+        run: |
+          node <<'JS'
+          const {chromium}=require('@playwright/test');
+          const fs=require('node:fs');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const b=await chromium.launch({headless:true,args:['--no-sandbox']});
+            fs.mkdirSync('qa-screenshots/knowledge-live',{recursive:true});
+            try{
+              for(const lang of ['de','sr'])for(const slug of ['','checkliste/','produkte/','partner/']){
+                for(const [label,width,height] of [['mobile',390,844],['desktop',1440,900]]){
+                  const page=await b.newPage({viewport:{width,height},deviceScaleFactor:1});
+                  const address='https://daninihub.com/'+lang+'/wissen/'+slug;
+                  const response=await page.goto(address,{waitUntil:'domcontentloaded',timeout:30000});
+                  assert.equal(response?.status(),200,address+' status');
+                  await page.locator('main h1').waitFor();
+                  await page.evaluate(()=>document.fonts.ready);
+                  const metrics=await page.evaluate(()=>({
+                    docWidth:document.documentElement.scrollWidth,
+                    viewport:window.innerWidth,
+                    mainH1:document.querySelectorAll('main h1').length,
+                    images:[...document.querySelectorAll('main img')].map(img=>({
+                      complete:img.complete,ok:img.complete && img.naturalWidth>0,
+                      alt:img.alt,src:img.currentSrc
+                    }))
+                  }));
+                  assert.equal(metrics.mainH1,1,address+' must have one H1');
+                  assert.ok(metrics.docWidth<=metrics.viewport+2,address+' horizontal overflow '+metrics.docWidth+' > '+metrics.viewport);
+                  assert.ok(metrics.images.every(img=>img.ok && img.alt.length>0),address+' missing or broken image '+JSON.stringify(metrics.images.filter(img=>!img.ok)));
+                  await page.screenshot({path:'qa-screenshots/knowledge-live/'+lang+'-'+(slug?slug.replace('/',''):'index')+'-'+label+'.png',fullPage:true});
+                  console.log('PASS',lang,slug||'index',label,width,'no overflow, loaded images, screenshot');
+                  await page.close();
+                }
+              }
+            }finally{await b.close()}
+          })().catch(err=>{console.error(err);process.exitCode=1});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: DANINI-knowledge-production-screenshots
+          path: qa-screenshots/knowledge-live/
+          retention-days: 10

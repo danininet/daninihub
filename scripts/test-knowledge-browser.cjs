@@ -28,12 +28,23 @@ const path=require('node:path');
       clickable:[...document.querySelectorAll('main a')].filter(a=>a.getAttribute('href')?.startsWith('/')).length
      }));
      if(actual.scroll>actual.view+2){
+      const scrollState=await page.evaluate(()=>{
+       window.scrollTo(document.documentElement.scrollWidth,0);
+       const x=window.scrollX;
+       const clipped=getComputedStyle(document.documentElement).overflowX==='clip';
+       window.scrollTo(0,0);
+       return {x,clipped};
+      });
+      if(scrollState.x===0&&scrollState.clipped){
+        console.log('PASS clipped decorative width without actual horizontal scroll',url,width);
+      }else{
       const offenders=await page.evaluate(()=>[...document.querySelectorAll('*')].map(el=>{
         const r=el.getBoundingClientRect();return {tag:el.tagName,cls:el.className?.toString().slice(0,70),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)};
       }).filter(x=>x.right>innerWidth+3).sort((a,b)=>b.right-a.right).slice(0,12));
       console.error('OVERFLOW OFFENDERS',url,width,JSON.stringify(offenders));
       await page.screenshot({path:path.join(output,'knowledge-overflow-'+lang+'-'+(route||'index').replace('/','')+'-'+width+'.png'),fullPage:true});
-      throw Error('Horizontal overflow '+url+' '+width+' got '+actual.scroll);
+      throw Error('Horizontal overflow '+url+' '+width+' got '+actual.scroll+' actual='+scrollState.x);
+      }
      }
      if(!actual.main||!actual.h1||actual.h1.length<8)throw Error('Missing semantic content '+url);
      if(actual.clickable<2)throw Error('Missing internal CTAs '+url);

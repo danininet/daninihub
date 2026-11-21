@@ -22,7 +22,14 @@ const fs=require('node:fs');
          const r=el.getBoundingClientRect();
          return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,85):'',right:Math.round(r.right),width:Math.round(r.width)};
        }).filter(o=>o.right>innerWidth+3).sort((a,b)=>b.right-a.right).slice(0,14));
+       const internal=await page.evaluate(()=>[...document.querySelectorAll('*')].map(el=>{
+        const r=el.getBoundingClientRect(),style=getComputedStyle(el);
+        return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,65):'',
+          sw:el.scrollWidth,cw:el.clientWidth,left:Math.round(r.left),right:Math.round(r.right),
+          white:style.whiteSpace,overflow:style.overflowX};
+       }).filter(o=>(o.sw>o.cw+30 && o.cw>0)||o.left< -10).sort((a,b)=>(b.sw-b.cw)-(a.sw-a.cw)).slice(0,20));
        console.error('OVERFLOW DIAGNOSTIC',url,viewport.width,JSON.stringify(offenders));
+       console.error('INNER SCROLL DIAGNOSTIC',JSON.stringify(internal));
        await page.screenshot({path:'outputs/b2b/danini-academy-overflow-'+locale+'-'+(slug?'lesson':'home')+'-'+viewport.label+'.png',fullPage:true});
        throw Error('horizontal overflow '+url+': '+m.w+' > '+m.iw);
      }

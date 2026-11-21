@@ -79,6 +79,14 @@ assert.ok(ratio(styleRead.para,styleRead.bg)>=4.5,'Wissen description contrast <
 const academyResponse=await page.goto(baseUrl+"/"+locale+"/akademija/",{waitUntil:"domcontentloaded"});
 assert.equal(academyResponse.status(),200);
 assert.equal(await page.locator('.ed-map-grid li').count(),3,'Academy visual learning path must show 3 actual steps');
+
+assert.equal(await page.locator('.ed-case-business-visual').count(),1,'Business example graphic missing');
+const photo=page.locator('.ed-case-auto img');
+await photo.scrollIntoViewIfNeeded();
+assert.equal(await photo.evaluate(el=>el.complete&&el.naturalWidth>0),true,'Academy first-party case photo broken');
+assert.equal(await page.evaluate(()=>{window.scrollTo(document.documentElement.scrollWidth,0);return window.scrollX}),0,'Academy horizontal overflow '+locale+' '+device);
+await page.screenshot({path:"qa-screenshots/"+locale+"-"+device+"-academy-home.png",fullPage:true});
+
 assert.equal(await page.locator('.ed-map-grid a[href^="/'+locale+'/akademija/"]').count(),2,'Academy graphics must link both module pages');
 const mapStyle=await page.evaluate(()=>{
  const section=document.querySelector('.ed-map');

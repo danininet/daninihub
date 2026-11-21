@@ -58,6 +58,40 @@ const img=page.locator(".kh-path img").first();
 await img.scrollIntoViewIfNeeded();
 assert.equal(await img.evaluate(el=>el.complete&&el.naturalWidth>0),true,"missing first-party image");
 await page.screenshot({path:"qa-screenshots/"+locale+"-"+device+"-knowledge.png",fullPage:true});
+
+/* Computed-style WCAG AA QA: prevent invisible text on dark backgrounds. */
+const styleRead=await page.evaluate(()=>{
+ const section=document.querySelector('.kh-section-light');
+ const title=section?.querySelector('.kh-section-intro h2');
+ const para=section?.querySelector('.kh-section-intro>p:last-child');
+ return {bg:section?getComputedStyle(section).backgroundColor:null,
+         title:title?getComputedStyle(title).color:null,
+         para:para?getComputedStyle(para).color:null};
+});
+function luminance(rgb){
+ const nums=(rgb.match(/[\\d.]+/g)||[]).slice(0,3).map(Number);
+ assert.equal(nums.length,3,'Cannot parse computed RGB '+rgb);
+ return nums.map((x,i)=>{const n=x/255;return (n<=.04045?n/12.92:((n+.055)/1.055)**2.4)*[.2126,.7152,.0722][i]}).reduce((a,b)=>a+b,0);
+}
+function ratio(fg,bg){const a=luminance(fg),b=luminance(bg);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)}
+assert.ok(ratio(styleRead.title,styleRead.bg)>=4.5,'Wissen title contrast <4.5:1 '+JSON.stringify(styleRead));
+assert.ok(ratio(styleRead.para,styleRead.bg)>=4.5,'Wissen description contrast <4.5:1 '+JSON.stringify(styleRead));
+const academyResponse=await page.goto(baseUrl+"/"+locale+"/akademija/",{waitUntil:"domcontentloaded"});
+assert.equal(academyResponse.status(),200);
+assert.equal(await page.locator('.ed-map-grid li').count(),3,'Academy visual learning path must show 3 actual steps');
+assert.equal(await page.locator('.ed-map-grid a[href^="/'+locale+'/akademija/"]').count(),2,'Academy graphics must link both module pages');
+const mapStyle=await page.evaluate(()=>{
+ const section=document.querySelector('.ed-map');
+ const title=section.querySelector('h2');
+ return {bg:getComputedStyle(section).backgroundColor,fg:getComputedStyle(title).color};
+});
+assert.ok(ratio(mapStyle.fg,mapStyle.bg)>=4.5,'Academy diagram heading contrast <4.5:1');
+const moduleResponse=await page.goto(baseUrl+"/"+locale+"/akademija/modul-03/",{waitUntil:"domcontentloaded"});
+assert.equal(moduleResponse.status(),200);
+assert.equal(await page.locator('.academyl-flow li').count(),3,'Module 03 offer graphic must have three steps');
+assert.equal(await page.locator('[data-lesson-print]').count(),1,'Module 03 print action lost');
+await page.screenshot({path:"qa-screenshots/"+locale+"-"+device+"-academy-module03.png",fullPage:true});
+
 await context.close();
 }
 }

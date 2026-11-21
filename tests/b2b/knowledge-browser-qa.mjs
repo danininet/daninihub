@@ -81,9 +81,7 @@ assert.equal(academyResponse.status(),200);
 assert.equal(await page.locator('.ed-map-grid li').count(),3,'Academy visual learning path must show 3 actual steps');
 
 assert.equal(await page.locator('.ed-case-business-visual').count(),1,'Business example graphic missing');
-const photo=page.locator('.ed-case-auto img');
-await photo.scrollIntoViewIfNeeded();
-assert.equal(await photo.evaluate(async el=>{await el.decode();return el.complete&&el.naturalWidth>0}),true,'Academy first-party case photo broken');
+assert.equal(await page.locator('.ed-case-auto-visual').count(),1,'AutoDanini evidence infographic missing');
 assert.equal(await page.evaluate(()=>{window.scrollTo(document.documentElement.scrollWidth,0);return window.scrollX}),0,'Academy horizontal overflow '+locale+' '+device);
 await page.screenshot({path:"qa-screenshots/"+locale+"-"+device+"-academy-home.png",fullPage:true});
 

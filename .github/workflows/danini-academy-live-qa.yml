@@ -1,0 +1,72 @@
+name: DANINI Akademija live DE SR browser QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/danini-academy-live-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  academy-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Validate public pages, links, worksheet readability and mobile UX
+        run: |
+          node <<'NODE'
+          const {chromium}=require('@playwright/test');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+            try{
+              for(const locale of ['de','sr']){
+                for(const slug of ['','akademija/','business/','auto-check/','wissen/','wissen/produkte/']){
+                  const url='https://daninihub.com/'+locale+'/'+slug;
+                  const page=await browser.newPage({viewport:{width:390,height:844}});
+                  const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+                  assert.equal(response.status(),200,'HTTP status '+url);
+                  const h1=await page.locator('main h1').count();
+                  assert.equal(h1,1,'expected one visible semantic H1 '+url);
+                  assert.equal(await page.locator('link[rel=canonical]').count(),1,'canonical missing '+url);
+                  assert.equal(await page.locator('a[href="/'+locale+'/akademija/"]').count()>0,true,'Academy internal link missing '+url);
+                  const overflow=await page.evaluate(()=>{scrollTo(document.documentElement.scrollWidth,0);return scrollX});
+                  assert.equal(overflow,0,'horizontal scroll on mobile '+url);
+                  if(slug===''){
+                    const heading=await page.locator('main h1').innerText();
+                    assert.match(heading,locale==='de'?/Online-Business entwickeln/:/online preduzeće/i);
+                  }
+                  if(slug==='akademija/'){
+                    assert.equal(await page.locator('.ed-module.ed-live').count(),1,'lesson 01 availability');
+                    assert.equal(await page.locator('.ed-fields textarea').count(),5,'worksheet fields');
+                    const box=page.locator('.ed-fields textarea').first();
+                    await box.fill('Provera '+locale);
+                    assert.equal(await box.inputValue(),'Provera '+locale);
+                    const palette=await box.evaluate(el=>({fg:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}));
+                    assert.deepEqual(palette,{fg:'rgb(23, 56, 74)',bg:'rgb(255, 255, 255)'},'worksheet contrast '+locale);
+                    assert.equal(await page.locator('[data-education-print]').count(),1,'PDF action');
+                    assert.equal(await page.locator('[data-copy-prompt]').count(),3,'prompt copy actions');
+                  }
+                  console.log('PASS LIVE',url,'mobile:390px');
+                  await page.close();
+                }
+              }
+              const page=await browser.newPage({viewport:{width:1440,height:900}});
+              for(const locale of ['de','sr']){
+                const url='https://daninihub.com/'+locale+'/akademija/';
+                const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+                assert.equal(response.status(),200);
+                assert.equal(await page.locator('.ed-fields textarea').count(),5);
+                console.log('PASS LIVE',url,'desktop:1440px');
+              }
+              await page.close();
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE

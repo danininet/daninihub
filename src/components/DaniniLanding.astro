@@ -5,31 +5,37 @@ const { locale } = Astro.props as { locale: Locale };
 const de = locale === "de";
 const business = "/" + locale + "/business/";
 const auto = "/" + locale + "/auto-check/";
+const academy = "/" + locale + "/akademija/";
 const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
 ---
 <Base locale={locale}
-  title={de ? "DANINI — Digitale Geschäftsprozesse und Fahrzeugentscheidungen" : "DANINI — Digitalno poslovanje i odluke pri kupovini vozila"}
-  description={de ? "DANINI verbindet digitale B2B-Anfrageprozesse mit AutoDanini: strukturierte Anfragen, überprüfbare Informationen und menschliche Entscheidungen zwischen DACH und Balkan." : "DANINI povezuje digitalizaciju poslovnih upita i AutoDanini: proverljive informacije, jasni postupci i odluke uz ljudsku kontrolu između DACH regiona i Balkana."}>
+  title={de ? "DANINI Akademie — mit KI ein eigenes Online-Business entwickeln" : "DANINI Akademija — nauči da izgradiš online preduzeće uz AI"}
+  description={de ? "DANINI vermittelt praxisnah, wie Sie mit KI eine Geschäftsidee prüfen und ein Online-Business entwickeln. Kostenlose erste Lektion mit praktischen Beispielen aus DANINI Business und AutoDanini." : "DANINI uči kako da uz AI proveriš poslovnu nišu i izgradiš online preduzeće. Besplatna prva lekcija i praktični primeri AutoDanini i DANINI Business."}>
   <section class="d-hero" aria-labelledby="danini-home-title">
     <div class="wrap d-hero-grid">
       <div>
-        <p class="d-eyebrow">DANINI · DACH ↔ BALKAN · {de ? "DIGITALE DIENSTLEISTUNGEN" : "DIGITALNE USLUGE"}</p>
-        <h1 id="danini-home-title">{de ? "Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen." : "Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom."}</h1>
-        <p class="d-lead">{de ? "Für Unternehmen vom Balkan, die mit Kunden, Lieferanten oder Partnern in Deutschland arbeiten möchten: DANINI Business strukturiert Anfragen, Unterlagen und deutschsprachige Kommunikation. AutoDanini hilft Käufern vom Balkan, Inserate vor Reise und Anzahlung einzuordnen." : "Za firme sa Balkana koje žele da sarađuju sa nemačkim kupcima, dobavljačima i partnerima: DANINI Business sređuje upite, dokumentaciju i komunikaciju na nemačkom. AutoDanini pomaže pojedincima da pripreme odluku o vozilu pre puta i kapare."}</p>
+        <p class="d-eyebrow">DANINI · DACH ↔ BALKAN · {de ? "KI-BUSINESS-AKADEMIE" : "AI EDUKACIJA I ONLINE BIZNIS"}</p>
+        <h1 id="danini-home-title">{de ? "Mit KI ein eigenes Online-Business entwickeln. Schritt für Schritt." : "Nauči kako da uz AI izgradiš sopstveno online preduzeće."}</h1>
+        <p class="d-lead">{de ? "Lernen Sie mit konkreten Übungen, wie Sie eine Nische prüfen, ein Angebot formulieren und KI für Recherche, Inhalte und Arbeitsabläufe nutzen. Unsere Praxisbeispiele: DANINI Business und AutoDanini. Keine Erfolgs- oder Einkommensgarantie." : "Kroz konkretne zadatke nauči da proveriš bilo koju poslovnu nišu, napraviš ponudu i koristiš AI za istraživanje, sadržaj i organizaciju. Kako to radimo pokazujemo kroz DANINI Business i AutoDanini — bez obećanja zarade."}</p>
         <div class="d-actions">
-          <a class="d-btn primary" href={business}>{de ? "Business-Anfrage starten" : "Pokreni poslovni upit"}</a>
-          <a class="d-btn outline" href={auto}>{de ? "Fahrzeugangebot prüfen" : "Proveri oglas vozila"}</a>
+          <a class="d-btn primary" href={academy}>{de ? "Kostenlose erste KI-Lektion starten" : "Započni besplatnu AI lekciju"}</a>
+          <a class="d-btn outline" href="#arbeitsbereiche">{de ? "Praxisprojekte ansehen" : "Pogledaj naše praktične primere"}</a>
         </div>
         <div class="d-hero-benefits" aria-label={de ? "Unsere Arbeitsprinzipien" : "Način rada"}>
-          <span>{de ? "Deutsch / Serbisch" : "Nemački / srpski"}</span>
-          <span>{de ? "Strukturierte Vorprüfung" : "Strukturisana predprovera"}</span>
-          <span>{de ? "Menschliche Freigabe" : "Ljudsko odobrenje"}</span>
+          <span>{de ? "KI lernen und anwenden" : "Uči i primeni AI"}</span>
+          <span>{de ? "Eigene Nische entwickeln" : "Razvij sopstvenu nišu"}</span>
+          <span>{de ? "Echte Praxisbeispiele" : "Primeri iz prakse"}</span>
         </div>
-        <p class="d-small">{de ? "KI unterstützt die Vorbereitung. Kritische Entscheidungen und verbindliche Schritte bleiben unter menschlicher Kontrolle." : "AI pomaže u pripremi. Važne odluke i obavezujući koraci ostaju pod ljudskom kontrolom."}</p>
+        <p class="d-small">{de ? "Die erste Lektion ist kostenlos verfügbar. Weitere Module sind in Vorbereitung; kein vollständiger kostenpflichtiger Kurs wird als fertig angeboten." : "Prva lekcija je besplatna i dostupna. Ostali moduli su u pripremi; ne predstavljamo nedovršen kurs kao gotov proizvod."}</p>
       </div>
       <div class="d-visual" aria-label={de ? "DANINI Geschäftsbereiche" : "DANINI poslovne oblasti"}>
-        <div class="d-visual-head"><span>DANINI / DIGITAL OFFICE</span><span>DACH ↔ BALKAN</span></div>
-        <div class="d-visual-title">{de ? "Zwei Wege. Ein klarer nächster Schritt." : "Dva pravca. Jedan jasan sledeći korak."}</div>
+        <div class="d-visual-head"><span>DANINI / AI BUSINESS ACADEMY</span><span>DACH ↔ BALKAN</span></div>
+        <div class="d-visual-title">{de ? "Ein Lernweg. Zwei Praxisbeispiele." : "Jedan sistem učenja. Dva primera iz prakse."}</div>
+        <a class="d-visual-service d-visual-education" href={academy}>
+          <span class="d-visual-icon" aria-hidden="true">00</span>
+          <span><strong>DANINI AKADEMIJA</strong><small>{de ? "Nische → KI-Übung → überprüfbares Angebot" : "Niša → AI zadatak → proverljiva ponuda"}</small></span>
+          <span class="d-visual-arrow" aria-hidden="true">↗</span>
+        </a>
         <a class="d-visual-service" href={business}>
           <span class="d-visual-icon" aria-hidden="true">01</span>
           <span><strong>DANINI BUSINESS</strong><small>{de ? "Anfrage → Einordnung → Antwortentwurf" : "Upit → analiza → nacrt odgovora"}</small></span>
@@ -40,15 +46,25 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
           <span><strong>AUTODANINI</strong><small>{de ? "Inserat → Nachweise → Prüffragen" : "Oglas → dokumenta → pitanja"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
-        <div class="d-visual-foot"><span class="d-online-dot"></span>{de ? "Digitale Vorprüfung mit nachvollziehbaren Ergebnissen" : "Digitalna predprovera sa razumljivim rezultatom"}</div>
+        <div class="d-visual-foot"><span class="d-online-dot"></span>{de ? "Lernen, selbst umsetzen und an echten Projekten prüfen" : "Nauči, primeni i proveri na stvarnim projektima"}</div>
       </div>
     </div>
   </section>
 
+  <section class="d-section d-education" aria-labelledby="academy-home-title">
+    <div class="wrap d-education-grid">
+      <div><p class="d-eyebrow">DANINI AKADEMIJA / {de?"HAUPTPRODUKT":"GLAVNI PROIZVOD"}</p>
+      <h2 id="academy-home-title">{de?"Von der Geschäftsidee zum ersten prüfbaren Ergebnis.":"Od poslovne ideje do prvog proverljivog rezultata."}</h2>
+      <p>{de?"Die kostenlose erste Praxislektion zeigt, wie Sie eine Nische eingrenzen, mithilfe gezielter KI-Fragen echte Probleme erfassen und Annahmen testen. Mit drei kopierbaren Prompts und einem ausdruckbaren Arbeitsblatt." : "Prva besplatna lekcija pokazuje kako da odabereš nišu, uz tri AI zadatka razjasniš problem i proveriš pretpostavke. Dobijaš radnu svesku za sopstvenu poslovnu ideju."}</p>
+      <a class="d-education-cta" href={academy}>{de?"Mit Modul 01 beginnen":"Počni od modula 01"} ↗</a>
+      <small>{de?"Sechs Themen geplant, aktuell eine vollständige Startlektion verfügbar. Keine Kurs- oder Verdienstgarantie." : "Planirano šest oblasti; trenutno je dostupna jedna cela početna lekcija. Nema garancija zarade."}</small></div>
+      <div class="d-education-preview"><span>01 / {de?"LERNEN":"UČENJE"}</span><strong>{de?"Nische":"Niša"}</strong><span>02 / {de?"PRÜFEN":"PROVERA"}</span><strong>{de?"Nachfrage":"Potreba"}</strong><span>03 / {de?"ENTWICKELN":"IZGRADNJA"}</span><strong>{de?"Erstes Angebot":"Prva ponuda"}</strong></div>
+    </div>
+  </section>
   <section id="arbeitsbereiche" class="d-section d-light">
     <div class="wrap">
-      <p class="d-eyebrow">{de ? "UNSERE ZWEI GESCHÄFTSBEREICHE" : "NAŠE DVE POSLOVNE OBLASTI"}</p>
-      <h2>{de ? "Eine Marke. Zwei klare Leistungen." : "Jedan brend. Dve jasne oblasti."}</h2>
+      <p class="d-eyebrow">{de ? "UNSERE PRAXISBEISPIELE" : "NAŠI PRIMERI IZ PRAKSE"}</p>
+      <h2>{de ? "Was Sie in der Akademie lernen, zeigen wir in unseren eigenen Projekten." : "Ono što učimo — pokazujemo kroz sopstvene projekte."}</h2>
       <div class="d-cards">
         <article class="d-card d-card-business">
           <div class="d-card-media d-business-media" aria-hidden="true">
@@ -103,6 +119,7 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
   </section>
 </Base>
 <style>
+.d-visual-education{background:#facc151a;border-color:#facc1588}.d-education{background:#fff}.d-education-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(275px,.8fr);gap:50px;align-items:center}.d-education h2{font-size:clamp(2rem,3.4vw,3.15rem);color:#112c40}.d-education p{color:#425c6d;font-size:1.08rem}.d-education small{display:block;margin-top:14px;color:#5b7180}.d-education-cta{display:inline-flex;background:#0b5b61;color:#fff;font-weight:850;border-radius:10px;padding:15px 22px;margin-top:16px}.d-education-preview{border-radius:18px;background:linear-gradient(140deg,#12283c,#0b565b);padding:clamp(25px,4vw,45px);display:grid;grid-template-columns:1fr;gap:8px;box-shadow:0 20px 45px #0c273723}.d-education-preview span{font-size:.72rem;color:#e9d28c;font-weight:850;letter-spacing:.12em}.d-education-preview strong{font-size:clamp(1.6rem,2.8vw,2.7rem);color:#fff;margin-bottom:14px}@media(max-width:820px){.d-education-grid{grid-template-columns:1fr}.d-education-preview{max-width:620px}}
 .d-hero{background:radial-gradient(ellipse at 80% 10%,#17526a 0%,transparent 42%),linear-gradient(128deg,#091523 0%,#102638 60%,#092329 100%);color:#f9fafb;padding:clamp(58px,7.5vw,112px) 0;position:relative;overflow:hidden}
 .d-hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(90deg,transparent,#000);pointer-events:none}
 .d-hero .wrap{position:relative}

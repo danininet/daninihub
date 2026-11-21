@@ -67,14 +67,14 @@ test('PR207 three questions and risk UI wired in both locales',()=>{
  assert.match(advisor,/Pregled troškova/);
 });
 test('DANINI navigation keeps both commercial lines and languages',()=>{
- for(const label of ['Startseite','Početna','DANINI Business','AutoDanini','Unsere Methode','Naša metoda','Kontakt']) assert.ok(nav.includes(label),label);
+ for(const label of ['Startseite','Početna','DANINI Akademie','DANINI Akademija','DANINI Business','AutoDanini','Unsere Methode','Naša metoda','Kontakt']) assert.ok(nav.includes(label),label);
  const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
  const business=readFileSync('src/components/BusinessLanding.astro','utf8');
  const route=readFileSync('src/pages/[locale]/auto-check.astro','utf8');
  const rootPage=readFileSync('src/pages/index.astro','utf8');
  assert.match(rootPage,/DaniniLanding/);
- assert.match(brand,/Sa Balkana do pouzdanijih odluka/);
- assert.match(brand,/Für Unternehmen und Käufer vom Balkan/);
+ assert.match(brand,/Nauči kako da uz AI izgradiš sopstveno online preduzeće/);
+ assert.match(brand,/Mit KI ein eigenes Online-Business entwickeln/);
  assert.match(business,/DANINI Anfragebüro/);
  assert.match(route,/slug="auto-check"/);
 });

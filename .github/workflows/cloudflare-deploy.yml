@@ -45,8 +45,8 @@ jobs:
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
           const locales = [
-            ['de','Auto in Deutschland gefunden?','Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen.'],
-            ['sr','Našao si auto u Nemačkoj?','Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom.']
+            ['de','Auto in Deutschland gefunden?','Mit KI ein eigenes Online-Business entwickeln. Schritt für Schritt.'],
+            ['sr','Našao si auto u Nemačkoj?','Nauči kako da uz AI izgradiš sopstveno online preduzeće.']
           ];
           for (const [locale,heading,brandHeading] of locales) {
             const home=fs.readFileSync('dist/'+locale+'/auto-check/index.html','utf8');
@@ -55,6 +55,9 @@ jobs:
             const advisor=fs.readFileSync('dist/'+locale+'/ai-savetnik/index.html','utf8');
             assert.ok(brand.includes(brandHeading),'DANINI two-line brand Hero missing in '+locale);
             assert.ok(brand.includes('d-visual-service'),'DANINI visual service paths missing in '+locale);
+            const academy=fs.readFileSync('dist/'+locale+'/akademija/index.html','utf8');
+            assert.ok(brand.includes('/'+locale+'/akademija/'),'Academy homepage CTA missing in '+locale);
+            assert.ok(academy.includes('data-education-print'),'Academy worksheet missing in '+locale);
             assert.ok(brand.includes('d-card-media'),'DANINI service card visuals missing in '+locale);
             assert.ok(business.includes('DANINI Anfragebüro'),'DANINI Business offer missing in '+locale);
             assert.ok(home.includes(heading),'AutoDanini Hero missing in '+locale);
@@ -142,12 +145,13 @@ jobs:
             assert.match(html,/danini-advisor-client\.js/,path+' advisor client script');
             console.log('PASS',path,'HTTP 200');
           }
-          for (const [path,heading] of [['/de/','Für Unternehmen und Käufer vom Balkan: Deutschland besser erreichen.'],['/sr/','Sa Balkana do pouzdanijih odluka i poslova sa Nemačkom.']]){
+          for (const [path,heading] of [['/de/','Mit KI ein eigenes Online-Business entwickeln. Schritt für Schritt.'],['/sr/','Nauči kako da uz AI izgradiš sopstveno online preduzeće.']]){
             const r=await fetch(base+path,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
             assert.equal(r.status,200,path+' HTTP status');
             const html=await r.text();
             assert.ok(html.includes(heading),path+' DANINI brand page not live');
             const locale=path==='/de/'?'de':'sr';
+            assert.ok(html.includes('href="/'+locale+'/akademija/"'),path+' Academy CTA not live');
             assert.ok(html.includes('href="/'+locale+'/business/#anfrage"'),path+' missing Business inquiry CTA');
             assert.ok(html.includes('href="/'+locale+'/auto-check/#contact"'),path+' missing AutoDanini inquiry CTA');
             assert.ok(html.includes('mailto:info@daninihub.com'),path+' missing direct email fallback');

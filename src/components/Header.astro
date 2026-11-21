@@ -15,6 +15,7 @@ const altSlug = (language: "de" | "sr") => {
 };
 const navItems = [
   { href: home, label: isDe ? "Startseite" : "Početna", active: !slug },
+  { href: home + "akademija/", label: isDe ? "DANINI Akademie" : "DANINI Akademija", active: slug === "akademija" },
   { href: home + "business/", label: "DANINI Business", active: slug === "business" },
   { href: home + "auto-check/", label: "AutoDanini", active: slug === "auto-check" },
   { href: home + "wissen/", label: isDe ? "Wissen & Ratgeber" : "Vodiči i saveti", active: slug.startsWith("wissen") },
@@ -26,7 +27,7 @@ const navItems = [
 <header>
   <div class="wrap nav danini-header">
     <a class="brand" href={home} aria-label={isDe ? "DANINI — Startseite" : "DANINI — Početna"}>
-      <span class="brand-lockup"><img class="brand-logo" src={daniniBrandLogo} width="360" height="120" alt="DANINI" decoding="async" /><small>DACH ↔ BALKAN · BUSINESS & AUTO</small></span>
+      <span class="brand-lockup"><img class="brand-logo" src={daniniBrandLogo} width="360" height="120" alt="DANINI" decoding="async" /><small>AI EDUKACIJA · BUSINESS · AUTO</small></span>
     </a>
     <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
       {navItems.map(item => <a href={item.href} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}

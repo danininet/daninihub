@@ -7,14 +7,14 @@ const base="/"+locale+"/";
 const lessons=de?[
  {num:"01",name:"Nische und Problem prüfen",sub:"Verfügbar · kostenlose Praxislektion",status:"live"},
  {num:"02",name:"Zielgruppe, Recherche und Nachfrage",sub:"Verfügbar · kostenlose Recherchelektion",status:"live"},
- {num:"03",name:"Ein konkretes Angebot formulieren",sub:"Curriculum · in Vorbereitung",status:"planned"},
+ {num:"03",name:"Ein konkretes Angebot formulieren",sub:"Verfügbar · kostenlose Angebotslektion",status:"live"},
  {num:"04",name:"Online-Präsenz und erste Anfragen",sub:"Curriculum · in Vorbereitung",status:"planned"},
  {num:"05",name:"KI-gestützte Abläufe aufbauen",sub:"Curriculum · in Vorbereitung",status:"planned"},
  {num:"06",name:"Liefern, messen und verbessern",sub:"Curriculum · in Vorbereitung",status:"planned"}
 ]:[
  {num:"01",name:"Izbor niše i provera problema",sub:"Dostupno · besplatna praktična lekcija",status:"live"},
  {num:"02",name:"Publika, istraživanje i potražnja",sub:"Dostupno · besplatna lekcija istraživanja",status:"live"},
- {num:"03",name:"Konkretna ponuda i prvi proizvod",sub:"Program · u pripremi",status:"planned"},
+ {num:"03",name:"Konkretna ponuda i prvi proizvod",sub:"Dostupno · besplatna praktična lekcija",status:"live"},
  {num:"04",name:"Online prisustvo i prvi upiti",sub:"Program · u pripremi",status:"planned"},
  {num:"05",name:"AI tokovi i automatizacija",sub:"Program · u pripremi",status:"planned"},
  {num:"06",name:"Isporuka, merenje i unapređenje",sub:"Program · u pripremi",status:"planned"}
@@ -37,7 +37,7 @@ const prompts=de?[
    <h1>{de?"Mit KI ein Online-Business entwickeln. Schritt für Schritt.":"Nauči da uz AI izgradiš svoje online preduzeće."}</h1>
    <p class="ed-lead">{de?"Von der ersten Nischenidee bis zu einem überprüfbaren Angebot: Lernen Sie, wie Sie KI als Werkzeug für Recherche, Planung, Inhalte und Arbeitsabläufe nutzen – mit menschlicher Kontrolle und echten Praxisbeispielen.":"Od ideje za bilo koju nišu do proverljive ponude: nauči da koristiš AI za istraživanje, planiranje, izradu sadržaja i organizovanje poslovanja. Sve kroz konkretne zadatke i stvarne DANINI primere."}</p>
    <div class="ed-actions"><a class="ed-btn" href="#lektion-1">{de?"Kostenlose erste Lektion starten":"Započni besplatnu prvu lekciju"} ↓</a><a class="ed-btn ed-outline" href="#praxis">{de?"Praxisprojekte ansehen":"Pogledaj primere iz prakse"} ↗</a></div>
-   <p class="ed-fine">{de?"Keine Registrierung erforderlich. Kein Einkommensversprechen. Vier weitere Module sind in Vorbereitung.":"Bez registracije i obećanja zarade. Dostupna su dva modula; još četiri se razvijaju."}</p>
+   <p class="ed-fine">{de?"Keine Registrierung erforderlich. Kein Einkommensversprechen. Drei weitere Module sind in Vorbereitung.":"Bez registracije i obećanja zarade. Dostupna su tri modula; još tri se razvijaju."}</p>
   </div>
   <div class="ed-display" aria-label={de?"Von einer Nischenidee zum prüfbaren Online-Angebot":"Od ideje za nišu do proverljive online ponude"}>
    <p>{de?"DANINI METHODE / BEISPIEL":"DANINI METODA / PRIMER"}</p>
@@ -50,8 +50,8 @@ const prompts=de?[
 </section>
 <section class="ed-intro"><div class="wrap"><div class="ed-intro-grid"><p><strong>{de?"Für verschiedene Nischen":"Za različite niše"}</strong><span>{de?"Dienstleistungen, Produkte, digitale Angebote und lokale Unternehmen.":"Usluge, digitalni proizvodi, lokalni i online poslovi."}</span></p><p><strong>{de?"KI als Werkzeug":"AI kao alat"}</strong><span>{de?"Fragen, recherchieren, Entwürfe erstellen – Ergebnisse selbst prüfen.":"Pitaj, istraži, pripremi nacrte — samostalno proveri rezultate."}</span></p><p><strong>{de?"Praxis statt Versprechen":"Praksa umesto obećanja"}</strong><span>{de?"DANINI Business und AutoDanini sind dokumentierte Entwicklungsbeispiele, keine behaupteten Verkaufserfolge.":"DANINI Business i AutoDanini su primeri razvoja, ne izmišljene priče o zaradi."}</span></p></div></div></section>
 <section class="ed-section" id="programm"><div class="wrap">
- <p class="ed-kicker">{de?"LERNPFAD":"PROGRAM UČENJA"}</p><h2>{de?"Sechs Themen. Zwei kostenlose Praxislektionen.":"Šest oblasti. Dve besplatne lekcije dostupne."}</h2><p class="ed-description">{de?"Der Lernpfad ist der geplante Rahmen, kein behaupteter fertiger Videokurs. Modul 01 und Modul 02 sind als vollständige Arbeitslektionen verfügbar.":"Ovo je struktura programa, ne tvrdnja da je svih šest modula gotovo. Moduli 01 i 02 su objavljene praktične lekcije."}</p>
- <div class="ed-modules">{lessons.map(l=><article class:list={["ed-module",l.status==="live"?"ed-live":"ed-pending"]}><span>{l.num}</span><div><h3>{l.name}</h3><p>{l.sub}</p></div>{l.status==="live"?<a href={l.num==="01"?"#lektion-1":base+"akademija/modul-02/"}>{de?"Öffnen":"Otvori"} →</a>:<small>{de?"Geplant":"Planirano"}</small>}</article>)}</div>
+ <p class="ed-kicker">{de?"LERNPFAD":"PROGRAM UČENJA"}</p><h2>{de?"Sechs Themen. Drei kostenlose Praxislektionen.":"Šest oblasti. Tri besplatne lekcije dostupne."}</h2><p class="ed-description">{de?"Der Lernpfad ist der geplante Rahmen, kein behaupteter fertiger Videokurs. Modul 01, 02 und 03 sind als vollständige Arbeitslektionen verfügbar.":"Ovo je struktura programa, ne tvrdnja da je svih šest modula gotovo. Moduli 01, 02 i 03 su objavljene praktične lekcije."}</p>
+ <div class="ed-modules">{lessons.map(l=><article class:list={["ed-module",l.status==="live"?"ed-live":"ed-pending"]}><span>{l.num}</span><div><h3>{l.name}</h3><p>{l.sub}</p></div>{l.status==="live"?<a href={l.num==="01"?"#lektion-1":base+"akademija/modul-"+l.num+"/"}>{de?"Öffnen":"Otvori"} →</a>:<small>{de?"Geplant":"Planirano"}</small>}</article>)}</div>
 </div></section>
 <section class="ed-section ed-lesson" id="lektion-1"><div class="wrap ed-reading">
  <p class="ed-kicker">{de?"MODUL 01 · KOSTENLOS":"MODUL 01 · BESPLATNO"}</p><h2>{de?"Eine Nische mit KI prüfen, bevor Sie investieren.":"Kako da uz AI proveriš poslovnu nišu pre ulaganja."}</h2>

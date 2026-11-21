@@ -28,7 +28,7 @@ jobs:
             const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
             try{
               for(const locale of ['de','sr']){
-                for(const slug of ['','akademija/','akademija/modul-02/','business/','auto-check/','wissen/','wissen/produkte/']){
+                for(const slug of ['','akademija/','akademija/modul-02/','akademija/modul-03/','business/','auto-check/','wissen/','wissen/produkte/']){
                   const url='https://daninihub.com/'+locale+'/'+slug;
                   const page=await browser.newPage({viewport:{width:390,height:844}});
                   const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
@@ -45,8 +45,8 @@ jobs:
                     assert.match(heading,locale==='de'?/Online-Business entwickeln/:/online preduzeće/i);
                   }
                   if(slug==='akademija/'){
-                    assert.equal(await page.locator('.ed-module.ed-live').count(),2,'two free modules available');
-                    assert.equal(await page.locator('.ed-module.ed-pending').count(),4,'four planned modules');
+                    assert.equal(await page.locator('.ed-module.ed-live').count(),3,'three free modules available');
+                    assert.equal(await page.locator('.ed-module.ed-pending').count(),3,'three planned modules');
                     assert.ok(await page.locator('a[href="/'+locale+'/akademija/modul-02/"]').count()>0,'Module 02 link missing');
                     assert.equal(await page.locator('.ed-fields textarea').count(),5,'worksheet fields');
                     const box=page.locator('.ed-fields textarea').first();
@@ -57,10 +57,10 @@ jobs:
                     assert.equal(await page.locator('[data-education-print]').count(),1,'PDF action');
                     assert.equal(await page.locator('[data-copy-prompt]').count(),3,'prompt copy actions');
                   }
-                  if(slug==='akademija/modul-02/'){
+                  if(slug==='akademija/modul-02/'||slug==='akademija/modul-03/'){
                     assert.equal(await page.locator('[data-lesson-print]').count(),1,'Module 02 PDF print action missing');
                     assert.equal(await page.locator('meta[name="robots"][content="index,follow"]').count(),1,'Module 02 indexable');
-                    assert.equal(await page.locator('link[rel="canonical"][href="https://daninihub.com/'+locale+'/akademija/modul-02/"]').count(),1,'Module 02 canonical');
+                    assert.equal(await page.locator('link[rel="canonical"][href="https://daninihub.com/'+locale+'/'+slug+'"]').count(),1,'Lesson canonical');
                   }
                   console.log('PASS LIVE',url,'mobile:390px');
                   await page.close();
@@ -68,7 +68,7 @@ jobs:
               }
               const page=await browser.newPage({viewport:{width:1440,height:900}});
               for(const locale of ['de','sr']){
-                for(const slug of ['akademija/','akademija/modul-02/']){
+                for(const slug of ['akademija/','akademija/modul-02/','akademija/modul-03/']){
                   const url='https://daninihub.com/'+locale+'/'+slug;
                   const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
                   assert.equal(response.status(),200);
@@ -78,7 +78,7 @@ jobs:
                 }
               }
               await page.close();
-              for(const file of ['danini-starter-kit-recherche.csv','danini-starter-kit-offer-de-sr.md','danini-starter-kit-checklist-de-sr.md']){
+              for(const file of ['danini-starter-kit-recherche.csv','danini-starter-kit-offer-de-sr.md','danini-starter-kit-checklist-de-sr.md','danini-modul03-ponuda-angebot.csv','danini-modul03-offer-worksheet-de-sr.md']){
                 const u='https://daninihub.com/downloads/akademija/'+file;
                 const r=await fetch(u);
                 assert.equal(r.status,200,'Starter Kit HTTP '+file);

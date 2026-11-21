@@ -11,7 +11,7 @@ const fs=require('node:fs');
    const page=await browser.newPage({viewport});
    const errors=[];
    page.on('pageerror',e=>errors.push(e.message));
-   for(const slug of ['','akademija/','akademija/modul-02/']){
+   for(const slug of ['','akademija/','akademija/modul-02/','akademija/modul-03/']){
      const url='http://127.0.0.1:4321/'+locale+'/'+slug;
      const res=await page.goto(url,{waitUntil:'domcontentloaded',timeout:25000});
      assert.equal(res.status(),200,'missing '+url);
@@ -52,8 +52,8 @@ const fs=require('node:fs');
      }
      assert.deepEqual(errors,[],'JS errors '+url);
      if(slug==='akademija/'){
-       assert.equal(await page.locator('.ed-module.ed-live').count(),2,'two modules available');
-       assert.equal(await page.locator('.ed-module.ed-pending').count(),4,'four planned modules');
+       assert.equal(await page.locator('.ed-module.ed-live').count(),3,'three modules available');
+       assert.equal(await page.locator('.ed-module.ed-pending').count(),3,'three planned modules');
        assert.equal(await page.locator('.ed-fields textarea').count(),5,'worksheet fields');
        assert.equal(await page.locator('.ed-prompt blockquote').count(),3,'AI prompts');
        const input=page.locator('.ed-fields textarea').first();
@@ -62,10 +62,10 @@ const fs=require('node:fs');
        const palette=await input.evaluate(el=>({foreground:getComputedStyle(el).color,background:getComputedStyle(el).backgroundColor}));
        assert.equal(palette.background,'rgb(255, 255, 255)','worksheet textarea must be readable on a light background');
        assert.equal(palette.foreground,'rgb(23, 56, 74)','worksheet textarea text must contrast with its background');
-     }else if(slug==='akademija/modul-02/'){
+     }else if(slug==='akademija/modul-02/'||slug==='akademija/modul-03/'){
        assert.equal(await page.locator('main h1').count(),1,'module 02 heading missing');
        assert.equal(await page.locator('[data-lesson-print]').count(),1,'module 02 printable worksheet action missing');
-       assert.equal(await page.locator('link[rel="canonical"][href="https://daninihub.com/'+locale+'/akademija/modul-02/"]').count(),1,'module 02 canonical');
+       assert.equal(await page.locator('link[rel="canonical"][href="https://daninihub.com/'+locale+'/'+slug+'"]').count(),1,'lesson canonical');
        assert.equal(await page.locator('meta[name="robots"][content="index,follow"]').count(),1,'module 02 indexable');
      }else{
        assert.equal(await page.locator('a[href="/'+locale+'/akademija/"]').count()>0,true,'homepage academy path missing');

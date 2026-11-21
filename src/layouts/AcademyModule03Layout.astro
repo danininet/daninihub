@@ -1,0 +1,19 @@
+---
+import Base from "./Base.astro";
+const locale=Astro.url.pathname.startsWith("/de/")?"de":"sr";
+const de=locale==="de";
+---
+<Base locale={locale} slug="akademija/modul-03"
+ title={de?"DANINI Akademie Modul 03 — Ein konkretes Angebot mit KI entwickeln":"DANINI Akademija Modul 03 — konkretna ponuda uz AI"}
+ description={de?"Praxislektion: Kundenproblem, Liefergegenstand, Leistungsgrenzen, Preiskalkulation und Validierung.":"Praktična lekcija: problem kupca, isporučivi rezultat, ograničenja, računica cene i validacija."}>
+ <section class="academyl-hero"><div class="wrap">
+  <p>DANINI {de?"AKADEMIE · MODUL 03":"AKADEMIJA · MODUL 03"}</p>
+  <h1>{de?"Mit KI ein konkretes Geschäftsangebot entwickeln.":"Kako uz AI napraviti konkretnu poslovnu ponudu."}</h1>
+  <a href={"/"+locale+"/akademija/"}>{de?"Zurück zur Akademie":"Nazad na Akademiju"} ↗</a>
+ </div></section>
+ <section class="academyl-content"><article class="wrap academyl-article"><slot /><div class="academy-downloads"><p><strong>{de?"Arbeitsblätter herunterladen":"Preuzmi radne listove"}</strong></p><a href="/downloads/akademija/danini-modul03-ponuda-angebot.csv" download>CSV · {de?"Tabellen-Arbeitsblatt":"Tabela za popunjavanje"}</a> · <a href="/downloads/akademija/danini-modul03-offer-worksheet-de-sr.md" download>{de?"Textvorlage DE/SR":"Šablon DE/SR"}</a></div><button data-lesson-print type="button">{de?"Arbeitsblatt als PDF speichern":"Sačuvaj radnu svesku kao PDF"}</button></article></section>
+</Base>
+<script>document.querySelector("[data-lesson-print]")?.addEventListener("click",()=>window.print());</script>
+<style>
+.academyl-hero{background:linear-gradient(135deg,#0b1728,#10515b);color:white;padding:60px 0}.academyl-hero h1{color:white;font-size:clamp(2.2rem,4.5vw,4rem);max-width:1050px}.academyl-hero p{color:#f4cc76;letter-spacing:.12em;font-weight:800;font-size:.78rem}.academyl-hero a{color:#facc15;font-weight:800;text-decoration:underline}.academyl-content{padding:55px 0;background:#f6f9fb}.academyl-article{max-width:920px;background:white;border:1px solid #d5e1e8;border-radius:16px;padding:clamp(20px,4vw,46px);color:#213e52;overflow-wrap:anywhere}.academyl-article :global(h2){color:#163a50}.academyl-article :global(h3){color:#17566b}.academyl-article :global(blockquote){margin:20px 0;background:#ecf5f6;border-left:4px solid #127b7c;padding:16px 21px;color:#234b5a}.academyl-article :global(table){border-collapse:collapse;width:100%;font-size:.88rem;display:block;overflow-x:auto}.academyl-article :global(th),.academyl-article :global(td){border:1px solid #b5cdd5;padding:10px;text-align:left;min-width:130px}.academyl-article :global(p),.academyl-article :global(li){color:#34576b;line-height:1.73}.academyl-article button{background:#facc15;color:#122940;border:0;padding:14px 22px;border-radius:9px;font-weight:800;margin-top:18px;cursor:pointer}@media print{@page{size:A4;margin:12mm}header,footer,.academyl-hero,.academyl-article button{display:none!important}.academyl-content{padding:0;background:white}.academyl-article{border:0;padding:0}.academyl-article :global(table){overflow:visible;font-size:.8rem}}
+.academy-downloads{margin-top:26px;padding:18px;background:#edf6f6;border-radius:10px}.academy-downloads a{color:#084e71;text-decoration:underline;font-weight:700}</style>

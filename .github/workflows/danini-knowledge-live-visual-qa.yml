@@ -37,6 +37,20 @@ jobs:
                   assert.equal(response?.status(),200,address+' status');
                   await page.locator('main h1').waitFor();
                   await page.evaluate(()=>document.fonts.ready);
+                  // Explicitly trigger lazy images before assessing them.
+                  for(const img of await page.locator('main img').all()){
+                    await img.scrollIntoViewIfNeeded();
+                    await img.evaluate(async el=>{
+                      if(el.complete && el.naturalWidth>0)return;
+                      await new Promise(resolve=>{
+                        const done=()=>resolve();
+                        el.addEventListener('load',done,{once:true});
+                        el.addEventListener('error',done,{once:true});
+                        setTimeout(done,10000);
+                      });
+                    });
+                  }
+                  await page.evaluate(()=>window.scrollTo(0,0));
                   const metrics=await page.evaluate(()=>({
                     docWidth:document.documentElement.scrollWidth,
                     viewport:window.innerWidth,

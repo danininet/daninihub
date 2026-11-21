@@ -12,7 +12,7 @@ export function GET() {
     ...[...originalEvergreen,...srBusinessEvergreen].filter(a=>a.index).map(a=>`https://daninihub.com/${a.locale}/wissen/${a.slug}/`),
     ...["de", "sr"].flatMap((l) => ["wissen", "wissen/checkliste", "wissen/produkte", "wissen/partner", "wissen/glossar", "wissen/dokumente", ...guides.filter(g=>!(l==="de"&&g.slug==="kundenanfragen")&&!(l==="sr"&&g.slug==="fahrzeugpapiere")).map(g => "wissen/" + g.slug)].map(s => `https://daninihub.com/${l}/${s}/`)),
     ...["de", "sr"].flatMap((l) =>
-      ["", "akademija", "akademija/modul-02", "business", "auto-check", "ai-savetnik", ...verticals, "impressum", "datenschutz", "agb"].map(
+      ["", "akademija", "akademija/modul-02", "akademija/modul-03", "business", "auto-check", "ai-savetnik", ...verticals, "impressum", "datenschutz", "agb"].map(
         (s) => `https://daninihub.com/${l}/${s ? s + "/" : ""}`,
       ),
     ),

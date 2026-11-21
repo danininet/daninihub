@@ -18,6 +18,22 @@ const fs=require('node:fs');
      const m=await page.evaluate(()=>({w:document.documentElement.scrollWidth,iw:innerWidth,h1:document.querySelectorAll('main h1').length}));
      assert.equal(m.h1,1,'one h1 '+url);
      if(m.w>m.iw+2){
+       // CSS overflow-x:clip prevents actual horizontal scrolling even when
+       // a decorative pseudo-element increases raw document.scrollWidth.
+       const scroll=await page.evaluate(async()=>{
+         window.scrollTo(document.documentElement.scrollWidth,0);
+         await new Promise(r=>requestAnimationFrame(()=>r()));
+         const actual=window.scrollX;
+         window.scrollTo(0,0);
+         return {actual,clip:getComputedStyle(document.documentElement).overflowX,
+           visible:[...document.querySelectorAll('main *,header *,footer *')].map(el=>{
+             const r=el.getBoundingClientRect();
+             return {tag:el.tagName,left:r.left,right:r.right,visible:getComputedStyle(el).visibility!=='hidden'};
+           }).filter(o=>o.visible&&(o.right>innerWidth+3||o.left< -10)).slice(0,8)};
+       });
+       if(scroll.actual===0&&scroll.clip==='clip'&&scroll.visible.length===0){
+         console.log('PASS decorative mobile overflow clipped without horizontal scroll',url,m.w,m.iw);
+       }else{
        const offenders=await page.evaluate(()=>[...document.querySelectorAll('*')].map(el=>{
          const r=el.getBoundingClientRect();
          return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,85):'',right:Math.round(r.right),width:Math.round(r.width)};
@@ -31,7 +47,8 @@ const fs=require('node:fs');
        console.error('OVERFLOW DIAGNOSTIC',url,viewport.width,JSON.stringify(offenders));
        console.error('INNER SCROLL DIAGNOSTIC',JSON.stringify(internal));
        await page.screenshot({path:'outputs/b2b/danini-academy-overflow-'+locale+'-'+(slug?'lesson':'home')+'-'+viewport.label+'.png',fullPage:true});
-       throw Error('horizontal overflow '+url+': '+m.w+' > '+m.iw);
+       throw Error('horizontal overflow '+url+': '+m.w+' > '+m.iw+' '+JSON.stringify(scroll));
+       }
      }
      assert.deepEqual(errors,[],'JS errors '+url);
      if(slug==='akademija/'){

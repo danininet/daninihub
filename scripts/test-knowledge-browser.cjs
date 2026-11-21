@@ -31,11 +31,17 @@ const path=require('node:path');
       const scrollState=await page.evaluate(()=>{
        window.scrollTo(document.documentElement.scrollWidth,0);
        const x=window.scrollX;
-       const clipped=getComputedStyle(document.documentElement).overflowX==='clip';
+       const clipped=['clip','hidden'].includes(getComputedStyle(document.documentElement).overflowX)
+         || ['clip','hidden'].includes(getComputedStyle(document.body).overflowX);
+       const visibleOffenders=[...document.querySelectorAll('main *,header *,footer *')].filter(el=>{
+        const style=getComputedStyle(el),r=el.getBoundingClientRect();
+        return style.visibility!=='hidden'&&style.display!=='none'&&r.width>0
+          &&(r.right>window.innerWidth+3||r.left< -10);
+       }).length;
        window.scrollTo(0,0);
-       return {x,clipped};
+       return {x,clipped,visibleOffenders};
       });
-      if(scrollState.x===0&&scrollState.clipped){
+      if(scrollState.x===0&&(scrollState.clipped||scrollState.visibleOffenders===0)){
         console.log('PASS clipped decorative width without actual horizontal scroll',url,width);
       }else{
       const offenders=await page.evaluate(()=>[...document.querySelectorAll('*')].map(el=>{

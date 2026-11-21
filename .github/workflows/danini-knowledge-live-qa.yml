@@ -1,0 +1,74 @@
+name: DANINI knowledge conversion production live QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/danini-knowledge-live-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify production DE/SR conversion pages and preserve business routes
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const origin='https://daninihub.com';
+          async function read(path){
+            const response=await fetch(origin+path,{redirect:'follow',signal:AbortSignal.timeout(18000),headers:{accept:'text/html', 'cache-control':'no-cache'}});
+            assert.equal(response.status,200,path+' status '+response.status);
+            const body=await response.text();
+            assert.match(body,/<html/i,path+' HTML missing');
+            return body;
+          }
+          for(const locale of ['de','sr']){
+            const root='/'+locale+'/wissen/';
+            for(const slug of ['','checkliste/','produkte/','partner/']){
+              const path=root+slug;
+              const html=await read(path);
+              assert.match(html,new RegExp('<html[^>]+lang="'+locale+'"'),path+' wrong language');
+              assert.match(html,/rel="canonical"/,path+' canonical missing');
+              assert.match(html,/name="description"/,path+' description missing');
+              assert.ok(html.includes('DANINI'),path+' branding missing');
+              if(!slug){
+                assert.ok(html.includes(root+'checkliste/'),path+' checklist CTA missing');
+                assert.ok(html.includes(root+'produkte/'),path+' product CTA missing');
+                assert.ok(html.includes(root+'partner/'),path+' partnership CTA missing');
+              }else if(slug==='checkliste/'){
+                assert.ok(html.includes('data-auto-enquiry'),path+' working lead form absent');
+                assert.ok(html.includes('window.print()'),path+' print action absent');
+                assert.equal((html.match(/class="cl-square"/g)||[]).length,12,path+' checklist count');
+              }else if(slug==='produkte/'){
+                assert.ok(html.includes('49 €'),path+' existing PDF status missing');
+                assert.ok(html.includes('/digital.html'),path+' digital PDF route missing');
+                assert.ok(html.includes('/'+locale+'/business/'),path+' B2B route missing');
+              }else if(slug==='partner/'){
+                assert.ok(html.includes('mailto:info@daninihub.com'),path+' partner contact missing');
+              }
+              console.log('PASS',path,'HTTP 200, metadata, content, CTA');
+            }
+            for(const p of ['/auto-check/','/business/']){
+              await read('/'+locale+p);
+              console.log('PASS existing commercial page',locale+p);
+            }
+          }
+          const map=await fetch(origin+'/sitemap.xml',{signal:AbortSignal.timeout(18000)});
+          assert.equal(map.status,200,'Sitemap status');
+          const xml=await map.text();
+          for(const locale of ['de','sr'])for(const slug of ['checkliste','produkte','partner'])
+            assert.ok(xml.includes(origin+'/'+locale+'/wissen/'+slug+'/'),'Sitemap missing '+locale+'/'+slug);
+          console.log('PASS sitemap six localized conversion URLs');
+          const pay=await fetch(origin+'/api/danini/digital/status',{signal:AbortSignal.timeout(18000)});
+          assert.equal(pay.status,200,'Payment status endpoint');
+          const payStatus=await pay.json();
+          assert.equal(payStatus.enabled,false,'PUBLIC CHECKOUT MUST REMAIN DISABLED');
+          assert.equal(payStatus.softwareEnabled,false,'SOFTWARE MUST REMAIN DISABLED');
+          console.log('PASS public digital purchases remain OFF (not a completed payment test)');
+          console.log('LIMITS: No Turnstile form submitted, no email sent, no real purchase, no partner commissions.');
+          JS

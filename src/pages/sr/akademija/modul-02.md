@@ -2,7 +2,7 @@
 layout: ../../../layouts/AcademyLessonLayout.astro
 ---
 
-**Status:** kompletan redakcijski materijal, još nije javno implementiran. **Jezik:** SR. **Trajanje vežbe:** okvirno 60–90 minuta (procena).
+**Status:** besplatna praktična lekcija. **Jezik:** SR. **Trajanje vežbe:** okvirno 60–90 minuta (procena).
 
 ### Šta polaznik dobija
 Na kraju izrađuje početni istraživački dosije: jednu jasno definisanu ciljnu grupu; tri dokumentovana signala problema; uporedni pregled najmanje tri alternative; tri hipoteze za proveru; jedan mali validacioni test. Odsustvo dokaza je prihvatljiv rezultat. AI odgovor nije tržišni dokaz.

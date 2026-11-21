@@ -14,6 +14,9 @@ for(const lang of ['de','sr']){
  assert.ok(home.includes('/'+lang+'/akademija/'),'academy missing as homepage CTA '+lang);
  assert.ok(home.includes('DANINI Business')&&home.includes('AUTODANINI'),'existing live examples lost '+lang);
  assert.ok(home.includes('DANINI AKADEMIJA'),'academy not first-class '+lang);
+
+ assert.ok(home.includes(lang==='de'?'Module 01–03 sind kostenlos verfügbar':'Moduli 01–03 su besplatni i dostupni'),'Homepage incorrectly advertises only one free lesson '+lang);
+ assert.ok(home.includes(lang==='de'?'Module 04–06 sind in Vorbereitung':'Moduli 04–06 su u pripremi'),'Homepage planning status missing '+lang);
  assert.ok(hub.includes('/'+lang+'/akademija/'),'knowledge hub backlink missing '+lang);
  assert.ok(academy.includes('DANINI')&&academy.includes('AutoDanini'),'education examples missing '+lang);
  assert.ok(academy.includes('data-education-print'),'printable worksheet missing '+lang);

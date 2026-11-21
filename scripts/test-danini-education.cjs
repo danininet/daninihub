@@ -8,6 +8,9 @@ for(const lang of ['de','sr']){
  const home=page(lang+'/index.html');
  const academy=page(lang+'/akademija/index.html');
  const hub=page(lang+'/wissen/index.html');
+ const catalog=page(lang+'/wissen/produkte/index.html');
+ assert.ok(catalog.includes('/'+lang+'/akademija/'),'Academy product must be linked from catalog '+lang);
+ assert.ok(catalog.indexOf('pd-education')<catalog.indexOf('pd-grid'),'Academy must be primary catalog card '+lang);
  assert.ok(home.includes('/'+lang+'/akademija/'),'academy missing as homepage CTA '+lang);
  assert.ok(home.includes('DANINI Business')&&home.includes('AUTODANINI'),'existing live examples lost '+lang);
  assert.ok(home.includes('DANINI AKADEMIJA'),'academy not first-class '+lang);

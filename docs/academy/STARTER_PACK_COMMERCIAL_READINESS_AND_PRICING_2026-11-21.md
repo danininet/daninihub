@@ -22,12 +22,12 @@ Datum provere: 21.11.2026. Podaci su uporedivi po formatu samo delimično; live 
 | Konkurent | Proizvod, jezik/tržište, isporuka | Istaknuta cena | URL |
 |---|---|---:|---|
 | IBB Business Akademie | ChatGPT Basics; DE; on-demand LMS, oko 1–2 h učenja, pristup 2 nedelje | 41,65 € bruto (prikaz pretrage) | https://www.business-akademie.com/kurse/chatgpt-basics |
-| KI Ablauf | KI-Workflow Starter-Kit; DE/EN; 24 radna toka, PDF, DOCX, TXT, XLSX preko Payhip | 39 € jednokratno (indeksirana ponuda) | https://kiablauf.de/ki-workflow-starter-kit/ |
+| Dargel Solutions | AI-First Operating Playbook; DE; 9 poglavlja, PDF + HTML, četiri XLSX šablona, naplata i dostava preko Gumroad | 39 € + primenljivi PDV | https://dargel-solutions.de/produkte/ai-first-operating-playbook/ |
 | Outliers (Excel Grašić) | AI u poslovanju; SR; samostalne video lekcije, 1 godina platforme i podrška | 197 € | https://excelgrasic.com/kurs/ai/ |
 | Cubes School | AI kurs ChatGPT; SR; video platforma, 6 meseci pristupa | 300 € sa PDV-om na otvorenoj strani | https://cubes.edu.rs/kursevi/biblioteka/ai-kurs-kako-koristiti-chat-gpt/ |
 | t3n shop | KI erfolgreich im Unternehmen etablieren; DE; PDF, 150 strana, 8 poglavlja, download link posle kupovine | Cena nije pouzdano očitana | https://shop.t3n.de/en/products/ki-erfolgreich-im-unternehmen-etablieren |
 
-**Pouzdanost:** cene od 39 € i 41,65 € evidentirane su u indeksiranom sadržaju; njihovu eventualnu promenu na korpi treba ponovo proveriti. Ostale otvorene stranice direktno prikazuju cenu. Ova evidencija nije dokaz završenih transakcija i ne potvrđuje prodajne rezultate konkurenata.
+**Pouzdanost:** cene 39 € i 41,65 € direktno su potvrđene na stranicama dobavljača; konačan račun može zavisiti od PDV-a i kupčeve zemlje. Ostale otvorene stranice direktno prikazuju navedene cene. Nisu proverene stvarne narudžbine. Ova evidencija nije dokaz završenih transakcija i ne potvrđuje prodajne rezultate konkurenata.
 
 ## Interni predlog nivoa — NE OBJAVLJIVATI
 - **Free: 0 €** — tri besplatne lekcije, osnovni CSV i tekst šabloni; bez registracije.

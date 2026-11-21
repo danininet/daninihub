@@ -36,6 +36,7 @@ jobs:
         run: |
           npm ci --no-audit --no-fund
           npm run build:platform
+          node scripts/test-danini-education.cjs
           npm run check:b2b
           node --test tests/b2b/autodanini-home-qa.test.mjs
           node --test tests/b2b/ai-intake.test.mjs tests/b2b/ai-preview.test.mjs
@@ -164,6 +165,27 @@ jobs:
             assert.ok(html.includes(heading),path+' AutoDanini hero not live');
             assert.ok(html.includes('universal-advisor-form'),path+' vehicle input missing');
           }
+          // Module 02 and free educational assets (no customer data or payment requests).
+          for(const locale of ['de','sr']){
+            const lessonPath='/'+locale+'/akademija/modul-02/';
+            const lesson=await fetch(base+lessonPath,{signal:AbortSignal.timeout(20000)});
+            assert.equal(lesson.status,200,lessonPath+' must be served');
+            const html=await lesson.text();
+            assert.ok(html.includes('https://daninihub.com'+lessonPath),lessonPath+' canonical missing');
+            assert.ok(html.includes('data-lesson-print'),lessonPath+' printable worksheet missing');
+            assert.ok(!html.includes('noindex,follow'),lessonPath+' still noindex');
+            const academy=await fetch(base+'/'+locale+'/akademija/',{signal:AbortSignal.timeout(20000)});
+            assert.equal(academy.status,200);
+            const academyHtml=await academy.text();
+            assert.ok(academyHtml.includes('href="'+lessonPath+'"'),lessonPath+' navigation missing');
+          }
+          for(const file of ['danini-starter-kit-recherche.csv','danini-starter-kit-offer-de-sr.md','danini-starter-kit-checklist-de-sr.md']){
+            const response=await fetch(base+'/downloads/akademija/'+file,{signal:AbortSignal.timeout(20000)});
+            assert.equal(response.status,200,'Free Academy download missing: '+file);
+            const content=await response.text();
+            assert.ok(content.length>100,'Empty Academy download: '+file);
+          }
+          console.log('PASS public DE/SR Module 02 plus three Starter Kit downloads');
           const resp=await fetch(base+'/api/lead/status',{signal:AbortSignal.timeout(20000)});
           assert.equal(resp.status,200);
           const status=await resp.json();
@@ -219,3 +241,5 @@ jobs:
 # Authorized P0 secure DANINI owner portal release 2026-11-19: PR #260, requires all predeploy gates and Access checks.
 
 # Authorized P1 knowledge and lead-conversion release 2026-11-21: PR #261 merged as 6d38ca43ef99800668a04bd5cefaf50297879314. Five CI SUCCESS. Keep checkout OFF; no price, DNS, legal or partner commission activation.
+
+# Authorized Academy Module 02 release 2026-11-21: PR #263 squash merged; six CI checks SUCCESS. Publish only free content and downloads. No changes to billing, prices, DNS, legal text or partner payments.

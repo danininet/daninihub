@@ -17,7 +17,15 @@ const fs=require('node:fs');
      assert.equal(res.status(),200,'missing '+url);
      const m=await page.evaluate(()=>({w:document.documentElement.scrollWidth,iw:innerWidth,h1:document.querySelectorAll('main h1').length}));
      assert.equal(m.h1,1,'one h1 '+url);
-     assert.ok(m.w<=m.iw+2,'horizontal overflow '+url+': '+m.w+' > '+m.iw);
+     if(m.w>m.iw+2){
+       const offenders=await page.evaluate(()=>[...document.querySelectorAll('*')].map(el=>{
+         const r=el.getBoundingClientRect();
+         return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,85):'',right:Math.round(r.right),width:Math.round(r.width)};
+       }).filter(o=>o.right>innerWidth+3).sort((a,b)=>b.right-a.right).slice(0,14));
+       console.error('OVERFLOW DIAGNOSTIC',url,viewport.width,JSON.stringify(offenders));
+       await page.screenshot({path:'outputs/b2b/danini-academy-overflow-'+locale+'-'+(slug?'lesson':'home')+'-'+viewport.label+'.png',fullPage:true});
+       throw Error('horizontal overflow '+url+': '+m.w+' > '+m.iw);
+     }
      assert.deepEqual(errors,[],'JS errors '+url);
      if(slug==='akademija/'){
        assert.equal(await page.locator('.ed-module.ed-live').count(),1,'only one module available');

@@ -60,7 +60,7 @@ jobs:
                   if(slug==='akademija/modul-02/'||slug==='akademija/modul-03/'){
                     assert.equal(await page.locator('[data-lesson-print]').count(),1,'Module 02 PDF print action missing');
                     assert.equal(await page.locator('meta[name="robots"][content="index,follow"]').count(),1,'Module 02 indexable');
-                    assert.equal(await page.locator('link[rel="canonical"][href="https://daninihub.com/'+locale+'/akademija/modul-02/"]').count(),1,'Module 02 canonical');
+                    assert.equal(await page.locator('link[rel="canonical"][href="https://daninihub.com/'+locale+'/'+slug+'"]').count(),1,'Lesson canonical');
                   }
                   console.log('PASS LIVE',url,'mobile:390px');
                   await page.close();

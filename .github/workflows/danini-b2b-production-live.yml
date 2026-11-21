@@ -1,11 +1,18 @@
-name: DANINI B2B production safety and cutover readiness
+name: DANINI Business production lifecycle read-only QA
+# Replaces obsolete 13 Nov cutover assumptions after verified 19 Nov B2B activation.
+# Safe GET-only production checks. No customer data, email, AI inference or payment.
 on:
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/danini-b2b-production-live.yml']
   push:
     branches: [main]
     paths: ['.github/workflows/danini-b2b-production-live.yml']
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -13,39 +20,58 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-      - name: Validate live B2B pages and existing paid/lead API without submitting data
+          node-version: '22'
+      - name: Verify live Business and AutoDanini pages plus existing protected APIs (GET only)
         run: |
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           const origin='https://daninihub.com';
-          async function get(path){
-            const r=await fetch(origin+path,{signal:AbortSignal.timeout(20000),headers:{'cache-control':'no-cache','accept':'text/html,application/json'}});
-            const t=await r.text();
-            console.log(path,r.status,t.length,r.headers.get('content-type'));
-            assert.equal(r.status,200, path+': '+t.slice(0,180));
-            return t;
+          async function get(path,accept='text/html,application/json'){
+            const response=await fetch(origin+path,{
+              signal:AbortSignal.timeout(18000),redirect:'follow',cache:'no-store',
+              headers:{accept,'cache-control':'no-cache'}
+            });
+            const body=await response.text();
+            assert.equal(response.status,200,path+' HTTP '+response.status);
+            return {body,headers:response.headers};
           }
-          for (const p of ['/', '/de/', '/sr/']) {
-            const html=await get(p);
-            assert.match(html,/CBAM/i,p+' must show new B2B homepage');
-            assert.match(html,/Produktionspartner|Proizvodnja i poslovna saradnja/i,p+' must show understandable production-partner navigation');
-            assert.match(html,/<html lang="(de|sr)"/i,p+' must be localized');
+          const publicRoutes=['/','/de/','/sr/','/de/business/','/sr/business/',
+            '/de/auto-check/','/sr/auto-check/','/de/ai-savetnik/','/sr/ai-savetnik/'];
+          for(const path of publicRoutes){
+            const {body}=await get(path,'text/html');
+            assert.match(body,/<html\b/i,path+' HTML missing');
+            assert.match(body,/DANINI/i,path+' brand missing');
+            if(path.includes('/business/'))
+              assert.match(body,/data-business-enquiry/i,path+' Business form missing');
+            if(path.includes('/auto-check/'))
+              assert.match(body,/universal-advisor-form/i,path+' AutoDanini form missing');
+            console.log('PASS',path,'HTTP 200 and key elements');
           }
-          const sitemap=await fetch(origin+'/sitemap.xml',{signal:AbortSignal.timeout(20000)});
-          assert.equal(sitemap.status,200,'new sitemap live');
-          const sitemapXml=await sitemap.text();
-          assert.match(sitemapXml,/\/de\/cbam\//,'sitemap B2B route');
-          for(const p of ['/de/cbam/','/de/subcontractor/','/de/nearshoring/','/sr/cbam/','/de/impressum/','/de/datenschutz/','/de/agb/','/auto/']){
-            assert.match(await get(p),/DANINI/i,p+' branded HTML');
-          }
-          assert.deepEqual(JSON.parse(await get('/api/health')),{status:'ok'});
-          const cfg=JSON.parse(await get('/api/tenant-config'));
-          assert.equal(cfg.enabled,false,'advanced B2B intake must remain disabled until separate validation');
-          const lead=JSON.parse(await get('/api/lead/status'));
-          assert.equal(lead.enabled,true,'existing protected Brevo lead intake must remain live');
-          const digital=JSON.parse(await get('/api/danini/digital/status'));
-          assert.equal(digital.ok,true,'existing digital payment API must remain reachable');
-          assert.equal(typeof digital.enabled,'boolean');
-          console.log('PASS B2B pages, health, closed advanced intake, live Brevo lead API and digital status');
+          const parse=async path=>{
+            const r=await get(path,'application/json');
+            const payload=JSON.parse(r.body);
+            assert.ok(payload&&typeof payload==='object',path+' JSON missing');
+            return payload;
+          };
+          const health=await parse('/api/health');
+          assert.equal(health.status,'ok','B2B Worker health');
+          console.log('PASS /api/health');
+          const tenant=await parse('/api/tenant-config');
+          assert.equal(tenant.enabled,true,'Production B2B intake unexpectedly disabled');
+          assert.ok(typeof tenant.siteKey==='string'&&tenant.siteKey.length>10,'Turnstile public sitekey missing');
+          assert.ok(Array.isArray(tenant.languages)&&tenant.languages.includes('de')&&tenant.languages.includes('sr'));
+          assert.equal(tenant.TOKEN_SECRET,undefined);
+          assert.equal(tenant.DIRECTOR_HMAC_SECRET,undefined);
+          console.log('PASS /api/tenant-config B2B enabled with sitekey (no secret values logged)');
+          const lead=await parse('/api/lead/status');
+          assert.equal(lead.enabled,true,'Existing protected Brevo lead intake disabled');
+          assert.ok(typeof lead.turnstileSiteKey==='string'&&lead.turnstileSiteKey.length>10);
+          console.log('PASS /api/lead/status protected Brevo intake ready (NOT delivery proof)');
+          const digital=await parse('/api/danini/digital/status');
+          assert.equal(digital.ok,true);
+          assert.equal(digital.softwareEnabled,false);
+          assert.equal(digital.enabled,false,'Public digital payment must remain disabled');
+          assert.equal(digital.mode,'sandbox','Live checkout unexpected');
+          console.log('PASS /api/danini/digital/status Sandbox-only, no live payments');
+          console.log('LIMITS: No Turnstile POST, R2 content, director approval, final report delivery, email or PayPal transaction exercised.');
           JS

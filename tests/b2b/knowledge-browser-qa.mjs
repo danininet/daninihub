@@ -69,7 +69,7 @@ const styleRead=await page.evaluate(()=>{
          para:para?getComputedStyle(para).color:null};
 });
 function luminance(rgb){
- const nums=(rgb.match(/[\\d.]+/g)||[]).slice(0,3).map(Number);
+ const nums=(rgb.match(/[0-9.]+/g)||[]).slice(0,3).map(Number);
  assert.equal(nums.length,3,'Cannot parse computed RGB '+rgb);
  return nums.map((x,i)=>{const n=x/255;return (n<=.04045?n/12.92:((n+.055)/1.055)**2.4)*[.2126,.7152,.0722][i]}).reduce((a,b)=>a+b,0);
 }

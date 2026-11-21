@@ -19,12 +19,18 @@ for(const lang of ['de','sr']){
  assert.ok(academy.includes('data-education-print'),'printable worksheet missing '+lang);
  assert.equal((academy.match(/class="ed-prompt"/g)||[]).length,3,'expected three AI prompts '+lang);
  assert.equal((academy.match(/<textarea[^>]*maxlength=/g)||[]).length,5,'expected five worksheet fields '+lang);
- assert.equal((academy.match(/class="ed-module ed-live"/g)||[]).length,2,'two free modules live '+lang);
- assert.equal((academy.match(/class="ed-module ed-pending"/g)||[]).length,4,'four modules remain planned '+lang);
+ assert.equal((academy.match(/class="ed-module ed-live"/g)||[]).length,3,'three free modules live '+lang);
+ assert.equal((academy.match(/class="ed-module ed-pending"/g)||[]).length,3,'three modules remain planned '+lang);
  assert.ok(!/garantovana zarada|guaranteed income|garantiertes Einkommen/i.test(academy),'income promise forbidden '+lang);
  assert.ok(academy.includes('/'+lang+'/business/')&&academy.includes('/'+lang+'/wissen/checkliste/'),'cases not linked '+lang);
  assert.ok(home.includes('/'+lang+'/auto-check/')&&home.includes('/'+lang+'/business/'),'existing services inaccessible '+lang);
  const module02=page(lang+'/akademija/modul-02/index.html');
+ const module03=page(lang+'/akademija/modul-03/index.html');
+ assert.ok(module03.includes('https://daninihub.com/'+lang+'/akademija/modul-03/'),'Module 03 canonical '+lang);
+ assert.ok(module03.includes('data-lesson-print'),'Module 03 print '+lang);
+ assert.ok(module03.includes('DANINI Business')&&module03.includes('AutoDanini'),'Module 03 examples '+lang);
+ assert.ok(academy.includes('/'+lang+'/akademija/modul-03/'),'Module 03 link '+lang);
+ for(const file of ['danini-modul03-ponuda-angebot.csv','danini-modul03-offer-worksheet-de-sr.md']){assert.ok(fs.statSync(path.join(root,'downloads/akademija',file)).size>100,'missing Module 03 download '+file);assert.ok(module03.includes('/downloads/akademija/'+file),'Module 03 download link '+file);}
  assert.ok(module02.includes('https://daninihub.com/'+lang+'/akademija/modul-02/'),'Module 02 canonical '+lang);
  assert.ok(!module02.includes('noindex,follow'),'Module 02 must be indexable '+lang);
  assert.ok(academy.includes('/'+lang+'/akademija/modul-02/'),'Module 02 navigation missing '+lang);
@@ -35,11 +41,12 @@ for(const lang of ['de','sr']){
  }
  const canonical='https://daninihub.com/'+lang+'/akademija/';
  assert.ok(academy.includes(canonical),'academy SEO canonical missing '+lang);
- console.log('PASS DANINI academy',lang,'landing, two lessons, four planned, Starter Kit, prompts, worksheet, business cases');
+ console.log('PASS DANINI academy',lang,'landing, three lessons, three planned, Starter Kit, prompts, worksheet, business cases');
 }
 const sitemap=page('sitemap.xml');
 for(const lang of ['de','sr']){
  assert.ok(sitemap.includes('https://daninihub.com/'+lang+'/akademija/'),'missing sitemap '+lang);
  assert.ok(sitemap.includes('https://daninihub.com/'+lang+'/akademija/modul-02/'),'missing Module 02 sitemap '+lang);
+ assert.ok(sitemap.includes('https://daninihub.com/'+lang+'/akademija/modul-03/'),'missing Module 03 sitemap '+lang);
 }
 console.log('PASS DANINI academy sitemap / de sr');

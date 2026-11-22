@@ -92,6 +92,9 @@ const offerings = de ? [
   <BusinessContact locale={locale} />
 </Base>
 <style>
+/* Business-only clipping of non-content overflow on narrow viewports.
+   The supplementary text/grid items are separately allowed to shrink/wrap. */
+:global(html:has(.b-hero)),:global(body:has(.b-hero)){overflow-x:clip}
 .b-hero{background:linear-gradient(125deg,#101e31,#12364b);color:#fff;padding:clamp(64px,7vw,100px) 0}
 .b-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.8fr);align-items:center;gap:clamp(30px,5vw,80px)}
 .b-eyebrow{font-size:.72rem;letter-spacing:.13em;font-weight:800;color:#0b7669}

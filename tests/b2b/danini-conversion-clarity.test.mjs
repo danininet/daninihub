@@ -63,3 +63,16 @@ test('AI status labels accurately identify screenshot, licensed listing and copi
  assert.match(client,/if\(data\.aiUsed===true\)/);
  assert.match(client,/Nur regelbasierte Vorprüfung; keine KI-Analyse ausgeführt/);
 });
+
+test('AutoDanini starts with buyer problem and three local-only follow-up questions',()=>{
+ const advisor=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ const guide=readFileSync('public/danini-problem-guide.js','utf8');
+ assert.ok(advisor.indexOf('data-problem-guide')<advisor.indexOf('advisor-grid'),'problem-first guidance must precede optional listing input');
+ assert.match(advisor,/danini-problem-guide\\.js/);
+ for(const topic of ['deposit','travel','documents','seller','import'])assert.match(guide,new RegExp("id:'"+topic+"'"));
+ assert.match(guide,/step<3/);
+ assert.match(guide,/Samo na osnovu tvojih odgovora/);
+ assert.match(advisor,/Ovo početno usmeravanje zasnovano je na pravilima/);
+ assert.doesNotMatch(guide,/\\bfetch\\s*\\(|\\bXMLHttpRequest\\b|\\bAI\\.run\\s*\\(/);
+ assert.match(guide,/href='#advisor-contact'/);
+});

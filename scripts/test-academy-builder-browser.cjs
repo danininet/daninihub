@@ -96,6 +96,7 @@ async function scenario(browser, language, width) {
   assert.equal(projects.size,1);
   const finalProject=[...projects.values()][0];assert.equal(finalProject.steps.length,6);
   await page.locator('#project-list button').click();
+  await page.waitForFunction(() => document.querySelector('.bb-tab[aria-pressed="true"]')?.textContent.startsWith('1.') && document.querySelector('#field-a')?.value === 'Original niche pitanje');
   assert.equal(await page.locator('#field-a').inputValue(),'Original niche pitanje');
   let exported;
   const downloadWait=page.waitForEvent('download');
@@ -117,6 +118,7 @@ async function scenario(browser, language, width) {
   await page.locator('#dashboard').waitFor({state:'visible'});
   assert.equal(await page.locator('#project-list button').count(),1);
   await page.locator('#project-list button').click();
+  await page.waitForFunction(() => document.querySelector('.bb-tab[aria-pressed="true"]')?.textContent.startsWith('1.') && document.querySelector('#field-a')?.value === 'Original niche pitanje');
   assert.equal(await page.locator('#field-a').inputValue(),'Original niche pitanje');
   page.once('dialog',dialog=>dialog.accept());
   await page.locator('#delete-project').click();

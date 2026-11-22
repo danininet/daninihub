@@ -672,6 +672,36 @@ input::placeholder, textarea::placeholder { color: var(--danini-muted); }
 :root { --status-confirmed: var(--danini-mint); --status-warning: var(--danini-amber); --status-critical: var(--danini-critical); }
 
 
+/* WCAG contrast foundation — issue #268 follow-up.
+   Previous global p/.micro/.eyebrow rules inherited the pale-on-dark
+   --danini-muted (#b8c6d7) on white pages. That gives only ~1.74:1.
+   Define a local light-surface palette instead of overriding unrelated
+   components or adding blanket !important declarations. */
+:root {
+  --danini-copy-light: #334155;
+  --danini-muted-light: #475569;
+}
+:is(
+  .d-education, .d-light, .d-trust,
+  .b-section, .b-extra, .b-proof,
+  .ed-intro, .ed-section, .ed-module, .ed-worksheet, .ed-case-grid article,
+  .kh-bar, .kh-section-light, .kh-academy, .kh-result,
+  .auto-hero, .auto-advisor, .auto-precheck, .auto-process,
+  .auto-contact-section, .auto-storage, .auto-example, .auto-faq,
+  .advisor-page, .bc-form, .ac-form
+) {
+  --danini-muted: var(--danini-muted-light);
+  color: var(--danini-copy-light);
+  color-scheme: light;
+}
+/* Root-context dark cards nested in a light section keep their own
+   light foreground — never turn the method/example panels dark-on-dark. */
+:is(.d-education-preview, .ed-prompts, .ed-digital,
+    .kh-product-band, .kh-partner, .auto-hero-panel, .auto-inspection) {
+  --danini-muted: #cbd5e1;
+  color-scheme: dark;
+}
+
 /* PR208 urgent visibility repair: automotive buyer pages use LIGHT surfaces.
    The global Dark Tech tokens remain scoped to other pages, but must never
    force pale text on the light AutoDanini hero, forms, cards or advisor. */

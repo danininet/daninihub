@@ -54,6 +54,18 @@ const de=locale==="de";
 .bb-shell{max-width:1070px;padding:35px 22px 70px}.bb-notice{background:#e6f4f5;color:#16444a;border-left:4px solid #0d727a;padding:13px 17px;border-radius:5px}
 .bb-card{background:#fff;border:1px solid #c7d6df;border-radius:15px;padding:clamp(18px,3vw,30px);margin:18px 0;box-shadow:0 12px 28px #0b304010}.bb-card h2,.bb-card h3,.bb-card h4{color:#12374a}.bb-card input,.bb-card textarea{display:block;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;width:100%;max-width:610px;font:inherit}.bb-card label{font-weight:780;color:#193d50;display:block;margin:14px 0 7px}.bb-btn{background:#075e65;color:#fff;border:2px solid #075e65;min-height:48px;padding:11px 19px;border-radius:8px;font-weight:850;cursor:pointer;margin-top:15px}.bb-btn:hover{background:#034c52}.bb-outline{background:#fff;border:2px solid #37757d;color:#074e54;border-radius:8px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:800}.bb-card button:focus-visible,.bb-card input:focus-visible,.bb-card textarea:focus-visible{outline:3px solid #b07c1e;outline-offset:3px}.bb-top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.bb-layout{display:grid;grid-template-columns:minmax(230px,.65fr) minmax(0,1.5fr);gap:20px}.bb-project{display:block;border:1px solid #91b2be;background:#f5fafb;color:#114052;text-align:left;border-radius:8px;padding:13px;width:100%;font:inherit;cursor:pointer;margin:8px 0}.bb-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}.bb-tab{background:#f3f8fa;color:#174151;border:1px solid #84a5b2;border-radius:8px;padding:9px 11px;font:inherit;cursor:pointer}.bb-tab[aria-pressed="true"]{background:#104d5b;color:#fff}.bb-field{margin:15px 0}.bb-field textarea{max-width:100%;min-height:85px;resize:vertical}.bb-danger{border-top:1px solid #cedde4;margin-top:28px;padding-top:14px}.bb-fine{color:#385a69;font-size:.91rem;margin-top:24px}#turnstile{margin:15px 0;min-height:65px}.bb-new{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.bb-new label{flex-basis:100%;margin:0}.bb-new input{flex:1;min-width:210px}.bb-new button{margin:0}@media(max-width:780px){.bb-layout{grid-template-columns:1fr}.bb-shell{padding:22px 16px 55px}.bb-hero{padding:48px 0}.bb-card{padding:20px}}
 
+/* Dynamic no-login preview: JavaScript creates labels, textarea and helper paragraphs
+   without Astro's data-astro attribute. Scoped rules alone do not reach those nodes.
+   Explicitly style the actual rendered controls and the light card's text. */
+.bb-card > p,.bb-demo > p:not(.bb-demo-label){color:#334155}
+.bb-demo :global(#demo-fields label){display:block;color:#193d50;font-weight:780;margin:14px 0 7px}
+.bb-demo :global(#demo-fields textarea){display:block;width:100%;max-width:100%;min-height:85px;resize:vertical;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;font:inherit}
+.bb-demo :global(#demo-fields textarea::placeholder){color:#475569;opacity:1}
+.bb-demo :global(#demo-fields textarea:focus-visible){outline:3px solid #b07c1e;outline-offset:3px}
+.bb-demo :global(#demo-fields .bb-demo-stage){color:#164a5d;font-weight:750;font-size:1.08rem;line-height:1.65;margin-top:22px}
+.bb-demo :global(#demo-result p),.bb-demo :global(#demo-summary p){color:#334155}
+.bb-demo #demo-title::placeholder{color:#475569;opacity:1}
+
 .bb-demo{border-top:5px solid #0a737a}
 .bb-demo-label{font-size:.8rem;font-weight:850;letter-spacing:.07em;color:#745110;margin:0 0 10px}
 .bb-demo-progress{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;color:#143c4e;font-weight:850;margin:23px 0 12px}

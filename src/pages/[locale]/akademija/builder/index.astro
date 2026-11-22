@@ -58,6 +58,8 @@ const de=locale==="de";
    without Astro's data-astro attribute. Scoped rules alone do not reach those nodes.
    Explicitly style the actual rendered controls and the light card's text. */
 .bb-card > p,.bb-demo > p:not(.bb-demo-label){color:#334155}
+/* Fine print outside the white card sits on the near-black shell, not on white. */
+.bb-shell > .bb-fine{color:#c7d6e2}
 .bb-demo :global(#demo-fields label){display:block;color:#193d50;font-weight:780;margin:14px 0 7px}
 .bb-demo :global(#demo-fields textarea){display:block;width:100%;max-width:100%;min-height:85px;resize:vertical;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;font:inherit}
 .bb-demo :global(#demo-fields textarea::placeholder){color:#475569;opacity:1}

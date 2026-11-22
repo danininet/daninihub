@@ -24,6 +24,8 @@ const probes={
  'wissen/produkte/':[],
  'wissen/glossar/':['.glossary-item h2','.glossary-item p'],
  'wissen/gebrauchtwagen-anzahlung/':['.knowledge-article h1','.guide-part h2','.guide-part p'],
+ 'wissen/anfragemanagement-kleine-unternehmen/':['.source-article h1','.source-body p'],
+ 'wissen/fahrzeugbrief-fahrzeugschein-coc-hu/':['.source-article h1','.source-body p'],
  'akademija/builder/':[],
  'akademija/modul-03/':[],
  'ai-savetnik/':[]
@@ -48,7 +50,7 @@ try{
    const page=await context.newPage();
    const errors=[];
    page.on('pageerror',error=>errors.push(error.message));
-   for(const route of routes){
+   for(const route of [...routes,locale==='de'?'wissen/anfragemanagement-kleine-unternehmen/':'wissen/fahrzeugbrief-fahrzeugschein-coc-hu/']){
     const url=origin+'/'+locale+'/'+route;
     const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
     assert.equal(response?.status(),200,'HTTP error '+url);
@@ -116,7 +118,9 @@ try{
         'akademija/':['.ed-intro','.ed-section'],
         'wissen/':['.kh-section-light','.kh-academy'],
         'wissen/glossar/':['.section.white'],
-        'wissen/gebrauchtwagen-anzahlung/':['.section.white']
+        'wissen/gebrauchtwagen-anzahlung/':['.section.white'],
+        'wissen/anfragemanagement-kleine-unternehmen/':['.section.white'],
+        'wissen/fahrzeugbrief-fahrzeugschein-coc-hu/':['.section.white']
       };
       return (targets[route]||[]).map(selector=>{
         const el=document.querySelector(selector);

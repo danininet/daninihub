@@ -17,7 +17,7 @@ const viewports=[
 ];
 const probes={
  '': ['.d-education h2','.d-education p','.d-trust h2','.d-trust-grid p','.d-contact .d-eyebrow','.d-contact h2','.d-card h3','.d-card p'],
- 'business/':['.b-section h2','.b-card h3','.b-card p','.b-cta .b-eyebrow','.b-cta h2','.bc-form label','.bc-fieldset small','.bc-action-note'],
+ 'business/':['.b-section h2','.b-card h3','.b-card p','.b-section .b-eyebrow','.b-demo-document b','.bc-form label','.bc-fieldset small','.bc-action-note'],
  'auto-check/':['.auto-hero h1','.auto-hero .auto-lead','.auto-advisor-box h2','.auto-steps article p','.ac-form label','.ac-status'],
  'akademija/':['.ed-intro strong','.ed-section h2','.ed-map-head h2','.ed-module h3','.ed-module p','.ed-builder-preview h2'],
  'wissen/':['.kh-section-light .kh-section-intro h2','.kh-section-light .kh-section-intro>p:last-child','.kh-path h3','.kh-path p'],

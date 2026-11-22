@@ -31,3 +31,22 @@ test('knowledge hub links directly to canonical calculator and keeps AutoDanini 
  assert.doesNotMatch(knowledge, /href="\/import\.html"/);
  assert.match(knowledge, /root\+"auto-check\/"/);
 });
+
+test('social share previews carry the existing brand image and canonical URLs',()=>{
+ const layout=readFileSync('src/layouts/Base.astro','utf8');
+ const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
+ const advisor=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ for(const page of [home,brand,advisor]) assert.match(page,/ogImage="\/images\/DANINI_Kartica_01_Salon_Auto_Bez_Osobe\.jpg"/);
+ assert.match(layout,/property="og:image"/);
+ assert.match(layout,/rel="canonical"/);
+ assert.match(layout,/hreflang="x-default"/);
+});
+test('AI interaction disclosure is visible before user input and existing transparency is linked',()=>{
+ const advisor=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ const footer=readFileSync('src/components/Footer.astro','utf8');
+ assert.match(advisor,/advisor-ai-disclosure/);
+ assert.match(advisor,/KI-gestützte Vorprüfung/);
+ assert.match(advisor,/AI-podržana predprovera/);
+ assert.ok(advisor.indexOf('advisor-ai-disclosure')<advisor.indexOf('advisor-grid'),'disclosure must precede user input');
+ assert.match(footer,/ai-transparenz/);
+});

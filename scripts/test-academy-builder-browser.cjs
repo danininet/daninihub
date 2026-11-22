@@ -129,6 +129,55 @@ async function scenario(browser, language, width) {
   console.log(`PASS Browser Builder ${language} ${width}px: OTP mock, 6 stages, reload, export, logout, delete`);
   await session.close();
 }
+async function preview(browser,language,width){
+ const ctx=await browser.newContext({viewport:{width,height:width<700?844:900},acceptDownloads:true});
+ const page=await ctx.newPage(),errors=[],writes=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ page.on('request',request=>{if(request.url().includes('/api/academy/')&&request.method()!=='GET')writes.push(request.method()+' '+request.url())});
+ await page.route('**/api/academy/config',route=>route.fulfill({status:404,contentType:'application/json',body:'{"error":"not_found"}'}));
+ const res=await page.goto(BASE+'/'+language+'/akademija/builder/',{waitUntil:'domcontentloaded'});
+ assert.equal(res?.status(),200);
+ await page.locator('#demo').waitFor({state:'visible',timeout:15000});
+ assert.equal(await page.locator('#signin').isVisible(),false);
+ assert.equal(await page.locator('#dashboard').isVisible(),false);
+ await page.locator('#demo-title').fill('Moja demonstraciona ideja');
+ for(let i=0;i<6;i++){
+  assert.equal(await page.locator('#demo-count').innerText(),(language==='de'?'Schritt ':'Korak ')+(i+1)+(language==='de'?' von 6':' od 6'));
+  await page.locator('#demo-field-a').fill('Napisani podatak '+i);
+  await page.locator('#demo-field-b').fill('Pretpostavka '+i);
+  await page.locator('#demo-next').click();
+ }
+ await page.locator('#demo-result').waitFor({state:'visible'});
+ assert.match(await page.locator('#demo-summary').innerText(),/Napisani podatak 0/);
+ assert.match(await page.locator('#demo-summary').innerText(),/Napisani podatak 5/);
+ const downloadEvent=page.waitForEvent('download');
+ await page.locator('#demo-export').click();
+ const download=await downloadEvent;
+ const payload=JSON.parse(readFileSync(await download.path(),'utf8'));
+ assert.equal(payload.project.title,'Moja demonstraciona ideja');
+ assert.equal(payload.project.steps.length,6);
+ assert.equal(payload.project.steps[0].fields.a,'Napisani podatak 0');
+ assert.equal(payload.project.steps[5].fields.a,'Napisani podatak 5');
+ await page.locator('#demo-edit').click();
+ assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 5');
+ await page.locator('#demo-back').click();
+ assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 4');
+ for(let i=4;i<5;i++){await page.locator('#demo-next').click();}
+ await page.locator('#demo-result').waitFor({state:'visible'});
+ page.once('dialog',dialog=>dialog.accept());
+ await page.locator('#demo-reset').click();
+ await page.locator('#demo-title').evaluate(el=>el.scrollIntoView());
+ assert.equal(await page.locator('#demo-title').inputValue(),'');
+ assert.equal(await page.locator('#demo-count').innerText(),(language==='de'?'Schritt 1 von 6':'Korak 1 od 6'));
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'preview horizontal overflow '+language+'/'+width);
+ assert.deepEqual(errors,[],'Preview JS errors');
+ assert.deepEqual(writes,[],'Preview unexpectedly sent customer data to API');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#demo').waitFor({state:'visible'});
+ assert.equal(await page.locator('#demo-title').inputValue(),'','Preview persisted data after refresh');
+ console.log('PASS Browser preview '+language+' '+width+'px: 6 steps, JSON, navigation, reset, private/offline');
+ await ctx.close();
+}
 async function disabled(browser) {
   const context=await browser.newContext({viewport:{width:390,height:840}});
   const page=await context.newPage();
@@ -146,5 +195,6 @@ async function disabled(browser) {
  try{
   for(const lang of ['sr','de'])for(const width of [390,1440])await scenario(browser,lang,width);
   await disabled(browser);
+  for(const lang of ['sr','de'])for(const width of [390,1440])await preview(browser,lang,width);
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

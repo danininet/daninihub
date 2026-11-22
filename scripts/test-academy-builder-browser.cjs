@@ -16,11 +16,11 @@ async function scenario(browser, language, width) {
     window.turnstile={render:()=>1,reset:()=>{},getResponse:()=>'E2E_MOCK_TURNSTILE'};
   });
   const page = await session.newPage();
-  const consoleErrors=[];
+  const consoleErrors=[]; const apiCalls=[];
   page.on('pageerror', error => consoleErrors.push(error.message));
   await page.route('**/api/academy/**', async route => {
     const req=route.request(),path=new URL(req.url()).pathname.replace('/api/academy/','');
-    const method=req.method();const input=req.postDataJSON?.()||{};
+    const method=req.method();const input=method==='GET'?{}:(req.postDataJSON?.()||{}); apiCalls.push(method+' '+path);
     let code=200,body={};
     if(path==='config'&&method==='GET')body={enabled:true,siteKey:'1x00000000000000000000AA'};
     else if(path==='session'&&method==='GET')body={authenticated:signedIn};
@@ -59,7 +59,18 @@ async function scenario(browser, language, width) {
   const path=`/${language}/akademija/builder/`;
   const response=await page.goto(BASE+path,{waitUntil:'domcontentloaded',timeout:30000});
   assert.equal(response?.status(),200,`Builder page ${path}`);
-  await page.locator('#signin').waitFor({state:'visible',timeout:20000});
+  try { await page.locator('#signin').waitFor({state:'visible',timeout:8000}); }
+  catch (e) {
+    console.error('Builder initialize diagnostics', JSON.stringify({
+      lang:language, viewport:width,
+      notice:await page.locator('#notice').textContent().catch(()=>null),
+      signinHidden:await page.locator('#signin').evaluate(el=>el.hidden).catch(()=>null),
+      configRequests:apiCalls,
+      pageErrors:consoleErrors,
+      inlineScripts:await page.locator('script').count()
+    }));
+    throw e;
+  }
   await page.locator('#email').fill(language==='de'?'alice@beispiel.test':'ana@primer.test');
   await page.locator('#login-form button').click();
   await page.locator('#verify-form').waitFor({state:'visible'});

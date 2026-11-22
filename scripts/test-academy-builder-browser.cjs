@@ -162,7 +162,8 @@ async function preview(browser,language,width){
  assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 5');
  await page.locator('#demo-back').click();
  assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 4');
- for(let i=4;i<5;i++){await page.locator('#demo-next').click();}
+ await page.locator('#demo-next').click(); // back to step 6
+  await page.locator('#demo-next').click(); // finish dossier
  await page.locator('#demo-result').waitFor({state:'visible'});
  page.once('dialog',dialog=>dialog.accept());
  await page.locator('#demo-reset').click();

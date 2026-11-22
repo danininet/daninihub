@@ -16,10 +16,10 @@ const viewports=[
  {name:'desktop',width:1440,height:900}
 ];
 const probes={
- '': ['.d-education h2','.d-education p','.d-trust h2','.d-trust-grid p','.d-contact .d-eyebrow','.d-contact h2','.d-card h3','.d-card p'],
- 'business/':['.b-section h2','.b-card h3','.b-card p','.b-section .b-eyebrow','.b-demo-document b','.bc-form label','.bc-fieldset small','.bc-action-note'],
+ '': ['.d-education h2','.d-education p','.d-education small','.d-trust h2','.d-trust-grid p','.d-trust-note p','.d-contact .d-eyebrow','.d-contact h2','.d-card h3','.d-card p'],
+ 'business/':['.b-section h2','.b-card h3','.b-card p','.b-extra .b-extra-limits','.b-section .b-eyebrow','.b-demo-document b','.bc-form label','.bc-fieldset small','.bc-action-note'],
  'auto-check/':['.auto-hero h1','.auto-hero .auto-lead','.auto-advisor-box h2','.auto-steps article p','.ac-form label','.ac-status'],
- 'akademija/':['.ed-intro strong','.ed-section h2','.ed-map-head h2','.ed-module h3','.ed-module p','.ed-builder-preview h2'],
+ 'akademija/':['.ed-intro strong','.ed-section h2','.ed-section .ed-kicker','.ed-map-head h2','.ed-module h3','.ed-module p','.ed-module small','.ed-builder-preview h2'],
  'wissen/':['.kh-section-light .kh-section-intro h2','.kh-section-light .kh-section-intro>p:last-child','.kh-path h3','.kh-path p'],
  'wissen/produkte/':[],
  'akademija/builder/':[],
@@ -106,6 +106,20 @@ try{
       };
       return selectors.map(sample);
     },probes[route]||[]);
+    const tone=await page.evaluate((route)=>{
+      const targets={
+        '':['.d-education','.d-trust'],
+        'business/':['.b-section','.b-extra'],
+        'auto-check/':['.auto-hero','.auto-advisor','.auto-process'],
+        'akademija/':['.ed-intro','.ed-section'],
+        'wissen/':['.kh-section-light','.kh-academy']
+      };
+      return (targets[route]||[]).map(selector=>{
+        const el=document.querySelector(selector);
+        return {selector,muted:el?getComputedStyle(el).getPropertyValue('--danini-muted').trim():null};
+      });
+    },route);
+    for(const color of tone)assert.equal(color.muted,'#475569','light section inherits washed-out text '+url+' '+color.selector+' got '+color.muted);
     for(const p of inspected){
      assert.ok(!p.error,'missing visual probe '+url+' '+p.selector);
      assert.ok(p.fg?.length===3 && p.bg?.length===3,'unresolved computed colors '+url+' '+p.selector);

@@ -81,3 +81,32 @@ for(const [fg,bg,label] of [
  ['#173e50','#ffffff','Module 03 diagram titles']
 ])assert.ok(contrastRatio(fg,bg)>=4.5,label+' WCAG AA failed: '+contrastRatio(fg,bg).toFixed(2));
 console.log('PASS visual source and WCAG contrast baseline for Academy + Wissen');
+
+
+/* Issue #268: guard against recurring poor contrast and icon regressions.
+   Browser QA is still required for rendered gradient/photo backgrounds. */
+const landingSource=fs.readFileSync(path.join(__dirname,'../src/components/DaniniLanding.astro'),'utf8');
+const businessSource=fs.readFileSync(path.join(__dirname,'../src/components/BusinessLanding.astro'),'utf8');
+const iconSource=fs.readFileSync(path.join(__dirname,'../src/components/DaniniIcon.astro'),'utf8');
+const globalSource=fs.readFileSync(path.join(__dirname,'../src/styles/global.css'),'utf8');
+for(const [name,source,icons] of [
+ ['home',landingSource,['academy','business','car']],
+ ['business',businessSource,['search','message','shield']],
+ ['academy',academySource,['search','shield','document']]
+]){
+ assert.match(source,/import DaniniIcon from/,'missing shared semantic icons '+name);
+ for(const icon of icons)assert.ok(source.includes(icon),'missing '+icon+' icon in '+name);
+}
+assert.match(iconSource,/aria-hidden="true" focusable="false"/,'decorative SVG must not duplicate adjacent labels');
+assert.match(landingSource,/\.d-contact \.d-eyebrow\{color:#facc15\}/,'dark homepage contact text regressed');
+assert.match(businessSource,/\.b-hero \.b-eyebrow\{color:#facc15\}/,'dark Business hero text regressed');
+assert.match(globalSource,/\.bc-form :is\(p,small\)/,'missing light Business form text tokens');
+assert.match(globalSource,/\.ac-form :is\(p,small\)/,'missing light Auto form text tokens');
+for(const [fg,bg,label] of [
+ ['#facc15','#0f172a','homepage dark contact eyebrow'],
+ ['#facc15','#112236','business dark CTA eyebrow'],
+ ['#40566a','#ffffff','light form text'],
+ ['#102238','#ffffff','light form labels'],
+ ['#075e58','#ffffff','light form links']
+])assert.ok(contrastRatio(fg,bg)>=4.5,label+' contrast AA failed');
+console.log('PASS issue #268 dark CTA contrast, light forms and first-party SVG icon guards');

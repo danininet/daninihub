@@ -786,6 +786,13 @@ body:has(.auto-hero) .auto-inspection .button {
   body:has(.advisor-page) .advisor-panel { padding: 1.1rem; }
 }
 
+/* Issue #268: accessibility on mixed-tone surfaces.
+   Light forms must not inherit the global Dark Tech foreground color. */
+.bc-form :is(p,small),.ac-form :is(p,small){color:#40566a}
+.bc-form :is(label,strong),.ac-form :is(label,strong){color:#102238}
+.bc-form :is(a),.ac-form :is(a){color:#075e58}
+.bc-form :is(input,select,textarea),.ac-form :is(input,select,textarea){color:#102238;background:#fbfdff}
+.bc-form :is(input,select,textarea)::placeholder,.ac-form :is(input,textarea)::placeholder{color:#526579;opacity:1}
 /* Dynamic advisor controls use global styles rather than scoped Astro selectors. */
 .advisor-page .advisor-analysis-button {
   display: inline-flex; align-items: center; justify-content: center;

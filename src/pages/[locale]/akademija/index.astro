@@ -1,5 +1,6 @@
 ---
 import Base from "../../../layouts/Base.astro";
+import DaniniIcon from "../../../components/DaniniIcon.astro";
 export function getStaticPaths(){return ["de","sr"].map(locale=>({params:{locale}}));}
 const locale=Astro.params.locale as "de" | "sr";
 const de=locale==="de";
@@ -63,9 +64,9 @@ const prompts=de?[
  <h2 id="ed-map-heading">{de?"Aus einer Idee wird ein prüfbares Angebot.":"Od ideje do ponude koju možeš da proveriš."}</h2>
  <p>{de?"Die Lernschritte bauen aufeinander auf. Alle drei Übungen sind kostenlos und sofort verfügbar.":"Tri praktična koraka nadovezuju se jedan na drugi. Sva tri su besplatna i odmah dostupna."}</p></div>
  <ol class="ed-map-grid">
-  <li><span class="ed-map-symbol" aria-hidden="true">◎</span><span class="ed-map-number">01 / {de?"NICHE":"NIŠA"}</span><strong>{de?"Kundenproblem erkennen":"Pronađi problem kupca"}</strong><p>{de?"Für wen und in welcher Situation besteht ein Problem?":"Kome pomažeš i u kojoj konkretnoj situaciji?"}</p><a href="#lektion-1">{de?"Lektion 01":"Lekcija 01"} →</a></li>
-  <li><span class="ed-map-symbol" aria-hidden="true">⌕</span><span class="ed-map-number">02 / {de?"NACHWEISE":"DOKAZI"}</span><strong>{de?"Signale statt Vermutungen":"Dokazi umesto nagađanja"}</strong><p>{de?"Quellen, Alternativen und offene Annahmen dokumentieren.":"Zapiši izvore, alternative i neproverene pretpostavke."}</p><a href={base+"akademija/modul-02/"}>{de?"Lektion 02":"Lekcija 02"} →</a></li>
-  <li><span class="ed-map-symbol" aria-hidden="true">▤</span><span class="ed-map-number">03 / {de?"ANGEBOT":"PONUDA"}</span><strong>{de?"Ein Ergebnis klar anbieten":"Definiši konkretan rezultat"}</strong><p>{de?"Leistungsumfang, Ausschlüsse, Kosten und einen kleinen Test festlegen.":"Ograniči obim, izračunaj trošak i pripremi prvi test."}</p><a href={base+"akademija/modul-03/"}>{de?"Lektion 03":"Lekcija 03"} →</a></li>
+  <li><span class="ed-map-symbol"><DaniniIcon name="search" size={26} /></span><span class="ed-map-number">01 / {de?"NICHE":"NIŠA"}</span><strong>{de?"Kundenproblem erkennen":"Pronađi problem kupca"}</strong><p>{de?"Für wen und in welcher Situation besteht ein Problem?":"Kome pomažeš i u kojoj konkretnoj situaciji?"}</p><a href="#lektion-1">{de?"Lektion 01":"Lekcija 01"} →</a></li>
+  <li><span class="ed-map-symbol"><DaniniIcon name="shield" size={26} /></span><span class="ed-map-number">02 / {de?"NACHWEISE":"DOKAZI"}</span><strong>{de?"Signale statt Vermutungen":"Dokazi umesto nagađanja"}</strong><p>{de?"Quellen, Alternativen und offene Annahmen dokumentieren.":"Zapiši izvore, alternative i neproverene pretpostavke."}</p><a href={base+"akademija/modul-02/"}>{de?"Lektion 02":"Lekcija 02"} →</a></li>
+  <li><span class="ed-map-symbol"><DaniniIcon name="document" size={26} /></span><span class="ed-map-number">03 / {de?"ANGEBOT":"PONUDA"}</span><strong>{de?"Ein Ergebnis klar anbieten":"Definiši konkretan rezultat"}</strong><p>{de?"Leistungsumfang, Ausschlüsse, Kosten und einen kleinen Test festlegen.":"Ograniči obim, izračunaj trošak i pripremi prvi test."}</p><a href={base+"akademija/modul-03/"}>{de?"Lektion 03":"Lekcija 03"} →</a></li>
  </ol>
  <p class="ed-map-caption">{de?"Orientierungsgrafik zum Lernpfad; keine Behauptung über fertige Geschäftsergebnisse.":"Ilustracija procesa učenja, ne obećanje poslovnog uspeha."}</p>
 </div></section>
@@ -145,6 +146,7 @@ document.querySelector<HTMLButtonElement>("[data-education-print]")?.addEventLis
 .ed-map-grid{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:none}
 .ed-map-grid li{min-width:0;padding:24px;border:1px solid #93b3c6;background:#ffffff0e;border-radius:18px;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
 .ed-map-symbol{display:grid;place-items:center;width:52px;height:52px;border-radius:15px;background:#facc15;color:#102c41;font-size:1.8rem;font-weight:850;line-height:1}
+.ed-map-symbol :global(svg){display:block}
 .ed-map-number{color:#f7d988;letter-spacing:.11em;font-size:.79rem;font-weight:850;margin-top:10px}
 .ed-map-grid strong{color:#fff;font-size:1.24rem;line-height:1.3}
 .ed-map-grid p{color:#e2edf3;line-height:1.6;margin:0 0 10px}

@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import DaniniIcon from "./DaniniIcon.astro";
 import type { Locale } from "../lib/content";
 const { locale } = Astro.props as { locale: Locale };
 const de = locale === "de";
@@ -32,17 +33,17 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
         <div class="d-visual-head"><span>DANINI / AI BUSINESS ACADEMY</span><span>DACH ↔ BALKAN</span></div>
         <div class="d-visual-title">{de ? "Ein Lernweg. Zwei Praxisbeispiele." : "Jedan sistem učenja. Dva primera iz prakse."}</div>
         <a class="d-visual-service d-visual-education" href={academy}>
-          <span class="d-visual-icon" aria-hidden="true">00</span>
+          <span class="d-visual-icon"><DaniniIcon name="academy" size={23} /></span>
           <span><strong>DANINI AKADEMIJA</strong><small>{de ? "Nische → KI-Übung → überprüfbares Angebot" : "Niša → AI zadatak → proverljiva ponuda"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
         <a class="d-visual-service" href={business}>
-          <span class="d-visual-icon" aria-hidden="true">01</span>
+          <span class="d-visual-icon"><DaniniIcon name="business" size={23} /></span>
           <span><strong>DANINI BUSINESS</strong><small>{de ? "Anfrage → Einordnung → Antwortentwurf" : "Upit → analiza → nacrt odgovora"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
         <a class="d-visual-service" href={auto}>
-          <span class="d-visual-icon" aria-hidden="true">02</span>
+          <span class="d-visual-icon"><DaniniIcon name="car" size={23} /></span>
           <span><strong>AUTODANINI</strong><small>{de ? "Inserat → Nachweise → Prüffragen" : "Oglas → dokumenta → pitanja"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
@@ -184,6 +185,9 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
 .d-contact-grid{display:grid;grid-template-columns:1fr auto;gap:35px;align-items:center}
 .d-contact h2{color:#fff}
 .d-contact p{color:#c1ccda}
+.d-contact .d-eyebrow{color:#facc15}
+.d-trust .d-eyebrow{color:#086357}
+.d-visual-icon :global(svg){display:block}
 .d-contact-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;max-width:620px}
 .d-contact-actions .d-email-link{color:#e4edf7;font-weight:730;text-decoration:underline;text-underline-offset:4px}
 .d-contact-actions .d-btn.outline{border-color:#a7b8c5}

@@ -49,6 +49,7 @@ jobs:
           done
           node tests/b2b/autodanini-browser-qa.mjs
           node tests/b2b/knowledge-browser-qa.mjs
+          node tests/b2b/danini-design-browser-qa.mjs
       - name: Upload SR/DE desktop and mobile screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4

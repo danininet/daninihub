@@ -1,4 +1,5 @@
 import { ownerPortal } from "./portal/page";
+import { academyRoute } from "./academy/routes.mjs";
 import legacy from "../workers/danini-intake.mjs";
 import type { Env } from "./lib/env";
 import { json, HttpError } from "./security/http";
@@ -18,6 +19,8 @@ export default {
     const url = new URL(request.url),
       p = url.pathname;
     try {
+      // Customer Builder: distinct, strictly disabled unless all Academy auth settings are present.
+      if (p.startsWith("/api/academy/")) return await academyRoute(request, env);
       if (p === "/api/health" && request.method === "GET")
         return json({ status: "ok" }, 200);
       if (p === "/api/tenant-config" && request.method === "GET")

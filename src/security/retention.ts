@@ -50,6 +50,18 @@ export async function cleanup(env: Env) {
       env.DANINI_DB.prepare("DELETE FROM cases WHERE id=?").bind(row.id),
     ]);
   }
+  // Customer Builder tables are optional and never touched if public Academy
+  // authentication is disabled. Activation requires an applied D1 migration.
+  if (env.ACADEMY_AUTH_ENABLED === "true") {
+    await env.DANINI_DB.batch([
+      env.DANINI_DB.prepare(
+        "DELETE FROM academy_login_challenges WHERE expires_at<? OR (consumed_at IS NOT NULL AND consumed_at<?)"
+      ).bind(now, now - 3600),
+      env.DANINI_DB.prepare(
+        "DELETE FROM academy_sessions WHERE expires_at<? OR (revoked_at IS NOT NULL AND revoked_at<?)"
+      ).bind(now, now - 3600),
+    ]);
+  }
   await env.DANINI_DB.batch([
     env.DANINI_DB.prepare("DELETE FROM rate_buckets WHERE expires_at<?").bind(
       now,

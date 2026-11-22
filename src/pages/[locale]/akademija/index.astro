@@ -48,6 +48,16 @@ const prompts=de?[
   </div>
  </div>
 </section>
+<section class="ed-builder-preview" aria-labelledby="ed-builder-preview-heading"><div class="wrap ed-builder-preview-grid">
+ <div><p class="ed-kicker">{de?"NEU · KOSTENLOSE INTERAKTIVE VORSCHAU":"NOVO · BESPLATNA INTERAKTIVNA PROBA"}</p>
+ <h2 id="ed-builder-preview-heading">{de?"Ihre Idee direkt strukturieren – in sechs Schritten.":"Razradi svoju poslovnu ideju kroz šest koraka."}</h2>
+ <p>{de?"Probieren Sie unseren Business Builder ohne Konto aus. Formulieren Sie Ihre Nische, Ihre Recherchefragen, Ihr Angebot und Ihren ersten Test. Laden Sie anschließend Ihr persönliches Dossier als Datei herunter. Alles bleibt bis zum Download in diesem Browser-Tab. Keine KI-Auswertung, keine Quellenprüfung und kein Verkauf.":"Isprobaj Business Builder bez naloga: opiši nišu, istraživanje, ponudu i prvi mali test. Na kraju preuzmi svoj poslovni dosije. Podaci ostaju u ovoj kartici dok ih sam ne preuzmeš. Bez AI analize, provere izvora i naplate."}</p>
+ <a class="ed-btn ed-builder-preview-cta" href={base+"akademija/builder/"}>{de?"Kostenlose Vorschau öffnen":"Otvori besplatni probni Builder"} →</a>
+ </div>
+ <ol class="ed-builder-preview-flow" aria-label={de?"Sechs Schritte Ihres Entwurfs":"Šest koraka tvog nacrta"}>
+ <li>01 · {de?"Nische":"Niša"}</li><li>02 · {de?"Markt":"Tržište"}</li><li>03 · {de?"Angebot":"Ponuda"}</li><li>04 · {de?"Online-Auftritt":"Online prisustvo"}</li><li>05 · {de?"Abläufe":"Operacije"}</li><li>06 · {de?"Validierung":"Validacija"}</li>
+ </ol>
+</div></section>
 <section class="ed-map" aria-labelledby="ed-map-heading"><div class="wrap">
  <div class="ed-map-head"><p class="ed-kicker">{de?"DREI SCHRITTE · EIN ERGEBNIS":"TRI KORAKA · JEDAN REZULTAT"}</p>
  <h2 id="ed-map-heading">{de?"Aus einer Idee wird ein prüfbares Angebot.":"Od ideje do ponude koju možeš da proveriš."}</h2>
@@ -163,4 +173,16 @@ document.querySelector<HTMLButtonElement>("[data-education-print]")?.addEventLis
 .ed-case-grid article>p:first-of-type{color:#075f65;font-weight:850;font-size:.8rem}
 @media(max-width:680px){.ed-case-business-visual,.ed-case-auto-visual{gap:5px;padding:12px}.ed-case-business-visual span,.ed-case-auto-visual span{padding:10px 5px;font-size:.74rem}}
 @media print{.ed-case-auto-visual,.ed-case-business-visual{display:none!important}}
+
+.ed-builder-preview{padding:clamp(38px,5vw,72px) 0;background:#edf5f7;color:#183a4d;border-bottom:1px solid #d0e0e5}
+.ed-builder-preview-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(245px,1fr);gap:clamp(20px,4vw,54px);align-items:center}
+.ed-builder-preview .ed-kicker{color:#745212}
+.ed-builder-preview h2{color:#133549;font-size:clamp(1.85rem,3vw,2.75rem);line-height:1.17;letter-spacing:-.025em;margin:0 0 14px}
+.ed-builder-preview p:not(.ed-kicker){color:#294f64;line-height:1.7}
+.ed-builder-preview-cta{display:inline-flex;margin-top:12px;background:#075e65;color:white;border:2px solid #075e65;text-decoration:none}
+.ed-builder-preview-cta:focus-visible{outline:3px solid #aa7418;outline-offset:4px}
+.ed-builder-preview-flow{margin:0;list-style:none;padding:15px;background:#123c50;border-radius:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;box-shadow:0 15px 35px #0c2e401d}
+.ed-builder-preview-flow li{background:#ffffff17;border:1px solid #a1c9cc;border-radius:9px;color:#fff;font-weight:800;font-size:.92rem;min-height:65px;padding:12px;display:flex;align-items:center}
+@media(max-width:760px){.ed-builder-preview-grid{grid-template-columns:1fr}.ed-builder-preview-flow{grid-template-columns:1fr 1fr}.ed-builder-preview-flow li{min-height:55px}}
+@media print{.ed-builder-preview{display:none!important}}
 </style>

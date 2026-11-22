@@ -32,6 +32,7 @@ jobs:
           for i in $(seq 1 45); do curl -fsS http://127.0.0.1:4321/api/health && break; sleep 1; done
           curl -fsS http://127.0.0.1:4321/api/health
           test "$(curl -s -o /tmp/b2b-disabled.json -w '%{http_code}' -X POST http://127.0.0.1:4321/api/intake)" = "503"
+          test "$(curl -s -o /tmp/academy-disabled.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/config)" = "404"
           node scripts/test-b2b-browser.cjs
           node scripts/test-knowledge-browser.cjs
           node scripts/test-danini-education-browser.cjs
@@ -45,4 +46,34 @@ jobs:
           path: |
             outputs/b2b/
             dist/
+          retention-days: 7
+
+  builder-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:platform
+      - run: npx playwright install chromium
+      - name: Academy Builder isolated Chromium E2E
+        run: |
+          npx wrangler dev --local --ip 127.0.0.1 --port 4321 --config wrangler.b2b.jsonc > /tmp/academy-builder-wrangler.log 2>&1 &
+          for i in $(seq 1 50); do curl -fsS http://127.0.0.1:4321/api/health && break; sleep 1; done
+          curl -fsS http://127.0.0.1:4321/api/health
+          test "$(curl -s -o /tmp/academy-disabled.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/config)" = "404"
+          node scripts/test-academy-builder-browser.cjs
+      - name: Upload diagnostic log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: academy-builder-wrangler-failure
+          path: /tmp/academy-builder-wrangler.log
           retention-days: 7

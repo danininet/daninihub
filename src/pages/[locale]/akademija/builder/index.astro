@@ -1,0 +1,125 @@
+---
+import Base from "../../../../layouts/Base.astro";
+export function getStaticPaths(){return ["de","sr"].map(locale=>({params:{locale}}));}
+const locale=Astro.params.locale as "de"|"sr";
+const de=locale==="de";
+---
+<Base locale={locale} slug="akademija/builder" noindex={true}
+ title={de?"AI Business Builder – geschützter Pilot":"AI Business Builder – zaštićeni pilot"}
+ description={de?"Geschützter Prototyp für eigene Geschäftsprojekte. Noch nicht öffentlich freigeschaltet.":"Zaštićeni prototip za sopstvene poslovne projekte. Još nije javno aktiviran."}>
+<section class="bb-hero"><div class="wrap"><p class="bb-eyebrow">DANINI / AI BUSINESS BUILDER</p><h1>{de?"Ihr Unternehmen. Ihr eigener Arbeitsbereich.":"Tvoje preduzeće. Tvoj radni prostor."}</h1><p>{de?"Erfassen Sie Ihre Geschäftsidee, strukturieren Sie sechs Arbeitsschritte und setzen Sie das Projekt später fort. Dieser Pilot enthält noch keine KI-Analyse, Website-Veröffentlichung oder Zahlung.":"Sačuvaj poslovnu ideju, prođi šest koraka i nastavi svoj projekat kasnije. Ovaj pilot još nema AI analizu, objavljivanje sajta ni naplatu."}</p></div></section>
+<div class="wrap bb-shell" id="builder" data-locale={locale}>
+ <p id="notice" class="bb-notice" role="status" aria-live="polite">{de?"Prüfe Verfügbarkeit…":"Proveravam dostupnost…"}</p>
+ <section class="bb-card" id="signin" hidden>
+  <h2>{de?"Mit E-Mail anmelden":"Prijavi se preko e-maila"}</h2>
+  <p>{de?"Sie erhalten einen einmaligen Code. Keine automatische Newsletter-Anmeldung.":"Dobićeš jednokratni kod. Nema automatske prijave na newsletter."}</p>
+  <form id="login-form"><label for="email">E-mail</label><input type="email" name="email" id="email" maxlength="254" required autocomplete="email" /><div id="turnstile"></div><button class="bb-btn" type="submit">{de?"Einmalcode senden":"Pošalji kod za prijavu"}</button></form>
+  <form id="verify-form" hidden><label for="otp">{de?"8-stelliger Einmalcode":"Jednokratni kod (8 cifara)"}</label><input id="otp" name="code" required pattern="[0-9]{8}" inputmode="numeric" autocomplete="one-time-code" maxlength="8" /><button type="submit" class="bb-btn">{de?"Anmelden":"Prijavi se"}</button></form>
+ </section>
+ <section id="dashboard" hidden>
+  <div class="bb-top"><h2>{de?"Meine Projekte":"Moji projekti"}</h2><button type="button" id="logout" class="bb-outline">{de?"Abmelden":"Odjavi se"}</button></div>
+  <form id="new-project" class="bb-card bb-new"><label for="project-title">{de?"Projektname":"Naziv projekta"}</label><input id="project-title" name="title" required maxlength="120" placeholder={de?"z. B. Online-Büroservice":"npr. Online administrativna podrška"} /><button class="bb-btn" type="submit">{de?"Projekt erstellen":"Kreiraj projekat"}</button></form>
+  <div class="bb-layout"><nav id="project-list" class="bb-card" aria-label={de?"Gespeicherte Projekte":"Sačuvani projekti"}></nav>
+   <section id="editor" class="bb-card" hidden><div class="bb-top"><h3 id="selected-title"></h3><button type="button" class="bb-outline" id="export">{de?"JSON exportieren":"Izvezi JSON"}</button></div>
+    <div id="step-tabs" class="bb-tabs" role="group" aria-label={de?"Projektphasen":"Faze projekta"}></div>
+    <h4 id="stage-title"></h4><p id="stage-help"></p>
+    <form id="step-form"><div id="step-fields"></div><button class="bb-btn" type="submit">{de?"Arbeitsschritt speichern":"Sačuvaj korak"}</button></form>
+    <div class="bb-danger"><button type="button" id="delete-project" class="bb-outline">{de?"Projekt löschen":"Obriši projekat"}</button></div>
+   </section></div>
+ </section>
+ <p class="bb-fine">{de?"Ohne Erfolgsgarantie. Daten werden nur nach Anmeldung gespeichert; bei abgeschalteter Pilotfunktion werden keine Projekte angenommen. Teilen Sie keine fremden personenbezogenen Daten, Passwörter oder Geschäftsgeheimnisse.":"Bez garancije uspeha. Podaci se čuvaju tek nakon prijave; kada je pilot isključen, projekti se ne primaju. Ne unosite tuđe lične podatke, lozinke niti poslovne tajne."}</p>
+</div>
+<script is:inline>
+const root=document.getElementById('builder');
+if(root){
+ const de=root.dataset.locale==='de';
+ const $=id=>document.getElementById(id);
+ const i18n=de?{
+  unavailable:'Der Business Builder wird vorbereitet. Kein Login, keine Speicherung und kein Kauf möglich.',ready:'Geschützter Pilot. Anmeldung per E-Mail-Code.',
+  generic:'Die Aktion konnte nicht abgeschlossen werden. Bitte später erneut versuchen.',sent:'Bitte prüfen Sie Ihre E-Mails und geben Sie den einmaligen Code ein.',saved:'Arbeitsschritt gespeichert.',created:'Projekt erstellt.',deleted:'Projekt gelöscht.',
+  noProjects:'Noch keine Projekte. Erstellen Sie Ihr erstes Projekt.',open:'Öffnen',confirmDelete:'Dieses Projekt samt Inhalten endgültig löschen?', noFields:'Bitte mindestens ein Feld ausfüllen.',
+  labels:[['Nische','Zielgruppe','Kundenproblem','Ihre bisherigen Annahmen'],['Markt','Tatsächlich geprüfte Quelle + Datum','Alternative / Wettbewerb','Offene Belege / Unsicherheiten'],['Angebot','Konkretes Ergebnis','Leistungsumfang und Grenzen','Preishypothese (nicht veröffentlicht)'],['Online-Auftritt','Ziel der Website','Kernbotschaft und Seiten','Geplante Inhalte / Veröffentlichungsfreigabe'],['Abläufe','Wichtige Kundenanfragen','Ablauf / Verantwortliche','Datenschutz und Freigaben'],['Validierung','Kleiner Markttest','Messgröße und Termin','PASS / REVIEW / STOP Entscheidung']]
+ }:{
+  unavailable:'AI Business Builder je u pripremi. Prijava, čuvanje projekata i kupovina nisu aktivni.',ready:'Zaštićeni pilot. Prijava jednokratnim e-mail kodom.',
+  generic:'Radnja nije završena. Pokušaj ponovo kasnije.',sent:'Proveri e-mail i unesi jednokratni kod.',saved:'Korak je sačuvan.',created:'Projekat je kreiran.',deleted:'Projekat je obrisan.',
+  noProjects:'Još nema projekata. Kreiraj svoj prvi projekat.',open:'Otvori',confirmDelete:'Trajno obrisati projekat i sav njegov sadržaj?',noFields:'Popuni bar jedno polje.',
+  labels:[['Niša','Ciljna grupa','Problem kupca','Moje pretpostavke'],['Tržište','Stvarno provereni izvor i datum','Alternativa / konkurencija','Nedostajući dokazi'],['Ponuda','Konkretan rezultat','Obim i ograničenja','Cenovna hipoteza (nije objavljena)'],['Online prisustvo','Cilj sajta','Glavna poruka i stranice','Sadržaj i odobrenje za objavu'],['Operacije','Važni upiti kupaca','Proces i odgovornosti','Privatnost i odobravanja'],['Validacija','Mali tržišni test','Merilo i rok','Odluka PASS / REVIEW / STOP']]
+ };
+ const ids=['niche','market','offer','online_presence','operations','validation'];
+ let challenge=null,turnstileId=null,siteKey=null,selected=null,stage='niche';
+ function notice(message){$('notice').textContent=message}
+ function show(id,visible){$(id).hidden=!visible}
+ function append(tag,content,className){const el=document.createElement(tag);if(className)el.className=className;if(content!=null)el.textContent=String(content);return el}
+ async function api(path,method='GET',payload){
+  const response=await fetch('/api/academy/'+path,{method,credentials:'same-origin',headers:payload?{'content-type':'application/json'}:{},body:payload?JSON.stringify(payload):undefined,cache:'no-store'});
+  const body=await response.json().catch(()=>({}));if(!response.ok)throw Error(body.error||'request_failed');return body;
+ }
+ async function loadTurnstile(){
+  if(!window.turnstile){
+   const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;
+   await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=reject;document.head.append(script)});
+  }
+  if(!window.turnstile)throw Error('turnstile_unavailable');
+  if(turnstileId!==null){window.turnstile.reset(turnstileId);return;}
+  turnstileId=window.turnstile.render('#turnstile',{sitekey:siteKey,action:'academy-login',language:de?'de':'sr',theme:'auto'});
+ }
+ async function initialize(){
+  try{
+   const config=await api('config');
+   if(!config.enabled||!config.siteKey){notice(i18n.unavailable);return}
+   siteKey=config.siteKey;
+   const session=await api('session');
+   if(session.authenticated){show('dashboard',true);await refresh();notice(i18n.ready);return}
+   show('signin',true);await loadTurnstile();notice(i18n.ready);
+  }catch{show('signin',false);notice(i18n.unavailable)}
+ }
+ async function refresh(){
+  const data=await api('projects');const list=$('project-list');list.replaceChildren();
+  if(!data.projects.length)list.append(append('p',i18n.noProjects));
+  for(const project of data.projects){const button=append('button',project.title+' · '+project.language.toUpperCase(),'bb-project');button.type='button';button.onclick=()=>openProject(project.id);list.append(button)}
+ }
+ async function openProject(id){
+  const data=await api('projects/'+id);selected=data.project;stage='niche';show('editor',true);renderEditor();
+ }
+ function renderEditor(){if(!selected)return;
+  $('selected-title').textContent=selected.title;
+  const tabs=$('step-tabs');tabs.replaceChildren();
+  ids.forEach((id,index)=>{const done=selected.steps?.some(x=>x.step===id);
+   const button=append('button',(index+1)+'. '+i18n.labels[index][0]+(done?' ✓':''),'bb-tab');button.type='button';button.setAttribute('aria-pressed',String(stage===id));button.onclick=()=>{stage=id;renderEditor()};tabs.append(button);
+  });
+  const index=ids.indexOf(stage),labels=i18n.labels[index];$('stage-title').textContent=labels[0];
+  $('stage-help').textContent=de?'Strukturieren Sie die Angaben. Recherchierte Fakten und Annahmen ausdrücklich trennen.':'Zapiši podatke. Razdvoji proverene činjenice i pretpostavke.';
+  const saved=selected.steps?.find(x=>x.step===stage)?.fields||{},fields=$('step-fields');fields.replaceChildren();
+  ['a','b','c'].forEach((key,idx)=>{const wrap=append('div',null,'bb-field'),label=append('label',labels[idx+1]);const input=append('textarea');
+   input.name=key;input.id='field-'+key;label.htmlFor=input.id;input.maxLength=1500;input.rows=3;input.value=saved[key]||'';wrap.append(label,input);fields.append(wrap)});
+ }
+ $('login-form').addEventListener('submit',async event=>{event.preventDefault();const email=$('email').value.trim();const token=window.turnstile?.getResponse(turnstileId)||'';
+  try{const d=await api('auth/start','POST',{email,language:de?'de':'sr',turnstileToken:token});challenge=d.challengeId;show('verify-form',true);notice(i18n.sent)}catch{notice(i18n.generic)}finally{window.turnstile?.reset(turnstileId)}
+ });
+ $('verify-form').addEventListener('submit',async event=>{event.preventDefault();try{
+  await api('auth/verify','POST',{challengeId:challenge,code:$('otp').value.trim()});show('signin',false);show('dashboard',true);await refresh();notice(i18n.ready);
+ }catch{notice(i18n.generic)}});
+ $('new-project').addEventListener('submit',async event=>{event.preventDefault();try{
+  const r=await api('projects','POST',{title:$('project-title').value.trim(),language:de?'de':'sr'});$('project-title').value='';await refresh();await openProject(r.project.id);notice(i18n.created);
+ }catch{notice(i18n.generic)}});
+ $('step-form').addEventListener('submit',async event=>{event.preventDefault();if(!selected)return;
+  const fields={};for(const el of $('step-fields').querySelectorAll('textarea'))if(el.value.trim())fields[el.name]=el.value.trim();
+  if(!Object.keys(fields).length){notice(i18n.noFields);return}
+  try{const keepStage=stage;await api('projects/'+selected.id+'/steps/'+keepStage,'PUT',{fields});await openProject(selected.id);stage=keepStage;renderEditor();notice(i18n.saved)}catch{notice(i18n.generic)}
+ });
+ $('export').addEventListener('click',async()=>{if(!selected)return;try{const data=await api('projects/'+selected.id+'/export');
+  const href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const link=append('a');link.href=href;link.download='danini-project-'+selected.id+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(href),1000);
+ }catch{notice(i18n.generic)}});
+ $('delete-project').addEventListener('click',async()=>{if(!selected||!confirm(i18n.confirmDelete))return;try{
+  await api('projects/'+selected.id,'DELETE');selected=null;show('editor',false);await refresh();notice(i18n.deleted);
+ }catch{notice(i18n.generic)}});
+ $('logout').addEventListener('click',async()=>{try{await api('logout','POST',{});selected=null;show('dashboard',false);show('editor',false);show('signin',true);show('verify-form',false);await loadTurnstile();notice(i18n.ready)}catch{notice(i18n.generic)}});
+ initialize();
+}
+</script>
+<style>
+.bb-hero{background:linear-gradient(115deg,#0b2437,#0c5862);color:white;padding:clamp(50px,7vw,90px) 0}.bb-hero .wrap{max-width:1070px}.bb-eyebrow{font-size:.78rem;font-weight:850;letter-spacing:.15em;color:#f5d98d}.bb-hero h1{font-size:clamp(2rem,4.5vw,3.4rem);line-height:1.13;color:#fff;max-width:850px}.bb-hero p:last-child{color:#e9f4f7;max-width:780px;font-size:1.13rem}
+.bb-shell{max-width:1070px;padding:35px 22px 70px}.bb-notice{background:#e6f4f5;color:#16444a;border-left:4px solid #0d727a;padding:13px 17px;border-radius:5px}
+.bb-card{background:#fff;border:1px solid #c7d6df;border-radius:15px;padding:clamp(18px,3vw,30px);margin:18px 0;box-shadow:0 12px 28px #0b304010}.bb-card h2,.bb-card h3,.bb-card h4{color:#12374a}.bb-card input,.bb-card textarea{display:block;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;width:100%;max-width:610px;font:inherit}.bb-card label{font-weight:780;color:#193d50;display:block;margin:14px 0 7px}.bb-btn{background:#075e65;color:#fff;border:2px solid #075e65;min-height:48px;padding:11px 19px;border-radius:8px;font-weight:850;cursor:pointer;margin-top:15px}.bb-btn:hover{background:#034c52}.bb-outline{background:#fff;border:2px solid #37757d;color:#074e54;border-radius:8px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:800}.bb-card button:focus-visible,.bb-card input:focus-visible,.bb-card textarea:focus-visible{outline:3px solid #b07c1e;outline-offset:3px}.bb-top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.bb-layout{display:grid;grid-template-columns:minmax(230px,.65fr) minmax(0,1.5fr);gap:20px}.bb-project{display:block;border:1px solid #91b2be;background:#f5fafb;color:#114052;text-align:left;border-radius:8px;padding:13px;width:100%;font:inherit;cursor:pointer;margin:8px 0}.bb-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}.bb-tab{background:#f3f8fa;color:#174151;border:1px solid #84a5b2;border-radius:8px;padding:9px 11px;font:inherit;cursor:pointer}.bb-tab[aria-pressed="true"]{background:#104d5b;color:#fff}.bb-field{margin:15px 0}.bb-field textarea{max-width:100%;min-height:85px;resize:vertical}.bb-danger{border-top:1px solid #cedde4;margin-top:28px;padding-top:14px}.bb-fine{color:#385a69;font-size:.91rem;margin-top:24px}#turnstile{margin:15px 0;min-height:65px}.bb-new{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.bb-new label{flex-basis:100%;margin:0}.bb-new input{flex:1;min-width:210px}.bb-new button{margin:0}@media(max-width:780px){.bb-layout{grid-template-columns:1fr}.bb-shell{padding:22px 16px 55px}.bb-hero{padding:48px 0}.bb-card{padding:20px}}
+</style>
+</Base>

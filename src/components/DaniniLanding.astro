@@ -10,31 +10,31 @@ const academy = "/" + locale + "/akademija/";
 const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
 ---
 <Base locale={locale}
-  title={de ? "DANINI Akademie — mit KI ein eigenes Online-Business entwickeln" : "DANINI Akademija — nauči da izgradiš online preduzeće uz AI"}
-  description={de ? "DANINI vermittelt praxisnah, wie Sie mit KI eine Geschäftsidee prüfen und ein Online-Business entwickeln. Kostenlose erste Lektion mit praktischen Beispielen aus DANINI Business und AutoDanini." : "DANINI uči kako da uz AI proveriš poslovnu nišu i izgradiš online preduzeće. Besplatna prva lekcija i praktični primeri AutoDanini i DANINI Business."}>
+  title={de ? "DANINI — AutoDanini Fahrzeug-Vorprüfung und Business-Anfragebüro" : "DANINI — provera vozila i digitalna poslovna podrška"}
+  description={de ? "AutoDanini unterstützt beim Einordnen von Fahrzeuginseraten und Unterlagen vor Reise und Anzahlung. DANINI Business hilft kleinen Betrieben bei Kundenanfragen und deutschsprachiger Bürokommunikation." : "AutoDanini pomaže u proveri dostupnih podataka iz oglasa i dokumentacije pre puta i kapare. DANINI Business sređuje poslovne upite i komunikaciju na nemačkom."}>
   <section class="d-hero" aria-labelledby="danini-home-title">
     <div class="wrap d-hero-grid">
       <div>
-        <p class="d-eyebrow">DANINI · DACH ↔ BALKAN · {de ? "KI-BUSINESS-AKADEMIE" : "AI EDUKACIJA I ONLINE BIZNIS"}</p>
-        <h1 id="danini-home-title">{de ? "Mit KI ein eigenes Online-Business entwickeln. Schritt für Schritt." : "Nauči kako da uz AI izgradiš sopstveno online preduzeće."}</h1>
-        <p class="d-lead">{de ? "Lernen Sie mit konkreten Übungen, wie Sie eine Nische prüfen, ein Angebot formulieren und KI für Recherche, Inhalte und Arbeitsabläufe nutzen. Unsere Praxisbeispiele: DANINI Business und AutoDanini. Keine Erfolgs- oder Einkommensgarantie." : "Kroz konkretne zadatke nauči da proveriš bilo koju poslovnu nišu, napraviš ponudu i koristiš AI za istraživanje, sadržaj i organizaciju. Kako to radimo pokazujemo kroz DANINI Business i AutoDanini — bez obećanja zarade."}</p>
+        <p class="d-eyebrow">DANINI · DACH ↔ BALKAN · {de ? "FAHRZEUGE PRÜFEN · GESCHÄFTSANFRAGEN ORDNEN" : "PROVERA VOZILA · POSLOVNI UPITI"}</p>
+        <h1 id="danini-home-title">{de ? "Auto in Deutschland gefunden? Erst prüfen, dann reisen." : "Našao si auto u Nemačkoj? Proveri oglas pre puta i kapare."}</h1>
+        <p class="d-lead">{de ? "AutoDanini hilft Ihnen, Inseratsangaben, fehlende Fahrzeugunterlagen und Fragen an den Verkäufer vor einer Reise oder Anzahlung zu klären. Für Unternehmen organisiert DANINI Business deutschsprachige Anfragen, Antwortentwürfe und Büroabläufe. Wählen Sie die passende Leistung." : "AutoDanini pomaže da razjasniš podatke iz oglasa, nedostajuću dokumentaciju i pitanja prodavcu pre putovanja ili kapare. Za firme DANINI Business organizuje poslovne upite, nacrte odgovora i komunikaciju na nemačkom. Izaberi uslugu koja ti treba."}</p>
         <div class="d-actions">
-          <a class="d-btn primary" href={academy}>{de ? "Kostenlose erste KI-Lektion starten" : "Započni besplatnu AI lekciju"}</a>
-          <a class="d-btn outline" href="#arbeitsbereiche">{de ? "Praxisprojekte ansehen" : "Pogledaj naše praktične primere"}</a>
+          <a class="d-btn primary" href={auto + "#ai-savetnik"}>{de ? "Fahrzeuginserat vorprüfen" : "Proveri oglas vozila"}</a>
+          <a class="d-btn outline" href={business + "#anfrage"}>{de ? "Business-Anfrage stellen" : "Pošalji Business upit"}</a>
         </div>
         <div class="d-hero-benefits" aria-label={de ? "Unsere Arbeitsprinzipien" : "Način rada"}>
-          <span>{de ? "KI lernen und anwenden" : "Uči i primeni AI"}</span>
-          <span>{de ? "Eigene Nische entwickeln" : "Razvij sopstvenu nišu"}</span>
-          <span>{de ? "Echte Praxisbeispiele" : "Primeri iz prakse"}</span>
+          <span>{de ? "Inserat und Unterlagen" : "Oglas i dokumentacija"}</span>
+          <span>{de ? "Deutschsprachige Anfragen" : "Poslovni upiti na nemačkom"}</span>
+          <span>{de ? "Klare nächste Schritte" : "Konkretni sledeći koraci"}</span>
         </div>
-        <p class="d-small">{de ? "Die Module 01–03 sind kostenlos verfügbar. Die Module 04–06 sind in Vorbereitung; der kostenpflichtige Gesamtkurs wird noch nicht angeboten." : "Moduli 01–03 su besplatni i dostupni. Moduli 04–06 su u pripremi; kompletan plaćeni kurs nije u prodaji."}</p>
+        <p class="d-small"><a href={academy}>{de ? "KI lernen? Kostenlose DANINI Akademie entdecken" : "Želiš da učiš AI? Pogledaj besplatnu DANINI Akademiju"}</a></p>
       </div>
       <div class="d-visual" aria-label={de ? "DANINI Geschäftsbereiche" : "DANINI poslovne oblasti"}>
-        <div class="d-visual-head"><span>DANINI / AI BUSINESS ACADEMY</span><span>DACH ↔ BALKAN</span></div>
-        <div class="d-visual-title">{de ? "Ein Lernweg. Zwei Praxisbeispiele." : "Jedan sistem učenja. Dva primera iz prakse."}</div>
-        <a class="d-visual-service d-visual-education" href={academy}>
-          <span class="d-visual-icon"><DaniniIcon name="academy" size={23} /></span>
-          <span><strong>DANINI AKADEMIJA</strong><small>{de ? "Nische → KI-Übung → überprüfbares Angebot" : "Niša → AI zadatak → proverljiva ponuda"}</small></span>
+        <div class="d-visual-head"><span>DANINI / AUTO · BUSINESS · AKADEMIE</span><span>DACH ↔ BALKAN</span></div>
+        <div class="d-visual-title">{de ? "Zwei Dienstleistungen. Eine klare Methode." : "Dve usluge. Jedan jasan način rada."}</div>
+        <a class="d-visual-service d-visual-education" href={auto}>
+          <span class="d-visual-icon"><DaniniIcon name="car" size={23} /></span>
+          <span><strong>AUTODANINI</strong><small>{de ? "Inserat → Nachweise → Prüffragen" : "Oglas → dokumenta → pitanja"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
         <a class="d-visual-service" href={business}>
@@ -42,40 +42,21 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
           <span><strong>DANINI BUSINESS</strong><small>{de ? "Anfrage → Einordnung → Antwortentwurf" : "Upit → analiza → nacrt odgovora"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
-        <a class="d-visual-service" href={auto}>
-          <span class="d-visual-icon"><DaniniIcon name="car" size={23} /></span>
-          <span><strong>AUTODANINI</strong><small>{de ? "Inserat → Nachweise → Prüffragen" : "Oglas → dokumenta → pitanja"}</small></span>
+        <a class="d-visual-service" href={academy}>
+          <span class="d-visual-icon"><DaniniIcon name="academy" size={23} /></span>
+          <span><strong>DANINI AKADEMIJA</strong><small>{de ? "Nische → KI-Übung → überprüfbares Angebot" : "Niša → AI zadatak → proverljiva ponuda"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
-        <div class="d-visual-foot"><span class="d-online-dot"></span>{de ? "Lernen, selbst umsetzen und an echten Projekten prüfen" : "Nauči, primeni i proveri na stvarnim projektima"}</div>
+        <div class="d-visual-foot"><span class="d-online-dot"></span>{de ? "Fahrzeugfragen und Geschäftsanfragen – getrennte Wege, gemeinsames Team" : "Provera vozila i poslovni upiti — odvojene usluge, jedan DANINI"}</div>
       </div>
     </div>
   </section>
 
-  <section class="d-section d-education" aria-labelledby="academy-home-title">
-    <div class="wrap d-education-grid">
-      <div><p class="d-eyebrow">DANINI AKADEMIJA / {de?"HAUPTPRODUKT":"GLAVNI PROIZVOD"}</p>
-      <h2 id="academy-home-title">{de?"Von der Geschäftsidee zum ersten prüfbaren Ergebnis.":"Od poslovne ideje do prvog proverljivog rezultata."}</h2>
-      <p>{de?"Drei kostenlose Praxislektionen zeigen, wie Sie eine Nische eingrenzen, Marktsignale prüfen und ein konkretes Angebot erstellen. Mit kopierbaren KI-Prompts und ausdruckbaren Arbeitsblättern." : "Tri besplatne praktične lekcije pokazuju kako da izabereš nišu, proveriš tržišne signale i pripremiš konkretnu ponudu uz AI zadatke i radne sveske."}</p>
-      <a class="d-education-cta" href={academy}>{de?"Mit Modul 01 beginnen":"Počni od modula 01"} ↗</a>
-      <small>{de?"Sechs Themen geplant, aktuell drei kostenlose Praxislektionen verfügbar. Keine Kurs- oder Verdienstgarantie." : "Planirano šest oblasti; trenutno su dostupne tri besplatne praktične lekcije. Nema garancija zarade."}</small></div>
-      <div class="d-education-preview"><span>01 / {de?"LERNEN":"UČENJE"}</span><strong>{de?"Nische":"Niša"}</strong><span>02 / {de?"PRÜFEN":"PROVERA"}</span><strong>{de?"Nachfrage":"Potreba"}</strong><span>03 / {de?"ENTWICKELN":"IZGRADNJA"}</span><strong>{de?"Erstes Angebot":"Prva ponuda"}</strong></div>
-    </div>
-  </section>
   <section id="arbeitsbereiche" class="d-section d-light">
     <div class="wrap">
-      <p class="d-eyebrow">{de ? "UNSERE PRAXISBEISPIELE" : "NAŠI PRIMERI IZ PRAKSE"}</p>
-      <h2>{de ? "Was Sie in der Akademie lernen, zeigen wir in unseren eigenen Projekten." : "Ono što učimo — pokazujemo kroz sopstvene projekte."}</h2>
+      <p class="d-eyebrow">{de ? "UNSERE LEISTUNGEN" : "NAŠE USLUGE"}</p>
+      <h2>{de ? "Fahrzeugprüfung vor der Reise und digitale Unterstützung für Unternehmen." : "Provera oglasa pre puta i digitalna podrška poslovnim upitima."}</h2>
       <div class="d-cards">
-        <article class="d-card d-card-business">
-          <div class="d-card-media d-business-media" aria-hidden="true">
-            <div class="d-media-grid"></div><span>DANINI BUSINESS</span><strong>AI / OFFICE</strong><small>ANFRAGEN · KOMMUNIKATION · PROZESSE</small>
-          </div>
-          <span class="d-tag">01 / DANINI BUSINESS</span>
-          <h3>{de ? "Kundenanfragen, deutsche Angebote, digitale Bürounterstützung." : "Nemački poslovni upiti, ponude i digitalna podrška."}</h3>
-          <p>{de ? "Für kleine Unternehmen vom Balkan: Anfragen und Anforderungen deutscher Geschäftspartner ordnen, fehlende Angaben erkennen und deutschsprachige Antwort- und Angebotsentwürfe mit menschlicher Freigabe vorbereiten." : "Za firme sa Balkana: priprema upita, odgovora i dokumentacije za saradnju sa nemačkim kupcima ili dobavljačima, uz jasne korake i ljudsko odobrenje."}</p>
-          <a href={business} aria-label={de ? "DANINI Business Anfrage starten" : "Pokreni DANINI Business upit"}>{de ? "Jetzt Business-Anfrage starten" : "Pokreni Business upit"} →</a>
-        </article>
         <article class="d-card d-card-auto">
           <div class="d-card-media d-auto-media" aria-hidden="true">
             <img src="/images/DANINI_Kartica_01_Salon_Auto_Bez_Osobe.jpg" alt="" loading="lazy" decoding="async" width="960" height="560" />
@@ -86,10 +67,29 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
           <p>{de ? "Prüffragen, fehlende Nachweise und bekannte Kosten übersichtlich erfassen. Bei Bedarf eine unabhängige Prüfung anfragen." : "Pregled oglasnih podataka, nedostajućih dokaza i poznatih troškova. Po potrebi zahtev za nezavisni pregled."}</p>
           <a href={auto} aria-label={de ? "AutoDanini Fahrzeugangebot prüfen" : "AutoDanini provera oglasa"}>{de ? "Fahrzeugangebot jetzt prüfen" : "Proveri oglas vozila"} →</a>
         </article>
+        <article class="d-card d-card-business">
+          <div class="d-card-media d-business-media" aria-hidden="true">
+            <div class="d-media-grid"></div><span>DANINI BUSINESS</span><strong>AI / OFFICE</strong><small>ANFRAGEN · KOMMUNIKATION · PROZESSE</small>
+          </div>
+          <span class="d-tag">01 / DANINI BUSINESS</span>
+          <h3>{de ? "Kundenanfragen, deutsche Angebote, digitale Bürounterstützung." : "Nemački poslovni upiti, ponude i digitalna podrška."}</h3>
+          <p>{de ? "Für kleine Unternehmen vom Balkan: Anfragen und Anforderungen deutscher Geschäftspartner ordnen, fehlende Angaben erkennen und deutschsprachige Antwort- und Angebotsentwürfe mit menschlicher Freigabe vorbereiten." : "Za firme sa Balkana: priprema upita, odgovora i dokumentacije za saradnju sa nemačkim kupcima ili dobavljačima, uz jasne korake i ljudsko odobrenje."}</p>
+          <a href={business} aria-label={de ? "DANINI Business Anfrage starten" : "Pokreni DANINI Business upit"}>{de ? "Jetzt Business-Anfrage starten" : "Pokreni Business upit"} →</a>
+        </article>
       </div>
     </div>
   </section>
 
+  <section class="d-section d-education" aria-labelledby="academy-home-title">
+    <div class="wrap d-education-grid">
+      <div><p class="d-eyebrow">DANINI AKADEMIJA / {de?"KOSTENLOSE BILDUNG":"BESPLATNA EDUKACIJA"}</p>
+      <h2 id="academy-home-title">{de?"Mit KI ein eigenes Online-Business entwickeln. Schritt für Schritt.":"Nauči kako da uz AI izgradiš sopstveno online preduzeće."}</h2>
+      <p>{de?"Drei kostenlose Praxislektionen zeigen, wie Sie eine Nische eingrenzen, Marktsignale prüfen und ein konkretes Angebot erstellen. Mit kopierbaren KI-Prompts und ausdruckbaren Arbeitsblättern." : "Tri besplatne praktične lekcije pokazuju kako da izabereš nišu, proveriš tržišne signale i pripremiš konkretnu ponudu uz AI zadatke i radne sveske."}</p>
+      <a class="d-education-cta" href={academy}>{de?"Mit Modul 01 beginnen":"Počni od modula 01"} ↗</a>
+      <small>{de?"Sechs Themen geplant, aktuell drei kostenlose Praxislektionen verfügbar. Keine Kurs- oder Verdienstgarantie." : "Planirano šest oblasti; trenutno su dostupne tri besplatne praktične lekcije. Nema garancija zarade."}</small></div>
+      <div class="d-education-preview"><span>01 / {de?"LERNEN":"UČENJE"}</span><strong>{de?"Nische":"Niša"}</strong><span>02 / {de?"PRÜFEN":"PROVERA"}</span><strong>{de?"Nachfrage":"Potreba"}</strong><span>03 / {de?"ENTWICKELN":"IZGRADNJA"}</span><strong>{de?"Erstes Angebot":"Prva ponuda"}</strong></div>
+    </div>
+  </section>
   <section class="d-section d-trust">
     <div class="wrap d-trust-grid">
       <div>
@@ -112,8 +112,8 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
         <p>{de ? "Eine Nachricht ist noch kein Auftrag. Leistungsumfang und Preis werden vor einer Beauftragung individuell geklärt." : "Slanje poruke nije narudžbina. Obim usluge i cena dogovaraju se pre angažovanja."}</p>
       </div>
       <div class="d-contact-actions">
-        <a class="d-btn primary" href={business + "#anfrage"}>{de ? "Business-Anfrage senden" : "Pošalji Business upit"}</a>
-        <a class="d-btn outline" href={auto + "#contact"}>{de ? "Fahrzeugprüfung anfragen" : "Zatraži proveru vozila"}</a>
+        <a class="d-btn primary" href={auto + "#contact"}>{de ? "Fahrzeug-Vorprüfung anfragen" : "Zatraži proveru oglasa"}</a>
+        <a class="d-btn outline" href={business + "#anfrage"}>{de ? "Business-Anfrage senden" : "Pošalji Business upit"}</a>
         <a class="d-email-link" href="mailto:info@daninihub.com?subject=DANINI%20-%20Anfrage">info@daninihub.com</a>
       </div>
     </div>

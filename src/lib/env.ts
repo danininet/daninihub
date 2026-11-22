@@ -1,4 +1,6 @@
 export interface Env {
+  ACADEMY_AUTH_ENABLED?: string;
+  ACADEMY_AUTH_SECRET?: string;
   ACCESS_TEAM_DOMAIN?: string;
   ACCESS_AUD?: string;
   DIRECTOR_EMAIL?: string;

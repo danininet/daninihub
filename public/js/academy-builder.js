@@ -15,6 +15,88 @@ if(root){
  };
  const ids=['niche','market','offer','online_presence','operations','validation'];
  let challenge=null,turnstileId=null,siteKey=null,selected=null,stage='niche';
+
+ // Free no-login preview. No localStorage, cookies, external services, or API calls for user fields.
+ const demoData={name:'',steps:{}};
+ let demoStage=0;
+ const demoCopy=de?{
+  count:n=>'Schritt '+(n+1)+' von 6',back:'← Zurück',next:'Weiter →',finish:'Dossier erstellen →',
+  export:'Ergebnis als JSON speichern',edit:'← Angaben bearbeiten',reset:'Neu beginnen',
+  resetConfirm:'Alle Angaben in diesem Tab endgültig verwerfen?',
+  nameError:'Bitte geben Sie zuerst einen Projektnamen ein.'
+ }:{
+  count:n=>'Korak '+(n+1)+' od 6',back:'← Nazad',next:'Nastavi →',finish:'Pripremi dosije →',
+  export:'Sačuvaj rezultat kao JSON',edit:'← Izmeni odgovore',reset:'Počni od početka',
+  resetConfirm:'Trajno obrisati sve unete odgovore iz ove kartice?',
+  nameError:'Prvo unesi naziv projekta.'
+ };
+ function captureDemo(){
+  demoData.name=$('demo-title').value.trim();
+  const values={};
+  for(const field of $('demo-fields').querySelectorAll('textarea'))if(field.value.trim())values[field.name]=field.value.trim();
+  demoData.steps[ids[demoStage]]=values;
+ }
+ function renderDemo(){
+  $('demo-title').value=demoData.name;
+  const labels=i18n.labels[demoStage];
+  $('demo-count').textContent=demoCopy.count(demoStage);
+  $('demo-step-title').textContent=labels[0];
+  $('demo-meter-fill').style.width=((demoStage+1)/6*100)+'%';
+  $('demo-back').textContent=demoCopy.back;
+  $('demo-back').disabled=demoStage===0;
+  $('demo-next').textContent=demoStage===5?demoCopy.finish:demoCopy.next;
+  $('demo-export').textContent=demoCopy.export;
+  $('demo-edit').textContent=demoCopy.edit;
+  $('demo-reset').textContent=demoCopy.reset;
+  const fields=$('demo-fields');fields.replaceChildren();
+  const info=append('p',de?'Notieren Sie Ihre eigenen Fakten und Annahmen. Ungeprüfte Angaben bitte klar markieren.':'Odvoji svoje činjenice i pretpostavke; označi sve što još nije provereno.','bb-demo-stage');
+  fields.append(info);
+  const old=demoData.steps[ids[demoStage]]||{};
+  for(const [n,key] of ['a','b','c'].entries()){
+   const wrap=append('div',null,'bb-field');
+   const label=append('label',labels[n+1]);const textarea=append('textarea');
+   textarea.id='demo-field-'+key;textarea.name=key;textarea.maxLength=1500;textarea.rows=3;textarea.value=old[key]||'';
+   label.htmlFor=textarea.id;wrap.append(label,textarea);fields.append(wrap);
+  }
+ }
+ function showDemoResult(){
+  const result=$('demo-summary');result.replaceChildren();
+  result.append(append('h4',demoData.name));
+  for(let i=0;i<6;i++){
+    const step=append('section',null,'bb-demo-row');step.append(append('strong',(i+1)+'. '+i18n.labels[i][0]));
+    const vals=demoData.steps[ids[i]]||{};
+    for(let n=0;n<3;n++){
+      const key=['a','b','c'][n];
+      const value=(vals[key]||'').trim();
+      if(value){step.append(append('strong',i18n.labels[i][n+1]),append('p',value));}
+    }
+    result.append(step);
+  }
+  show('demo-form',false);show('demo-result',true);
+ }
+ $('demo-form').addEventListener('submit',event=>{
+  event.preventDefault();
+  captureDemo();
+  if(!demoData.name){$('demo-title').focus();notice(demoCopy.nameError);return;}
+  if(demoStage<5){demoStage++;renderDemo();}
+  else showDemoResult();
+ });
+ $('demo-back').addEventListener('click',()=>{if(demoStage>0){captureDemo();demoStage--;renderDemo();}});
+ $('demo-edit').addEventListener('click',()=>{show('demo-result',false);show('demo-form',true);renderDemo();});
+ $('demo-reset').addEventListener('click',()=>{
+  if(!confirm(demoCopy.resetConfirm))return;
+  demoData.name='';demoData.steps={};demoStage=0;
+  show('demo-result',false);show('demo-form',true);renderDemo();
+ });
+ $('demo-export').addEventListener('click',()=>{
+  const output={product:'DANINI Business Builder - private preview',version:1,language:de?'de':'sr',
+   project:{title:demoData.name,steps:ids.map(id=>({step:id,fields:demoData.steps[id]||{}}))},
+   disclaimer:'User supplied, not verified; no AI processing, no server storage, no guarantee of results.'};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(output,null,2)],{type:'application/json'}));
+  const a=append('a');a.href=url;a.download='danini-builder-preview-'+(de?'de':'sr')+'.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ });
+
  function notice(message){$('notice').textContent=message}
  function show(id,visible){$(id).hidden=!visible}
  function append(tag,content,className){const el=document.createElement(tag);if(className)el.className=className;if(content!=null)el.textContent=String(content);return el}
@@ -34,12 +116,12 @@ if(root){
  async function initialize(){
   try{
    const config=await api('config');
-   if(!config.enabled||!config.siteKey){notice(i18n.unavailable);return}
+   if(!config.enabled||!config.siteKey){show('demo',true);renderDemo();notice(i18n.unavailable);return}
    siteKey=config.siteKey;
    const session=await api('session');
    if(session.authenticated){show('dashboard',true);await refresh();notice(i18n.ready);return}
    show('signin',true);await loadTurnstile();notice(i18n.ready);
-  }catch{show('signin',false);notice(i18n.unavailable)}
+  }catch{show('signin',false);show('demo',true);renderDemo();notice(i18n.unavailable)}
  }
  async function refresh(){
   const data=await api('projects');const list=$('project-list');list.replaceChildren();

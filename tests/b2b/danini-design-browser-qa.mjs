@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 
 const origin=process.env.DANINI_VISUAL_TEST_ORIGIN || 'http://127.0.0.1:4321';
-const routes=['','business/','auto-check/','ai-savetnik/','akademija/','akademija/builder/','akademija/modul-03/','wissen/','wissen/produkte/'];
+const routes=['','business/','auto-check/','ai-savetnik/','akademija/','akademija/builder/','akademija/modul-03/','wissen/','wissen/produkte/','wissen/glossar/','wissen/gebrauchtwagen-anzahlung/'];
 const viewports=[
  {name:'small',width:320,height:780},
  {name:'mobile',width:390,height:844},
@@ -22,6 +22,8 @@ const probes={
  'akademija/':['.ed-intro strong','.ed-section h2','.ed-section .ed-kicker','.ed-map-head h2','.ed-module h3','.ed-module p','.ed-module small','.ed-builder-preview h2'],
  'wissen/':['.kh-section-light .kh-section-intro h2','.kh-section-light .kh-section-intro>p:last-child','.kh-path h3','.kh-path p'],
  'wissen/produkte/':[],
+ 'wissen/glossar/':['.glossary-item h2','.glossary-item p'],
+ 'wissen/gebrauchtwagen-anzahlung/':['.knowledge-article h1','.guide-part h2','.guide-part p'],
  'akademija/builder/':[],
  'akademija/modul-03/':[],
  'ai-savetnik/':[]
@@ -112,7 +114,9 @@ try{
         'business/':['.b-section','.b-extra'],
         'auto-check/':['.auto-hero','.auto-advisor','.auto-process'],
         'akademija/':['.ed-intro','.ed-section'],
-        'wissen/':['.kh-section-light','.kh-academy']
+        'wissen/':['.kh-section-light','.kh-academy'],
+        'wissen/glossar/':['.section.white'],
+        'wissen/gebrauchtwagen-anzahlung/':['.section.white']
       };
       return (targets[route]||[]).map(selector=>{
         const el=document.querySelector(selector);

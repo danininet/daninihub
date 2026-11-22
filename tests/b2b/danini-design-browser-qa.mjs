@@ -69,6 +69,15 @@ try{
     });
     assert.equal(meta.h1,1,'missing/duplicate main H1 '+url);
     assert.ok(meta.hasVisibleCTA,'no visible internal links '+url);
+    if(meta.actualScrollX>1){
+     const offenders=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>{
+      const box=el.getBoundingClientRect(),style=getComputedStyle(el);
+      return {tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,85):'',text:el.textContent?.trim().slice(0,35),left:Math.round(box.left),right:Math.round(box.right),width:Math.round(box.width),overflowX:style.overflowX};
+     }).filter(x=>x.right>innerWidth+2 || x.left < -2).sort((a,b)=>b.right-a.right).slice(0,20));
+     console.error('ISSUE268 OVERFLOW DIAGNOSTIC',url,JSON.stringify(offenders));
+     const name=route?route.replaceAll('/','').replaceAll('-','_'):'home';
+     await page.screenshot({path:'qa-screenshots/issue-268/overflow-'+locale+'-'+viewport.width+'-'+name+'.png',fullPage:true});
+    }
     assert.ok(meta.actualScrollX<=1,'horizontal scrolling '+url+' '+JSON.stringify(meta));
     if(meta.scrollWidth>meta.width+3 && !meta.clipped){
      console.log('NOTE decorative document overflow:',url,JSON.stringify(meta));

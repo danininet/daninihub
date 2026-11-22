@@ -718,6 +718,19 @@ section.section.white:has(.glossary-item) :is(h1,h2,h3) {
   color: #132e43;
 }
 
+/* Knowledge article text may contain long DE/SR compound words and source URLs.
+   Wrap these within their editorial column instead of enlarging the viewport. */
+:is(.knowledge-article,.source-article) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+:is(.knowledge-article,.source-article) :is(p,li,a,dd) {
+  overflow-wrap: anywhere;
+}
+html:has(:is(.knowledge-article,.source-article)) {
+  overflow-x: clip;
+}
+
 /* PR208 urgent visibility repair: automotive buyer pages use LIGHT surfaces.
    The global Dark Tech tokens remain scoped to other pages, but must never
    force pale text on the light AutoDanini hero, forms, cards or advisor. */

@@ -24,3 +24,10 @@ test('approved brand artwork remains used, not favicon substitute',()=>{
  assert.match(header,/src={daniniBrandLogo}/);
  assert.doesNotMatch(header,/danini-favicon\.svg/);
 });
+
+test('knowledge hub links directly to canonical calculator and keeps AutoDanini enquiry path',()=>{
+ const knowledge=readFileSync('src/pages/[locale]/wissen/index.astro','utf8');
+ assert.match(knowledge, /href="\/auto\/import\/"/);
+ assert.doesNotMatch(knowledge, /href="\/import\.html"/);
+ assert.match(knowledge, /root\+"auto-check\/"/);
+});

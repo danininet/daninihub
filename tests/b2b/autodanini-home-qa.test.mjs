@@ -78,3 +78,17 @@ test('DANINI navigation keeps both commercial lines and languages',()=>{
  assert.match(business,/DANINI Anfragebüro/);
  assert.match(route,/slug="auto-check"/);
 });
+
+test('commercial homepage prioritizes AutoDanini and Business; Academy remains accessible',()=>{
+ const landing=readFileSync('src/components/DaniniLanding.astro','utf8');
+ assert.match(landing,/Auto in Deutschland gefunden\? Erst prüfen, dann reisen\./);
+ assert.match(landing,/Našao si auto u Nemačkoj\? Proveri oglas pre puta i kapare\./);
+ assert.match(landing,/Fahrzeuginserat vorprüfen/);
+ assert.match(landing,/Business-Anfrage stellen/);
+ assert.ok(landing.indexOf('href={auto + "#ai-savetnik"}') < landing.indexOf('href={business + "#anfrage"}'),'Auto CTA is primary');
+ assert.ok(landing.indexOf('id="arbeitsbereiche"') < landing.indexOf('class="d-section d-education"'),'Services before Academy');
+ assert.ok(landing.indexOf('class="d-card d-card-auto"') < landing.indexOf('class="d-card d-card-business"'),'Auto service listed first');
+ assert.match(landing,/href={academy}/);
+ assert.match(landing,/KOSTENLOSE BILDUNG/);
+ assert.doesNotMatch(landing,/HAUPTPRODUKT|GLAVNI PROIZVOD/);
+});

@@ -43,12 +43,12 @@ async function check(path) {
     throw new Error('Not a complete HTML page');
   if (/This Page Does Not Exist|Sorry, the page you are looking for could not be found/i.test(html))
     throw new Error('An obsolete hosting 404 page was served');
-  if (path === '/' && !isPullRequest && !/Mit KI ein eigenes Online-Business entwickeln\. Schritt für Schritt\./.test(html))
-    throw new Error('Root URL missing current DANINI Academy brand headline');
-  if (path === '/de/' && !isPullRequest && !/Mit KI ein eigenes Online-Business entwickeln\. Schritt für Schritt\./.test(html))
-    throw new Error('Wrong /de/ release (expected current Academy headline)');
-  if (path === '/sr/' && !isPullRequest && !/Nauči kako da uz AI izgradiš sopstveno online preduzeće\./.test(html))
-    throw new Error('Wrong /sr/ release (expected current Academy headline)');
+  if (path === '/' && !isPullRequest && !/Auto in Deutschland gefunden\? Erst prüfen, dann reisen\./.test(html))
+    throw new Error('Root URL missing current DANINI commercial service headline');
+  if (path === '/de/' && !isPullRequest && !/Auto in Deutschland gefunden\? Erst prüfen, dann reisen\./.test(html))
+    throw new Error('Wrong /de/ release (expected current AutoDanini headline)');
+  if (path === '/sr/' && !isPullRequest && !/Našao si auto u Nemačkoj\? Proveri oglas pre puta i kapare\./.test(html))
+    throw new Error('Wrong /sr/ release (expected current AutoDanini headline)');
   return {status: response.status, bytes: Buffer.byteLength(html)};
 }
 async function withRetries(path) {

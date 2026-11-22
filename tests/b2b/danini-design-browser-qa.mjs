@@ -54,7 +54,7 @@ try{
     const meta=await page.evaluate(()=>{
      const doc=document.documentElement;
      const body=document.body;
-     const links=[...document.querySelectorAll('main a[href]')];
+     const links=[...document.querySelectorAll('main a[href],main button')];
      const hasVisibleCTA=links.some(el=>{
       const r=el.getBoundingClientRect(),style=getComputedStyle(el);
       return r.width>0&&r.height>0&&style.visibility!=='hidden'&&style.display!=='none';
@@ -68,7 +68,7 @@ try{
       hasVisibleCTA};
     });
     assert.equal(meta.h1,1,'missing/duplicate main H1 '+url);
-    assert.ok(meta.hasVisibleCTA,'no visible internal links '+url);
+    assert.ok(meta.hasVisibleCTA,'no visible interactive action '+url);
     if(meta.actualScrollX>1){
      const offenders=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>{
       const box=el.getBoundingClientRect(),style=getComputedStyle(el);

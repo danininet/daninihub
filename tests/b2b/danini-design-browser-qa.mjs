@@ -175,7 +175,7 @@ try{
     if(route==='business/'){
      assert.equal(await page.locator('.b-card .danini-icon').count(),3,'business card icons missing');
     }
-    const screenshotRoutes=['','business/','auto-check/','akademija/','wissen/'];
+    const screenshotRoutes=['','business/','auto-check/','akademija/','akademija/builder/','wissen/'];
     if(screenshotRoutes.includes(route) && ['small','mobile','desktop'].includes(viewport.name)){
      await page.evaluate(()=>document.fonts.ready);
      const name=route?route.replaceAll('/','').replaceAll('-','_'):'home';

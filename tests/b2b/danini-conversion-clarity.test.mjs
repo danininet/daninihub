@@ -50,3 +50,16 @@ test('AI interaction disclosure is visible before user input and existing transp
  assert.ok(advisor.indexOf('advisor-ai-disclosure')<advisor.indexOf('advisor-grid'),'disclosure must precede user input');
  assert.match(footer,/ai-transparenz/);
 });
+
+test('AI status labels accurately identify screenshot, licensed listing and copied text',()=>{
+ const client=readFileSync('public/danini-advisor-client.js','utf8');
+ assert.match(client,/data\.sourceType==='user_supplied_screenshot'/);
+ assert.match(client,/AI analiza podataka sa dostavljenog screenshota/);
+ assert.match(client,/KI-Auswertung der Angaben aus dem hochgeladenen Screenshot/);
+ assert.match(client,/data\.sourceType==='authorized_listing'/);
+ assert.match(client,/AI analiza dozvoljeno preuzetih podataka oglasa/);
+ assert.match(client,/AI analiza kopiranog teksta oglasa/);
+ assert.match(client,/if\(data\.aiModel\)line\(/);
+ assert.match(client,/if\(data\.aiUsed===true\)/);
+ assert.match(client,/Nur regelbasierte Vorprüfung; keine KI-Analyse ausgeführt/);
+});

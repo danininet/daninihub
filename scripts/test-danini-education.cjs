@@ -99,7 +99,7 @@ for(const [name,source,icons] of [
 }
 assert.match(iconSource,/aria-hidden="true" focusable="false"/,'decorative SVG must not duplicate adjacent labels');
 assert.match(landingSource,/\.d-contact \.d-eyebrow\{color:#facc15\}/,'dark homepage contact text regressed');
-assert.match(businessSource,/\.b-cta \.b-eyebrow\{color:#facc15\}/,'dark Business CTA text regressed');
+assert.match(businessSource,/\.b-hero \.b-eyebrow\{color:#facc15\}/,'dark Business hero text regressed');
 assert.match(globalSource,/\.bc-form :is\(p,small\)/,'missing light Business form text tokens');
 assert.match(globalSource,/\.ac-form :is\(p,small\)/,'missing light Auto form text tokens');
 for(const [fg,bg,label] of [

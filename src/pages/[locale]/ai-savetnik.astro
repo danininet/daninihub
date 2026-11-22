@@ -23,11 +23,20 @@ const questions=de?[
   <div class="wrap advisor-wrap">
    <span class="eyebrow">AUTODANINI · {de?"KI-BERATER":"AI SAVETNIK"}</span>
    <h1>{de?"Ihr Auto. Ihre Fragen. Ein klarer Prüfweg.":"Tvoj automobil. Tri pitanja. Jasnija odluka."}</h1>
-   <p class="advisor-lead">{de?"Erfassen Sie das Inserat, beantworten Sie drei konkrete Fragen und sehen Sie offene Risiken und bekannte Kosten auf einen Blick. Ein Link ermöglicht zunächst eine Quellenprüfung; Fahrzeugdaten werden nur aus tatsächlich zugänglichen Informationen bewertet.":"Unesi oglas, odgovori na tri konkretna pitanja i pogledaj šta treba dodatno proveriti i koliko iznose poznati troškovi. Link najpre omogućava proveru izvora; podaci o vozilu analiziraju se samo ako su stvarno dostupni."}</p>
+   <p class="advisor-lead">{de?"Beginnen Sie mit Ihrer konkreten Frage zum Fahrzeugkauf. Drei kurze Rückfragen helfen Ihnen, fehlende Nachweise und den nächsten sicheren Schritt zu erkennen — ganz ohne Inseratlink.":"Počni od svog problema pri kupovini auta. Tri kratka potpitanja pomažu ti da prepoznaš nedostajuće dokaze i sledeći korak — bez potrebe za linkom oglasa."}</p>
    <aside class="advisor-ai-disclosure" role="note" aria-label={de?"Hinweis zur KI-Verarbeitung":"Obaveštenje o AI obradi"}>
      <strong>{de?"KI-gestützte Vorprüfung — Sie interagieren mit einem KI-System, wenn die KI-Auswertung verfügbar ist.":"AI-podržana predprovera — kada je AI analiza dostupna, komunicirate sa AI sistemom."}</strong>
      <p>{de?"Bei nicht verfügbarem KI-Modell wird nur eine ausdrücklich als regelbasiert gekennzeichnete Prüfung angezeigt. Inseratsangaben sind nicht unabhängig bestätigt. Keine Ausweis- oder Zahlungsdaten hochladen.":"Ako AI model nije dostupan, prikazuje se jasno označena provera zasnovana na pravilima. Podaci iz oglasa nisu nezavisno potvrđeni. Ne šaljite lična dokumenta niti podatke za plaćanje."} <a href={`/${locale}/ai-transparenz/`}>{de?"Mehr zur KI-Transparenz":"Više o AI transparentnosti"}</a></p>
    </aside>
+   <section class="advisor-problem-guide" id="problem-guide" data-problem-guide aria-labelledby="problem-guide-title">
+    <p class="advisor-guide-tag">{de?"EINSTIEG · GEFÜHRTE FRAGEN":"POČETAK · VOĐENA PITANJA"}</p>
+    <h2 id="problem-guide-title">{de?"Was möchten Sie vor dem Autokauf klären?":"Šta želiš da razjasniš pre kupovine auta?"}</h2>
+    <p>{de?"Wählen Sie zuerst Ihr Anliegen. Sie erhalten drei passende Rückfragen und eine Checkliste. Diese erste Orientierung ist regelbasiert, keine KI-Auswertung und keine unabhängige Fahrzeugprüfung.":"Prvo izaberi šta te brine. Dobićeš tri prilagođena pitanja i kontrolnu listu. Ovo početno usmeravanje zasnovano je na pravilima — nije AI analiza niti nezavisan pregled vozila."}</p>
+    <div id="problem-guide-options" class="advisor-guide-options" role="group" aria-label={de?"Anliegen auswählen":"Izaberi problem"}></div>
+    <div id="problem-guide-question" class="advisor-guide-question" aria-live="polite"></div>
+    <div id="problem-guide-result" class="advisor-guide-result" role="status" aria-live="polite"></div>
+    <p class="micro">{de?"Sie entscheiden, ob Sie anschließend eigene Inseratsdaten eingeben oder eine individuelle Prüfung anfragen. Keine Übermittlung Ihrer Antworten in diesem Schritt.":"Posle toga možeš, ali ne moraš, da dodaš podatke oglasa ili zatražiš individualnu proveru. Odgovori u ovom koraku se ne šalju serveru."}</p>
+   </section>
    <div class="advisor-grid">
     <section class="advisor-panel">
      <h2>01 / {de?"Fahrzeugangaben":"Podaci o vozilu"}</h2>
@@ -100,6 +109,7 @@ const questions=de?[
   </div>
  </section>
 </Base>
+<script is:inline src="/danini-problem-guide.js"></script>
 <script is:inline src="/danini-advisor-client.js"></script>
 <script>
  const root=document.querySelector('[data-advisor]');
@@ -117,6 +127,19 @@ const questions=de?[
  }
 </script>
 <style>
+.advisor-problem-guide{margin:26px 0 20px;padding:clamp(20px,3vw,34px);border:2px solid #8ab7c8;background:#fff;border-radius:20px;color:#142338;max-width:1000px}
+.advisor-problem-guide h2{font-size:clamp(1.5rem,2.8vw,2.1rem);line-height:1.25;color:#102e45;margin:7px 0 12px}
+.advisor-problem-guide p{color:#34495e;line-height:1.65}
+.advisor-guide-tag{font-size:.78rem;font-weight:850;letter-spacing:.08em;color:#075f57!important}
+.advisor-guide-options{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+.advisor-guide-options button,.advisor-guide-question button{border:1.5px solid #638498;border-radius:11px;background:#f9fcff;color:#153348;padding:12px 16px;min-height:46px;cursor:pointer;font:inherit;font-weight:700}
+.advisor-guide-options button[aria-pressed=true],.advisor-guide-question button[aria-pressed=true]{background:#d5f6eb;border:2px solid #07796b;color:#064d45}
+.advisor-guide-question{padding:0 0 8px}.advisor-guide-question h3{font-size:1.1rem;color:#153348;margin:10px 0 15px}.advisor-guide-question .advisor-answer-buttons{display:flex;flex-wrap:wrap;gap:10px}
+.advisor-guide-result:not(:empty){background:#effaf6;border:1px solid #88bbab;border-radius:12px;padding:16px 19px;margin:16px 0}
+.advisor-guide-result h3{margin:0 0 10px;color:#0a4f49}.advisor-guide-result ul{padding-left:23px;line-height:1.65}
+.advisor-guide-result a{font-weight:800;color:#075f57;text-decoration:underline}
+.advisor-problem-guide button:focus-visible{outline:3px solid #a06608;outline-offset:3px}
+@media(max-width:420px){.advisor-guide-options button,.advisor-guide-question button{width:100%;text-align:left}}
 .advisor-page{background:linear-gradient(145deg,#f3f7fb 0%,#eaf1f8 100%);padding:clamp(44px,5vw,82px) 0 95px;color:#142338;min-height:75vh}
 .advisor-wrap{max-width:1440px}
 .advisor-page .eyebrow{color:#0f766e;font-weight:800;letter-spacing:.15em;font-size:.74rem}

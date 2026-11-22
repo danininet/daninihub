@@ -26,7 +26,7 @@ const probes={
  'wissen/gebrauchtwagen-anzahlung/':['.knowledge-article h1','.guide-part h2','.guide-part p'],
  'wissen/anfragemanagement-kleine-unternehmen/':['.source-article h1','.source-body p'],
  'wissen/fahrzeugbrief-fahrzeugschein-coc-hu/':['.source-article h1','.source-body p'],
- 'akademija/builder/':['.bb-demo > p:not(.bb-demo-label)','.bb-demo #demo-fields .bb-demo-stage','.bb-demo #demo-fields label','.bb-demo #demo-fields textarea','.bb-demo #demo-title'],
+ 'akademija/builder/':['.bb-demo > p:not(.bb-demo-label)','.bb-demo #demo-fields .bb-demo-stage','.bb-demo #demo-fields label','.bb-demo #demo-fields textarea','.bb-demo #demo-title','.bb-shell > .bb-fine'],
  'akademija/modul-03/':[],
  'ai-savetnik/':[]
 };
@@ -168,6 +168,7 @@ try{
      assert.equal(dynamic.styles[2].color,'rgb(22, 74, 93)','Builder JS-generated help must be dark '+url);
      assert.equal(dynamic.styles[4].color,'rgb(51, 65, 85)','Builder description must be dark '+url);
      assert.equal(dynamic.placeholder,'rgb(71, 85, 105)','Builder placeholder must be legible '+url);
+     assert.equal(await page.locator('.bb-shell > .bb-fine').evaluate(el=>getComputedStyle(el).color),'rgb(199, 214, 226)','Builder dark-shell fine print must be legible '+url);
     }
     if(route==='akademija/'){
      assert.equal(await page.locator('.ed-map-grid .danini-icon').count(),3,'academy process icons missing');

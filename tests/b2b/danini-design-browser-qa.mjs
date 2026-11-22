@@ -51,6 +51,7 @@ try{
     const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
     assert.equal(response?.status(),200,'HTTP error '+url);
     await page.locator('main h1').first().waitFor({timeout:10000});
+    if(route==='akademija/builder/')await page.locator('#demo').waitFor({state:'visible',timeout:15000});
     const meta=await page.evaluate(()=>{
      const doc=document.documentElement;
      const body=document.body;

@@ -92,21 +92,33 @@ try{
       const sample=(selector)=>{
        const element=document.querySelector(selector);
        if(!element)return {selector,error:'missing'};
-       let cur=element,bg=null;
+       let cur=element,bg=null,complexBackground=false;
        while(cur){
         const computed=getComputedStyle(cur);
+        if(computed.backgroundImage!=='none')complexBackground=true;
         const color=rgb(computed.backgroundColor);
         if(color?.alpha===1){bg=color.rgb;break;}
         cur=cur.parentElement;
        }
        const fg=rgb(getComputedStyle(element).color);
-       return {selector,fg:fg?.rgb,bg,tag:element.tagName,size:Number.parseFloat(getComputedStyle(element).fontSize),text:element.textContent?.trim().slice(0,70)};
+       return {selector,fg:fg?.rgb,bg,complexBackground,tag:element.tagName,size:Number.parseFloat(getComputedStyle(element).fontSize),text:element.textContent?.trim().slice(0,70)};
       };
       return selectors.map(sample);
     },probes[route]||[]);
     for(const p of inspected){
      assert.ok(!p.error,'missing visual probe '+url+' '+p.selector);
      assert.ok(p.fg?.length===3 && p.bg?.length===3,'unresolved computed colors '+url+' '+p.selector);
+     // Computed background-color alone cannot represent CSS gradients or photos.
+     // Keep these explicit for screenshot review instead of reporting a false AA ratio.
+     if(p.complexBackground){
+      evidence.push({url,viewport:viewport.width,...p,ratio:null,manualBackgroundReview:true});
+      // Existing automated AutoDanini tests check that headings on its light gradient
+      // remain dark. Keep this independent invariant here as well.
+      if(p.selector.startsWith('.auto-hero ')){
+       assert.ok(Math.max(...p.fg)<175,'AutoDanini light-gradient text must remain dark '+url+' '+p.selector);
+      }
+      continue;
+     }
      const measured=ratio(p.fg,p.bg);
      assert.ok(measured>=4.5,'contrast <4.5:1 '+url+' '+p.selector+': '+measured.toFixed(2)+':1 fg='+p.fg+' bg='+p.bg);
      evidence.push({url,viewport:viewport.width,...p,ratio:Number(measured.toFixed(2))});

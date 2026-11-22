@@ -702,6 +702,22 @@ input::placeholder, textarea::placeholder { color: var(--danini-muted); }
   color-scheme: dark;
 }
 
+/* Wissen article/guide/glossary pages explicitly render a light editorial
+   canvas. Dark Tech's generic .section.white override previously made the
+   canvas navy while editorial links stayed dark teal and p text was muted.
+   Scope this fix to editorial pages, not to other intentionally dark cards. */
+article.section.white:has(:is(.source-article,.knowledge-article)),
+section.section.white:has(.glossary-item) {
+  --danini-muted: var(--danini-muted-light);
+  background: #f8fafc;
+  color: #173247;
+  color-scheme: light;
+}
+article.section.white:has(:is(.source-article,.knowledge-article)) :is(h1,h2,h3),
+section.section.white:has(.glossary-item) :is(h1,h2,h3) {
+  color: #132e43;
+}
+
 /* PR208 urgent visibility repair: automotive buyer pages use LIGHT surfaces.
    The global Dark Tech tokens remain scoped to other pages, but must never
    force pale text on the light AutoDanini hero, forms, cards or advisor. */

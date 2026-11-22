@@ -26,7 +26,7 @@ const probes={
  'wissen/gebrauchtwagen-anzahlung/':['.knowledge-article h1','.guide-part h2','.guide-part p'],
  'wissen/anfragemanagement-kleine-unternehmen/':['.source-article h1','.source-body p'],
  'wissen/fahrzeugbrief-fahrzeugschein-coc-hu/':['.source-article h1','.source-body p'],
- 'akademija/builder/':[],
+ 'akademija/builder/':['.bb-demo > p:not(.bb-demo-label)','.bb-demo #demo-fields .bb-demo-stage','.bb-demo #demo-fields label','.bb-demo #demo-fields textarea','.bb-demo #demo-title','.bb-shell > .bb-fine'],
  'akademija/modul-03/':[],
  'ai-savetnik/':[]
 };
@@ -55,7 +55,7 @@ try{
     const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
     assert.equal(response?.status(),200,'HTTP error '+url);
     await page.locator('main h1').first().waitFor({timeout:10000});
-    if(route==='akademija/builder/')await page.locator('#demo').waitFor({state:'visible',timeout:15000});
+    if(route==='akademija/builder/'){await page.locator('#demo').waitFor({state:'visible',timeout:15000});await page.locator('#demo-fields textarea').first().waitFor({state:'visible',timeout:15000});}
     const meta=await page.evaluate(()=>{
      const doc=document.documentElement;
      const body=document.body;
@@ -151,13 +151,32 @@ try{
      assert.equal(icons,3,'home: three first-party icons must render');
      assert.equal(await page.locator('.d-visual-service .danini-icon[aria-hidden="true"]').count(),3,'decorative icons must be hidden from screen readers');
     }
+    if(route==='akademija/builder/'){
+     const dynamic=await page.evaluate(()=>{
+      const field=document.querySelector('#demo-fields textarea');
+      const label=document.querySelector('#demo-fields label');
+      const stage=document.querySelector('#demo-fields .bb-demo-stage');
+      const name=document.querySelector('#demo-title');
+      const paragraph=document.querySelector('#demo > p:not(.bb-demo-label)');
+      const styles=[field,label,stage,name,paragraph].map(el=>el?({color:getComputedStyle(el).color,background:getComputedStyle(el).backgroundColor}):null);
+      return {styles,fieldTag:field?.tagName,fieldLabel:label?.getAttribute('for'),fieldId:field?.id,placeholder:getComputedStyle(name,'::placeholder').color};
+     });
+     assert.equal(dynamic.fieldTag,'TEXTAREA','Builder JS-generated field missing '+url);
+     assert.equal(dynamic.fieldLabel,dynamic.fieldId,'Builder dynamic label is not associated '+url);
+     assert.deepEqual(dynamic.styles[0],{color:'rgb(28, 58, 79)',background:'rgb(255, 255, 255)'},'Builder textarea must be dark text on white '+url);
+     assert.equal(dynamic.styles[1].color,'rgb(25, 61, 80)','Builder dynamic label must be dark '+url);
+     assert.equal(dynamic.styles[2].color,'rgb(22, 74, 93)','Builder JS-generated help must be dark '+url);
+     assert.equal(dynamic.styles[4].color,'rgb(51, 65, 85)','Builder description must be dark '+url);
+     assert.equal(dynamic.placeholder,'rgb(71, 85, 105)','Builder placeholder must be legible '+url);
+     assert.equal(await page.locator('.bb-shell > .bb-fine').evaluate(el=>getComputedStyle(el).color),'rgb(199, 214, 226)','Builder dark-shell fine print must be legible '+url);
+    }
     if(route==='akademija/'){
      assert.equal(await page.locator('.ed-map-grid .danini-icon').count(),3,'academy process icons missing');
     }
     if(route==='business/'){
      assert.equal(await page.locator('.b-card .danini-icon').count(),3,'business card icons missing');
     }
-    const screenshotRoutes=['','business/','auto-check/','akademija/','wissen/'];
+    const screenshotRoutes=['','business/','auto-check/','akademija/','akademija/builder/','wissen/'];
     if(screenshotRoutes.includes(route) && ['small','mobile','desktop'].includes(viewport.name)){
      await page.evaluate(()=>document.fonts.ready);
      const name=route?route.replaceAll('/','').replaceAll('-','_'):'home';

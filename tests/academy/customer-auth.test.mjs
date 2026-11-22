@@ -130,3 +130,43 @@ test('cross-site mutations and unauthenticated requests fail closed',async()=>{
   assert.equal(projects.status,200);
  } finally {fake.restore();db.close();}
 });
+
+test('staging remains closed without recipient allowlist and rejects other recipients',async()=>{
+ const {env,db}=fresh();const mock=fakeProviders();
+ try{
+  env.SITE_ORIGIN='https://danini-b2b-staging.example.workers.dev';
+  assert.equal((await academyRoute(send('/api/academy/config'),env)).status,404);
+  env.MAIL_TEST_RECIPIENTS='alice@example.test, bob@example.test';
+  assert.equal((await academyRoute(send('/api/academy/config'),env)).status,200);
+  const wrong=await academyRoute(loginStart('outside@example.test'),env);
+  assert.equal(wrong.status,403);assert.equal(mock.emails.length,0);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM academy_login_challenges').get().n,0);
+ }finally{mock.restore();db.close();}
+});
+
+test('account deletion purges pending verification challenges and login rate bucket',async()=>{
+ const {env,db}=fresh();const f=fakeProviders();
+ try{
+  const alice=await login(env,'alice@example.test',f);
+  const pending=await academyRoute(loginStart('alice@example.test'),env);
+  assert.equal(pending.status,202);
+  const id=(await pending.json()).challengeId,code=f.emails.at(-1).code;
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM academy_login_challenges WHERE consumed_at IS NULL').get().n,1);
+  const del=await academyRoute(send('/api/academy/account','DELETE',{confirm:'DELETE'},{cookie:alice.cookie}),env);
+  assert.equal(del.status,200);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM academy_login_challenges').get().n,0);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM rate_buckets WHERE key LIKE 'academy-login-email:%'").get().n,0);
+  assert.equal((await academyRoute(send('/api/academy/auth/verify','POST',{challengeId:id,code}),env)).status,401);
+ }finally{f.restore();db.close();}
+});
+
+test('API returns 409 at project cap and blocks a fourth project',async()=>{
+ const {env,db}=fresh();const f=fakeProviders();
+ try{
+  const alice=await login(env,'alice@example.test',f);
+  for(let i=0;i<3;i++)assert.equal((await academyRoute(send('/api/academy/projects','POST',{title:'Project '+i,language:'de'},{cookie:alice.cookie}),env)).status,201);
+  const fourth=await academyRoute(send('/api/academy/projects','POST',{title:'Fourth',language:'de'},{cookie:alice.cookie}),env);
+  assert.equal(fourth.status,409);assert.equal((await fourth.json()).error,'project_limit_reached');
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM academy_projects').get().n,3);
+ }finally{f.restore();db.close();}
+});

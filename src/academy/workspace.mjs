@@ -5,6 +5,8 @@
  * No AI calls, emails, payments, external publications or cross-tenant reads.
  */
 
+// Until billing and quotas are approved, cap per-account projects at 3.
+export const MAX_PROJECTS_PER_ACCOUNT=3;
 export const STEPS=Object.freeze([
   'niche','market','offer','online_presence','operations','validation',
 ]);
@@ -48,8 +50,12 @@ export async function createProject(db,actor,input){
   const title=text(input.title,120), language=locale(input.language);
   const id=crypto.randomUUID(), now=Date.now();
   // User must have been provisioned after verified sign-in.
-  await db.prepare('INSERT INTO academy_projects (id,owner_user_id,title,language,created_at,updated_at) VALUES (?,?,?,?,?,?)')
-    .bind(id,userId,title,language,now,now).run();
+  // One INSERT ... SELECT keeps the quota check and write in one SQL statement.
+  const inserted=await db.prepare(`INSERT INTO academy_projects
+    (id,owner_user_id,title,language,created_at,updated_at)
+    SELECT ?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM academy_projects WHERE owner_user_id=?) < ?`)
+    .bind(id,userId,title,language,now,now,userId,MAX_PROJECTS_PER_ACCOUNT).run();
+  if(inserted.meta?.changes!==1)throw bad('project_limit_reached');
   return {id,title,language,status:'draft',createdAt:now};
 }
 export async function listProjects(db,actor){

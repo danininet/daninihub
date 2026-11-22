@@ -13,7 +13,7 @@ const encoder=new TextEncoder();
 function err(status,code){const e=new Error(code);e.status=status;return e;}
 function config(env){
  if(env.ACADEMY_AUTH_ENABLED!=='true')throw err(404,'not_found');
- if(!env.DANINI_DB || typeof env.ACADEMY_AUTH_SECRET!=='string' || env.ACADEMY_AUTH_SECRET.length<48 || !env.SITE_ORIGIN || !env.BREVO_API_KEY || !env.DANINI_BREVO_SENDER || !env.DANINI_TURNSTILE_SECRET || !env.DANINI_TURNSTILE_SITEKEY)throw err(503,'academy_not_configured');
+ if(!isConfigured(env))throw err(503,'academy_not_configured');
 }
 async function key(secret){return crypto.subtle.importKey('raw',encoder.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);}
 async function mac(secret,value){const bytes=new Uint8Array(await crypto.subtle.sign('HMAC',await key(secret),encoder.encode(value)));return Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');}
@@ -21,7 +21,20 @@ function equal(a,b){if(!HEX.test(a)||!HEX.test(b))return false;let result=0;for(
 function nowSeconds(){return Math.floor(Date.now()/1000);}
 function sessionCookie(token,age){return `${COOKIE}=${token}; Path=/api/academy/; HttpOnly; Secure; SameSite=Strict; Max-Age=${age}`;}
 export function clearCookie(){return sessionCookie('',0);}
-export function isConfigured(env){return env.ACADEMY_AUTH_ENABLED==='true' && typeof env.ACADEMY_AUTH_SECRET==='string' && env.ACADEMY_AUTH_SECRET.length>=48 && !!env.DANINI_DB && !!env.SITE_ORIGIN && !!env.DANINI_TURNSTILE_SITEKEY && !!env.DANINI_TURNSTILE_SECRET && !!env.BREVO_API_KEY && !!env.DANINI_BREVO_SENDER;}
+function testRecipients(env){
+ return [...String(env.MAIL_TEST_RECIPIENT||'').split(','),...String(env.MAIL_TEST_RECIPIENTS||'').split(',')]
+   .map(x=>x.trim().toLowerCase()).filter(Boolean);
+}
+function stagingSite(env){
+ try{const u=new URL(env.SITE_ORIGIN);return u.hostname.endsWith('.workers.dev')||u.hostname.includes('-staging');}
+ catch{return true;}
+}
+export function isConfigured(env){
+ const ready=env.ACADEMY_AUTH_ENABLED==='true' && typeof env.ACADEMY_AUTH_SECRET==='string' && env.ACADEMY_AUTH_SECRET.length>=48 && !!env.DANINI_DB && !!env.SITE_ORIGIN && !!env.DANINI_TURNSTILE_SITEKEY && !!env.DANINI_TURNSTILE_SECRET && !!env.BREVO_API_KEY && !!env.DANINI_BREVO_SENDER;
+ // Staging always requires an explicit allowlist: accidentally toggling a flag
+ // must not turn the preview Worker into public customer registration.
+ return !!ready && (!stagingSite(env)||testRecipients(env).length>0);
+}
 function parseCookie(request){const all=request.headers.get('cookie')||'';const pair=all.split(';').map(x=>x.trim()).find(x=>x.startsWith(COOKIE+'='));const token=pair?.slice(COOKIE.length+1)||'';return HEX.test(token)?token.toLowerCase():null;}
 async function bumpRate(db,keyHash,limit,windowSeconds,now){
  const result=await db.prepare(`INSERT INTO rate_buckets(key,count,expires_at) VALUES (?,1,?)
@@ -46,7 +59,8 @@ export async function requestLogin(request,env,input){
  const email=typeof input?.email==='string'?input.email.trim().toLowerCase():'';
  const language=input?.language;
  if(email.length>254||!EMAIL.test(email)||!['sr','de'].includes(language))throw err(400,'invalid_input');
- if(env.MAIL_TEST_RECIPIENT && email!==env.MAIL_TEST_RECIPIENT.toLowerCase())throw err(403,'test_recipient_only');
+ const allowlist=testRecipients(env);
+ if(allowlist.length && !allowlist.includes(email))throw err(403,'test_recipient_only');
  const now=nowSeconds();
  const emailHash=await mac(env.ACADEMY_AUTH_SECRET,'email:'+email);
  const ipHash=await mac(env.ACADEMY_AUTH_SECRET,'ip:'+(request.headers.get('cf-connecting-ip')||'unknown'));
@@ -125,6 +139,12 @@ export async function logout(request,env){
  return {loggedOut:true,cookie:clearCookie()};
 }
 export async function deleteAccount(db,actor){
+ // Pending OTP records are not linked with a foreign key to users. Purge them
+ // by the server-held email digest BEFORE deleting the user. No plaintext PII.
+ await db.prepare(`DELETE FROM academy_login_challenges
+   WHERE email_hash=(SELECT email_hash FROM academy_users WHERE id=?)`).bind(actor.userId).run();
+ await db.prepare(`DELETE FROM rate_buckets
+   WHERE key='academy-login-email:' || (SELECT email_hash FROM academy_users WHERE id=?)`).bind(actor.userId).run();
  const r=await db.prepare('DELETE FROM academy_users WHERE id=?').bind(actor.userId).run();
  return {deleted:r.meta?.changes===1};
 }

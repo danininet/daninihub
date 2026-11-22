@@ -61,6 +61,7 @@ export async function academyRoute(request,env){
  }catch(e){
   const known=new Set(['verified_identity_required','invalid_input','invalid_fields','invalid_locale','invalid_step','invalid_field_name','too_many_bytes','invalid_project_id']);
   if(e.message==='project_not_found')return error(404,'not_found');
+  if(e.message==='project_limit_reached')return error(409,'project_limit_reached');
   if(known.has(e.message))return error(400,e.message);
   const status=Number(e.status);if(status>=400&&status<=499)return error(status,e.message);
   if(status===503)return error(503,e.message);

@@ -50,3 +50,16 @@ test('principal must be verified and server-supplied; input is bounded',async()=
   await assert.rejects(()=>saveStep(api,a,p.id,'niche',{'__proto__':'bad',what:'valid', 'with-hyphen':'not allowed'}),/invalid_field_name/);
   assert.deepEqual((await listProjects(api,a)).map(p=>p.id),[p.id]);raw.close();
 });
+
+test('3-project cap is scoped per user and deleting one restores capacity',async()=>{
+ const {raw,api}=fresh();await registerAuthenticatedUser(api,a);await registerAuthenticatedUser(api,b);
+ const projects=[];for(let i=0;i<3;i++)projects.push(await createProject(api,a,{title:'Business '+i,language:'de'}));
+ assert.equal((await listProjects(api,a)).length,3);
+ await assert.rejects(()=>createProject(api,a,{title:'Overflow',language:'de'}),/project_limit_reached/);
+ assert.equal(raw.prepare('SELECT COUNT(*) AS n FROM academy_projects').get().n,3);
+ assert.ok((await createProject(api,b,{title:'Separate owner',language:'sr'})).id);
+ assert.equal((await listProjects(api,b)).length,1);
+ await deleteProject(api,a,projects[0].id);
+ assert.ok((await createProject(api,a,{title:'New after delete',language:'de'})).id);
+ assert.equal((await listProjects(api,a)).length,3);raw.close();
+});

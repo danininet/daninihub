@@ -47,3 +47,10 @@ Postoji kod za registraciju preko OTP, sesije, korisnički API i DE/SR uređiva�
 - **Nema javne kupovine:** stranice `/de/akademija/builder/` i `/sr/akademija/builder/` su `noindex`, i dok je funkcija isključena prikazuju samo da je pilot nedostupan. Nema menija, CTA i promene javne ponude.
 - **Staging redosled:** prvo lokalna/staging D1 migracija, zatim probni prijem koda na odobreni interni e-mail `MAIL_TEST_RECIPIENT` uz Turnstile, višesesijsko čuvanje projekta, A/B izolacija, logout, export/delete, mobilni QA; tek nakon sveukupne bezbednosne i pravne provere predlog za javnu beta aktivaciju.
 - **QA:** komanda `npm run test:b2b` proširena je sa `node --test tests/academy/*.test.mjs`; lokalno 9/9 PASS sa simuliranim API servisima. CI i Astro build su zasebni obavezni dokazi.
+
+## Bezbednosno pooštravanje — 22.11.2026. (staging preflight)
+- Maksimalno **3 projekta po korisniku** dok nisu potvrđeni troškovi, skladište i planovi. Četvrti pokušaj vraća HTTP 409 `project_limit_reached`; SQL kvota je atomarna.
+- Brisanje Academy naloga briše i preostale OTP izazove i e-mail rate-limit zapis, pored korisničkih projekata i sesija.
+- Na `*.workers.dev` i drugim staging domenima nova prijava ne može biti uključena bez izričite liste testnih primalaca. `MAIL_TEST_RECIPIENTS` dozvoljava najviše odabrane interne e-mail adrese, odvojene zarezom; podržan je i postojeći `MAIL_TEST_RECIPIENT`. Ni jedan primaoc nije automatski dodat.
+- Staging D1 već ima 5 Academy tabela iz prethodne isključivo aditivne migracije. To **nije** dokaz HTTP/OTP prijave. Staging Worker još treba da dobije validiran branch build, zaseban session secret, staging Turnstile domen i testnu Brevo konfiguraciju.
+- Lokalne Node/SQLite provere posle izmena: **13/13 PASS**. CI na PR-u ostaje obavezan. Nema produkcionog merge/deploy-a, naplate, AI poziva ili slanja e-mailova u ovom koraku.

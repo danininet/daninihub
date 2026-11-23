@@ -60,9 +60,9 @@ test('all responses remain unverified, even when the user answers yes',()=>{
   'Laut Ihrer Angabe: nein — Nachweis fehlt.',
   'Prema tvojoj izjavi: ne — dokaz nedostaje.'
  ]) assert.ok(source.includes(phrase),'missing honest evidence disclosure: '+phrase);
- assert.match(source,/answers\\.forEach\\(item=>\\{\\s*const evidenceStatus=item\\.value===/);
- assert.match(source,/missing\\.append\\(el\\('li',item\\.question/);
- assert.doesNotMatch(source,/if\\(item\\.value!=='yes'\\)missing\\.append/);
+ assert.match(source,/answers\.forEach\(item=>\{\s*const evidenceStatus=item\.value===/);
+ assert.match(source,/missing\.append\(el\('li',item\.question/);
+ assert.doesNotMatch(source,/if\(item\.value!=='yes'\)missing\.append/);
 });
 
 test('free dialogue makes no network or model calls and never persists free-text notes',()=>{

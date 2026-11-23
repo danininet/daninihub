@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, codex/danini-b2b-platform-20261113]
   pull_request:
-    paths: ['src/**', 'tests/b2b/**', 'tests/academy/**', 'workers/danini-academy-ai.mjs', 'wrangler.b2b-production.jsonc', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json']
+    paths: ['src/**', 'tests/b2b/**', 'tests/academy/**', 'workers/danini-academy-ai.mjs', 'workers/danini-site-assistant.mjs', 'public/js/danini-site-assistant.js', 'scripts/test-site-assistant-browser.cjs', 'wrangler.b2b-production.jsonc', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json']
 permissions:
   contents: read
 jobs:
@@ -35,6 +35,8 @@ jobs:
           test "$(curl -s -o /tmp/academy-disabled.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/config)" = "404"
           test "$(curl -s -o /tmp/academy-ai-status.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/ai/status)" = "200"
           grep -q '"enabled":false' /tmp/academy-ai-status.json
+          test "$(curl -s -o /tmp/assistant-off.json -w '%{http_code}' http://127.0.0.1:4321/api/assistant/status)" = "200"
+          grep -q '"enabled":false' /tmp/assistant-off.json
           node scripts/test-b2b-browser.cjs
           node scripts/test-autodanini-dialog-browser.cjs
           node tests/b2b/autodanini-browser-qa.mjs
@@ -75,7 +77,10 @@ jobs:
           test "$(curl -s -o /tmp/academy-disabled.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/config)" = "404"
           test "$(curl -s -o /tmp/academy-ai-status.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/ai/status)" = "200"
           grep -q '"enabled":false' /tmp/academy-ai-status.json
+          test "$(curl -s -o /tmp/assistant-off.json -w '%{http_code}' http://127.0.0.1:4321/api/assistant/status)" = "200"
+          grep -q '"enabled":false' /tmp/assistant-off.json
           node scripts/test-academy-builder-browser.cjs
+          node scripts/test-site-assistant-browser.cjs
       - name: Upload diagnostic log on failure
         if: failure()
         uses: actions/upload-artifact@v4

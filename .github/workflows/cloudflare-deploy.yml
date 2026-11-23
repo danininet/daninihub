@@ -266,6 +266,37 @@ jobs:
           console.log('PASS Academy AI LIVE enabled DE/SR, Turnstile sitekey, invalid-origin rejection, no inference performed');
           NODE
 
+      - name: Verify deployed DE/SR site helper, Free gating and safe origin rejection
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const origin='https://daninihub.com';
+          const request=(path,options={})=>fetch(origin+path,{signal:AbortSignal.timeout(16000),headers:{'cache-control':'no-cache',...(options.headers||{})},...options});
+          const status=await request('/api/assistant/status');
+          assert.equal(status.status,200,'Site assistant status missing');
+          const state=await status.json();
+          assert.equal(state.enabled,true,'Site assistant is disabled after deploy');
+          assert.equal(typeof state.siteKey,'string');
+          for(const locale of ['de','sr']){
+            for(const page of ['/','/akademija/builder/','/business/','/auto-check/']){
+              const res=await request('/'+locale+page);
+              assert.equal(res.status,200,'Missing page '+locale+page);
+              const html=await res.text();
+              assert.ok(html.includes('danini-assistant-toggle')&&html.includes('danini-assistant-panel'),'Assistant missing '+locale+page);
+            }
+          }
+          const script=await request('/js/danini-site-assistant.js');
+          assert.equal(script.status,200,'Assistant browser script missing');
+          assert.ok((await script.text()).includes('danini-assistant-ask'));
+          const bad=await request('/api/assistant/ask',{method:'POST',headers:{origin:'https://invalid.example','content-type':'application/json'},
+            body:JSON.stringify({language:'sr',context:'academy',field:'Idea',question:'How to complete this?',turnstileToken:'INVALID_TEST_TOKEN_001'})});
+          assert.equal(bad.status,403,'Invalid origin was not rejected before AI call');
+          assert.equal((await bad.json()).error,'invalid_origin');
+          const wrong=await request('/api/assistant/ask',{method:'GET'});
+          assert.equal(wrong.status,405);
+          console.log('PASS public DE/SR DANINI context helper; no AI inference, no form data or third-party messages');
+          NODE
+
 # Owner-authorized 2026-11-23: publish active DE/SR Builder/correct catalog PR #277 at merge 0d314c521471f253174d2f7236a3a1ebb2d69327. No payment, DNS, legal or new paid AI calls.
 
 # Owner-authorized 2026-11-23 P0 product safety + Academy beginners: PR #278 and #279 merged, target 6 guided DE/SR steps and old-PDF live sale guard. Preserve sandbox, B2B, AutoDanini, legal and DNS settings. Verify site after deployment.

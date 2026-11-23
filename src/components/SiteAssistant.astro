@@ -1,0 +1,59 @@
+---
+import type {Locale} from "../lib/content";
+const {locale} = Astro.props as {locale:Locale};
+const de=locale==="de";
+---
+<aside class="da-root" data-danini-assistant data-language={locale} aria-label={de?"DANINI Formularhilfe":"DANINI pomoć za formulare"}>
+  <button class="da-toggle" id="danini-assistant-toggle" type="button" aria-expanded="false" aria-controls="danini-assistant-panel">
+    <span class="da-dot" aria-hidden="true">?</span><span>{de?"Hilfe beim Ausfüllen":"Pomoć pri popunjavanju"}</span>
+  </button>
+  <section class="da-panel" id="danini-assistant-panel" role="region" aria-label={de?"DANINI Hilfeassistent":"DANINI AI pomoćnik"} hidden>
+    <header class="da-head">
+      <div><strong>DANINI AI Asistent</strong><small>{de?"Anleitung zu Formularen und Angeboten":"Uputstva za obrasce i usluge"}</small></div>
+      <button class="da-close" type="button" id="danini-assistant-close" aria-label={de?"Hilfe schließen":"Zatvori pomoć"}>×</button>
+    </header>
+    <div class="da-content">
+      <p class="da-start">{de?"Wählen Sie ein Feld und klicken Sie auf „Feld erklären“. Für eigene Fragen gibt es eine optional begrenzte KI-Hilfe.":"Dodirni polje formulara i pritisni „Objasni polje“. Za svoja pitanja možeš koristiti i opcionu AI pomoć sa ograničenom kvotom."}</p>
+      <button type="button" class="da-local" id="danini-assistant-local">{de?"Aktuelles Feld erklären (kostenlos)":"Objasni izabrano polje (besplatno)"}</button>
+      <label class="da-label" for="danini-assistant-question">{de?"Was ist unklar?":"Šta ti nije jasno?"}</label>
+      <textarea id="danini-assistant-question" rows="3" maxlength="420" placeholder={de?"Z. B. Was schreibe ich in das Feld Zielgruppe?":"Npr. šta treba da upišem u ciljnu grupu?"}></textarea>
+      <p class="da-privacy">{de?"Ihre Formularwerte werden nicht automatisch gelesen oder an KI gesendet. Senden Sie keine Personen-, Karten- oder Ausweisdaten.":"Podaci iz formulara se ne čitaju niti šalju AI automatski. Ne unosi lične dokumente, kartice i poverljive podatke."}</p>
+      <div id="danini-assistant-captcha" class="da-captcha"></div>
+      <button type="button" class="da-ai" id="danini-assistant-ask" hidden>{de?"KI-Antwort anfordern":"Zatraži AI odgovor"}</button>
+      <p id="danini-assistant-status" role="status" aria-live="polite" class="da-status"></p>
+      <div id="danini-assistant-reply" aria-live="polite" class="da-reply"></div>
+      <p id="danini-assistant-note" class="da-note"></p>
+      <p class="da-support">{de?"Bei Bestellungen, Erstattung und sensiblen Fragen:":"Za narudžbine, povraćaj i osetljiva pitanja:"} <a href="mailto:info@daninihub.com">info@daninihub.com</a></p>
+    </div>
+  </section>
+</aside>
+<script is:inline src="/js/danini-site-assistant.js" defer></script>
+<style>
+.da-root{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:80;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#12263a}
+.da-root button{cursor:pointer;font:inherit}
+.da-toggle{display:flex;align-items:center;gap:9px;border:1px solid #0b726d;background:#08665e;color:white;border-radius:100px;padding:13px 18px;font-size:.85rem;font-weight:800;box-shadow:0 14px 30px #0416214d}
+.da-toggle:focus-visible,.da-root :is(button,textarea,a):focus-visible{outline:3px solid #facc15;outline-offset:3px}
+.da-dot{display:grid;place-items:center;border:1.5px solid currentColor;border-radius:50%;font-size:.9rem;width:21px;height:21px}
+.da-panel{position:absolute;bottom:calc(100% + 12px);right:0;width:min(390px,calc(100vw - 26px));max-height:min(78vh,720px);overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #b5ccd5;border-radius:17px;box-shadow:0 23px 65px #04162162}
+.da-panel[hidden]{display:none!important}
+.da-head{padding:16px 18px;background:#102a3c;color:#fff;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.da-head strong{display:block;font-size:1.03rem}.da-head small{display:block;font-size:.75rem;color:#dfebf4;margin-top:3px}
+.da-close{border:1px solid #b5cbd8;border-radius:8px;background:#173d53;color:#fff;padding:2px 10px;font-size:1.5rem}
+.da-content{padding:17px;display:grid;gap:12px}
+.da-start,.da-privacy,.da-note,.da-support{font-size:.81rem;line-height:1.55;color:#365368;margin:0}
+.da-label{font-size:.85rem;font-weight:800}
+.da-content textarea{width:100%;min-height:75px;background:#fafcfd;color:#142b3d;border:1.5px solid #7896a9;border-radius:9px;padding:11px;font-size:.9rem;line-height:1.5;resize:vertical}
+.da-content .da-local,.da-content .da-ai{padding:12px 13px;border:0;border-radius:9px;min-height:44px;font-weight:800}
+.da-local{background:#e7f2f1;color:#084b47;border:1px solid #9ac5bd!important}
+.da-ai{background:#0b7166;color:white}
+.da-ai[hidden]{display:none}
+.da-ai:disabled{opacity:.6;cursor:wait}
+.da-captcha{min-height:0}
+.da-status{min-height:15px;color:#365368;font-size:.81rem;line-height:1.4;margin:0}
+.da-reply{background:#f2f8f9;padding:13px;border-radius:9px;line-height:1.6;font-size:.9rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.da-reply:empty{display:none}.da-note:empty{display:none}
+.da-support{border-top:1px solid #d1e0e7;padding-top:12px}
+.da-support a{color:#095e60;font-weight:750}
+@media(max-width:550px){.da-root{right:10px;bottom:max(10px,env(safe-area-inset-bottom))}.da-toggle{padding:12px 15px;font-size:.78rem}.da-panel{width:calc(100vw - 20px);max-height:74vh}}
+@media print{.da-root{display:none!important}}
+</style>

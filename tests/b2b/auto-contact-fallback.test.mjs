@@ -10,7 +10,8 @@ for(const locale of ["de","sr"]){
    assert.match(source,/if \(emailFallback\)/);
    assert.match(source,/mailto:auto@daninihub\.com\?subject=/);
    assert.match(source,/form\.reportValidity\(\)/);
-   assert.doesNotMatch(source,/<button data-auto-submit type="submit" disabled>/);
+   assert.match(source,/<button data-auto-submit type="submit" disabled>/);
+   assert.match(source,/submit\.disabled = false;\s*void init\(\)/);
    assert.match(source,locale==="de"?/E-Mail-Entwurf öffnen/:/Otvori nacrt e-maila/);
  });
 }

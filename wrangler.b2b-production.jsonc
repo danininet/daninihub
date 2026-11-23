@@ -33,6 +33,7 @@
     "DANINI_AI_LIVE_APPROVED": "true",
     "ACADEMY_AI_ENABLED": "true",
     "DANINI_ACADEMY_AI_SPEND_APPROVED": "true",
+    "DANINI_SITE_ASSISTANT_ENABLED": "true",
     "ACCESS_TEAM_DOMAIN": "https://danininet.cloudflareaccess.com",
     "ACCESS_AUD": "202a450ca6a61daca3012f0472cb24f4461a69df9693904ee288e76211f244d6",
     "DIRECTOR_EMAIL": "dragangaganet@gmail.com"

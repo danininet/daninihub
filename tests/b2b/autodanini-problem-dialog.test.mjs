@@ -52,6 +52,19 @@ test('model mock contract is strict; invalid, repeated or unsupported claims are
  assert.equal(validateMockAiFollowup(valid,[valid.question]),null);
  assert.equal(validateMockAiFollowup('bad payload'),null);
 });
+test('all responses remain unverified, even when the user answers yes',()=>{
+ const source=readFileSync('public/danini-problem-guide.js','utf8');
+ for (const phrase of [
+  'Laut Ihrer Angabe: ja — nicht unabhängig bestätigt.',
+  'Prema tvojoj izjavi: da — nije nezavisno potvrđeno.',
+  'Laut Ihrer Angabe: nein — Nachweis fehlt.',
+  'Prema tvojoj izjavi: ne — dokaz nedostaje.'
+ ]) assert.ok(source.includes(phrase),'missing honest evidence disclosure: '+phrase);
+ assert.match(source,/answers\\.forEach\\(item=>\\{\\s*const evidenceStatus=item\\.value===/);
+ assert.match(source,/missing\\.append\\(el\\('li',item\\.question/);
+ assert.doesNotMatch(source,/if\\(item\\.value!=='yes'\\)missing\\.append/);
+});
+
 test('free dialogue makes no network or model calls and never persists free-text notes',()=>{
  const source=readFileSync('public/danini-problem-guide.js','utf8');
  assert.doesNotMatch(source,/\bfetch\s*\(|\bXMLHttpRequest\b|\bAI\.run\s*\(/);

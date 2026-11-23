@@ -11,7 +11,7 @@ const headers={'content-type':'application/json; charset=utf-8','cache-control':
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers});
 const safe=(x,max)=>typeof x==='string'?x.replace(/[\u0000-\u001f]/g,' ').trim().slice(0,max):'';
 const originAllowed=(v)=>v==='https://daninihub.com'||v==='https://www.daninihub.com';
-const configured=env=>env?.ACADEMY_AI_ENABLED==='true'&&env?.DANINI_ACADEMY_AI_SPEND_APPROVED==='true'&&
+export const configured=env=>env?.ACADEMY_AI_ENABLED==='true'&&env?.DANINI_ACADEMY_AI_SPEND_APPROVED==='true'&&
  env?.AI_ENABLED==='true'&&env?.DANINI_AI_LIVE_APPROVED==='true'&&typeof env?.AI?.run==='function'&&
  !!env.DANINI_DB&&!!env.DANINI_TURNSTILE_SECRET&&!!env.DANINI_TURNSTILE_SITEKEY;
 const LIMIT_PER_IP_DAY=2, LIMIT_GLOBAL_DAY=8; // capacity ceiling, NOT financial spending limit
@@ -44,7 +44,7 @@ function validate(payload){
  if(typeof payload.turnstileToken!=='string'||payload.turnstileToken.length<10||payload.turnstileToken.length>2048)return null;
  return {language,step,projectName,fields:output,token:payload.turnstileToken};
 }
-async function verifyHuman(request,env,token){
+export async function verifyHuman(request,env,token,action='academy-ai'){
  const form=new URLSearchParams({secret:env.DANINI_TURNSTILE_SECRET,response:token});
  const ip=request.headers.get('cf-connecting-ip');if(ip)form.set('remoteip',ip);
  try{
@@ -52,10 +52,10 @@ async function verifyHuman(request,env,token){
    method:'POST',body:form,signal:AbortSignal.timeout(7000)});
   if(!response.ok)return false;
   const check=await response.json();
-  return check.success===true&&['daninihub.com','www.daninihub.com'].includes(check.hostname)&&check.action==='academy-ai';
+  return check.success===true&&['daninihub.com','www.daninihub.com'].includes(check.hostname)&&check.action===action;
  }catch{return false}
 }
-async function quota(env,ip){
+export async function quota(env,ip){
  if(!ip||ip.length>70)return 'unavailable';
  try{
   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ip));

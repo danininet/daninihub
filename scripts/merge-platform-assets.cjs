@@ -41,6 +41,16 @@ const pages = fs
   );
 for (const name of pages) {
   let html = fs.readFileSync(path.join(source, name), "utf8");
+  // Legacy AutoDanini utilities remain available for existing bookmarks and payments.
+  // Give every legacy page a clear route back to the current DANINI experience.
+  const legacyBridge = '<nav aria-label="DANINI aktuelle Plattform / Aktuelna platforma" class="danini-current-platform-bridge">' +
+    '<a href="/de/">DANINI Startseite</a> · <a href="/de/auto-check/">AutoDanini DE — aktueller Check</a> · ' +
+    '<a href="/sr/auto-check/">AutoDanini SR — aktuelna provera</a> · <a href="/de/business/">DANINI Business</a>' +
+    '</nav>';
+  if (!html.includes('danini-current-platform-bridge')) {
+    html = html.replace(/<body(\s[^>]*)?>/i, match => match + legacyBridge);
+    html = html.replace('</head>', '<style>.danini-current-platform-bridge{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:12px 20px;background:#102a3c;color:#fff;font:600 14px/1.5 system-ui,sans-serif}.danini-current-platform-bridge a{color:#fff;text-decoration:underline;text-underline-offset:3px}</style></head>');
+  }
   // Remove only unfinished navigation links, retaining source pages/modules.
   html = html.replace(
     /<a\b[^>]*href=["'][^"']*(?:auctions|tender)(?:\.html)?[^"']*["'][^>]*>[\s\S]*?<\/a>/gi,

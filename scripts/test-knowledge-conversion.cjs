@@ -38,7 +38,7 @@ for(const lang of ['de','sr']){
   assert.ok(products.includes('/'+lang+'/akademija/builder/'),'Active free Builder missing from catalog');
   assert.ok(!products.includes('Öffentlicher Verkauf deaktiviert')&&!products.includes('Javna prodaja isključena'),'Inactive paid purchase presented as active catalog item');
   assert.ok(!products.includes('149 €'),'Unreleased software package advertised on active catalog');
-  assert.ok(products.includes('Checkout')||products.includes('PayPal'),'Checkout limitation omitted');
+  assert.ok(products.includes('/'+lang+'/auto-check/')&&products.includes('/'+lang+'/business/'),'Active inquiry services missing');
   assert.ok(partner.includes('mailto:info@daninihub.com'),'Partner enquiry missing');
   assert.ok(partner.includes(lang==='de'?'Provisionsprogramm':'provizijskog programa'),'Must not imply active affiliate program');
   for(const slug of ['gebrauchtwagen-anzahlung','fahrzeugpapiere','auto-deutschland-serbien','kundenanfragen','email-formular-crm','ki-buero']){

@@ -69,7 +69,7 @@ const de = locale === "de";
       </label>
       <div class="bc-captcha" data-business-captcha aria-label={de ? "Sicherheitsprüfung" : "Bezbednosna provera"}></div>
       <div class="bc-trust" aria-label={de ? "Schutz und Transparenz" : "Zaštita i transparentnost"}><span>{de ? "Turnstile-Spamschutz" : "Turnstile zaštita od spama"}</span><span>{de ? "Keine automatische Zahlung" : "Bez automatske naplate"}</span><span>{de ? "Freigabe vor Dritt-Kontakt" : "Odobrenje pre kontakta sa trećima"}</span></div>
-      <button type="submit" data-business-submit disabled>{de ? "Unverbindliche Anfrage absenden" : "Pošalji neobavezujući upit"}</button>
+      <button type="submit" data-business-submit>{de ? "Unverbindliche Anfrage absenden" : "Pošalji neobavezujući upit"}</button>
       <p class="bc-action-note">{de ? "Nächster Schritt: Wir prüfen die Angaben und klären den Umfang per E-Mail. Es erfolgt keine automatische Bestellung und keine Zahlung." : "Sledeći korak: pregledamo podatke i mejlom preciziramo obim. Slanje nije narudžbina niti pokretanje naplate."}</p>
       <p class="bc-status" data-business-status role="status" aria-live="polite">
         {de ? "Sicherheitsprüfung wird vorbereitet …" : "Priprema bezbednosne provere …"}
@@ -102,12 +102,15 @@ const de = locale === "de";
     let requestId = crypto.randomUUID();
     let active = false;
     let sending = false;
+    let fallback = false;
     const unavailable = () => {
       active = false;
-      submit.disabled = true;
+      fallback = true;
+      submit.disabled = false;
+      submit.textContent = de ? "E-Mail-Entwurf öffnen" : "Otvori nacrt e-maila";
       status.textContent = de
-        ? "Das sichere Formular ist derzeit nicht verfügbar. Bitte schreiben Sie an info@daninihub.com."
-        : "Bezbedni formular trenutno nije dostupan. Pišite na info@daninihub.com.";
+        ? "Automatisches Senden ist nicht verfügbar. Diese Schaltfläche öffnet nur einen E-Mail-Entwurf; Sie müssen ihn selbst senden."
+        : "Automatsko slanje nije dostupno. Dugme otvara samo nacrt e-maila; sami morate potvrditi slanje.";
     };
     const reset = () => {
       active = false;
@@ -151,7 +154,20 @@ const de = locale === "de";
     };
     form.addEventListener("submit", async event => {
       event.preventDefault();
-      if (!form.reportValidity() || !active || !widget || sending) return;
+      if (!form.reportValidity() || sending) return;
+      if (fallback) {
+        const values = new FormData(form);
+        const subject = "DANINI Business - " + String(values.get("service") || "Anfrage");
+        const body = [
+          String(values.get("name") || ""), String(values.get("email") || ""),
+          String(values.get("company") || ""), String(values.get("country") || ""),
+          String(values.get("direction") || ""), String(values.get("message") || "")
+        ].join("\\n");
+        window.location.href = "mailto:info@daninihub.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+        status.textContent = de ? "E-Mail-Entwurf geöffnet, sofern ein E-Mail-Programm eingerichtet ist. Der Versand ist nicht bestätigt." : "Nacrt je otvoren ako postoji e-mail program. Slanje nije potvrđeno.";
+        return;
+      }
+      if (!active || !widget) { status.textContent = de ? "Bitte zuerst die Sicherheitsprüfung abschließen." : "Najpre završite bezbednosnu proveru."; return; }
       const turnstile = getTurnstile();
       const token = turnstile?.getResponse(widget);
       if (!token) {reset();return;}

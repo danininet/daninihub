@@ -182,7 +182,7 @@ if(root){
  function captureDemo(){
   demoData.name=$('demo-title').value.trim();
   const values={};
-  for(const field of $('demo-fields').querySelectorAll('textarea'))if(field.value.trim())values[field.name]=field.value.trim();
+  for(const field of $('demo-fields').querySelectorAll('textarea[name="a"],textarea[name="b"],textarea[name="c"]'))if(field.value.trim())values[field.name]=field.value.trim();
   const id=ids[demoStage];
   if(JSON.stringify(demoData.steps[id]||{})!==JSON.stringify(values))delete aiReviews[id];
   demoData.steps[id]=values;
@@ -280,8 +280,8 @@ if(root){
     sitekey:aiSiteKey,action:'academy-ai',language:de?'de':'sr',theme:'auto'
    });
    show('demo-ai-controls',true);
-   // Re-render labels after the explicit AI availability was confirmed.
-   renderDemo();
+   // Preserve edits made while the availability request/Turnstile script loaded.
+   captureDemo();renderDemo();
   }catch{
    aiAvailable=false;show('demo-ai-controls',false);
   }

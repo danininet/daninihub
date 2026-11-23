@@ -297,6 +297,26 @@ jobs:
           console.log('PASS public DE/SR DANINI context helper; no AI inference, no form data or third-party messages');
           NODE
 
+      - name: Verify Academy FREE guest remains public and customer auth fails closed without secrets
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const origin='https://daninihub.com';
+          const cfg=await fetch(origin+'/api/academy/config',{signal:AbortSignal.timeout(16000),cache:'no-store'});
+          assert.equal(cfg.status,404,'Public sign-up unexpectedly enabled before signed owner-only pilot');
+          for(const lang of ['de','sr']){
+            const res=await fetch(origin+'/'+lang+'/akademija/builder/',{signal:AbortSignal.timeout(16000),cache:'no-store'});
+            assert.equal(res.status,200);
+            const html=await res.text();
+            assert.ok(html.includes('id="demo"')&&html.includes('id="dashboard"')&&html.includes('id="delete-account"'),'Free Builder or customer pilot UI missing: '+lang);
+          }
+          const denied=await fetch(origin+'/api/academy/auth/start',{method:'POST',headers:{origin,'content-type':'application/json'},
+             body:JSON.stringify({email:'not-invited@example.invalid',language:'sr',turnstileToken:'INVALID-TEST-ONLY'}),
+             signal:AbortSignal.timeout(16000)});
+          assert.equal(denied.status,404,'Public OTP registration must stay gated until invitations/secrets');
+          console.log('PASS Academy Free guest DE/SR, private dashboard templates; public OTP registration CLOSED');
+          NODE
+
 # Owner-authorized 2026-11-23: publish active DE/SR Builder/correct catalog PR #277 at merge 0d314c521471f253174d2f7236a3a1ebb2d69327. No payment, DNS, legal or new paid AI calls.
 
 # Owner-authorized 2026-11-23 P0 product safety + Academy beginners: PR #278 and #279 merged, target 6 guided DE/SR steps and old-PDF live sale guard. Preserve sandbox, B2B, AutoDanini, legal and DNS settings. Verify site after deployment.
@@ -337,3 +357,5 @@ jobs:
 # Authorized Academy Module 02 release 2026-11-21: PR #263 squash merged; six CI checks SUCCESS. Publish only free content and downloads. No changes to billing, prices, DNS, legal text or partner payments.
 
 # Owner-authorized P0 launch 2026-11-23: publish merged PR #276 at 52cd7feb7d8d69314b7ff492fb5db2dc2d89777f, prechecked 6/6 CI; Academy local-only DE/SR printable starter pack. No pricing/legal/DNS/payment changes.
+
+# Approved invitation-only FREE Academy customer workspace PR #284 merged 2026-11-23. Existing D1 tables added after bookmark; no public OTP until distinct secret and owner invite allowlist. Guest Builder remains public, no paid packages enabled.

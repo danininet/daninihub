@@ -158,83 +158,34 @@ async function preview(browser,language,width){
  assert.equal(payload.project.steps.length,6);
  assert.equal(payload.project.steps[0].fields.a,'Napisani podatak 0');
  assert.equal(payload.project.steps[5].fields.a,'Napisani podatak 5');
- // Exercise the NEW real browser controls: TXT download, visible evidence, print call and PDF bytes.
+ // Verify the real new free-preview controls (not just existence of buttons).
  const expectedHeading=language==='sr'?'Moj online biznis — početni operativni paket':'Mein Online-Business – operatives Startpaket';
  const rendered=await page.locator('#demo-summary').innerText();
- assert.ok(rendered.includes(expectedHeading),'Missing local-language operational package title');
- assert.ok(rendered.includes(language==='sr'?'Pretpostavke i otvorene hipoteze':'Annahmen und offene Hypothesen'),'Missing explicit hypothesis section');
+ assert.ok(rendered.includes(expectedHeading),'Missing localized package title');
+ assert.ok(rendered.includes(language==='sr'?'Pretpostavke i otvorene hipoteze':'Annahmen und offene Hypothesen'),'Missing hypothesis section');
  assert.ok(rendered.includes(language==='sr'?'Naredni konkretni koraci za proveru':'Nächste konkrete Prüfschritte'),'Missing next-step section');
  const textEvent=page.waitForEvent('download');
  await page.locator('#demo-text').click();
  const textDownload=await textEvent;
- assert.match(textDownload.suggestedFilename(),new RegExp('danini-online-business-startpaket-'+language+'\\.txt await page.locator('#demo-edit').click();
- assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 5');
- await page.locator('#demo-back').click();
- assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 4');
- await page.locator('#demo-next').click(); // back to step 6
-  await page.locator('#demo-next').click(); // finish dossier
- await page.locator('#demo-result').waitFor({state:'visible'});
- page.once('dialog',dialog=>dialog.accept());
- await page.locator('#demo-reset').click();
- await page.locator('#demo-title').evaluate(el=>el.scrollIntoView());
- assert.equal(await page.locator('#demo-title').inputValue(),'');
- assert.equal(await page.locator('#demo-count').innerText(),(language==='de'?'Schritt 1 von 6':'Korak 1 od 6'));
- assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'preview horizontal overflow '+language+'/'+width);
- assert.deepEqual(errors,[],'Preview JS errors');
- assert.deepEqual(writes,[],'Preview unexpectedly sent customer data to API');
- await page.reload({waitUntil:'domcontentloaded'});
- await page.locator('#demo').waitFor({state:'visible'});
- assert.equal(await page.locator('#demo-title').inputValue(),'','Preview persisted data after refresh');
- console.log('PASS Browser preview '+language+' '+width+'px: 6 steps, JSON, navigation, reset, private/offline');
- await ctx.close();
-}
-async function disabled(browser) {
-  const context=await browser.newContext({viewport:{width:390,height:840}});
-  const page=await context.newPage();
-  await page.route('**/api/academy/config',route=>route.fulfill({status:404,contentType:'application/json',body:JSON.stringify({error:'not_found'})}));
-  const response=await page.goto(BASE+'/sr/akademija/builder/',{waitUntil:'domcontentloaded'});
-  assert.equal(response?.status(),200);
-  await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('u pripremi'));
-  assert.equal(await page.locator('#signin').isVisible(),false);
-  assert.equal(await page.locator('#dashboard').isVisible(),false);
-  await context.close();
-  console.log('PASS disabled: no login or public registration visible');
-}
-(async()=>{
- const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH || undefined,args:['--no-sandbox']});
- try{
-  for(const lang of ['sr','de'])for(const width of [390,1440])await scenario(browser,lang,width);
-  await disabled(browser);
-  for(const lang of ['sr','de'])for(const width of [390,1440])await preview(browser,lang,width);
- }finally{await browser.close()}
-})().catch(e=>{console.error(e);process.exitCode=1});));
+ assert.equal(textDownload.suggestedFilename(),'danini-online-business-startpaket-'+language+'.txt');
  const textData=readFileSync(await textDownload.path(),'utf8');
- assert.ok(textData.includes(expectedHeading),'UTF-8 TXT lacks localized heading');
- assert.ok(textData.includes('Napisani podatak 0')&&textData.includes('Napisani podatak 5'),'TXT lost six-step data');
- let printCalled=false;
+ assert.ok(textData.includes(expectedHeading),'TXT lacks localized heading');
+ assert.ok(textData.includes('Napisani podatak 0')&&textData.includes('Napisani podatak 5'),'TXT lost data');
  await page.evaluate(()=>{window.__academyPrintCalled=false;window.print=()=>{window.__academyPrintCalled=true}});
  await page.locator('#demo-print').click();
- printCalled=await page.evaluate(()=>window.__academyPrintCalled);
- assert.equal(printCalled,true,'Print action did not call window.print()');
- const printResult=await page.evaluate(async()=>{
-   // Verify the print media switches to an uncluttered result without exposing the form.
-   const title=document.getElementById('demo-result');
-   const actions=title.querySelector('.bb-demo-actions');
-   return {visible:!!title&&getComputedStyle(title).display!=='none',title:title.innerText.slice(0,160),actionClass:actions?.className};
- });
- assert.ok(printResult.visible,'Printable dossier is hidden');
+ assert.equal(await page.evaluate(()=>window.__academyPrintCalled),true,'Print action did not call window.print');
  await page.emulateMedia({media:'print'});
- const printVisibility=await page.evaluate(()=>({
-   result:getComputedStyle(document.getElementById('demo-result')).visibility,
-   actions:getComputedStyle(document.querySelector('#demo-result .bb-demo-actions')).display
+ const visibility=await page.evaluate(()=>({
+  result:getComputedStyle(document.getElementById('demo-result')).visibility,
+  actions:getComputedStyle(document.querySelector('#demo-result .bb-demo-actions')).display
  }));
- assert.equal(printVisibility.result,'visible','Dossier not visible in print media');
- assert.equal(printVisibility.actions,'none','Print/PDF includes interactive controls');
- const pdf=await page.pdf({format:'A4',printBackground:true,preferCSSPageSize:true});
- assert.ok(pdf.subarray(0,5).toString()==='%PDF-','Browser PDF output not valid');
- assert.ok(pdf.length>2000,'Browser PDF unexpectedly empty');
+ assert.equal(visibility.result,'visible','Dossier hidden in print');
+ assert.equal(visibility.actions,'none','Interactive controls appeared in print');
+ const pdf=await page.pdf({format:'A4',printBackground:true});
+ assert.equal(pdf.subarray(0,5).toString(),'%PDF-','Invalid PDF');
+ assert.ok(pdf.length>2000,'PDF unexpectedly empty');
  await page.emulateMedia({media:'screen'});
- console.log('PASS Browser offline export '+language+' '+width+'px: UTF-8 TXT, evidence labels, print call, print CSS and valid PDF ('+pdf.length+' bytes)');
+ console.log('PASS Builder '+language+' '+width+'px: DE/SR TXT, evidence labels, print action, valid Chromium PDF '+pdf.length+' bytes');
  await page.locator('#demo-edit').click();
  assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 5');
  await page.locator('#demo-back').click();

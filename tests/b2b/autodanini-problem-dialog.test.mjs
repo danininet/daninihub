@@ -26,7 +26,7 @@ test('all five situations provide three DE/SR questions and practical German sel
 test('next question depends on previous answer, including unknown; no repeated question',()=>{
  for (const scenario of subjects){
   for (let i=1;i<3;i++){
-   const variants=['yes','no','unknown'].map(value=>getQuestion(scenario,i,[{value:'yes'},{value}].slice(0,i),false).question);
+   const variants=['yes','no','unknown'].map(value=>getQuestion(scenario,i,i===1?[{value}]:[{value:'yes'},{value}],false).question);
    assert.equal(new Set(variants).size,3,scenario.id+' step '+i+' is not responsive');
   }
  }

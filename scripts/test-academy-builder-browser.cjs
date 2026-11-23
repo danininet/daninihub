@@ -231,11 +231,55 @@ async function disabled(browser) {
   await context.close();
   console.log('PASS disabled: no login or public registration visible');
 }
+
+async function optionalAi(browser,language){
+ const context=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true});
+ await context.addInitScript(()=>{
+  window.turnstile={render:()=>1,reset:()=>{},getResponse:()=>'MOCK.TURNSTILE.TOKEN.LONG'};
+ });
+ const page=await context.newPage();
+ const requests=[];
+ await page.route('**/api/academy/**',async route=>{
+  const req=route.request(),path=new URL(req.url()).pathname;
+  if(path.endsWith('/config'))return route.fulfill({status:404,contentType:'application/json',body:'{"error":"not_found"}'});
+  if(path.endsWith('/ai/status'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({enabled:true,siteKey:'1x00000000000000000000AA'})});
+  if(path.endsWith('/ai/review')){
+   const data=req.postDataJSON();requests.push(data);
+   assert.equal(data.language,language);assert.equal(data.step,'niche');
+   assert.equal(data.projectName,'Test projekat');
+   assert.ok(data.fields.a.includes('Mala firma'));
+   assert.ok(!Object.prototype.hasOwnProperty.call(data.fields,''),'Generated prompt leaked into submitted fields');
+   return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+    aiUsed:true,unverified:true,questions:['Ko je konkretan prvi kupac?'],assumptions:['Potražnja nije potvrđena'],nextStep:'Razgovaraj sa tri zainteresovane firme i dokumentuj datum.'})});
+  }
+  return route.fulfill({status:404,contentType:'application/json',body:'{"error":"not_found"}'});
+ });
+ try{
+  await page.goto(BASE+'/'+language+'/akademija/builder/',{waitUntil:'domcontentloaded'});
+  await page.locator('#demo').waitFor({state:'visible',timeout:12000});
+  await page.locator('#demo-ai-controls').waitFor({state:'visible',timeout:12000});
+  await page.locator('#demo-title').fill('Test projekat');
+  await page.locator('#demo-field-a').fill('Mala firma u Nemačkoj');
+  await page.getByRole('button',{name:language==='de'?'Aktuellen Schritt mit KI prüfen':'Analiziraj ovaj korak uz AI'}).click();
+  await page.locator('#demo-fields .bb-ai-result').waitFor({state:'visible',timeout:12000});
+  assert.equal(requests.length,1,'AI must be explicitly requested exactly once');
+  assert.ok((await page.locator('#demo-fields .bb-ai-result').innerText()).includes('Potražnja nije potvrđena'));
+  assert.equal(await page.locator('#demo-field-a').inputValue(),'Mala firma u Nemačkoj');
+  // Editing after AI invalidates the stale previous review, before final document.
+  await page.locator('#demo-field-a').fill('Mala firma sa novim podacima');
+  await page.locator('#demo-next').click();
+  await page.locator('#demo-back').click();
+  assert.equal(await page.locator('#demo-fields .bb-ai-result').count(),0,'Stale AI result must not persist after source edit');
+  console.log('PASS Academy opt-in mocked AI '+language+': explicit consent, quota-safe payload, result, invalidation');
+ }finally{await context.close()}
+}
+
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH || undefined,args:['--no-sandbox']});
  try{
   for(const lang of ['sr','de'])for(const width of [390,1440])await scenario(browser,lang,width);
   await disabled(browser);
   for(const lang of ['sr','de'])for(const width of [390,1440])await preview(browser,lang,width);
+  for(const lang of ['sr','de'])await optionalAi(browser,lang);
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

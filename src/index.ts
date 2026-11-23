@@ -1,5 +1,6 @@
 import { ownerPortal } from "./portal/page";
 import { academyRoute } from "./academy/routes.mjs";
+import { siteAssistantRoute } from "../workers/danini-site-assistant.mjs";
 import legacy from "../workers/danini-intake.mjs";
 import type { Env } from "./lib/env";
 import { json, HttpError } from "./security/http";
@@ -21,6 +22,7 @@ export default {
     try {
       // Customer Builder: distinct, strictly disabled unless all Academy auth settings are present.
       // Academy AI has its own opt-in route; do not let the protected OTP workspace intercept it.
+      if (p.startsWith("/api/assistant/")) return await siteAssistantRoute(request, env);
       if (p.startsWith("/api/academy/ai/")) return await legacy.fetch(request, env);
       if (p.startsWith("/api/academy/")) return await academyRoute(request, env);
       if (p === "/api/health" && request.method === "GET")

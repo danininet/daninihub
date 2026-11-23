@@ -85,6 +85,33 @@ if(root){
 
  // Free no-login preview. No localStorage, cookies, external services, or API calls for user fields.
  const demoData={name:'',steps:{}};
+ const aiReviews={}; // In-memory only; never persisted or sent to a third party automatically.
+ let aiAvailable=false,aiSiteKey=null,aiTurnstileId=null,aiBusy=false;
+ const aiText=de?{
+  inProgress:'Die KI prüft nur Ihre Angaben, keine externen Quellen …',
+  completed:'KI-Rückfragen erzeugt. Die Daten und Annahmen sind weiterhin ungeprüft.',
+  disabled:'KI-Analyse ist nicht freigeschaltet. Nutzen Sie die lokalen Hilfen oder kopieren Sie den vorbereiteten Prompt.',
+  token:'Bitte lösen Sie zuerst die Sicherheitsprüfung.',
+  input:'Geben Sie zuerst einen Projektnamen und mindestens eine konkrete Aussage ein.',
+  error:'Die KI-Analyse konnte nicht abgeschlossen werden. Es wurde kein Ergebnis behauptet; versuchen Sie es später erneut.',
+  limit:'Das Tageslimit für KI-Analysen ist erreicht. Der kostenlose lokale Builder bleibt nutzbar.',
+  questions:'KI-Rückfragen (nicht unabhängig geprüft)',
+  assumptions:'Unbestätigte Hypothesen aus der KI-Prüfung',
+  next:'Nächster vorgeschlagener Prüfschritt',
+  disclaimer:'Die ausdrücklich angeforderte KI-Prüfung stellt Fragen und Hypothesen bereit. Sie bestätigt keine Marktinformationen oder Erfolgsaussichten.'
+ }:{
+  inProgress:'AI proverava samo tvoje odgovore, ne spoljne izvore …',
+  completed:'AI pitanja su pripremljena. Tvoje tvrdnje i pretpostavke ostaju neproverene.',
+  disabled:'AI analiza nije odobrena. Koristi lokalna uputstva ili kopiraj pripremljeni zadatak.',
+  token:'Prvo završi bezbednosnu proveru.',
+  input:'Prvo unesi naziv i bar jednu konkretnu tvrdnju.',
+  error:'AI analiza nije završena. Ne prikazujemo izmišljene rezultate; pokušaj kasnije.',
+  limit:'Dostignuta je dnevna kvota za AI. Besplatni formular i dalje radi.',
+  questions:'AI pitanja (nisu nezavisno proverena)',
+  assumptions:'Nepotvrđene pretpostavke iz AI pregleda',
+  next:'Predloženi sledeći korak',
+  disclaimer:'AI je pozvan samo na tvoj izričit zahtev. Pitanja i pretpostavke nisu potvrda tržišta, kupaca ili uspeha.'
+ };
  let demoStage=0;
  const demoCopy=de?{
   count:n=>'Schritt '+(n+1)+' von 6',back:'← Zurück',next:'Weiter →',finish:'Dossier erstellen →',
@@ -131,12 +158,17 @@ if(root){
    [packageCopy.next,[market.c,validation.a,validation.b].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()).length?[market.c,validation.a,validation.b].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()):[packageCopy.missingNext]]
   ];
  }
+ function aiDisclaimer(){return Object.keys(aiReviews).length?aiText.disclaimer:packageCopy.disclaimer}
+ function aiTextLines(id){
+  const x=aiReviews[id];if(!x)return [];
+  return ['',aiText.questions,...x.questions.map(y=>'- '+y),aiText.assumptions,...x.assumptions.map(y=>'- '+y),aiText.next,x.nextStep,''];
+ }
  function packageText(){
-  const lines=[packageCopy.title,demoData.name,'',packageCopy.disclaimer,''];
+  const lines=[packageCopy.title,demoData.name,'',aiDisclaimer(),''];
   ids.forEach((id,i)=>{
    lines.push((i+1)+'. '+i18n.labels[i][0]);
    ['a','b','c'].forEach((key,j)=>lines.push(i18n.labels[i][j+1]+': '+(demoData.steps[id]?.[key]?.trim()||packageCopy.empty)));
-   lines.push('');
+   lines.push(...aiTextLines(id),'');
   });
   for(const [heading,items] of packageEvidence()){lines.push(heading);for(const item of items)lines.push('- '+item);lines.push('');}
   return lines.join('\n');
@@ -151,7 +183,9 @@ if(root){
   demoData.name=$('demo-title').value.trim();
   const values={};
   for(const field of $('demo-fields').querySelectorAll('textarea'))if(field.value.trim())values[field.name]=field.value.trim();
-  demoData.steps[ids[demoStage]]=values;
+  const id=ids[demoStage];
+  if(JSON.stringify(demoData.steps[id]||{})!==JSON.stringify(values))delete aiReviews[id];
+  demoData.steps[id]=values;
  }
  function renderDemo(){
   $('demo-title').value=demoData.name;
@@ -184,7 +218,7 @@ if(root){
    wrap.append(label,explanation,textarea,example);fields.append(wrap);
   }
   const tools=append('div',null,'bb-helper-panel');
-  const note=append('p',helperCopy.aiNote,'bb-field-tip');
+  const note=append('p',aiAvailable?aiText.disclaimer:helperCopy.aiNote,'bb-field-tip');
   const promptButton=append('button',helperCopy.ai,'bb-outline');promptButton.type='button';
   const checkButton=append('button',helperCopy.localCheck,'bb-outline');checkButton.type='button';
   const promptArea=append('textarea');promptArea.id='demo-ai-prompt';promptArea.readOnly=true;promptArea.hidden=true;promptArea.rows=9;promptArea.setAttribute('aria-label',helperCopy.promptTitle);
@@ -212,11 +246,78 @@ if(root){
        :helperCopy.checkOk)+(demoStage===1?' '+helperCopy.checkSource:'')+' '+helperCopy.checkFinish;
   });
   tools.append(note,promptButton,checkButton,promptArea,copyButton,feedback);fields.append(tools);
+  const priorReview=aiReviews[ids[demoStage]];
+  if(priorReview)fields.append(renderAiReview(priorReview));
+  if(aiTurnstileId!==null&&window.turnstile)window.turnstile.reset(aiTurnstileId);
  }
+ function renderAiReview(x){
+  const box=append('section',null,'bb-ai-result');
+  const sections=[[aiText.questions,x.questions],[aiText.assumptions,x.assumptions],[aiText.next,[x.nextStep]]];
+  for(const [heading,items] of sections){
+   box.append(append('h5',heading));
+   for(const value of items)box.append(append('p',value));
+  }
+  box.append(append('p',aiText.disclaimer));
+  return box;
+ }
+ async function loadAiStatus(){
+  try{
+   const status=await api('ai/status');
+   aiAvailable=status.enabled===true&&typeof status.siteKey==='string'&&status.siteKey.length>6;
+   if(!aiAvailable)return;
+   aiSiteKey=status.siteKey;
+   const target=$('demo-ai-controls');
+   if(!target||!window.turnstile){
+    if(!window.turnstile){
+     const script=document.createElement('script');
+     script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+     script.async=true;
+     await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=reject;document.head.append(script)});
+    }
+   }
+   if(!window.turnstile)throw Error('captcha_unavailable');
+   aiTurnstileId=window.turnstile.render('#demo-ai-turnstile',{
+    sitekey:aiSiteKey,action:'academy-ai',language:de?'de':'sr',theme:'auto'
+   });
+   show('demo-ai-controls',true);
+   // Re-render labels after the explicit AI availability was confirmed.
+   renderDemo();
+  }catch{
+   aiAvailable=false;show('demo-ai-controls',false);
+  }
+ }
+ $('demo-ai-review').addEventListener('click',async()=>{
+  if(aiBusy||!aiAvailable)return;
+  captureDemo();
+  const fields=demoData.steps[ids[demoStage]]||{};
+  if(!demoData.name||!Object.values(fields).some(v=>v.length>8)){
+   $('demo-ai-feedback').textContent=aiText.input;return;
+  }
+  const token=window.turnstile?.getResponse(aiTurnstileId)||'';
+  if(!token){$('demo-ai-feedback').textContent=aiText.token;return}
+  aiBusy=true;$('demo-ai-review').disabled=true;
+  $('demo-ai-feedback').textContent=aiText.inProgress;
+  const id=ids[demoStage];
+  try{
+   const x=await api('ai/review','POST',{language:de?'de':'sr',step:id,projectName:demoData.name,fields,turnstileToken:token});
+   if(x.aiUsed!==true||x.unverified!==true||!Array.isArray(x.questions)||typeof x.nextStep!=='string')throw Error('invalid_ai_output');
+   aiReviews[id]={questions:x.questions.slice(0,3),assumptions:(x.assumptions||[]).slice(0,3),nextStep:x.nextStep};
+   $('demo-ai-feedback').textContent=aiText.completed;
+   const prior=$('demo-fields').querySelector('.bb-ai-result');
+   if(prior)prior.remove();
+   $('demo-fields').append(renderAiReview(aiReviews[id]));
+  }catch(error){
+   const message=String(error?.message||'');
+   $('demo-ai-feedback').textContent=message==='academy_ai_daily_limit'?aiText.limit:message==='academy_ai_disabled'?aiText.disabled:aiText.error;
+  }finally{
+   aiBusy=false;$('demo-ai-review').disabled=false;
+   if(aiTurnstileId!==null&&window.turnstile)window.turnstile.reset(aiTurnstileId);
+  }
+ });
  function showDemoResult(){
   const result=$('demo-summary');result.replaceChildren();
   result.append(append('h4',packageCopy.title+' — '+demoData.name));
-  result.append(append('p',packageCopy.disclaimer,'bb-evidence-note'));
+  result.append(append('p',aiDisclaimer(),'bb-evidence-note'));
   for(let i=0;i<6;i++){
     const step=append('section',null,'bb-demo-row');step.append(append('strong',(i+1)+'. '+i18n.labels[i][0]));
     const vals=demoData.steps[ids[i]]||{};
@@ -226,6 +327,7 @@ if(root){
       if(value){step.append(append('strong',i18n.labels[i][n+1]),append('p',value));}
     }
     result.append(step);
+    if(aiReviews[ids[i]])result.append(renderAiReview(aiReviews[ids[i]]));
   }
   for(const [heading,items] of packageEvidence()){
    const section=append('section',null,'bb-evidence-section');
@@ -247,12 +349,14 @@ if(root){
  $('demo-reset').addEventListener('click',()=>{
   if(!confirm(demoCopy.resetConfirm))return;
   demoData.name='';demoData.steps={};demoStage=0;
+  for(const key of Object.keys(aiReviews))delete aiReviews[key];
   show('demo-result',false);show('demo-form',true);renderDemo();
  });
  $('demo-export').addEventListener('click',()=>{
   const output={product:'DANINI Business Builder - private preview',version:1,language:de?'de':'sr',
-   project:{title:demoData.name,steps:ids.map(id=>({step:id,fields:demoData.steps[id]||{}}))},
-   disclaimer:'User supplied, not verified; no AI processing, no server storage, no guarantee of results.'};
+   project:{title:demoData.name,steps:ids.map(id=>({step:id,fields:demoData.steps[id]||{},aiReview:aiReviews[id]||null}))},
+   aiUsed:Object.keys(aiReviews).length>0,
+   disclaimer:aiDisclaimer()};
   const url=URL.createObjectURL(new Blob([JSON.stringify(output,null,2)],{type:'application/json'}));
   const a=append('a');a.href=url;a.download='danini-builder-preview-'+(de?'de':'sr')+'.json';a.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -280,12 +384,12 @@ if(root){
  async function initialize(){
   try{
    const config=await api('config');
-   if(!config.enabled||!config.siteKey){show('demo',true);renderDemo();notice(i18n.unavailable);return}
+   if(!config.enabled||!config.siteKey){show('demo',true);renderDemo();notice(i18n.unavailable);loadAiStatus();return}
    siteKey=config.siteKey;
    const session=await api('session');
    if(session.authenticated){show('dashboard',true);await refresh();notice(i18n.ready);return}
    show('signin',true);await loadTurnstile();notice(i18n.ready);
-  }catch{show('signin',false);show('demo',true);renderDemo();notice(i18n.unavailable)}
+  }catch{show('signin',false);show('demo',true);renderDemo();notice(i18n.unavailable);loadAiStatus()}
  }
  async function refresh(){
   const data=await api('projects');const list=$('project-list');list.replaceChildren();

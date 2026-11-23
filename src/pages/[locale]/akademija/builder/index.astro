@@ -7,7 +7,7 @@ const de=locale==="de";
 <Base locale={locale} slug="akademija/builder" noindex={false}
  title={de?"Kostenloser Online Business Builder – in sechs Schritten zum Startpaket":"Besplatni Online Business Builder – poslovni paket u šest koraka"}
  description={de?"Kostenloses Tool: Geschäftsidee in sechs Schritten strukturieren, individuelles Startpaket als Text/JSON exportieren oder als PDF drucken. Ohne Anmeldung.":"Besplatan alat: razradi poslovnu ideju kroz šest koraka i izvezi operativni paket kao TXT/JSON ili PDF. Bez prijave."}>
-<section class="bb-hero"><div class="wrap"><p class="bb-eyebrow">DANINI / ONLINE BUSINESS BUILDER · {de?"KOSTENLOS & SOFORT NUTZBAR":"BESPLATNO I ODMAH DOSTUPNO"}</p><h1>{de?"Ihre Geschäftsidee. Sechs Schritte. Ein konkretes Startpaket.":"Tvoja poslovna ideja. Šest koraka. Konkretan poslovni paket."}</h1><p>{de?"Nutzen Sie den kostenlosen Builder direkt ohne Anmeldung: entwickeln Sie Ihren Plan und speichern Sie Ihr Ergebnis als TXT, JSON oder druckbares PDF. Der Entwurf ist keine geprüfte Marktanalyse; Ihre Eingaben bleiben im Browser-Tab.":"Koristi besplatni Builder odmah i bez prijave: razradi plan i sačuvaj rezultat kao TXT, JSON ili PDF. Nacrt nije potvrđena analiza tržišta; tvoji unosi ostaju u kartici browsera."}</p><a class="bb-start-link" href="#demo">{de?"Jetzt kostenlos starten":"Započni besplatno"}</a></div></section>
+<section class="bb-hero"><div class="wrap"><p class="bb-eyebrow">DANINI / ONLINE BUSINESS BUILDER · {de?"KOSTENLOS & SOFORT NUTZBAR":"BESPLATNO I ODMAH DOSTUPNO"}</p><h1>{de?"Ihre Geschäftsidee. Sechs Schritte. Ein konkretes Startpaket.":"Tvoja poslovna ideja. Šest koraka. Konkretan poslovni paket."}</h1><p>{de?"Nutzen Sie den kostenlosen Builder direkt ohne Anmeldung: entwickeln Sie Ihren Plan und speichern Sie Ihr Ergebnis als TXT, JSON oder druckbares PDF. Der Entwurf ist keine geprüfte Marktanalyse; Ihre Eingaben bleiben im Browser-Tab.":"Koristi besplatni Builder odmah i bez prijave: razradi plan i sačuvaj rezultat kao TXT, JSON ili PDF. Nacrt nije potvrđena analiza tržišta; tvoji unosi ostaju u kartici browsera."}</p><a class="bb-start-link" href="#demo">{de?"Jetzt kostenlos starten":"Započni besplatno"}</a><a class="bb-login-link" href="#signin">{de?"Zum kostenlosen Testkonto":"Prijava na besplatan test nalog"}</a></div></section>
 <div class="wrap bb-shell" id="builder" data-locale={locale}>
  <p id="notice" class="bb-notice" role="status" aria-live="polite">{de?"Prüfe Verfügbarkeit…":"Proveravam dostupnost…"}</p>
  <section class="bb-card bb-demo" id="demo" hidden aria-labelledby="demo-heading">
@@ -36,12 +36,18 @@ const de=locale==="de";
   </div>
   <p class="bb-fine">{de?"Privater Entwurf ohne Speicherung oder Kauf. Keine Passwörter, fremden personenbezogenen Daten oder vertraulichen Unterlagen eingeben.":"Privatni nacrt bez čuvanja i kupovine. Ne unosi lozinke, tuđe lične podatke ni poverljivu dokumentaciju."}</p>
  </section>
- <section class="bb-card bb-pilot" id="signin" hidden>
+ <section class="bb-card bb-pilot" id="signin" aria-labelledby="pilot-login-heading">
+  <div class="bb-pilot-heading">
+    <h2 id="pilot-login-heading">{de?"Kostenloses Konto für eingeladene Tester":"Besplatan nalog za pozvane test korisnike"}</h2>
+    <a class="bb-pilot-link" href="#login-form">{de?"Zur Anmeldung":"Idi na prijavu"}</a>
+  </div>
+  <p id="pilot-login-status" role="status" aria-live="polite">{de?"Die Anmeldung wird geprüft. Sie können den kostenlosen Builder auch ohne Konto nutzen.":"Proveravam prijavu. Besplatni Builder možeš koristiti i bez naloga."}</p>
+  <button type="button" id="pilot-login-retry" class="bb-outline" hidden>{de?"Anmeldung erneut prüfen":"Ponovo proveri prijavu"}</button>
   <p class="bb-demo-label">{de?"EINGELADENER FREE-PILOT":"POZIVNI FREE PILOT"}</p>
   <p>{de?"Nur für ausdrücklich eingeladene Testpersonen. Die kostenlose Erstellung eines lokalen Geschäftsplans bleibt oben ohne Anmeldung verfügbar.":"Samo za izričito pozvane test korisnike. Besplatni formular iznad ostaje dostupan bez naloga."}</p>
   <h2>{de?"Mit E-Mail anmelden":"Prijavi se preko e-maila"}</h2>
   <p>{de?"Sie erhalten einen einmaligen Code. Keine automatische Newsletter-Anmeldung.":"Dobićeš jednokratni kod. Nema automatske prijave na newsletter."}</p>
-  <form id="login-form"><label for="email">E-mail</label><input type="email" name="email" id="email" maxlength="254" required autocomplete="email" /><div id="turnstile"></div><button class="bb-btn" type="submit">{de?"Einmalcode senden":"Pošalji kod za prijavu"}</button></form>
+  <form id="login-form" aria-describedby="pilot-login-status"><label for="email">E-mail</label><input type="email" name="email" id="email" maxlength="254" required autocomplete="email" /><div id="turnstile"></div><button class="bb-btn" type="submit">{de?"Einmalcode senden":"Pošalji kod za prijavu"}</button></form>
   <form id="verify-form" hidden><label for="otp">{de?"8-stelliger Einmalcode":"Jednokratni kod (8 cifara)"}</label><input id="otp" name="code" required pattern="[0-9]{8}" inputmode="numeric" autocomplete="one-time-code" maxlength="8" /><button type="submit" class="bb-btn">{de?"Anmelden":"Prijavi se"}</button></form>
  </section>
  <section id="dashboard" hidden aria-label={de?"Mein DANINI Arbeitsbereich":"Moj DANINI radni prostor"}>
@@ -88,6 +94,14 @@ const de=locale==="de";
 .bb-account-controls{border-top:3px solid #b3c8d5}
 .bb-account-controls button{border-color:#984a4a;color:#7e2727}
 .bb-pilot{border:2px solid #aacad1}
+.bb-pilot-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.bb-pilot-heading h2{margin:0}
+.bb-pilot-link,.bb-login-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 15px;border:1px solid #096b69;border-radius:9px;color:#075955;font-weight:800;text-decoration:none}
+.bb-login-link{margin-left:12px;background:#fff;color:#0d5155}
+#pilot-login-status{font-size:.91rem;line-height:1.5;color:#315064}
+#pilot-login-retry[hidden]{display:none!important}
+@media(max-width:650px){.bb-login-link{margin:12px 0 0;display:flex;width:100%}.bb-pilot-heading{align-items:stretch}}
+
 @media(max-width:760px){.bb-dashboard-cards{grid-template-columns:1fr}}
 .bb-card input,.bb-card textarea{display:block;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;width:100%;max-width:610px;font:inherit}.bb-card label{font-weight:780;color:#193d50;display:block;margin:14px 0 7px}.bb-btn{background:#075e65;color:#fff;border:2px solid #075e65;min-height:48px;padding:11px 19px;border-radius:8px;font-weight:850;cursor:pointer;margin-top:15px}.bb-btn:hover{background:#034c52}.bb-outline{background:#fff;border:2px solid #37757d;color:#074e54;border-radius:8px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:800}.bb-card button:focus-visible,.bb-card input:focus-visible,.bb-card textarea:focus-visible{outline:3px solid #b07c1e;outline-offset:3px}.bb-top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.bb-layout{display:grid;grid-template-columns:minmax(230px,.65fr) minmax(0,1.5fr);gap:20px}.bb-project{display:block;border:1px solid #91b2be;background:#f5fafb;color:#114052;text-align:left;border-radius:8px;padding:13px;width:100%;font:inherit;cursor:pointer;margin:8px 0}.bb-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}.bb-tab{background:#f3f8fa;color:#174151;border:1px solid #84a5b2;border-radius:8px;padding:9px 11px;font:inherit;cursor:pointer}.bb-tab[aria-pressed="true"]{background:#104d5b;color:#fff}.bb-field{margin:15px 0}.bb-field textarea{max-width:100%;min-height:85px;resize:vertical}.bb-danger{border-top:1px solid #cedde4;margin-top:28px;padding-top:14px}.bb-fine{color:#385a69;font-size:.91rem;margin-top:24px}#turnstile{margin:15px 0;min-height:65px}.bb-new{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.bb-new label{flex-basis:100%;margin:0}.bb-new input{flex:1;min-width:210px}.bb-new button{margin:0}@media(max-width:780px){.bb-layout{grid-template-columns:1fr}.bb-shell{padding:22px 16px 55px}.bb-hero{padding:48px 0}.bb-card{padding:20px}}
 

@@ -382,17 +382,21 @@ if(root){
   turnstileId=window.turnstile.render('#turnstile',{sitekey:siteKey,action:'academy-login',language:de?'de':'sr',theme:'auto'});
  }
  async function initialize(){
+  // The no-registration Builder stays available even when the invitation-only
+  // account pilot is active. Never make a free feature depend on e-mail signup.
+  show('demo',true);renderDemo();loadAiStatus();
   try{
    const config=await api('config');
-   if(!config.enabled||!config.siteKey){show('demo',true);renderDemo();notice(i18n.unavailable);loadAiStatus();return}
+   if(!config.enabled||!config.siteKey){notice(i18n.unavailable);return}
    siteKey=config.siteKey;
    const session=await api('session');
    if(session.authenticated){show('dashboard',true);await refresh();notice(i18n.ready);return}
    show('signin',true);await loadTurnstile();notice(i18n.ready);
-  }catch{show('signin',false);show('demo',true);renderDemo();notice(i18n.unavailable);loadAiStatus()}
+  }catch{show('signin',false);notice(i18n.unavailable)}
  }
  async function refresh(){
   const data=await api('projects');const list=$('project-list');list.replaceChildren();
+  if($('dashboard-project-count'))$('dashboard-project-count').textContent=data.projects.length+' / 3';
   if(!data.projects.length)list.append(append('p',i18n.noProjects));
   for(const project of data.projects){const button=append('button',project.title+' · '+project.language.toUpperCase(),'bb-project');button.type='button';button.onclick=()=>openProject(project.id);list.append(button)}
  }
@@ -432,5 +436,14 @@ if(root){
   await api('projects/'+selected.id,'DELETE');selected=null;show('editor',false);await refresh();notice(i18n.deleted);
  }catch{notice(i18n.generic)}});
  $('logout').addEventListener('click',async()=>{try{await api('logout','POST',{});selected=null;show('dashboard',false);show('editor',false);show('signin',true);show('verify-form',false);await loadTurnstile();notice(i18n.ready)}catch{notice(i18n.generic)}});
+ $('delete-account').addEventListener('click',async()=>{
+  const message=de?'Konto und alle gespeicherten Projekte unwiderruflich löschen? Exportieren Sie vorher Ihre Daten.':'Trajno obrisati nalog i sve sačuvane projekte? Prvo izvezi potrebne podatke.';
+  if(!confirm(message))return;
+  // Second, typed confirmation avoids accidental irreversible deletion.
+  const phrase=prompt(de?'Zum Löschen DELETE eingeben:':'Za brisanje upiši DELETE:');
+  if(phrase!=='DELETE')return;
+  try{await api('account','DELETE',{confirm:'DELETE'});selected=null;show('dashboard',false);show('editor',false);show('signin',true);show('verify-form',false);await loadTurnstile();notice(de?'Konto und Projekte gelöscht.':'Nalog i projekti su obrisani.')}
+  catch{notice(i18n.generic)}
+ });
  initialize();
 }

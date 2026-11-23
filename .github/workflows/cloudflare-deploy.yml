@@ -270,6 +270,7 @@ jobs:
 
 # Owner-authorized 2026-11-23 P0 product safety + Academy beginners: PR #278 and #279 merged, target 6 guided DE/SR steps and old-PDF live sale guard. Preserve sandbox, B2B, AutoDanini, legal and DNS settings. Verify site after deployment.
 # Authorized P0 2026-11-23: publish PR #280 guarded Academy AI code (9/9 checks); ACADEMY_AI_ENABLED and DANINI_ACADEMY_AI_SPEND_APPROVED remain UNSET, no model inference or billing change. Only public free Builder keeps working.
+# Owner-approved Academy AI Free live route fix: PR #282 merged as d6cd36b2d5f72d009583859df5411955456bc896; B2B/Builder/Auto/Brevo CI 5/5 green; require new production HTTP 200 Academy AI status before declaring success.
 # PR208 production release trigger 2026-11-13: workflow content touched to start guarded main deployment.
 
 # P0 verified redeploy 2026-11-16: integrate PR223 Brevo trace, preserve DE/SR storefront.

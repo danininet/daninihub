@@ -68,7 +68,8 @@ const fs = require("node:fs");
     assert.match(offerText,locale==="de"?/Antworten/:/Odgovori/);
     assert.equal(await page.locator("form[data-auto-enquiry] select[name=intent]").inputValue(),"documents");
     assert.equal(await page.locator("form[data-auto-enquiry] input[name=email]").inputValue(),"");
-    assert.equal(await page.locator("form[data-auto-enquiry] button[data-auto-submit]").isDisabled(),true);
+    assert.equal(await page.locator("form[data-auto-enquiry] button[data-auto-submit]").isDisabled(),false,"fallback is usable when lead API is off");
+    assert.equal(await page.locator("form[data-auto-enquiry]").evaluate(el=>el.checkValidity()),false,"mandatory contact details still protect the handoff");
     await page.goto(url,{waitUntil:"domcontentloaded"});
     await page.locator("#problem-guide-question button").last().click(); // restart after saved session
     // The short free-form problem stays local, no email, no API submission.

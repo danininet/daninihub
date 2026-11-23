@@ -142,7 +142,35 @@ const assert = require("node:assert/strict");
         assert.equal(submitted.consent, true);
         assert.equal(submitted.turnstileToken, "QA_MOCK_TOKEN_NOT_VALID");
         await page.screenshot({ path: "outputs/b2b/" + locale + "-auto-" + width + ".png", fullPage: true });
-        assert.deepEqual(errors, [], locale + " browser errors including AutoDanini");
+        // Simulate unavailable lead endpoint: the form must remain actionable,
+        // and the fallback must never claim an email has been delivered.
+        const offlineLeadStatus = route => route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"unavailable"})});
+        await page.route("**/api/lead/status", offlineLeadStatus);
+        await page.goto(base+"auto-check/",{waitUntil:"networkidle"});
+        const unavailableAuto=page.locator("[data-auto-enquiry]");
+        await page.waitForFunction(()=>document.querySelector("[data-auto-submit]")?.textContent?.includes("E-Mail") || document.querySelector("[data-auto-submit]")?.textContent?.includes("nacrt"));
+        assert.equal(await unavailableAuto.locator("[data-auto-submit]").isDisabled(),false,locale+" Auto fallback clickable");
+        await unavailableAuto.locator('[name="source"]').fill("Fiktivni oglas za proveru formulara, bez slanja na produkciju.");
+        await unavailableAuto.locator('[name="intent"]').selectOption("documents");
+        await unavailableAuto.locator('[name="name"]').fill("QA Tester");
+        await unavailableAuto.locator('[name="email"]').fill("qa@example.invalid");
+        await unavailableAuto.locator('[name="consent"]').check();
+        await unavailableAuto.locator("[data-auto-submit]").click();
+        assert.match(await unavailableAuto.locator("[data-auto-status]").innerText(),locale==="de"?/nicht bestätigt/:/nije potvrđeno/);
+        await page.goto(base+"business/",{waitUntil:"networkidle"});
+        const unavailableBusiness=page.locator("[data-business-enquiry]");
+        await page.waitForFunction(()=>document.querySelector("[data-business-submit]")?.textContent?.includes("E-Mail") || document.querySelector("[data-business-submit]")?.textContent?.includes("nacrt"));
+        assert.equal(await unavailableBusiness.locator("[data-business-submit]").isDisabled(),false,locale+" Business fallback clickable");
+        await unavailableBusiness.locator('[name="name"]').fill("QA Tester");
+        await unavailableBusiness.locator('[name="email"]').fill("qa@example.invalid");
+        await unavailableBusiness.locator('[name="service"]').selectOption("check");
+        await unavailableBusiness.locator('[name="message"]').fill("Fiktivni poslovni upit za proveru rezervnog režima slanja.");
+        await unavailableBusiness.locator('[name="consent"]').check();
+        await unavailableBusiness.locator("[data-business-submit]").click();
+        assert.match(await unavailableBusiness.locator("[data-business-status]").innerText(),locale==="de"?/nicht bestätigt/:/nije potvrđeno/);
+        assert.deepEqual(errors.filter(message => !message.includes("status of 503 (Service Unavailable)")), [], locale + " unexpected browser errors excluding intentional 503 fallback test");
+        await page.unroute("**/api/lead/status", offlineLeadStatus);
+        errors.length = 0; // no simulated 503 may leak into the next locale's normal-path assertions
         results.push({ locale, width, home, business, auto, errors });
       }
       await page.close();

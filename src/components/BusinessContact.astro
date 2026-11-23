@@ -162,7 +162,7 @@ const de = locale === "de";
           String(values.get("name") || ""), String(values.get("email") || ""),
           String(values.get("company") || ""), String(values.get("country") || ""),
           String(values.get("direction") || ""), String(values.get("message") || "")
-        ].join("\\n");
+        ].join("\n");
         window.location.href = "mailto:info@daninihub.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
         status.textContent = de ? "E-Mail-Entwurf geöffnet, sofern ein E-Mail-Programm eingerichtet ist. Der Versand ist nicht bestätigt." : "Nacrt je otvoren ako postoji e-mail program. Slanje nije potvrđeno.";
         return;

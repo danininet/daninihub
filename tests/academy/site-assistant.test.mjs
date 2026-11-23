@@ -37,7 +37,7 @@ test('bad origin and payload are rejected before verification or AI use',async()
  const cap=mockHuman();
  try{
   assert.equal((await siteAssistantRoute(ask({},'https://evil.example'),vars)).status,403);
-  assert.equal((await siteAssistantRoute(ask({question:'x'.repeat(421)}),vars)).status,400);
+  assert.equal((await siteAssistantRoute(ask({question:'x'.repeat(621)}),vars)).status,400);
   assert.equal((await siteAssistantRoute(ask({context:'unknown'}),vars)).status,400);
   assert.equal((await siteAssistantRoute(ask({language:'en'}),vars)).status,400);
   assert.equal((await siteAssistantRoute(ask({field:'x'.repeat(66)}),vars)).status,400);
@@ -77,7 +77,7 @@ test('invalid model result does not pretend there was a successful answer',async
 });
 
 test('project selection requires a real session, never trusts supplied userId',async()=>{
- const {db,vars}=env();
+ const {db,vars}=env({ACADEMY_AUTH_ENABLED:'true',ACADEMY_INVITE_ONLY:'true',ACADEMY_AUTH_SECRET:'S'.repeat(64),MAIL_TEST_RECIPIENTS:'owner@example.invalid',SITE_ORIGIN:'https://daninihub.com',BREVO_API_KEY:'mock',DANINI_BREVO_SENDER:'owner@example.invalid'});
  try{
   let run=0;vars.AI={run(){run++;throw Error('must not infer')}};
   const mock=mockHuman();

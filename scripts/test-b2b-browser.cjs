@@ -17,6 +17,18 @@ const assert = require("node:assert/strict");
   fs.mkdirSync("outputs/b2b", { recursive: true });
   const results = [];
   try {
+    // Native submissions must never expose personal data in URL when JS is blocked.
+    for (const locale of ["de", "sr"]) {
+      const noJs = await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:820}});
+      for (const [section,selector] of [["auto-check","[data-auto-submit]"],["business","[data-business-submit]"]]) {
+        const target="http://127.0.0.1:4321/"+locale+"/"+section+"/";
+        await noJs.goto(target,{waitUntil:"domcontentloaded"});
+        assert.equal(await noJs.locator(selector).isDisabled(),true,locale+" "+section+" must fail closed without JS");
+        await noJs.locator(selector).click({force:true});
+        assert.equal(new URL(noJs.url()).search,"",locale+" "+section+" must not leak fields into URL");
+      }
+      await noJs.close();
+    }
     for (const width of [1440, 390]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       const errors = [];

@@ -381,19 +381,54 @@ if(root){
   if(turnstileId!==null){window.turnstile.reset(turnstileId);return;}
   turnstileId=window.turnstile.render('#turnstile',{sitekey:siteKey,action:'academy-login',language:de?'de':'sr',theme:'auto'});
  }
+ const pilotStatus=$('pilot-login-status'),pilotRetry=$('pilot-login-retry');
+ const pilotSubmit=$('login-form').querySelector('button[type="submit"]');
+ const pilotCopy=de?{
+  checking:'Die geschützte Testanmeldung wird geprüft. Der kostenlose Builder bleibt ohne Konto nutzbar.',
+  unavailable:'Die Testanmeldung ist noch nicht freigeschaltet. Der Builder oben funktioniert ohne Anmeldung.',
+  captcha:'Die Sicherheitsprüfung konnte nicht geladen werden. Bitte erneut versuchen. Der kostenlose Builder bleibt nutzbar.',
+  ready:'Anmeldung bereit. Nur ausdrücklich eingeladene E-Mail-Adressen können einen Einmalcode erhalten.',
+  pending:'Bitte warten, bis die Sicherheitsprüfung geladen ist.'
+ }:{
+  checking:'Proveravam prijavu. Besplatni Builder iznad radi i bez naloga.',
+  unavailable:'Test prijava još nije dostupna. Besplatni Builder iznad radi bez naloga.',
+  captcha:'Bezbednosna provera nije učitana. Pokušaj ponovo. Besplatni Builder radi bez naloga.',
+  ready:'Prijava je spremna. Samo pozvane e-mail adrese mogu primiti jednokratni kod.',
+  pending:'Sačekaj da se učita bezbednosna provera.'
+ };
+ let pilotLoading=false,pilotReady=false;
+ function pilotState(text,ready,retry){
+  pilotStatus.textContent=text;pilotReady=ready;pilotSubmit.disabled=!ready;pilotRetry.hidden=!retry;
+ }
  async function initialize(){
-  // The no-registration Builder stays available even when the invitation-only
-  // account pilot is active. Never make a free feature depend on e-mail signup.
+  // Always expose an obvious invitation-only sign-in entry point.
+  // Server allowlist, Turnstile and OTP protections remain mandatory.
   show('demo',true);renderDemo();loadAiStatus();
+  show('signin',true);
+  pilotState(pilotCopy.checking,false,false);
+  await initializePilot();
+ }
+ async function initializePilot(){
+  if(pilotLoading)return;
+  pilotLoading=true;pilotState(pilotCopy.checking,false,false);
   try{
    const config=await api('config');
-   if(!config.enabled||!config.siteKey){notice(i18n.unavailable);return}
+   if(config.enabled!==true||typeof config.siteKey!=='string'||!config.siteKey){
+    pilotState(pilotCopy.unavailable,false,true);notice(i18n.unavailable);return;
+   }
    siteKey=config.siteKey;
    const session=await api('session');
-   if(session.authenticated){show('dashboard',true);await refresh();notice(i18n.ready);return}
-   show('signin',true);await loadTurnstile();notice(i18n.ready);
-  }catch{show('signin',false);notice(i18n.unavailable)}
+   if(session.authenticated){
+    show('signin',false);show('dashboard',true);await refresh();notice(i18n.ready);return;
+   }
+   show('signin',true);
+   try{await loadTurnstile()}
+   catch{pilotState(pilotCopy.captcha,false,true);notice(pilotCopy.captcha);return}
+   pilotState(pilotCopy.ready,true,false);notice(i18n.ready);
+  }catch{show('signin',true);pilotState(pilotCopy.unavailable,false,true);notice(i18n.unavailable)}
+  finally{pilotLoading=false}
  }
+ pilotRetry.addEventListener('click',initializePilot);
  async function refresh(){
   const data=await api('projects');const list=$('project-list');list.replaceChildren();
   if($('dashboard-project-count'))$('dashboard-project-count').textContent=data.projects.length+' / 3';
@@ -415,7 +450,7 @@ if(root){
   ['a','b','c'].forEach((key,idx)=>{const wrap=append('div',null,'bb-field'),label=append('label',labels[idx+1]);const input=append('textarea');
    input.name=key;input.id='field-'+key;label.htmlFor=input.id;input.maxLength=1500;input.rows=3;input.value=saved[key]||'';wrap.append(label,input);fields.append(wrap)});
  }
- $('login-form').addEventListener('submit',async event=>{event.preventDefault();const email=$('email').value.trim();const token=window.turnstile?.getResponse(turnstileId)||'';
+ $('login-form').addEventListener('submit',async event=>{event.preventDefault();if(!pilotReady){pilotStatus.textContent=pilotCopy.pending;return}const email=$('email').value.trim();const token=window.turnstile?.getResponse(turnstileId)||'';
   try{const d=await api('auth/start','POST',{email,language:de?'de':'sr',turnstileToken:token});challenge=d.challengeId;show('verify-form',true);notice(i18n.sent)}catch{notice(i18n.generic)}finally{window.turnstile?.reset(turnstileId)}
  });
  $('verify-form').addEventListener('submit',async event=>{event.preventDefault();try{

@@ -13,6 +13,73 @@ if(root){
   noProjects:'Još nema projekata. Kreiraj svoj prvi projekat.',open:'Otvori',confirmDelete:'Trajno obrisati projekat i sav njegov sadržaj?',noFields:'Popuni bar jedno polje.',
   labels:[['Niša','Ciljna grupa','Problem kupca','Moje pretpostavke'],['Tržište','Stvarno provereni izvor i datum','Alternativa / konkurencija','Nedostajući dokazi'],['Ponuda','Konkretan rezultat','Obim i ograničenja','Cenovna hipoteza (nije objavljena)'],['Online prisustvo','Cilj sajta','Glavna poruka i stranice','Sadržaj i odobrenje za objavu'],['Operacije','Važni upiti kupaca','Proces i odgovornosti','Privatnost i odobravanja'],['Validacija','Mali tržišni test','Merilo i rok','Odluka PASS / REVIEW / STOP']]
  };
+
+ // Beginner guidance, authored examples and honest off-site AI prompt builder.
+ // This is NOT model inference. No user content is transferred without their action.
+ const beginner=de?[
+  {intro:'Wer soll das Problem lösen lassen? Beschreiben Sie zuerst EINE konkrete Kundengruppe und eine alltägliche Schwierigkeit.',fields:[
+   ['Zum Beispiel: kleine Handwerksbetriebe in Duisburg mit deutsch-serbischen Kundenanfragen.','Nennen Sie eine Branche, einen Ort oder Markt und eine konkrete Kundengruppe.'],
+   ['Zum Beispiel: Kundenanfragen gehen zwischen E-Mail und Telefon verloren.','Schreiben Sie eine beobachtbare Schwierigkeit, nicht nur „sie brauchen KI“.'],
+   ['Zum Beispiel: Ich vermute, dass Betriebe dafür bezahlen würden. Das ist noch unbewiesen.','Was glauben Sie bislang und wie könnten Sie es überprüfen?']]},
+  {intro:'Recherchieren Sie Quellen selbst und notieren Sie Datum und URL. Ein KI-Ergebnis beweist keine Nachfrage.',fields:[
+   ['Zum Beispiel: URL eines öffentlich zugänglichen Branchenforums; geprüft am TT.MM.JJJJ; konkrete Frage.','NUR tatsächlich gelesene Quellen nennen; sonst ausdrücklich „noch nicht geprüft“.'],
+   ['Zum Beispiel: manuelle Bürohilfe, bestehende CRM-Software oder andere lokale Anbieter.','Beschreiben Sie, wie Kunden das Problem heute lösen.'],
+   ['Zum Beispiel: Noch keine Gespräche mit potenziellen Kunden; Zahlungsbereitschaft unbekannt.','Welche Aussage oder Quelle fehlt noch?']]},
+  {intro:'Beschreiben Sie, was der Kunde konkret erhält – und was nicht. Preise hier sind nur eine Hypothese.',fields:[
+   ['Zum Beispiel: eine sortierte Liste von fünf Anfragen und zwei prüfbare Antwortentwürfe.','Nennen Sie ein konkretes Dokument oder Ergebnis statt „KI-Lösung“.'],
+   ['Zum Beispiel: maximal fünf Anfragen, ein Korrekturlauf, kein automatischer Versand.','Legen Sie Grenzen, Zeit und Ausschlüsse fest.'],
+   ['Zum Beispiel: Testpreis 40 EUR, noch mit keinem Kunden validiert.','Kennzeichnen Sie ausdrücklich unveröffentlichte Preisannahmen.']]},
+  {intro:'Eine Startseite braucht eine Zielgruppe, einen Nutzen und eine klare nächste Handlung – nicht sofort einen neuen Shop.',fields:[
+   ['Zum Beispiel: Interessenten sollen eine unverbindliche Anfrage mit drei Angaben senden.','Was soll eine Besucherin oder ein Besucher tun?'],
+   ['Zum Beispiel: Startseite, Leistung, Beispiel, Kontakt und Datenschutz.','Welche wenigen Seiten braucht die erste Version?'],
+   ['Zum Beispiel: ein anonymisierter Musterfall, vor Veröffentlichung menschlich geprüft.','Welche Inhalte sind vorbereitet, und wer darf sie freigeben?']]},
+  {intro:'Skizzieren Sie den Weg vom Eingang einer Anfrage zur tatsächlichen Lieferung und der menschlichen Kontrolle.',fields:[
+   ['Zum Beispiel: Name/Kontakt, Problembeschreibung und gewünschter Termin.','Welche Angaben sind erforderlich, welche ausdrücklich nicht?'],
+   ['Zum Beispiel: Anfrage → fehlende Angaben → Entwurf → eigene Freigabe → Versand.','Wer übernimmt welche Aufgabe und kontrolliert das Ergebnis?'],
+   ['Zum Beispiel: keine vertraulichen Daten an offene KI; Kundenversand erst nach Freigabe.','Beschreiben Sie Datenminimierung und eine Kontrollstelle.']]},
+  {intro:'Testen Sie nur eine kleine Annahme. Ein Plan ist keine bestätigte Nachfrage oder ein echter Umsatz.',fields:[
+   ['Zum Beispiel: drei unverbindliche Gespräche mit passenden Betrieben, ohne Massenwerbung.','Welcher zulässige kleine Test liefert neue Informationen?'],
+   ['Zum Beispiel: bis 15.12. drei dokumentierte Rückmeldungen, davon eine konkrete Angebotsanfrage.','Tragen Sie eine Frist und eine messbare Beobachtung ein.'],
+   ['Zum Beispiel: REVIEW, wenn noch Belege fehlen; STOP nach zwei Tests ohne Interesse.','Wann machen Sie weiter, prüfen erneut oder stoppen?']]}
+ ]:[
+  {intro:'Kome konkretno želiš da pomogneš i koji jedan problem rešavaš? Počni od čoveka i problema, a ne od AI tehnologije.',fields:[
+   ['Primer: male firme u Nemačkoj koje dobijaju upite na srpskom i nemačkom.','Napiši jednu grupu kupaca, tržište i po mogućnosti mesto.'],
+   ['Primer: upiti se izgube između e-maila i telefona, pa odgovor kasni.','Napiši konkretan problem koji kupac prepoznaje.'],
+   ['Primer: pretpostavljam da bi firme platile pomoć. Još nemam dokaz.','Navedite šta samo pretpostavljaš i kako to možeš proveriti.']]},
+  {intro:'Zapiši stvarne izvore i datume. AI odgovor sam po sebi nije dokaz potražnje.',fields:[
+   ['Primer: link do stvarno pročitanog javnog upita, datum provere i opis problema.','Ako nisi istraživao, napiši „još nisam proverio“, ne izmišljaj izvore.'],
+   ['Primer: firma sada odgovara ručno ili koristi postojeći CRM.','Ko rešava isti problem i kako kupci danas rade?'],
+   ['Primer: nisam razgovarao sa kupcima; ne znam da li bi platili.','Koji dokaz još nedostaje?']]},
+  {intro:'Definiši mali proizvod ili uslugu koju možeš stvarno da isporučiš, sa jasnim granicama.',fields:[
+   ['Primer: spisak pet pristiglih upita sa dva nacrta odgovora na nemačkom.','Napiši šta tačno kupac dobija: fajl, izveštaj ili konkretnu radnju.'],
+   ['Primer: do pet upita, jedna ispravka; nema slanja bez odobrenja.','Napiši šta je uključeno i šta NIJE uključeno.'],
+   ['Primer: razmišljam o testnoj ceni 40 €, ali je niko nije potvrdio.','Upiši okvirnu hipotezu o ceni, ne javni cenovnik.']]},
+  {intro:'Ne treba ti odmah savršen sajt. Odredi kome se obraćaš i koju radnju želiš od posetioca.',fields:[
+   ['Primer: posetilac šalje besplatan upit sa tri kratka podatka.','Šta tačno korisnik treba da uradi na sajtu?'],
+   ['Primer: početna, opis usluge, primer rezultata, kontakt i privatnost.','Napiši osnovne stranice i jednu rečenicu ponude.'],
+   ['Primer: anonimni demo slučaj, kontrola pre objave, bez lažnih recenzija.','Koji sadržaj pripremaš i šta moraš proveriti pre objave?']]},
+  {intro:'Objasni redosled rada: od upita preko provere do isporuke i odobrenja.',fields:[
+   ['Primer: kontakt, vrsta problema i željeni datum, bez ličnih dokumenata.','Koje minimalne informacije treba da pošalje kupac?'],
+   ['Primer: upit → pitanja → nacrt → moja provera → slanje kupcu.','Ko radi svaki korak i kako se otkriva greška?'],
+   ['Primer: ne ubacujem tuđe podatke u javni AI; ručno odobravam slanje.','Kako štitiš podatke i ko odobrava konačan rezultat?']]},
+  {intro:'Izaberi mali test, rok i jasnu odluku. Plan i pretpostavke nisu stvarni kupci.',fields:[
+   ['Primer: tri dobrovoljna razgovora sa odgovarajućim firmama.','Kako bezbedno i zakonito možeš proveriti interesovanje?'],
+   ['Primer: do 15.12. tri povratne informacije i bar jedan ozbiljan upit.','Koji merljiv signal očekuješ i do kada?'],
+   ['Primer: REVIEW ako nedostaju dokazi; STOP posle dva bezuspešna testa.','Šta znači nastavi (PASS), proveri (REVIEW), ili stani (STOP)?']]}
+ ];
+ const helperCopy=de?{
+  tip:'Was soll ich eingeben?',example:'Beispiel (nur zum Verständnis, nicht automatisch übernommen)', 
+  ai:'KI-Fragen für diesen Schritt vorbereiten',aiNote:'Dieses kostenlose Formular ruft kein KI-Modell auf. Sie können den vorbereiteten Text in einen KI-Assistenten Ihrer Wahl kopieren. Prüfen Sie alle Antworten selbst; keine personenbezogenen oder vertraulichen Daten senden.',
+  copy:'KI-Prompt kopieren',copied:'Kopiert – bitte im eigenen KI-Assistenten einfügen.',promptTitle:'Prüffragen zu meinem Geschäftsvorhaben',promptEnd:'Stelle höchstens drei priorisierte Rückfragen. Trenne nachweislich belegte Fakten, meine Annahmen und unbekannte Punkte. Erfinde keine Belege, Kunden, Preise oder Garantien. Nenne einen kostenlosen überprüfbaren nächsten Schritt. Keine Rechts- oder Steuerberatung.',
+  localCheck:'Entwurf prüfen (ohne KI)',localResult:'Automatische Vollständigkeitsprüfung – keine KI- oder Marktanalyse',
+  missing:'Noch nicht ausgefüllt',checkOk:'Es sind Angaben vorhanden. Das beweist weder Nachfrage noch Eignung.',checkSource:'Ohne echte, datierte Quelle ist die Nachfrage nicht überprüft.',checkFinish:'Vor weiteren Ausgaben die offenen Punkte mit echten Quellen prüfen.'
+ }:{
+  tip:'Šta treba da upišem?',example:'Primer (samo objašnjenje, ne popunjava se automatski)',
+  ai:'Pripremi AI pitanja za ovaj korak',aiNote:'Ovaj besplatni formular ne poziva AI model. Pripremljeni tekst možeš kopirati u AI asistenta po svom izboru. Proveri njegove odgovore; ne šalji lične ili poverljive podatke.',
+  copy:'Kopiraj AI zadatak',copied:'Kopirano — nalepi u AI asistenta.',promptTitle:'Provera moje poslovne ideje',promptEnd:'Postavi najviše tri najvažnija potpitanja. Odvoji proverene činjenice, moje pretpostavke i nepoznate informacije. Ne izmišljaj izvore, kupce, cene ni garancije. Predloži jedan besplatan način provere. Ne pružaj pravni ili poreski savet.',
+  localCheck:'Proveri nacrt (bez AI)',localResult:'Automatska provera popunjenosti — nije AI ni provera tržišta',
+  missing:'Još nije popunjeno',checkOk:'Podaci su uneti, ali to još ne dokazuje potražnju.',checkSource:'Bez stvarnog izvora i datuma potražnja nije proverena.',checkFinish:'Pre trošenja novca proveri pretpostavke na stvarnim izvorima.'
+ };
  const ids=['niche','market','offer','online_presence','operations','validation'];
  let challenge=null,turnstileId=null,siteKey=null,selected=null,stage='niche';
 
@@ -103,13 +170,48 @@ if(root){
   const fields=$('demo-fields');fields.replaceChildren();
   const info=append('p',de?'Notieren Sie Ihre eigenen Fakten und Annahmen. Ungeprüfte Angaben bitte klar markieren.':'Odvoji svoje činjenice i pretpostavke; označi sve što još nije provereno.','bb-demo-stage');
   fields.append(info);
+  const help=append('p',beginner[demoStage].intro,'bb-beginner-intro');
+  fields.append(help);
   const old=demoData.steps[ids[demoStage]]||{};
   for(const [n,key] of ['a','b','c'].entries()){
    const wrap=append('div',null,'bb-field');
    const label=append('label',labels[n+1]);const textarea=append('textarea');
    textarea.id='demo-field-'+key;textarea.name=key;textarea.maxLength=1500;textarea.rows=3;textarea.value=old[key]||'';
-   label.htmlFor=textarea.id;wrap.append(label,textarea);fields.append(wrap);
+   label.htmlFor=textarea.id;
+   textarea.placeholder=beginner[demoStage].fields[n][0];
+   const explanation=append('p',helperCopy.tip+' '+beginner[demoStage].fields[n][1],'bb-field-tip');
+   const example=append('p',helperCopy.example+': '+beginner[demoStage].fields[n][0],'bb-field-example');
+   wrap.append(label,explanation,textarea,example);fields.append(wrap);
   }
+  const tools=append('div',null,'bb-helper-panel');
+  const note=append('p',helperCopy.aiNote,'bb-field-tip');
+  const promptButton=append('button',helperCopy.ai,'bb-outline');promptButton.type='button';
+  const checkButton=append('button',helperCopy.localCheck,'bb-outline');checkButton.type='button';
+  const promptArea=append('textarea');promptArea.id='demo-ai-prompt';promptArea.readOnly=true;promptArea.hidden=true;promptArea.rows=9;promptArea.setAttribute('aria-label',helperCopy.promptTitle);
+  const copyButton=append('button',helperCopy.copy,'bb-outline');copyButton.type='button';copyButton.hidden=true;
+  const feedback=append('p',null,'bb-field-tip');feedback.id='demo-help-feedback';feedback.setAttribute('role','status');
+  function buildPrompt(){
+    captureDemo();
+    const answers=demoData.steps[ids[demoStage]]||{};
+    return [helperCopy.promptTitle, 'Projekt: '+demoData.name,
+      'Phase: '+labels[0],
+      ...['a','b','c'].map((key,n)=>labels[n+1]+': '+(answers[key]||helperCopy.missing)),
+      helperCopy.promptEnd].join('\\n');
+  }
+  promptButton.addEventListener('click',()=>{promptArea.value=buildPrompt();promptArea.hidden=false;copyButton.hidden=false;feedback.textContent='';});
+  copyButton.addEventListener('click',async()=>{promptArea.value=buildPrompt();promptArea.select();
+   try{await navigator.clipboard.writeText(promptArea.value);feedback.textContent=helperCopy.copied}
+   catch{feedback.textContent=de?'Text markieren und manuell kopieren.':'Označi tekst i kopiraj ručno.';}
+  });
+  checkButton.addEventListener('click',()=>{
+    captureDemo();
+    const values=demoData.steps[ids[demoStage]]||{};
+    const gaps=['a','b','c'].filter(key=>!(values[key]||'').trim()).map(key=>labels[['a','b','c'].indexOf(key)+1]);
+    feedback.textContent=helperCopy.localResult+': '+(gaps.length
+       ?(de?'Bitte ergänzen: ':'Dopuni: ')+gaps.join(', ')
+       :helperCopy.checkOk)+(demoStage===1?' '+helperCopy.checkSource:'')+' '+helperCopy.checkFinish;
+  });
+  tools.append(note,promptButton,checkButton,promptArea,copyButton,feedback);fields.append(tools);
  }
  function showDemoResult(){
   const result=$('demo-summary');result.replaceChildren();

@@ -34,6 +34,22 @@ async function readyFile(env,sku){
  }catch{return false;}
 }
 export async function ready(env){return configured(env)&&await readyFile(env,'guide');}
+/**
+ * Separate CONTENT quality approval from payment configuration. Required for
+ * new LIVE orders only. Existing paid downloads and sandbox remain compatible.
+ * An approval must pin the exact reviewed PDF digest from private D1.
+ */
+export async function approvedGuideForLive(env){
+ if(env.DANINI_DIGITAL_CONTENT_APPROVED!=='true')return false;
+ const expected=env.DANINI_DIGITAL_APPROVED_PDF_SHA256;
+ if(typeof expected!=='string'||! /^[a-f0-9]{64}$/.test(expected))return false;
+ // Known October 2026 legacy edition contains unverified monetary/legal claims.
+ if(expected==='b74e1f21d19ac60a38bc79c185d26fae79e490b2bafc4cff10e2f7665e6164db')return false;
+ try{
+  const file=await env.DANINI_DB.prepare('SELECT sha256,ready FROM danini_digital_files WHERE sku=? AND ready=1').bind('guide').first();
+  return !!(file?.ready===1&&file.sha256===expected);
+ }catch{return false;}
+}
 async function paypal(env,path,{method='GET',body,requestId}={}){
  const root=env.PAYPAL_ENV==='live'?'https://api-m.paypal.com':'https://api-m.sandbox.paypal.com';
  const secret=btoa(env.PAYPAL_CLIENT_ID+':'+env.PAYPAL_CLIENT_SECRET);
@@ -144,6 +160,7 @@ async function authorizedSandbox(request,env){
 }
 async function checkout(request,env,sandbox=false){
  if(!await ready(env)||sandbox!==(env.PAYPAL_ENV==='sandbox'))return err('CHECKOUT_NOT_READY',503);
+ if(!sandbox&&!await approvedGuideForLive(env))return err('CONTENT_NOT_APPROVED',503);
  if(sandbox){
   if(!await authorizedSandbox(request,env))return err('NOT_FOUND',404);
  }else if(!['https://daninihub.com','https://www.daninihub.com'].includes(request.headers.get('Origin'))){
@@ -234,7 +251,7 @@ async function webhook(request,env){
 export async function digitalRoute(request,env){
  const url=new URL(request.url),path=url.pathname;
  if(path==='/api/danini/digital/status'){
-  const on=env.PAYPAL_ENV==='live'&&await ready(env);
+  const on=env.PAYPAL_ENV==='live'&&await ready(env)&&await approvedGuideForLive(env);
   return json({ok:true,enabled:on,mode:configured(env)?env.PAYPAL_ENV:'disabled',guidePriceEur:49,softwareEnabled:false,delivery:'private-d1-pdf'});
  }
  if(path==='/api/danini/digital/checkout'&&request.method==='POST')return checkout(request,env);

@@ -257,7 +257,14 @@
     selected.questionsSeller.forEach(s=>seller.append(el('li',s)));
     result.append(seller,el('p',l.noMail));
     const actions=el('div',undefined,'advisor-answer-buttons');
-    const service=el('a',l.service);service.href='/'+(de?'de':'sr')+'/auto-check/#contact';actions.append(service);
+    const service=el('a',l.service);service.href='/'+(de?'de':'sr')+'/auto-check/#contact';
+    service.addEventListener('click',()=>{
+      try {
+        // Explicit opt-in handoff: only topic and fixed-choice answers, never free text or PII.
+        sessionStorage.setItem('danini-auto-enquiry-handoff-v1',JSON.stringify({id:selected.id,values:answers.map(a=>a.value)}));
+      }catch{ /* contact form remains accessible without sessionStorage */ }
+    });
+    actions.append(service);
     const listing=el('a',l.listing);listing.href='#listing';listing.addEventListener('click',()=>document.querySelector('.advisor-advanced')?.setAttribute('open',''));actions.append(listing);
     result.append(actions);
     question.append(button(l.back,()=>{step=MAX_QUESTIONS-1;answers=answers.slice(0,step);save();render();focusQuestion();}));

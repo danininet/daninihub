@@ -10,7 +10,7 @@
  const note=$('danini-assistant-note'),status=$('danini-assistant-status');
  const pathname=location.pathname;
  const context=pathname.includes('/akademija/')?'academy':pathname.includes('/auto-check/')?'auto':pathname.includes('/business/')?'business':'general';
- let field='',fieldName='',lastFocus=null,ready=false,busy=false,widget=null,initialized=false;
+ let field='',fieldName='',lastFocus=null,ready=false,busy=false,widget=null,initialized=false,initBusy=false;
  const T=lang==='de'?{
   noField:'Klicken Sie zuerst auf ein Formularfeld. Ich erkläre dann, was dort hineingehört.',
   generic:'Wählen Sie ein Feld aus oder stellen Sie eine konkrete Frage zum nächsten Arbeitsschritt.',
@@ -23,7 +23,11 @@
   auto:'Geben Sie Inseratslink oder kopierte Fahrzeugangaben, Standort und ein konkretes Anliegen ein. Ein Link bestätigt weder FIN noch Zustand. Keine Ausweiskopien, Karten- oder personenbezogenen Daten.',
   details:{business:{name:'Bitte geben Sie Ihren Namen als Kontaktperson ein.',email:'Ihre erreichbare geschäftliche E-Mail, z. B. kontakt@beispiel.de.',company:'Firmenname, falls vorhanden; Sie können dieses Feld leer lassen.',country:'Welchen DACH-Markt betrifft Ihre Anfrage: DE, AT oder CH?',direction:'Wählen Sie die Richtung der Zusammenarbeit, falls bekannt.',service:'Wählen Sie die Leistung, die Ihrer Frage am nächsten kommt; die Details werden vor der Beauftragung geklärt.',message:'Beschreiben Sie einen konkreten Ablauf: Was passiert heute, wo entstehen Probleme und welches Ergebnis wünschen Sie?'},auto:{source:'Kopieren Sie Inseratstext oder Link und möglichst Modell, Erstzulassung, Kilometerstand und Preis. Nur ein Link ist kein überprüfter Beleg.',location:'Tragen Sie den Ort oder die Postleitzahl des Fahrzeugstandorts ein, falls bekannt.',intent:'Wählen Sie, ob es um Dokumente, Verkäuferfragen oder einen möglichen unabhängigen Vor-Ort-Check geht.',name:'Name der Kontaktperson.',email:'E-Mail für eine Antwort, ohne Passwörter oder Zahlungsdaten.'}},
   business:'Nennen Sie eine bestehende Anfrage oder Routine, die Schwierigkeit und das gewünschte Ergebnis. Eine Anfrage ist keine kostenpflichtige Bestellung.',
-  aiOff:'KI-Fragen sind aktuell nicht verfügbar. Die kostenlosen Feldhilfen funktionieren weiterhin.',
+  aiOff:'KI ist derzeit serverseitig deaktiviert. Die kostenlosen Feldhilfen bleiben verfügbar.',
+  aiLoad:'Die Sicherheitsprüfung konnte nicht geladen werden. Kostenlosen Hinweis nutzen oder KI-Verbindung erneut prüfen.',
+  aiRetry:'KI-Verbindung erneut prüfen',
+  aiReady:'KI ist bereit. Frage eingeben, Sicherheitsprüfung abschließen und erst dann senden.',
+  aiStatusError:'KI-Status ist derzeit nicht erreichbar. Die kostenlosen Hinweise bleiben verfügbar.',
   aiWait:'KI-Antwort wird vorbereitet …',aiError:'Keine bestätigte KI-Antwort. Versuchen Sie es später; die Feldhilfe bleibt verfügbar.',
   aiLimit:'Das gemeinsame Tageslimit der kostenlosen KI-Hilfe ist erreicht.',
   token:'Bitte zuerst die Sicherheitsprüfung abschließen.',
@@ -41,7 +45,11 @@
   auto:'Unesi link ili kopirane podatke iz oglasa, mesto vozila i konkretno pitanje. Sam link ne potvrđuje VIN ni stanje. Ne unosi lična dokumenta ili podatke kartice.',
   details:{business:{name:'Upiši ime osobe koja šalje poslovni upit.',email:'Unesi poslovnu e-mail adresu na koju možemo odgovoriti, npr. kontakt@primer.de.',company:'Naziv firme ako postoji; ovo polje nije obavezno.',country:'Izaberi koje DACH tržište je relevantno: Nemačka, Austrija ili Švajcarska.',direction:'Izaberi smer poslovne saradnje, ako ga znaš.',service:'Izaberi najbližu uslugu. Detaljan obim i uslovi se utvrđuju pre dogovora.',message:'Opiši jedan konkretan postupak: šta sada radiš, gde nastaje problem i kakav rezultat želiš.'},auto:{source:'Nalepi tekst oglasa ili link i, ako znaš, marku, model, godište, kilometražu i cenu. Link sam po sebi nije potvrda oglasa.',location:'Upiši grad ili poštanski broj gde se auto nalazi, ako znaš.',intent:'Izaberi da li želiš pomoć oko dokumenata, pitanja prodavcu ili moguće nezavisne provere.',name:'Ime kontakt osobe.',email:'Adresa na koju želiš odgovor; bez lozinki ili podataka kartice.'}},
   business:'Navedi jedan postojeći postupak ili upit, šta sada ne radi i koji konkretan rezultat očekuješ. Upit nije plaćena narudžbina.',
-  aiOff:'AI pitanja trenutno nisu dostupna. Besplatna pomoć uz polja i dalje radi.',
+  aiOff:'AI servis je trenutno isključen. Besplatna objašnjenja polja i dalje rade.',
+  aiLoad:'Bezbednosna provera nije učitana. Možeš koristiti besplatno objašnjenje ili ponovo proveriti AI vezu.',
+  aiRetry:'Ponovo proveri AI vezu',
+  aiReady:'AI je spreman. Unesi pitanje, završi bezbednosnu proveru i tek onda pošalji.',
+  aiStatusError:'Status AI servisa trenutno nije dostupan. Besplatna objašnjenja i dalje rade.',
   aiWait:'Pripremam AI odgovor …',aiError:'Nije dobijen potvrđen AI odgovor. Probaj kasnije; pomoć uz polja ostaje dostupna.',
   aiLimit:'Zajednička dnevna kvota besplatne AI pomoći je dostignuta.',
   token:'Prvo završi bezbednosnu proveru.',
@@ -78,19 +86,33 @@
  toggle.addEventListener('click',()=>panel.hidden?open():shut());close.addEventListener('click',shut);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)shut()});
  local.addEventListener('click',()=>{explain();lastFocus?.focus({preventScroll:true})});
+ function unavailable(message){
+  ready=false;ask.hidden=true;status.textContent=message;
+  retry.hidden=false;
+ }
+ const retry=$('danini-assistant-retry');
+ retry.addEventListener('click',initialize);
  async function initialize(){
+  if(initBusy||busy)return;
+  initBusy=true;retry.hidden=true;
+  status.textContent=lang==='de'?'KI-Verbindung wird geprüft …':'Proveravam AI vezu …';
   try{
-   const res=await fetch('/api/assistant/status',{cache:'no-store'});
+   const res=await fetch('/api/assistant/status',{cache:'no-store',signal:AbortSignal.timeout(10000)});
+   if(!res.ok){unavailable(T.aiStatusError);return;}
    const data=await res.json();
-   if(!res.ok||data.enabled!==true||typeof data.siteKey!=='string'){status.textContent=T.aiOff;return;}
+   if(data.enabled!==true){unavailable(T.aiOff);return;}
+   if(typeof data.siteKey!=='string'||data.siteKey.length<7){unavailable(T.aiStatusError);return;}
    if(!window.turnstile){
-    const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;
+    const script=document.createElement('script');
+    script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;
     await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
    }
-   if(!window.turnstile){status.textContent=T.aiOff;return;}
+   if(!window.turnstile){unavailable(T.aiLoad);return;}
+   if(widget!==null){window.turnstile.remove(widget);widget=null;}
    widget=window.turnstile.render(verify,{sitekey:data.siteKey,action:'danini-assistant',language:lang,theme:'auto'});
-   ready=true;ask.hidden=false;status.textContent='';
-  }catch{status.textContent=T.aiOff}
+   ready=true;ask.hidden=false;retry.hidden=true;status.textContent=T.aiReady;
+  }catch{unavailable(T.aiLoad);}
+  finally{initBusy=false;}
  }
  ask.addEventListener('click',async()=>{
   if(!ready||busy)return;

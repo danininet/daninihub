@@ -108,7 +108,7 @@
     await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
    }
    if(!window.turnstile){unavailable(T.aiLoad);return;}
-   if(widget!==null){window.turnstile.remove(widget);widget=null;}
+   if(widget!==null){window.turnstile.remove?.(widget);widget=null;}
    widget=window.turnstile.render(verify,{sitekey:data.siteKey,action:'danini-assistant',language:lang,theme:'auto'});
    ready=true;ask.hidden=false;retry.hidden=true;status.textContent=T.aiReady;
   }catch{unavailable(T.aiLoad);}

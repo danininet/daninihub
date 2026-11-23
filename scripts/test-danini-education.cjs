@@ -129,3 +129,24 @@ for(const [fg,bg,label] of [
  ['#075e58','#ffffff','light form links']
 ])assert.ok(contrastRatio(fg,bg)>=4.5,label+' contrast AA failed');
 console.log('PASS issue #268 dark CTA contrast, light forms and first-party SVG icon guards');
+
+// P0 availability regression: the FREE six-step builder is publicly active even when protected OTP storage is disabled.
+const builderSource=fs.readFileSync(path.join(__dirname,'../src/pages/[locale]/akademija/builder/index.astro'),'utf8');
+const builderClient=fs.readFileSync(path.join(__dirname,'../public/js/academy-builder.js'),'utf8');
+const homepageSource=fs.readFileSync(path.join(__dirname,'../src/components/DaniniLanding.astro'),'utf8');
+for(const lang of ['de','sr']){
+ const builderHtml=page(lang+'/akademija/builder/index.html');
+ const homeHtml=page(lang+'/index.html');
+ const academyHtml=page(lang+'/akademija/index.html');
+ assert.ok(builderHtml.includes('id="demo"'),'free Builder missing '+lang);
+ assert.ok(!builderHtml.includes('noindex,follow'),'free Builder incorrectly hidden from SEO '+lang);
+ assert.ok(homeHtml.includes('/'+lang+'/akademija/builder/'),'homepage free Builder CTA missing '+lang);
+ assert.ok(academyHtml.includes('/'+lang+'/akademija/builder/'),'Academy free Builder CTA missing '+lang);
+}
+assert.ok(!builderSource.includes('geschützter Pilot')&&!builderSource.includes('zaštićeni pilot'),'obsolete pilot title');
+assert.ok(!builderSource.includes('Noch nicht öffentlich freigeschaltet')&&!builderSource.includes('Još nije javno aktiviran'),'incorrect unavailable metadata');
+assert.ok(!builderClient.includes('Der Business Builder wird vorbereitet')&&!builderClient.includes('AI Business Builder je u pripremi'),'incorrect runtime availability banner');
+assert.match(builderClient,/Besplatni Business Builder je aktivan/,'missing SR positive availability');
+assert.match(builderClient,/Der kostenlose Business Builder ist jetzt nutzbar/,'missing DE positive availability');
+assert.ok(homepageSource.includes('Kostenlosen Business Builder starten'),'homepage active product CTA missing');
+console.log('PASS live free Builder availability messaging, DE/SR home CTAs and indexability');

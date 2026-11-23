@@ -233,10 +233,12 @@ async function disabled(browser) {
   const response=await page.goto(BASE+'/sr/akademija/builder/',{waitUntil:'domcontentloaded'});
   assert.equal(response?.status(),200);
   await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('Besplatni Business Builder je aktivan'));
-  assert.equal(await page.locator('#signin').isVisible(),false);
+  assert.equal(await page.locator('#signin').isVisible(),true,'Invite-only sign-in stays discoverable');
+  assert.equal(await page.locator('#login-form button[type="submit"]').isDisabled(),true,'OTP must remain disabled');
+  assert.ok((await page.locator('#pilot-login-status').innerText()).includes('nije dostupna'),'Show clear unavailable state');
   assert.equal(await page.locator('#dashboard').isVisible(),false);
   await context.close();
-  console.log('PASS disabled: no login or public registration visible');
+  console.log('PASS disabled: sign-in info visible, OTP disabled and guest Builder usable');
 }
 
 async function optionalAi(browser,language){

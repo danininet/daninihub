@@ -210,6 +210,33 @@ jobs:
           }
           console.log('PASS production Turnstile and Brevo readiness; no customer email sent');
           NODE
+      - name: Verify published free Builder and active public catalog (DE/SR)
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          for (const lang of ['de','sr']) {
+            const root='https://daninihub.com/'+lang;
+            const pages={};
+            for (const [key,path] of Object.entries({builder:'/akademija/builder/',home:'/',academy:'/akademija/',catalog:'/wissen/produkte/'})) {
+              const response=await fetch(root+path+'?qa=20261123-live',{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(20000)});
+              assert.equal(response.status,200,lang+' '+key+' HTTP status');
+              pages[key]=await response.text();
+            }
+            const b=pages.builder,h=pages.home,a=pages.academy,p=pages.catalog;
+            assert.ok(b.includes(lang==='de'?'Kostenloser Online Business Builder':'Besplatni Online Business Builder'),lang+' free Builder title missing');
+            assert.ok(!b.includes('Noch nicht öffentlich freigeschaltet')&&!b.includes('Još nije javno aktiviran'),lang+' stale pilot metadata still public');
+            assert.ok(!b.includes('noindex,follow'),lang+' free Builder incorrectly noindex');
+            assert.ok(b.includes('/js/academy-builder.js')&&b.includes('id="demo-export"'),lang+' usable free Builder missing');
+            assert.ok(h.includes('/'+lang+'/akademija/builder/'),lang+' home CTA missing');
+            assert.ok(a.includes('/'+lang+'/akademija/builder/'),lang+' academy CTA missing');
+            assert.ok(p.includes('/'+lang+'/akademija/builder/'),lang+' products CTA missing');
+            assert.ok(!p.includes('Javna prodaja isključena')&&!p.includes('Öffentlicher Verkauf deaktiviert'),lang+' unavailable paid catalog still shown');
+            console.log('PASS LIVE '+lang+' free Builder, active home/academy/catalog, no stale disabled label');
+          }
+          NODE
+
+# Owner-authorized 2026-11-23: publish active DE/SR Builder/correct catalog PR #277 at merge 0d314c521471f253174d2f7236a3a1ebb2d69327. No payment, DNS, legal or new paid AI calls.
+
 # PR208 production release trigger 2026-11-13: workflow content touched to start guarded main deployment.
 
 # P0 verified redeploy 2026-11-16: integrate PR223 Brevo trace, preserve DE/SR storefront.

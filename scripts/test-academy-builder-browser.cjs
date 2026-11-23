@@ -71,6 +71,7 @@ async function scenario(browser, language, width) {
     }));
     throw e;
   }
+  assert.equal(await page.locator('#demo').isVisible(),true,'Free Builder remains visible with pilot login');
   await page.locator('#email').fill(language==='de'?'alice@beispiel.test':'ana@primer.test');
   await page.locator('#login-form button').click();
   await page.locator('#verify-form').waitFor({state:'visible'});

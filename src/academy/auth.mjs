@@ -25,15 +25,11 @@ function testRecipients(env){
  return [...String(env.MAIL_TEST_RECIPIENT||'').split(','),...String(env.MAIL_TEST_RECIPIENTS||'').split(',')]
    .map(x=>x.trim().toLowerCase()).filter(Boolean);
 }
-function stagingSite(env){
- try{const u=new URL(env.SITE_ORIGIN);return u.hostname.endsWith('.workers.dev')||u.hostname.includes('-staging');}
- catch{return true;}
-}
 export function isConfigured(env){
  const ready=env.ACADEMY_AUTH_ENABLED==='true' && typeof env.ACADEMY_AUTH_SECRET==='string' && env.ACADEMY_AUTH_SECRET.length>=48 && !!env.DANINI_DB && !!env.SITE_ORIGIN && !!env.DANINI_TURNSTILE_SITEKEY && !!env.DANINI_TURNSTILE_SECRET && !!env.BREVO_API_KEY && !!env.DANINI_BREVO_SENDER;
- // Staging always requires an explicit allowlist: accidentally toggling a flag
- // must not turn the preview Worker into public customer registration.
- return !!ready && (!stagingSite(env)||testRecipients(env).length>0);
+ // Explicit invitation-only pilot applies to production AND staging. Never infer
+ // permission to register the public from being on the production hostname.
+ return !!ready && env.ACADEMY_INVITE_ONLY==='true' && testRecipients(env).length>0;
 }
 function parseCookie(request){const all=request.headers.get('cookie')||'';const pair=all.split(';').map(x=>x.trim()).find(x=>x.startsWith(COOKIE+'='));const token=pair?.slice(COOKIE.length+1)||'';return HEX.test(token)?token.toLowerCase():null;}
 async function bumpRate(db,keyHash,limit,windowSeconds,now){
@@ -60,7 +56,7 @@ export async function requestLogin(request,env,input){
  const language=input?.language;
  if(email.length>254||!EMAIL.test(email)||!['sr','de'].includes(language))throw err(400,'invalid_input');
  const allowlist=testRecipients(env);
- if(allowlist.length && !allowlist.includes(email))throw err(403,'test_recipient_only');
+ if(!allowlist.includes(email))throw err(403,'test_recipient_only');
  const now=nowSeconds();
  const emailHash=await mac(env.ACADEMY_AUTH_SECRET,'email:'+email);
  const ipHash=await mac(env.ACADEMY_AUTH_SECRET,'ip:'+(request.headers.get('cf-connecting-ip')||'unknown'));

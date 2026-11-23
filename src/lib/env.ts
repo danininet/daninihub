@@ -1,5 +1,8 @@
 export interface Env {
   ACADEMY_AUTH_ENABLED?: string;
+  ACADEMY_INVITE_ONLY?: string;
+  MAIL_TEST_RECIPIENTS?: string;
+  MAIL_TEST_RECIPIENT?: string;
   ACADEMY_AUTH_SECRET?: string;
   ACCESS_TEAM_DOMAIN?: string;
   ACCESS_AUD?: string;
@@ -24,7 +27,6 @@ export interface Env {
   AI_API_KEY?: string;
   AI_MODEL?: string;
   AI_PROCESSING_APPROVED?: string;
-  MAIL_TEST_RECIPIENT?: string;
   BREVO_API_KEY?: string;
   DANINI_BREVO_SENDER?: string;
   DANINI_NOTIFY_TO?: string;

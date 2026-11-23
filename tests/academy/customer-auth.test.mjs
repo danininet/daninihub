@@ -14,8 +14,9 @@ function fresh(){
    async first(){return db.prepare(query).get(...args)||null},
    async all(){return {results:db.prepare(query).all(...args)}}
  }}}}};
- const env={ACADEMY_AUTH_ENABLED:'true',ACADEMY_AUTH_SECRET:'5'.repeat(64),SITE_ORIGIN:origin,
-  DANINI_DB:dbApi,BREVO_API_KEY:'test',DANINI_BREVO_SENDER:'internal@example.test',DANINI_TURNSTILE_SECRET:'testing',DANINI_TURNSTILE_SITEKEY:'1x00000000000000000000AA',MAIL_TEST_RECIPIENT:undefined};
+ const env={ACADEMY_AUTH_ENABLED:'true',ACADEMY_INVITE_ONLY:'true',ACADEMY_AUTH_SECRET:'5'.repeat(64),SITE_ORIGIN:origin,
+  DANINI_DB:dbApi,BREVO_API_KEY:'test',DANINI_BREVO_SENDER:'internal@example.test',DANINI_TURNSTILE_SECRET:'testing',DANINI_TURNSTILE_SITEKEY:'1x00000000000000000000AA',
+  MAIL_TEST_RECIPIENTS:'alice@example.test,bob@example.test,a@example.test,b@example.test,same@example.test,any@example.test,test@example.test,one@example.test'};
  return {db,env};
 }
 function send(path,method='GET',body,opts={}){
@@ -111,6 +112,12 @@ test('Academy configuration discloses only public Turnstile key when all require
   const r=await academyRoute(send('/api/academy/config'),env);
   assert.equal(r.status,200);
   assert.deepEqual(await r.json(),{enabled:true,siteKey:'1x00000000000000000000AA'});
+  env.MAIL_TEST_RECIPIENTS='';
+  assert.equal((await academyRoute(send('/api/academy/config'),env)).status,404);
+  env.MAIL_TEST_RECIPIENTS='alice@example.test';
+  env.ACADEMY_INVITE_ONLY='false';
+  assert.equal((await academyRoute(send('/api/academy/config'),env)).status,404);
+  env.ACADEMY_INVITE_ONLY='true';
   delete env.BREVO_API_KEY;
   assert.equal((await academyRoute(send('/api/academy/config'),env)).status,404);
   env.ACADEMY_AUTH_ENABLED='false';
@@ -135,6 +142,7 @@ test('staging remains closed without recipient allowlist and rejects other recip
  const {env,db}=fresh();const mock=fakeProviders();
  try{
   env.SITE_ORIGIN='https://danini-b2b-staging.example.workers.dev';
+  env.MAIL_TEST_RECIPIENTS='';
   assert.equal((await academyRoute(send('/api/academy/config'),env)).status,404);
   env.MAIL_TEST_RECIPIENTS='alice@example.test, bob@example.test';
   assert.equal((await academyRoute(send('/api/academy/config'),env)).status,200);

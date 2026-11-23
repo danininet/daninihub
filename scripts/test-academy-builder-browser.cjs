@@ -283,6 +283,65 @@ async function optionalAi(browser,language){
  }finally{await context.close()}
 }
 
+
+async function turnstileRacing(browser,language){
+ const context=await browser.newContext({viewport:{width:390,height:844}});
+ const page=await context.newPage(),errors=[];let scriptRequests=0;
+ page.on('pageerror',err=>errors.push(err.message));
+ await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',async route=>{
+  scriptRequests++;
+  await route.fulfill({status:200,contentType:'application/javascript',body:`
+   window.turnstile={render:function(target){const box=document.querySelector(target);if(!box)throw Error('missing target');
+      return target.includes('demo')?5:7;},reset:function(){},getResponse:function(){return 'MOCK_TEST_TOKEN_LONG'}};
+  `});
+ });
+ await page.route('**/api/academy/**',route=>{
+  const p=new URL(route.request().url()).pathname;
+  if(p.endsWith('/config'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({enabled:true,siteKey:'1x00000000000000000000AA'})});
+  if(p.endsWith('/session'))return route.fulfill({status:200,contentType:'application/json',body:'{"authenticated":false}'});
+  if(p.endsWith('/ai/status'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({enabled:true,siteKey:'1x00000000000000000000AA'})});
+  return route.fulfill({status:404,contentType:'application/json',body:'{"error":"not_found"}'});
+ });
+ try{
+  const res=await page.goto(BASE+'/'+language+'/akademija/builder/',{waitUntil:'domcontentloaded'});
+  assert.equal(res.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#pilot-login-status')?.textContent?.includes(
+   document.documentElement.lang==='de'?'Anmeldung bereit':'Prijava je spremna'),null,{timeout:15000});
+  assert.equal(scriptRequests,1,'Turnstile script must be loaded only once even when Academy AI and OTP boot simultaneously');
+  assert.equal(await page.locator('#login-form button[type="submit"]').isEnabled(),true);
+  assert.equal(await page.locator('#demo-ai-controls').isVisible(),true,'Academy AI should share the loaded widget script');
+  assert.deepEqual(errors,[],'Race-condition browser errors');
+  console.log('PASS '+language+' Academy AI and OTP use ONE Turnstile script, both widgets initialize');
+ }finally{await context.close()}
+}
+async function turnstileFailure(browser,language){
+ const context=await browser.newContext({viewport:{width:390,height:844}});
+ const page=await context.newPage();let scriptAttempts=0;
+ await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',route=>{
+  scriptAttempts++;return route.abort('failed');
+ });
+ await page.route('**/api/academy/**',route=>{
+  const p=new URL(route.request().url()).pathname;
+  if(p.endsWith('/config'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({enabled:true,siteKey:'1x00000000000000000000AA'})});
+  if(p.endsWith('/session'))return route.fulfill({status:200,contentType:'application/json',body:'{"authenticated":false}'});
+  if(p.endsWith('/ai/status'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({enabled:true,siteKey:'1x00000000000000000000AA'})});
+  return route.fulfill({status:404,contentType:'application/json',body:'{"error":"not_found"}'});
+ });
+ try{
+  const res=await page.goto(BASE+'/'+language+'/akademija/builder/',{waitUntil:'domcontentloaded'});
+  assert.equal(res.status(),200);
+  await page.locator('#pilot-login-retry').waitFor({state:'visible',timeout:15000});
+  assert.equal(await page.locator('#login-form button[type="submit"]').isEnabled(),false);
+  assert.equal(await page.locator('#demo').isVisible(),true,'Guest Builder remains functional when Turnstile script is blocked');
+  const status=await page.locator('#pilot-login-status').innerText();
+  assert.ok(status.includes(language==='de'?'Sicherheitsprüfung':'bezbednosna provera'));
+  await page.locator('#pilot-login-retry').click();
+  await page.waitForFunction(()=>document.querySelector('#pilot-login-retry')?.hidden===false);
+  assert.ok(scriptAttempts>=2,'Retry must actually attempt a new Turnstile script download');
+  console.log('PASS '+language+' blocked Turnstile explains failure, fails closed and retries without enabling OTP');
+ }finally{await context.close()}
+}
+
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH || undefined,args:['--no-sandbox']});
  try{
@@ -290,5 +349,7 @@ async function optionalAi(browser,language){
   await disabled(browser);
   for(const lang of ['sr','de'])for(const width of [390,1440])await preview(browser,lang,width);
   for(const lang of ['sr','de'])await optionalAi(browser,lang);
+  for(const lang of ['sr','de'])await turnstileRacing(browser,lang);
+  for(const lang of ['sr','de'])await turnstileFailure(browser,lang);
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

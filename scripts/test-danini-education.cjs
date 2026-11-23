@@ -23,7 +23,8 @@ for(const lang of ['de','sr']){
  assert.ok(academy.includes('DANINI')&&academy.includes('AutoDanini'),'education examples missing '+lang);
  assert.ok(academy.includes('data-education-print'),'printable worksheet missing '+lang);
  assert.equal((academy.match(/class="ed-prompt"/g)||[]).length,3,'expected three AI prompts '+lang);
- assert.equal((academy.match(/<textarea[^>]*maxlength=/g)||[]).length,5,'expected five worksheet fields '+lang);
+ const worksheetFields=(academy.match(/<textarea[^>]*maxlength=/g)||[]).filter(tag=>!tag.includes('danini-assistant-question'));
+ assert.equal(worksheetFields.length,5,'expected five worksheet fields (excluding shared assistant) '+lang);
  assert.equal((academy.match(/class="ed-module ed-live"/g)||[]).length,3,'three free modules live '+lang);
  assert.equal((academy.match(/class="ed-module ed-pending"/g)||[]).length,3,'three modules remain planned '+lang);
  assert.ok(!/garantovana zarada|guaranteed income|garantiertes Einkommen/i.test(academy),'income promise forbidden '+lang);

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {configured,ready,verifiedCapture,downloadToken,tokenValid,digitalRoute} from '../workers/danini-digital-commerce.mjs';
+import {configured,ready,approvedGuideForLive,verifiedCapture,downloadToken,tokenValid,digitalRoute} from '../workers/danini-digital-commerce.mjs';
 const ref='DGD-'+'A'.repeat(32);
 const sku='guide';
 const fakePaid={reference:ref,sku,email:'buyer@example.test',language:'de',amount_cents:4900,status:'PAID',paid_at:new Date().toISOString(),paypal_order_id:'9TESTORDER99'};
@@ -126,4 +126,28 @@ test('offline simulated checkout -> PayPal capture -> D1 -> private PDF -> email
   const badSignature=await digitalRoute(new Request('https://daninihub.com/api/danini/digital/paypal/webhook',{method:'POST',body:'{}'}),env);
   assert.equal(badSignature.status,403);
  }finally{globalThis.fetch=original;}
+});
+
+test('P0: unreviewed 2026 guide may not be offered via live checkout despite live PayPal flags',async()=>{
+ const db=mockDb({withFile:true}),env={...baseEnv,DANINI_DB:db,PAYPAL_ENV:'live',DANINI_DIGITAL_LIVE_APPROVED:'true'};
+ // Provider credentials and original PDF storage alone must never authorize paid Live orders.
+ assert.equal(await ready(env),true);
+ assert.equal(await approvedGuideForLive(env),false);
+ let status=await digitalRoute(new Request('https://daninihub.com/api/danini/digital/status'),env);
+ assert.equal((await status.json()).enabled,false);
+ const body={sku:'guide',email:'buyer@example.test',language:'de',termsAccepted:true,instantDeliveryConsent:true};
+ let out=await digitalRoute(new Request('https://daninihub.com/api/danini/digital/checkout',{
+  method:'POST',headers:{Origin:'https://daninihub.com','content-type':'application/json'},body:JSON.stringify(body)
+ }),env);
+ assert.equal(out.status,503);
+ assert.equal((await out.json()).error,'CONTENT_NOT_APPROVED');
+ assert.equal(db.records.size,0,'No unpaid order should be created');
+ // Attempting to approve the unrevised production PDF checksum is explicitly rejected.
+ const legacy='b74e1f21d19ac60a38bc79c185d26fae79e490b2bafc4cff10e2f7665e6164db';
+ assert.equal(await approvedGuideForLive({...env,DANINI_DIGITAL_CONTENT_APPROVED:'true',DANINI_DIGITAL_APPROVED_PDF_SHA256:legacy}),false);
+ assert.equal(await approvedGuideForLive({...env,DANINI_DIGITAL_CONTENT_APPROVED:'true',DANINI_DIGITAL_APPROVED_PDF_SHA256:'0'.repeat(64)}),false);
+ // Once the final material has actually been reviewed and imported, the digest gate is satisfiable;
+ // this does not remove the independent live merchant/legal/price/consent prerequisites.
+ const digest=createHash('sha256').update(db.bytes).digest('hex');
+ assert.equal(await approvedGuideForLive({...env,DANINI_DIGITAL_CONTENT_APPROVED:'true',DANINI_DIGITAL_APPROVED_PDF_SHA256:digest}),true);
 });

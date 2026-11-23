@@ -314,7 +314,7 @@ jobs:
           import assert from 'node:assert/strict';
           const origin='https://daninihub.com';
           const cfg=await fetch(origin+'/api/academy/config',{signal:AbortSignal.timeout(16000),cache:'no-store'});
-          assert.ok([200,404].includes(cfg.status),'Unexpected Academy config status '+cfg.status);
+          assert.equal(cfg.status,200,'Owner-invited Academy login must be configured (check signing-secret length and invite list)');
           if(cfg.status===200){
             const body=await cfg.json();
             assert.equal(body.enabled,true,'Unexpected enabled Academy config');
@@ -326,6 +326,7 @@ jobs:
             assert.equal(res.status,200);
             const html=await res.text();
             assert.ok(html.includes('id="demo"')&&html.includes('id="dashboard"')&&html.includes('id="delete-account"'),'Free Builder or customer pilot UI missing: '+lang);
+            assert.ok(html.includes('href="#signin"')&&html.includes('id="pilot-login-status"')&&html.includes('id="pilot-login-retry"'),'Visible invited FREE login not published: '+lang);
           }
           const denied=await fetch(origin+'/api/academy/auth/start',{method:'POST',headers:{origin,'content-type':'application/json'},
              body:JSON.stringify({email:'not-invited@example.invalid',language:'sr',turnstileToken:'INVALID-TEST-ONLY'}),
@@ -382,3 +383,5 @@ jobs:
 # Owner-approved 2026-11-23: publish PR #285 DE/SR AI status/retry clarification after six green CI workflows. Preserve all existing Free quotas, paid/OTP gates and pricing.
 
 # 2026-11-23: runtime cache-propagation retry for release 285 after initial CDN page returned old markup; acceptance still requires the new DE/SR helper and retry.
+
+# Owner-approved P0 2026-11-23: PR #287 merged after 6/6 green workflows; deploy visible DE/SR FREE pilot login and require config=200 + uninvited rejection. No price/payment/DNS changes.

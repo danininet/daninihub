@@ -30,6 +30,56 @@ if(root){
   resetConfirm:'Trajno obrisati sve unete odgovore iz ove kartice?',
   nameError:'Prvo unesi naziv projekta.'
  };
+
+ const packageCopy=de?{
+  title:'Mein Online-Business – operatives Startpaket',
+  disclaimer:'Arbeitsentwurf aus Ihren Eingaben. DANINI hat keine Angaben unabhängig verifiziert, keine KI-Analyse ausgeführt und keinen Markterfolg geprüft.',
+  sources:'Vom Nutzer genannte Quellen (noch unabhängig zu prüfen)',
+  assumptions:'Annahmen und offene Hypothesen',
+  next:'Nächste konkrete Prüfschritte',
+  missingSources:'Noch keine datierte Quelle angegeben. Öffentliche Quellen und deren Datum dokumentieren.',
+  missingAssumptions:'Zielgruppe, Nachfrage, Nutzen und Preis sind bis zur Prüfung als Hypothesen zu behandeln.',
+  missingNext:'Einen kleinen Nachfragetest festlegen, Ergebnis dokumentieren und danach entscheiden.',
+  empty:'Noch nicht ausgefüllt',
+  exportText:'Als lesbaren Text speichern',
+  print:'Startpaket drucken / als PDF speichern'
+ }:{
+  title:'Moj online biznis — početni operativni paket',
+  disclaimer:'Radni nacrt iz tvojih unosa. DANINI nije nezavisno proverio podatke, izvršio AI analizu niti potvrdio tržišnu potražnju.',
+  sources:'Izvori koje korisnik navodi (tek treba nezavisno proveriti)',
+  assumptions:'Pretpostavke i otvorene hipoteze',
+  next:'Naredni konkretni koraci za proveru',
+  missingSources:'Još nema navedenog izvora i datuma. Zabeleži javne izvore i datum provere.',
+  missingAssumptions:'Ciljnu grupu, potražnju, korist i cenu tretiraj kao hipoteze dok se ne provere.',
+  missingNext:'Odredi mali test potražnje, dokumentuj rezultat i tek onda donesi odluku.',
+  empty:'Nije popunjeno',
+  exportText:'Sačuvaj kao čitljiv tekst',
+  print:'Odštampaj paket / sačuvaj kao PDF'
+ };
+ function packageEvidence(){
+  const niche=demoData.steps.niche||{},market=demoData.steps.market||{},offer=demoData.steps.offer||{},validation=demoData.steps.validation||{};
+  return [
+   [packageCopy.sources,market.a?.trim()?[market.a.trim()]:[packageCopy.missingSources]],
+   [packageCopy.assumptions,[niche.c,offer.c].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()).length?[niche.c,offer.c].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()):[packageCopy.missingAssumptions]],
+   [packageCopy.next,[market.c,validation.a,validation.b].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()).length?[market.c,validation.a,validation.b].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()):[packageCopy.missingNext]]
+  ];
+ }
+ function packageText(){
+  const lines=[packageCopy.title,demoData.name,'',packageCopy.disclaimer,''];
+  ids.forEach((id,i)=>{
+   lines.push((i+1)+'. '+i18n.labels[i][0]);
+   ['a','b','c'].forEach((key,j)=>lines.push(i18n.labels[i][j+1]+': '+(demoData.steps[id]?.[key]?.trim()||packageCopy.empty)));
+   lines.push('');
+  });
+  for(const [heading,items] of packageEvidence()){lines.push(heading);for(const item of items)lines.push('- '+item);lines.push('');}
+  return lines.join('\n');
+ }
+ function saveLocalText(filename,content){
+  const url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'}));
+  const link=append('a');link.href=url;link.download=filename;link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }
+
  function captureDemo(){
   demoData.name=$('demo-title').value.trim();
   const values={};
@@ -46,6 +96,8 @@ if(root){
   $('demo-back').disabled=demoStage===0;
   $('demo-next').textContent=demoStage===5?demoCopy.finish:demoCopy.next;
   $('demo-export').textContent=demoCopy.export;
+  $('demo-text').textContent=packageCopy.exportText;
+  $('demo-print').textContent=packageCopy.print;
   $('demo-edit').textContent=demoCopy.edit;
   $('demo-reset').textContent=demoCopy.reset;
   const fields=$('demo-fields');fields.replaceChildren();
@@ -61,7 +113,8 @@ if(root){
  }
  function showDemoResult(){
   const result=$('demo-summary');result.replaceChildren();
-  result.append(append('h4',demoData.name));
+  result.append(append('h4',packageCopy.title+' — '+demoData.name));
+  result.append(append('p',packageCopy.disclaimer,'bb-evidence-note'));
   for(let i=0;i<6;i++){
     const step=append('section',null,'bb-demo-row');step.append(append('strong',(i+1)+'. '+i18n.labels[i][0]));
     const vals=demoData.steps[ids[i]]||{};
@@ -71,6 +124,12 @@ if(root){
       if(value){step.append(append('strong',i18n.labels[i][n+1]),append('p',value));}
     }
     result.append(step);
+  }
+  for(const [heading,items] of packageEvidence()){
+   const section=append('section',null,'bb-evidence-section');
+   section.append(append('h5',heading));
+   for(const item of items)section.append(append('p',item));
+   result.append(section);
   }
   show('demo-form',false);show('demo-result',true);
  }
@@ -96,6 +155,9 @@ if(root){
   const a=append('a');a.href=url;a.download='danini-builder-preview-'+(de?'de':'sr')+'.json';a.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
  });
+
+ $('demo-text').addEventListener('click',()=>saveLocalText('danini-online-business-startpaket-'+(de?'de':'sr')+'.txt',packageText()));
+ $('demo-print').addEventListener('click',()=>window.print());
 
  function notice(message){$('notice').textContent=message}
  function show(id,visible){$(id).hidden=!visible}

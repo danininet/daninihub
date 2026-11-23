@@ -158,6 +158,34 @@ async function preview(browser,language,width){
  assert.equal(payload.project.steps.length,6);
  assert.equal(payload.project.steps[0].fields.a,'Napisani podatak 0');
  assert.equal(payload.project.steps[5].fields.a,'Napisani podatak 5');
+ // Verify the real new free-preview controls (not just existence of buttons).
+ const expectedHeading=language==='sr'?'Moj online biznis — početni operativni paket':'Mein Online-Business – operatives Startpaket';
+ const rendered=await page.locator('#demo-summary').innerText();
+ assert.ok(rendered.includes(expectedHeading),'Missing localized package title');
+ assert.ok(rendered.includes(language==='sr'?'Pretpostavke i otvorene hipoteze':'Annahmen und offene Hypothesen'),'Missing hypothesis section');
+ assert.ok(rendered.includes(language==='sr'?'Naredni konkretni koraci za proveru':'Nächste konkrete Prüfschritte'),'Missing next-step section');
+ const textEvent=page.waitForEvent('download');
+ await page.locator('#demo-text').click();
+ const textDownload=await textEvent;
+ assert.equal(textDownload.suggestedFilename(),'danini-online-business-startpaket-'+language+'.txt');
+ const textData=readFileSync(await textDownload.path(),'utf8');
+ assert.ok(textData.includes(expectedHeading),'TXT lacks localized heading');
+ assert.ok(textData.includes('Napisani podatak 0')&&textData.includes('Napisani podatak 5'),'TXT lost data');
+ await page.evaluate(()=>{window.__academyPrintCalled=false;window.print=()=>{window.__academyPrintCalled=true}});
+ await page.locator('#demo-print').click();
+ assert.equal(await page.evaluate(()=>window.__academyPrintCalled),true,'Print action did not call window.print');
+ await page.emulateMedia({media:'print'});
+ const visibility=await page.evaluate(()=>({
+  result:getComputedStyle(document.getElementById('demo-result')).visibility,
+  actions:getComputedStyle(document.querySelector('#demo-result .bb-demo-actions')).display
+ }));
+ assert.equal(visibility.result,'visible','Dossier hidden in print');
+ assert.equal(visibility.actions,'none','Interactive controls appeared in print');
+ const pdf=await page.pdf({format:'A4',printBackground:true});
+ assert.equal(pdf.subarray(0,5).toString(),'%PDF-','Invalid PDF');
+ assert.ok(pdf.length>2000,'PDF unexpectedly empty');
+ await page.emulateMedia({media:'screen'});
+ console.log('PASS Builder '+language+' '+width+'px: DE/SR TXT, evidence labels, print action, valid Chromium PDF '+pdf.length+' bytes');
  await page.locator('#demo-edit').click();
  assert.equal(await page.locator('#demo-field-a').inputValue(),'Napisani podatak 5');
  await page.locator('#demo-back').click();

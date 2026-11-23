@@ -37,7 +37,7 @@ const de = locale === "de";
       <label class="ac-consent"><input type="checkbox" name="consent" required /> <span>{de ? "Ich willige in die Verarbeitung dieser konkreten Anfrage ein und habe die " : "Saglasan/saglasna sam sa obradom ovog upita i pročitao/la sam "} <a href={"/"+locale+"/datenschutz/"}>{de ? "Datenschutzhinweise gelesen" : "pravila privatnosti"}</a> *</span></label>
       <div class="ac-captcha" data-auto-captcha aria-label={de ? "Sicherheitsprüfung" : "Bezbednosna provera"}></div>
       <div class="ac-trust" aria-label={de ? "Transparenz und Datenschutz" : "Transparentnost i privatnost"}><span>{de ? "Turnstile gegen Spam" : "Turnstile protiv spama"}</span><span>{de ? "Keine Zahlung durch Anfrage" : "Upit ne pokreće naplatu"}</span><span>{de ? "Keine technische Fahrzeuggarantie" : "Bez garancije stanja vozila"}</span></div>
-      <button data-auto-submit type="submit">{de ? "Fahrzeuganfrage senden" : "Pošalji zahtev za vozilo"}</button>
+      <button data-auto-submit type="submit" disabled>{de ? "Fahrzeuganfrage senden" : "Pošalji zahtev za vozilo"}</button>
       <p class="ac-disclaimer" style="color:#43566b;font-size:.76rem;line-height:1.55;margin:0">{de ? "Der Link wird nur als Hinweis auf das Inserat aufgenommen; Fahrzeugdaten werden dadurch nicht automatisch bestätigt. Das Formular ist durch Cloudflare Turnstile geschützt. Keine Ausweisdokumente, Zahlungsdaten oder sensiblen Bilder senden. Für Screenshots nutzen Sie die direkte E-Mail und fügen Dateien selbst hinzu." : "Link se prima kao izvor oglasa, ali se podaci o vozilu time ne potvrđuju automatski. Formular štiti Cloudflare Turnstile. Ne šaljite dokumenta, podatke za plaćanje ni osetljive fotografije. Screenshotove možete priložiti kroz direktan e-mail."}</p>
       <p class="ac-status" data-auto-status role="status" aria-live="polite">{de ? "Sicherheitsprüfung wird geladen …" : "Učitavanje bezbednosne provere …"}</p>
     </form>
@@ -177,6 +177,9 @@ const de = locale === "de";
         status.textContent=de?"Versand nicht bestätigt. Bitte vor erneutem Senden per E-Mail nachfragen, ob Ihre Anfrage eingegangen ist.":"Prijem nije potvrđen. Pre ponovnog slanja proverite mejlom da li je zahtev stigao.";
       }finally{busy=false;reset();}
     });
+    // Never allow a native GET request with visitor data when the script fails.
+    // The protected submit handler is now attached; enable a safe interactive action.
+    submit.disabled = false;
     void init();
   }
 </script>

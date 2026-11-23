@@ -327,6 +327,11 @@ jobs:
             const html=await res.text();
             assert.ok(html.includes('id="demo"')&&html.includes('id="dashboard"')&&html.includes('id="delete-account"'),'Free Builder or customer pilot UI missing: '+lang);
             assert.ok(html.includes('href="#signin"')&&html.includes('id="pilot-login-status"')&&html.includes('id="pilot-login-retry"'),'Visible invited FREE login not published: '+lang);
+          const academyScript=await fetch(origin+'/js/academy-builder.js?release=turnstile-otp-288',{signal:AbortSignal.timeout(16000),cache:'no-store'});
+          assert.equal(academyScript.status,200,'Academy JS unavailable');
+          const academyCode=await academyScript.text();
+          assert.ok(academyCode.includes('turnstileScriptPromise')&&academyCode.includes('turnstile_script_blocked')&&academyCode.includes('Cloudflare bezbednosna provera nije učitana'),'Fixed shared Turnstile loader not publicly deployed');
+
           }
           const denied=await fetch(origin+'/api/academy/auth/start',{method:'POST',headers:{origin,'content-type':'application/json'},
              body:JSON.stringify({email:'not-invited@example.invalid',language:'sr',turnstileToken:'INVALID-TEST-ONLY'}),
@@ -385,3 +390,5 @@ jobs:
 # 2026-11-23: runtime cache-propagation retry for release 285 after initial CDN page returned old markup; acceptance still requires the new DE/SR helper and retry.
 
 # Owner-approved P0 2026-11-23: PR #287 merged after 6/6 green workflows; deploy visible DE/SR FREE pilot login and require config=200 + uninvited rejection. No price/payment/DNS changes.
+
+# Owner-authorized 2026-11-23: deploy PR #288 shared Turnstile loader, OTP fail-closed, DE/SR status and retry. Regression CI 5/5 green including real browser script race. Preserve all secrets, D1 bindings, AI quotas, pricing, live payments, DNS.

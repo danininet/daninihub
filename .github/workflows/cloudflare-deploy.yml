@@ -238,6 +238,7 @@ jobs:
 # Owner-authorized 2026-11-23: publish active DE/SR Builder/correct catalog PR #277 at merge 0d314c521471f253174d2f7236a3a1ebb2d69327. No payment, DNS, legal or new paid AI calls.
 
 # Owner-authorized 2026-11-23 P0 product safety + Academy beginners: PR #278 and #279 merged, target 6 guided DE/SR steps and old-PDF live sale guard. Preserve sandbox, B2B, AutoDanini, legal and DNS settings. Verify site after deployment.
+# Authorized P0 2026-11-23: publish PR #280 guarded Academy AI code (9/9 checks); ACADEMY_AI_ENABLED and DANINI_ACADEMY_AI_SPEND_APPROVED remain UNSET, no model inference or billing change. Only public free Builder keeps working.
 # PR208 production release trigger 2026-11-13: workflow content touched to start guarded main deployment.
 
 # P0 verified redeploy 2026-11-16: integrate PR223 Brevo trace, preserve DE/SR storefront.

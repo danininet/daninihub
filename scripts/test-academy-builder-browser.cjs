@@ -72,6 +72,8 @@ async function scenario(browser, language, width) {
     throw e;
   }
   assert.equal(await page.locator('#demo').isVisible(),true,'Free Builder remains visible with pilot login');
+  assert.equal(await page.locator('#login-form button[type="submit"]').isDisabled(),false,'Configured sign-in button should be enabled');
+  assert.ok((await page.locator('#pilot-login-status').innerText()).includes(language==='de'?'bereit':'spremna'));
   await page.locator('#email').fill(language==='de'?'alice@beispiel.test':'ana@primer.test');
   await page.locator('#login-form button').click();
   await page.locator('#verify-form').waitFor({state:'visible'});
@@ -139,7 +141,9 @@ async function preview(browser,language,width){
  const res=await page.goto(BASE+'/'+language+'/akademija/builder/',{waitUntil:'domcontentloaded'});
  assert.equal(res?.status(),200);
  await page.locator('#demo').waitFor({state:'visible',timeout:15000});
- assert.equal(await page.locator('#signin').isVisible(),false);
+ await page.locator('#signin').waitFor({state:'visible',timeout:10000});
+ assert.equal(await page.locator('#login-form button[type="submit"]').isDisabled(),true,'Guest sign-in must remain inactive until pilot config is available');
+ assert.ok((await page.locator('#pilot-login-status').innerText()).includes(language==='de'?'nicht freigeschaltet':'nije dostupna'),'Visible pilot status missing');
  assert.equal(await page.locator('#dashboard').isVisible(),false);
  await page.locator('#demo-title').fill('Moja demonstraciona ideja');
  for(let i=0;i<6;i++){

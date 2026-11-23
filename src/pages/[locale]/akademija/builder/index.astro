@@ -36,13 +36,26 @@ const de=locale==="de";
   </div>
   <p class="bb-fine">{de?"Privater Entwurf ohne Speicherung oder Kauf. Keine Passwörter, fremden personenbezogenen Daten oder vertraulichen Unterlagen eingeben.":"Privatni nacrt bez čuvanja i kupovine. Ne unosi lozinke, tuđe lične podatke ni poverljivu dokumentaciju."}</p>
  </section>
- <section class="bb-card" id="signin" hidden>
+ <section class="bb-card bb-pilot" id="signin" hidden>
+  <p class="bb-demo-label">{de?"EINGELADENER FREE-PILOT":"POZIVNI FREE PILOT"}</p>
+  <p>{de?"Nur für ausdrücklich eingeladene Testpersonen. Die kostenlose Erstellung eines lokalen Geschäftsplans bleibt oben ohne Anmeldung verfügbar.":"Samo za izričito pozvane test korisnike. Besplatni formular iznad ostaje dostupan bez naloga."}</p>
   <h2>{de?"Mit E-Mail anmelden":"Prijavi se preko e-maila"}</h2>
   <p>{de?"Sie erhalten einen einmaligen Code. Keine automatische Newsletter-Anmeldung.":"Dobićeš jednokratni kod. Nema automatske prijave na newsletter."}</p>
   <form id="login-form"><label for="email">E-mail</label><input type="email" name="email" id="email" maxlength="254" required autocomplete="email" /><div id="turnstile"></div><button class="bb-btn" type="submit">{de?"Einmalcode senden":"Pošalji kod za prijavu"}</button></form>
   <form id="verify-form" hidden><label for="otp">{de?"8-stelliger Einmalcode":"Jednokratni kod (8 cifara)"}</label><input id="otp" name="code" required pattern="[0-9]{8}" inputmode="numeric" autocomplete="one-time-code" maxlength="8" /><button type="submit" class="bb-btn">{de?"Anmelden":"Prijavi se"}</button></form>
  </section>
- <section id="dashboard" hidden>
+ <section id="dashboard" hidden aria-label={de?"Mein DANINI Arbeitsbereich":"Moj DANINI radni prostor"}>
+  <div class="bb-card bb-account-overview">
+    <p class="bb-demo-label">DANINI CUSTOMER OFFICE · FREE PILOT</p>
+    <h2>{de?"Mein kostenloser Arbeitsbereich":"Moj besplatni radni prostor"}</h2>
+    <p>{de?"Hier können Sie bis zu drei Entwürfe speichern und später weiterbearbeiten. Ihre Projektangaben sind nicht unabhängig geprüft. Keine Bezahlung, kein Abonnement.":"Ovde možeš sačuvati do tri poslovna nacrta i nastaviti rad kasnije. Uneti podaci nisu nezavisno provereni. Nema plaćanja niti pretplate."}</p>
+    <div class="bb-dashboard-cards">
+      <div class="bb-dashboard-card"><strong>{de?"Meine Projekte":"Moji projekti"}</strong><span id="dashboard-project-count">0 / 3</span><small>{de?"Privat gespeichert; jederzeit exportierbar oder löschbar.":"Privatno sačuvani; možeš ih izvesti ili obrisati."}</small></div>
+      <div class="bb-dashboard-card"><strong>{de?"KI-Hilfe":"AI pomoć"}</strong><span>{de?"Kostenlos, begrenzt":"Besplatno, ograničeno"}</span><small>{de?"Gemeinsame Tagesquote; kein garantierter Anspruch auf eine bestimmte Anzahl.":"Zajednička dnevna kvota; broj dostupnih analiza nije garantovan."}</small></div>
+      <div class="bb-dashboard-card"><strong>{de?"Tarif und Bestellung":"Paket i narudžbine"}</strong><span>FREE</span><small>{de?"Keine aktiven Käufe oder kostenpflichtigen Mitgliedschaften in diesem Pilot.":"U ovom pilotu nema aktivnih kupovina ni plaćenog članstva."}</small></div>
+    </div>
+    <p>{de?"Hilfe zu Formularen:":"Pomoć pri popunjavanju:"} <a href="mailto:info@daninihub.com">info@daninihub.com</a></p>
+  </div>
   <div class="bb-top"><h2>{de?"Meine Projekte":"Moji projekti"}</h2><button type="button" id="logout" class="bb-outline">{de?"Abmelden":"Odjavi se"}</button></div>
   <form id="new-project" class="bb-card bb-new"><label for="project-title">{de?"Projektname":"Naziv projekta"}</label><input id="project-title" name="title" required maxlength="120" placeholder={de?"z. B. Online-Büroservice":"npr. Online administrativna podrška"} /><button class="bb-btn" type="submit">{de?"Projekt erstellen":"Kreiraj projekat"}</button></form>
   <div class="bb-layout"><nav id="project-list" class="bb-card" aria-label={de?"Gespeicherte Projekte":"Sačuvani projekti"}></nav>
@@ -52,6 +65,12 @@ const de=locale==="de";
     <form id="step-form"><div id="step-fields"></div><button class="bb-btn" type="submit">{de?"Arbeitsschritt speichern":"Sačuvaj korak"}</button></form>
     <div class="bb-danger"><button type="button" id="delete-project" class="bb-outline">{de?"Projekt löschen":"Obriši projekat"}</button></div>
    </section></div>
+  <section class="bb-card bb-account-controls" aria-label={de?"Datenschutz und Kontoeinstellungen":"Privatnost i podešavanja naloga"}>
+    <h3>{de?"Konto und Datenschutz":"Nalog i privatnost"}</h3>
+    <p>{de?"Alle Entwürfe als JSON exportieren Sie einzeln über die jeweilige Projektseite. Mit der Konto-Löschung werden die gespeicherten Projekte und aktiven Sitzungen entfernt.":"Svaki projekat možeš posebno da izvezeš kao JSON. Brisanjem naloga uklanjaju se sačuvani projekti i aktivne sesije."}</p>
+    <button type="button" id="delete-account" class="bb-outline">{de?"Konto und Projekte endgültig löschen":"Trajno obriši nalog i projekte"}</button>
+    <p>{de?"Bestätigen Sie nur, wenn Sie vorher alle benötigten Exporte gesichert haben.":"Potvrdi tek nakon što sačuvaš potrebne izvoze."}</p>
+  </section>
  </section>
  <p class="bb-fine">{de?"Ohne Erfolgsgarantie. Daten werden nur nach Anmeldung gespeichert; bei abgeschalteter Pilotfunktion werden keine Projekte angenommen. Teilen Sie keine fremden personenbezogenen Daten, Passwörter oder Geschäftsgeheimnisse.":"Bez garancije uspeha. Podaci se čuvaju tek nakon prijave; kada je pilot isključen, projekti se ne primaju. Ne unosite tuđe lične podatke, lozinke niti poslovne tajne."}</p>
 </div>
@@ -59,7 +78,18 @@ const de=locale==="de";
 <style>
 .bb-hero{background:linear-gradient(115deg,#0b2437,#0c5862);color:white;padding:clamp(50px,7vw,90px) 0}.bb-hero .wrap{max-width:1070px}.bb-eyebrow{font-size:.78rem;font-weight:850;letter-spacing:.15em;color:#f5d98d}.bb-hero h1{font-size:clamp(2rem,4.5vw,3.4rem);line-height:1.13;color:#fff;max-width:850px}.bb-hero p:last-of-type{color:#e9f4f7;max-width:780px;font-size:1.13rem}.bb-start-link{display:inline-flex;margin-top:12px;border-radius:9px;background:#f7d87e;color:#122f40!important;font-weight:850;text-decoration:none;padding:14px 20px}.bb-start-link:hover,.bb-start-link:focus-visible{background:#fff0b0}
 .bb-shell{max-width:1070px;padding:35px 22px 70px}.bb-notice{background:#e6f4f5;color:#16444a;border-left:4px solid #0d727a;padding:13px 17px;border-radius:5px}
-.bb-card{background:#fff;border:1px solid #c7d6df;border-radius:15px;padding:clamp(18px,3vw,30px);margin:18px 0;box-shadow:0 12px 28px #0b304010}.bb-card h2,.bb-card h3,.bb-card h4{color:#12374a}.bb-card input,.bb-card textarea{display:block;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;width:100%;max-width:610px;font:inherit}.bb-card label{font-weight:780;color:#193d50;display:block;margin:14px 0 7px}.bb-btn{background:#075e65;color:#fff;border:2px solid #075e65;min-height:48px;padding:11px 19px;border-radius:8px;font-weight:850;cursor:pointer;margin-top:15px}.bb-btn:hover{background:#034c52}.bb-outline{background:#fff;border:2px solid #37757d;color:#074e54;border-radius:8px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:800}.bb-card button:focus-visible,.bb-card input:focus-visible,.bb-card textarea:focus-visible{outline:3px solid #b07c1e;outline-offset:3px}.bb-top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.bb-layout{display:grid;grid-template-columns:minmax(230px,.65fr) minmax(0,1.5fr);gap:20px}.bb-project{display:block;border:1px solid #91b2be;background:#f5fafb;color:#114052;text-align:left;border-radius:8px;padding:13px;width:100%;font:inherit;cursor:pointer;margin:8px 0}.bb-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}.bb-tab{background:#f3f8fa;color:#174151;border:1px solid #84a5b2;border-radius:8px;padding:9px 11px;font:inherit;cursor:pointer}.bb-tab[aria-pressed="true"]{background:#104d5b;color:#fff}.bb-field{margin:15px 0}.bb-field textarea{max-width:100%;min-height:85px;resize:vertical}.bb-danger{border-top:1px solid #cedde4;margin-top:28px;padding-top:14px}.bb-fine{color:#385a69;font-size:.91rem;margin-top:24px}#turnstile{margin:15px 0;min-height:65px}.bb-new{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.bb-new label{flex-basis:100%;margin:0}.bb-new input{flex:1;min-width:210px}.bb-new button{margin:0}@media(max-width:780px){.bb-layout{grid-template-columns:1fr}.bb-shell{padding:22px 16px 55px}.bb-hero{padding:48px 0}.bb-card{padding:20px}}
+.bb-card{background:#fff;border:1px solid #c7d6df;border-radius:15px;padding:clamp(18px,3vw,30px);margin:18px 0;box-shadow:0 12px 28px #0b304010}.bb-card h2,.bb-card h3,.bb-card h4{color:#12374a}.bb-account-overview{border-top:5px solid #0b7379;background:#f6fbfc}
+.bb-account-overview p,.bb-account-controls p{color:#31485a;line-height:1.6}
+.bb-dashboard-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:19px 0}
+.bb-dashboard-card{display:grid;gap:8px;background:#fff;border:1px solid #c5d9df;border-radius:12px;padding:17px;min-width:0}
+.bb-dashboard-card strong{font-size:.95rem;color:#103950}
+.bb-dashboard-card span{font-size:1.1rem;font-weight:850;color:#0b615a}
+.bb-dashboard-card small{font-size:.79rem;color:#365568;line-height:1.5}
+.bb-account-controls{border-top:3px solid #b3c8d5}
+.bb-account-controls button{border-color:#984a4a;color:#7e2727}
+.bb-pilot{border:2px solid #aacad1}
+@media(max-width:760px){.bb-dashboard-cards{grid-template-columns:1fr}}
+.bb-card input,.bb-card textarea{display:block;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;width:100%;max-width:610px;font:inherit}.bb-card label{font-weight:780;color:#193d50;display:block;margin:14px 0 7px}.bb-btn{background:#075e65;color:#fff;border:2px solid #075e65;min-height:48px;padding:11px 19px;border-radius:8px;font-weight:850;cursor:pointer;margin-top:15px}.bb-btn:hover{background:#034c52}.bb-outline{background:#fff;border:2px solid #37757d;color:#074e54;border-radius:8px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:800}.bb-card button:focus-visible,.bb-card input:focus-visible,.bb-card textarea:focus-visible{outline:3px solid #b07c1e;outline-offset:3px}.bb-top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.bb-layout{display:grid;grid-template-columns:minmax(230px,.65fr) minmax(0,1.5fr);gap:20px}.bb-project{display:block;border:1px solid #91b2be;background:#f5fafb;color:#114052;text-align:left;border-radius:8px;padding:13px;width:100%;font:inherit;cursor:pointer;margin:8px 0}.bb-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}.bb-tab{background:#f3f8fa;color:#174151;border:1px solid #84a5b2;border-radius:8px;padding:9px 11px;font:inherit;cursor:pointer}.bb-tab[aria-pressed="true"]{background:#104d5b;color:#fff}.bb-field{margin:15px 0}.bb-field textarea{max-width:100%;min-height:85px;resize:vertical}.bb-danger{border-top:1px solid #cedde4;margin-top:28px;padding-top:14px}.bb-fine{color:#385a69;font-size:.91rem;margin-top:24px}#turnstile{margin:15px 0;min-height:65px}.bb-new{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.bb-new label{flex-basis:100%;margin:0}.bb-new input{flex:1;min-width:210px}.bb-new button{margin:0}@media(max-width:780px){.bb-layout{grid-template-columns:1fr}.bb-shell{padding:22px 16px 55px}.bb-hero{padding:48px 0}.bb-card{padding:20px}}
 
 /* Dynamic no-login preview: JavaScript creates labels, textarea and helper paragraphs
    without Astro's data-astro attribute. Scoped rules alone do not reach those nodes.

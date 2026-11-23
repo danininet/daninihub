@@ -282,12 +282,14 @@ jobs:
               const res=await request('/'+locale+page);
               assert.equal(res.status,200,'Missing page '+locale+page);
               const html=await res.text();
-              assert.ok(html.includes('danini-assistant-toggle')&&html.includes('danini-assistant-panel'),'Assistant missing '+locale+page);
+              assert.ok(html.includes('danini-assistant-toggle')&&html.includes('danini-assistant-panel')&&html.includes('danini-assistant-retry'),'Assistant help/retry missing '+locale+page);
             }
           }
           const script=await request('/js/danini-site-assistant.js');
           assert.equal(script.status,200,'Assistant browser script missing');
-          assert.ok((await script.text()).includes('danini-assistant-ask'));
+          const scriptContent=await script.text();
+          assert.ok(scriptContent.includes('danini-assistant-ask'));
+          assert.ok(scriptContent.includes('danini-assistant-retry')&&scriptContent.includes('AI servis je trenutno isključen'),'Assistant retry/status fix not live');
           const bad=await request('/api/assistant/ask',{method:'POST',headers:{origin:'https://invalid.example','content-type':'application/json'},
             body:JSON.stringify({language:'sr',context:'academy',field:'Idea',question:'How to complete this?',turnstileToken:'INVALID_TEST_TOKEN_001'})});
           assert.equal(bad.status,403,'Invalid origin was not rejected before AI call');
@@ -359,3 +361,5 @@ jobs:
 # Owner-authorized P0 launch 2026-11-23: publish merged PR #276 at 52cd7feb7d8d69314b7ff492fb5db2dc2d89777f, prechecked 6/6 CI; Academy local-only DE/SR printable starter pack. No pricing/legal/DNS/payment changes.
 
 # Approved invitation-only FREE Academy customer workspace PR #284 merged 2026-11-23. Existing D1 tables added after bookmark; no public OTP until distinct secret and owner invite allowlist. Guest Builder remains public, no paid packages enabled.
+
+# Owner-approved 2026-11-23: publish PR #285 DE/SR AI status/retry clarification after six green CI workflows. Preserve all existing Free quotas, paid/OTP gates and pricing.

@@ -77,9 +77,10 @@ try {
     assert.equal(await page.locator('[data-question]').count(),3);
     assert.equal(await page.locator('[data-risk-row]').count(),3);
     assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth+2),true,locale+' '+viewport.name+' advisor overflow');
+    await page.locator('.advisor-advanced').evaluate(el=>el.open=true);
     for(let i=0;i<3;i++)await page.locator('[data-question]').nth(i).locator('button[data-answer]').first().click();
     assert.match(await page.locator('#advisor-status').textContent(),locale==='de'?/Alle drei Antworten/:/Sva tri odgovora/);
-    await page.locator('details').evaluate(el=>el.open=true);
+    await page.locator('.advisor-panel details').evaluate(el=>el.open=true);
     await page.locator('#cost-price').fill('12000');
     await page.locator('#cost-transport').fill('250');
     await page.locator('#cost-fees').fill('90');

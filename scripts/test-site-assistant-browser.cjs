@@ -11,6 +11,7 @@ async function scenario(browser,locale,section,width){
   const req=route.request(),url=new URL(req.url());
   if(url.pathname.endsWith('/status'))return route.fulfill({status:200,contentType:'application/json',
     body:JSON.stringify({enabled:true,siteKey:'0x000000000000TEST'})});
+  if(url.pathname.endsWith('/projects'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({authenticated:true,projects:[{id:'123e4567-e89b-42d3-a456-426614174000',title:'Moj online biznis',language:locale}]})});
   const data=req.postDataJSON();calls.push(data);
   return route.fulfill({status:200,contentType:'application/json',
    body:JSON.stringify({aiUsed:true,answer:locale==='de'?'Schreiben Sie zuerst eine konkrete Kundengruppe.':'Prvo napiši jednu konkretnu ciljnu grupu.',
@@ -29,14 +30,27 @@ async function scenario(browser,locale,section,width){
   assert.ok((await page.locator('#danini-assistant-reply').innerText()).length>30);
   assert.equal(calls.length,0,'Local form help must not call AI');
   await page.locator('#danini-assistant-ask').waitFor({state:'visible'});
+  await page.locator('#danini-assistant-project-reload').click();
+  await page.locator('#danini-assistant-project').selectOption('123e4567-e89b-42d3-a456-426614174000');
   await page.locator('#danini-assistant-question').fill(locale==='de'?'Was muss ich in das aktuelle Feld eingeben?':'Šta tačno treba da napišem u izabrano polje?');
   await page.locator('#danini-assistant-ask').click();
   await page.waitForFunction(()=>document.querySelector('#danini-assistant-reply')?.textContent?.includes('Proveri svoj nacrt.')||
    document.querySelector('#danini-assistant-reply')?.textContent?.includes('Überprüfen Sie'));
   assert.equal(calls.length,1);
   assert.equal(calls[0].language,locale);assert.equal(calls[0].context,section);
+  assert.equal(calls[0].projectId,'123e4567-e89b-42d3-a456-426614174000');
+  assert.deepEqual(calls[0].history,[]);
   assert.ok(calls[0].question.length>=8);
   assert.ok(!JSON.stringify(calls[0]).includes('PRIVATNA_PROBNA_VREDNOST'),'Form values were leaked automatically');
+  assert.equal(await page.locator('#danini-assistant-history .da-turn').count(),2);
+  assert.ok((await page.locator('#danini-assistant-history').innerText()).includes('DANINI AI:'));
+  await page.locator('#danini-assistant-question').fill(locale==='de'?'Wie könnte ich diese Idee als Online-Unternehmen testen?':'Kako da testiram ideju za sopstveno online preduzeće?');
+  await page.locator('#danini-assistant-ask').click();
+  await page.waitForFunction(()=>document.querySelectorAll('#danini-assistant-history .da-turn').length===4);
+  assert.equal(calls.length,2);
+  assert.equal(calls[1].history.length,2);
+  await page.locator('#danini-assistant-project').selectOption('');
+  assert.equal(await page.locator('#danini-assistant-history .da-turn').count(),0,'Changing project must clear current chat context');
   assert.equal(errs.length,0,'Page script error: '+errs.join('; '));
   await page.keyboard.press('Escape');
   assert.equal(await page.locator('#danini-assistant-panel').isVisible(),false);

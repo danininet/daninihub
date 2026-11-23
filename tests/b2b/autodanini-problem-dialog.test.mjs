@@ -21,7 +21,7 @@ test('all five situations provide three DE/SR questions and practical German sel
      assert.equal(getQuestion(scenario,MAX_QUESTIONS,answers,de),null);
    }
    assert.ok(scenario.questionsSeller.every(x=>x.endsWith('?')),scenario.id+' seller questions');
- });
+ }
 });
 test('next question depends on previous answer, including unknown; no repeated question',()=>{
  for (const scenario of subjects){

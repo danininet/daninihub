@@ -56,6 +56,23 @@ for(const lang of ['de','sr']){
 }
 console.log('PASS DANINI academy sitemap / de sr');
 
+// Free Builder must produce a readable offline operational package without using AI or server storage.
+for(const lang of ['de','sr']){
+ const builder=page(lang+'/akademija/builder/index.html');
+ assert.ok(builder.includes('id="demo-print"'),'missing printable packet action '+lang);
+ assert.ok(builder.includes('id="demo-text"'),'missing readable text export '+lang);
+ assert.ok(builder.includes('id="demo-export"'),'existing JSON export removed '+lang);
+ assert.ok(builder.includes('/js/academy-builder.js'),'existing client-only demo script missing '+lang);
+}
+const builderScript=fs.readFileSync(path.join(__dirname,'../public/js/academy-builder.js'),'utf8');
+assert.match(builderScript,/function packageEvidence\(/,'evidence grouping missing');
+assert.match(builderScript,/function packageText\(/,'readable operational text missing');
+assert.match(builderScript,/window\.print\(\)/,'print action missing');
+assert.match(builderScript,/text\/plain;charset=utf-8/,'offline UTF-8 download missing');
+assert.match(builderScript,/DANINI nije nezavisno proverio podatke/,'SR disclosure missing');
+assert.match(builderScript,/DANINI hat keine Angaben unabhängig verifiziert/,'DE disclosure missing');
+console.log('PASS Academy Builder DE/SR printable offline starter pack and evidence labeling');
+
 
 /* Visual regression guard: Academy 3-step diagrams, light knowledge sections,
    and measurable AA contrast. No brittle screenshot-only assertion. */

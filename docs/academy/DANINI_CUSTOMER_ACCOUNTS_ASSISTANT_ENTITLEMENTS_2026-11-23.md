@@ -41,6 +41,10 @@ Desktop sidebar/top navigation + mobile bottom/accessible menu:
 ## Admission and product-order gates
 1. Confirm actual commercial and privacy notices (controller identity, legal basis, retention, Brevo OTP, platform subprocessors, required B2C withdrawal/cancellation and digital content conformity).
 2. Apply existing additive Academy D1 migration to production **only** after schema review and backup; verify foreign keys, account segregation and deletion.
+   - Production pilot must have `ACADEMY_INVITE_ONLY=true` and a nonempty, owner-controlled `MAIL_TEST_RECIPIENTS` allowlist. Both staging AND production fail closed without them.
+   - `ACADEMY_AUTH_ENABLED=true` is permitted only when independently signed `ACADEMY_AUTH_SECRET` exists and the actual OTP delivery to the invited owner is verified.
+   - Guest Builder stays visible alongside opt-in sign-in; switching on account functionality must never gate the public free form.
+   - Pilot rollout does not authorize public FREE registration, purchases, subscriptions or marketing messages.
 3. Configure `ACADEMY_AUTH_SECRET` as a separate secret, allowlist the first test inbox, validate actual Turnstile + Brevo OTP delivery and logout/session ownership. Owner Cloudflare Access stays separate.
 4. Customer dashboard only shows data retrieved for authenticated `userId`. Test IDOR, CSRF, session rotation/expiry, race conditions, read/write/delete, export and accessibility; no email address in public analytics.
 5. Define `plan_products`, `account_entitlements`, `subscriptions`, `usage_records` with migrations **only** when approved. Enforce limits in Worker/API and D1, not client strings or PayPal button visibility. Existing commerce order status never grants entitlement without verified provider capture.

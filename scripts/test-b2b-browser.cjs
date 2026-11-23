@@ -167,7 +167,7 @@ const assert = require("node:assert/strict");
         await unavailableBusiness.locator('[name="consent"]').check();
         await unavailableBusiness.locator("[data-business-submit]").click();
         assert.match(await unavailableBusiness.locator("[data-business-status]").innerText(),locale==="de"?/nicht bestätigt/:/nije potvrđeno/);
-        assert.deepEqual(errors, [], locale + " browser errors including AutoDanini");
+        assert.deepEqual(errors.filter(message => !message.includes("status of 503 (Service Unavailable)")), [], locale + " unexpected browser errors excluding intentional 503 fallback test");
         results.push({ locale, width, home, business, auto, errors });
       }
       await page.close();

@@ -126,7 +126,7 @@
       deposit:/kapar|avans|uplati|anzahlung|vorauszahlung|reservierungsgebühr/,
       travel:/putujem|putov|putan|dolazak|reisen|anreise|fahrt nach deutschland/,
       documents:/dokument|papir|saobraćajn|fahrzeugbrief|fahrzeugschein|zulassungsbescheinigung/,
-      seller:/nemačk|prodavc|poruku prodav|deutsch sprechen|verkäufer kontaktieren/,
+      seller:/ne govorim nemačk|ne znam nemačk|na nemačkom|pomoć na nemačk|deutsch sprechen|kein deutsch|verkäufer kontaktieren|frage auf deutsch|kontakt mit verkäufer/,
       import:/uvoz|carin|porez|registracij|einfuhr|zoll|importkosten/
     };
     const found = Object.entries(groups).filter(([,pattern])=>pattern.test(value)).map(([id])=>id);

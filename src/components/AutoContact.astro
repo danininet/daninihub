@@ -37,7 +37,7 @@ const de = locale === "de";
       <label class="ac-consent"><input type="checkbox" name="consent" required /> <span>{de ? "Ich willige in die Verarbeitung dieser konkreten Anfrage ein und habe die " : "Saglasan/saglasna sam sa obradom ovog upita i pročitao/la sam "} <a href={"/"+locale+"/datenschutz/"}>{de ? "Datenschutzhinweise gelesen" : "pravila privatnosti"}</a> *</span></label>
       <div class="ac-captcha" data-auto-captcha aria-label={de ? "Sicherheitsprüfung" : "Bezbednosna provera"}></div>
       <div class="ac-trust" aria-label={de ? "Transparenz und Datenschutz" : "Transparentnost i privatnost"}><span>{de ? "Turnstile gegen Spam" : "Turnstile protiv spama"}</span><span>{de ? "Keine Zahlung durch Anfrage" : "Upit ne pokreće naplatu"}</span><span>{de ? "Keine technische Fahrzeuggarantie" : "Bez garancije stanja vozila"}</span></div>
-      <button data-auto-submit type="submit" disabled>{de ? "Fahrzeuganfrage senden" : "Pošalji zahtev za vozilo"}</button>
+      <button data-auto-submit type="submit">{de ? "Fahrzeuganfrage senden" : "Pošalji zahtev za vozilo"}</button>
       <p class="ac-disclaimer" style="color:#43566b;font-size:.76rem;line-height:1.55;margin:0">{de ? "Der Link wird nur als Hinweis auf das Inserat aufgenommen; Fahrzeugdaten werden dadurch nicht automatisch bestätigt. Das Formular ist durch Cloudflare Turnstile geschützt. Keine Ausweisdokumente, Zahlungsdaten oder sensiblen Bilder senden. Für Screenshots nutzen Sie die direkte E-Mail und fügen Dateien selbst hinzu." : "Link se prima kao izvor oglasa, ali se podaci o vozilu time ne potvrđuju automatski. Formular štiti Cloudflare Turnstile. Ne šaljite dokumenta, podatke za plaćanje ni osetljive fotografije. Screenshotove možete priložiti kroz direktan e-mail."}</p>
       <p class="ac-status" data-auto-status role="status" aria-live="polite">{de ? "Sicherheitsprüfung wird geladen …" : "Učitavanje bezbednosne provere …"}</p>
     </form>
@@ -91,9 +91,13 @@ const de = locale === "de";
     let widget: string | null = null;
     let verified = false;
     let busy = false;
+    let emailFallback = false;
     const disabled = () => {
-      verified = false; submit.disabled = true;
-      status.textContent = de ? "Das Online-Formular ist nicht verfügbar. Schreiben Sie an auto@daninihub.com." : "Formular trenutno nije dostupan. Pišite na auto@daninihub.com.";
+      verified = false;
+      emailFallback = true;
+      submit.disabled = false;
+      submit.textContent = de ? "E-Mail-Entwurf öffnen" : "Otvori nacrt e-maila";
+      status.textContent = de ? "Online-Versand nicht verfügbar. Diese Schaltfläche öffnet nur einen E-Mail-Entwurf. Bitte selbst absenden." : "Automatsko slanje nije dostupno. Dugme otvara samo nacrt e-maila koji sami morate poslati.";
     };
     const reset = () => {
       verified = false; submit.disabled = true;
@@ -128,7 +132,19 @@ const de = locale === "de";
     };
     form.addEventListener("submit",async event=>{
       event.preventDefault();
-      if (!form.reportValidity() || !verified || !widget || busy) return;
+      if (!form.reportValidity() || busy) return;
+      if (emailFallback) {
+        const values = new FormData(form);
+        const subject = "AutoDanini - " + String(values.get("intent") || "Fahrzeuganfrage");
+        const body = [String(values.get("name") || ""), String(values.get("email") || ""), String(values.get("source") || ""), String(values.get("location") || "")].join("\n");
+        window.location.href = "mailto:auto@daninihub.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+        status.textContent = de ? "E-Mail-Entwurf geöffnet, sofern ein E-Mail-Programm vorhanden ist. Versand nicht bestätigt." : "Nacrt je otvoren ako postoji e-mail program. Slanje nije potvrđeno.";
+        return;
+      }
+      if (!verified || !widget) {
+        status.textContent = de ? "Bitte die Sicherheitsprüfung abschließen." : "Najpre završite bezbednosnu proveru.";
+        return;
+      }
       const token=captchaApi()?.getResponse(widget);
       if(!token){reset();return;}
       const values=new FormData(form);

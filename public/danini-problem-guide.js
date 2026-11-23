@@ -256,7 +256,7 @@
     result.append(seller,el('p',l.noMail));
     const actions=el('div',undefined,'advisor-answer-buttons');
     const service=el('a',l.service);service.href='/'+(de?'de':'sr')+'/auto-check/#contact';actions.append(service);
-    const listing=el('a',l.listing);listing.href='#listing';actions.append(listing);
+    const listing=el('a',l.listing);listing.href='#listing';listing.addEventListener('click',()=>document.querySelector('.advisor-advanced')?.setAttribute('open',''));actions.append(listing);
     result.append(actions);
     question.append(button(l.back,()=>{step=MAX_QUESTIONS-1;answers=answers.slice(0,step);save();render();focusQuestion();}));
     question.append(button(l.restart,restart));

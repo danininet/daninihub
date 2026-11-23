@@ -13,7 +13,7 @@ const de=locale==="de";
  <section class="bb-card bb-demo" id="demo" hidden aria-labelledby="demo-heading">
   <p class="bb-demo-label">{de?"KOSTENLOSES TOOL · SOFORT STARTEN":"BESPLATAN ALAT · POČNI ODMAH"}</p>
   <h2 id="demo-heading">{de?"Ihr eigenes Startpaket in sechs Schritten erstellen":"Napravi svoj poslovni paket u šest koraka"}</h2>
-  <p>{de?"Sechs Schritte mit einer kurzen Erklärung und einem Beispiel zu jedem Feld. Prüfen Sie Ihren Entwurf auf fehlende Angaben und erstellen Sie auf Wunsch passende Fragen für einen externen KI-Assistenten. Dieses Formular führt selbst keine KI-Analyse durch und sendet keine Eingaben an den Server. Vor dem Schließen als TXT, JSON oder PDF sichern.":"Šest koraka sa kratkim objašnjenjem i primerom uz svako polje. Posle unosa možeš proveriti da li je nacrt kompletan i pripremiti prilagođena pitanja za spoljnog AI asistenta. Ovaj obrazac sam ne izvršava AI analizu; ništa se ne šalje serveru. Pre zatvaranja sačuvaj TXT, JSON ili PDF."}</p>
+  <p>{de?"Sechs Schritte mit einer kurzen Erklärung und einem Beispiel zu jedem Feld. Prüfen Sie den Entwurf lokal und nutzen Sie optional die DANINI KI-Rückfragen durch ausdrückliches Anklicken. Nur dann werden der Titel und die Felder dieses Schritts für die KI-Prüfung übermittelt. Vor dem Schließen als TXT, JSON oder PDF sichern.":"Šest koraka sa kratkim objašnjenjem i primerom uz svako polje. Proveri nacrt lokalno i, ako želiš, izričitim klikom zatraži DANINI AI pitanja. Samo tada se naziv projekta i polja tog koraka šalju na AI proveru. Pre zatvaranja sačuvaj TXT, JSON ili PDF."}</p>
   <div class="bb-demo-progress"><span id="demo-count"></span><span id="demo-step-title"></span></div>
   <div class="bb-demo-meter" aria-hidden="true"><span id="demo-meter-fill"></span></div>
   <form id="demo-form">
@@ -30,7 +30,7 @@ const de=locale==="de";
   </form>
   <div id="demo-result" hidden aria-live="polite">
    <h3>{de?"Ihr vorläufiges Projektdossier":"Tvoj preliminarni poslovni dosije"}</h3>
-   <p>{de?"Die Angaben wurden ausschließlich von Ihnen eingegeben. Es fand keine externe Prüfung oder KI-Auswertung statt.":"Prikazani podaci potiču isključivo od tebe. Nije izvršena nezavisna provera niti AI analiza."}</p>
+   <p id="demo-result-disclaimer">{de?"Es findet keine unabhängige externe Prüfung statt. KI-Rückfragen entstehen nur auf Ihren ausdrücklichen Wunsch.":"Ne vrši se nezavisna provera spoljnih izvora. AI pitanja nastaju samo na tvoj izričit zahtev."}</p>
    <div id="demo-summary"></div>
    <div class="bb-demo-actions"><button class="bb-btn" type="button" id="demo-export"></button><button class="bb-outline" type="button" id="demo-text"></button><button class="bb-outline" type="button" id="demo-print"></button><button class="bb-outline" type="button" id="demo-edit"></button><button class="bb-outline" type="button" id="demo-reset"></button></div>
   </div>

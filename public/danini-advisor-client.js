@@ -231,7 +231,13 @@
       line(lang==='de'?'Fehlende Angaben':'Nedostajući podaci',(data.missing||[]).map(key => (lang==='de'?deNames:names)[key] || key).join(', ')||'—');
       for(const risk of data.warnings||[])line(lang==='de'?'Hinweis':'Napomena',risk);
       if(data.aiUsed===true){
-        line(lang==='de'?'KI-Status':'AI status',lang==='de'?'KI-Auswertung des kopierten Inseratstextes':'AI analiza kopiranog teksta oglasa');
+        const aiSourceLabel = data.sourceType==='user_supplied_screenshot'
+          ? (lang==='de'?'KI-Auswertung der Angaben aus dem hochgeladenen Screenshot':'AI analiza podataka sa dostavljenog screenshota')
+          : data.sourceType==='authorized_listing'
+            ? (lang==='de'?'KI-Auswertung aus berechtigt abgerufenen Inseratsangaben':'AI analiza dozvoljeno preuzetih podataka oglasa')
+            : (lang==='de'?'KI-Auswertung des kopierten Inseratstextes':'AI analiza kopiranog teksta oglasa');
+        line(lang==='de'?'KI-Status':'AI status',aiSourceLabel);
+        if(data.aiModel)line(lang==='de'?'KI-Modell':'AI model',data.aiModel);
         for(const item of data.aiRisks||[])line(lang==='de'?'KI-Risiko (unbestätigt)':'AI rizik (nepotvrđeno)',item.evidence+' — '+item.concern);
         const aiTitle=document.createElement('strong');aiTitle.textContent=lang==='de'?'Weitere KI-Fragen an den Verkäufer':'Dodatna AI pitanja za prodavca';
         analysisOutput.append(aiTitle);

@@ -31,3 +31,57 @@ test('knowledge hub links directly to canonical calculator and keeps AutoDanini 
  assert.doesNotMatch(knowledge, /href="\/import\.html"/);
  assert.match(knowledge, /root\+"auto-check\/"/);
 });
+
+test('social share previews carry the existing brand image and canonical URLs',()=>{
+ const layout=readFileSync('src/layouts/Base.astro','utf8');
+ const brand=readFileSync('src/components/DaniniLanding.astro','utf8');
+ const advisor=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ for(const page of [home,brand,advisor]) assert.match(page,/ogImage="\/images\/DANINI_Kartica_01_Salon_Auto_Bez_Osobe\.jpg"/);
+ assert.match(layout,/property="og:image"/);
+ assert.match(layout,/rel="canonical"/);
+ assert.match(layout,/hreflang="x-default"/);
+});
+test('AI interaction disclosure is visible before user input and existing transparency is linked',()=>{
+ const advisor=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ const footer=readFileSync('src/components/Footer.astro','utf8');
+ assert.match(advisor,/advisor-ai-disclosure/);
+ assert.match(advisor,/Kostenloser Dialog nach festen Regeln — keine generative KI/);
+ assert.match(advisor,/Besplatan razgovor zasnovan na pravilima — bez generativne AI/);
+ assert.ok(advisor.indexOf('advisor-ai-disclosure')<advisor.indexOf('advisor-grid'),'disclosure must precede user input');
+ assert.match(footer,/ai-transparenz/);
+});
+
+test('AI status labels accurately identify screenshot, licensed listing and copied text',()=>{
+ const client=readFileSync('public/danini-advisor-client.js','utf8');
+ assert.match(client,/data\.sourceType==='user_supplied_screenshot'/);
+ assert.match(client,/AI analiza podataka sa dostavljenog screenshota/);
+ assert.match(client,/KI-Auswertung der Angaben aus dem hochgeladenen Screenshot/);
+ assert.match(client,/data\.sourceType==='authorized_listing'/);
+ assert.match(client,/AI analiza dozvoljeno preuzetih podataka oglasa/);
+ assert.match(client,/AI analiza kopiranog teksta oglasa/);
+ assert.match(client,/if\(data\.aiModel\)line\(/);
+ assert.match(client,/if\(data\.aiUsed===true\)/);
+ assert.match(client,/Nur regelbasierte Vorprüfung; keine KI-Analyse ausgeführt/);
+});
+
+test('AutoDanini opens with DE/SR buyer problem; the listing analyzer remains optional',()=>{
+ const advisor=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
+ const guide=readFileSync('public/danini-problem-guide.js','utf8');
+ assert.ok(advisor.indexOf('data-problem-guide')<advisor.indexOf('advisor-grid'),'problem-first guidance precedes optional listing input');
+ assert.match(advisor,/danini-problem-guide\.js/);
+ assert.match(advisor,/Planiraš kupovinu auta iz Nemačke\? Reci šta te brine/);
+ assert.match(advisor,/Sie möchten ein Auto kaufen\? Sagen Sie uns/);
+ for(const topic of ['deposit','travel','documents','seller','import'])assert.match(guide,new RegExp("id:'"+topic+"'"));
+ assert.match(guide,/MAX_QUESTIONS = 3/);
+ assert.match(guide,/Besplatno usmeravanje po pravilima/);
+ assert.match(advisor,/Besplatno usmeravanje je zasnovano na pravilima/);
+ assert.match(advisor,/class="advisor-advanced"/);
+ assert.match(guide,/auto-check\/\#contact/);
+ assert.match(guide,/sessionStorage/);
+ assert.match(guide,/danini-auto-enquiry-handoff-v1/);
+ assert.match(guide,/validateMockAiFollowup/);
+ assert.match(guide,/getQuestion/);
+ assert.match(guide,/focusQuestion/);
+ assert.match(guide,/restart/);
+ assert.doesNotMatch(guide,/\bfetch\s*\(|\bXMLHttpRequest\b|\bAI\.run\s*\(/);
+});

@@ -235,6 +235,37 @@ jobs:
           }
           NODE
 
+
+      - name: Academy AI controlled Free-plan go-live status and negative-requests QA
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const root='https://daninihub.com';
+          const timeout=()=>AbortSignal.timeout(18000);
+          const check=await fetch(root+'/api/academy/ai/status',{headers:{'cache-control':'no-cache'},signal:timeout()});
+          assert.equal(check.status,200,'Academy AI status must be public and reachable');
+          const state=await check.json();
+          assert.equal(state.enabled,true,'Owner-approved Academy AI remains disabled on production');
+          assert.equal(typeof state.siteKey,'string');
+          assert.ok(state.siteKey.startsWith('0x'),'Academy Turnstile sitekey missing');
+          for(const lang of ['de','sr']){
+            const page=await fetch(root+'/'+lang+'/akademija/builder/',{signal:timeout()});
+            assert.equal(page.status,200,'Builder not publicly available: '+lang);
+            const html=await page.text();
+            assert.ok(html.includes('demo-ai-review')&&html.includes('demo-ai-turnstile'),'Academy AI controls absent: '+lang);
+          }
+          const blocked=await fetch(root+'/api/academy/ai/review',{
+            method:'POST',headers:{origin:'https://invalid.example','content-type':'application/json'},
+            body:JSON.stringify({language:'sr',step:'niche',projectName:'Test',fields:{a:'Any field'},turnstileToken:'INVALID_TEST_TOKEN'}),
+            signal:timeout()
+          });
+          assert.equal(blocked.status,403,'Invalid origin was not rejected before inference');
+          assert.equal((await blocked.json()).error,'invalid_origin');
+          const wrong=await fetch(root+'/api/academy/ai/review',{method:'GET',signal:timeout()});
+          assert.equal(wrong.status,405,'Review must not run on GET');
+          console.log('PASS Academy AI LIVE enabled DE/SR, Turnstile sitekey, invalid-origin rejection, no inference performed');
+          NODE
+
 # Owner-authorized 2026-11-23: publish active DE/SR Builder/correct catalog PR #277 at merge 0d314c521471f253174d2f7236a3a1ebb2d69327. No payment, DNS, legal or new paid AI calls.
 
 # Owner-authorized 2026-11-23 P0 product safety + Academy beginners: PR #278 and #279 merged, target 6 guided DE/SR steps and old-PDF live sale guard. Preserve sandbox, B2B, AutoDanini, legal and DNS settings. Verify site after deployment.

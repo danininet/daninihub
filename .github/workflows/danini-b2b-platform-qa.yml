@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, codex/danini-b2b-platform-20261113]
   pull_request:
-    paths: ['src/**', 'tests/b2b/**', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json']
+    paths: ['src/**', 'tests/b2b/**', 'tests/academy/**', 'workers/danini-academy-ai.mjs', 'wrangler.b2b-production.jsonc', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json']
 permissions:
   contents: read
 jobs:

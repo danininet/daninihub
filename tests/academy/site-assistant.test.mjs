@@ -125,3 +125,47 @@ test('general question about building a personal business is within real AI coac
   assert.ok(called.messages[3].content.includes('Želim da izgradim'));
  }finally{mock.restore();db.close()}
 });
+
+test('logged-in user may select only their own D1 project as AI context',async()=>{
+ const {db,vars}=env();
+ const ownId='123e4567-e89b-42d3-a456-426614174000';
+ const otherId='123e4567-e89b-42d3-a456-426614174001';
+ const actor='123e4567-e89b-42d3-a456-426614174100';
+ const stranger='123e4567-e89b-42d3-a456-426614174101';
+ const sid='123e4567-e89b-42d3-a456-426614174200';
+ const secret='DANINI_TEST_SECRET_'.repeat(4),raw='a'.repeat(64);
+ const hmac=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ const mac=async s=>[...new Uint8Array(await crypto.subtle.sign('HMAC',hmac,new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+ db.exec("CREATE TABLE academy_users(id TEXT PRIMARY KEY,email_hash TEXT,created_at INTEGER); CREATE TABLE academy_sessions(id TEXT PRIMARY KEY,user_id TEXT,token_hash TEXT,expires_at INTEGER,revoked_at INTEGER,created_at INTEGER); CREATE TABLE academy_projects(id TEXT PRIMARY KEY,owner_user_id TEXT,title TEXT,language TEXT,status TEXT,created_at INTEGER,updated_at INTEGER); CREATE TABLE academy_project_steps(project_id TEXT,step TEXT,content_json TEXT,updated_at INTEGER)");
+ const now=Math.floor(Date.now()/1000);
+ for(const id of [actor,stranger])db.prepare('INSERT INTO academy_users(id,email_hash,created_at) VALUES (?,?,?)').run(id,id,now);
+ for(const [id,owner,title] of [[ownId,actor,'Moja knjigovodstvena usluga'],[otherId,stranger,'Strogo tuđi projekat']])
+  db.prepare('INSERT INTO academy_projects(id,owner_user_id,title,language,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?)').run(id,owner,title,'sr','draft',now,now);
+ db.prepare('INSERT INTO academy_sessions(id,user_id,token_hash,expires_at,created_at) VALUES (?,?,?,?,?)').run(sid,actor,await mac('session:'+raw),now+3600,now);
+ const dbApi={prepare(sql){return{bind(...args){return{
+  async first(){return db.prepare(sql).get(...args)||null},
+  async all(){return {results:db.prepare(sql).all(...args)}},
+  async run(){return db.prepare(sql).run(...args)}
+ }}}}};
+ vars.DANINI_DB=dbApi;vars.ACADEMY_AUTH_ENABLED='true';vars.ACADEMY_INVITE_ONLY='true';vars.ACADEMY_AUTH_SECRET=secret;
+ vars.MAIL_TEST_RECIPIENTS='test@example.invalid';vars.SITE_ORIGIN='https://daninihub.com';
+ vars.BREVO_API_KEY='mock';vars.DANINI_BREVO_SENDER='owner@example.invalid';
+ const mock=mockHuman();
+ let called=0,contextString='';
+ vars.AI={run:async(_model,payload)=>{called++;contextString=JSON.stringify(payload.messages);return {response:{answer:'Prvo jasno opiši ko koristi tvoju uslugu i kakvu vrednost možeš da isporučiš.',nextStep:'Razgovaraj sa tri stvarna potencijalna korisnika.',requiresHuman:false}}}};
+ function withCookie(projectId){
+  const src=ask({projectId});
+  const headers=new Headers(src.headers);headers.set('cookie','danini_academy_session='+raw);
+  return new Request(src,{headers});
+ }
+ try{
+  const denied=await siteAssistantRoute(withCookie(otherId),vars);
+  assert.equal(denied.status,404);assert.equal((await denied.json()).error,'project_not_found');
+  assert.equal(called,0,'Must not invoke AI on unauthorized project');
+  const accepted=await siteAssistantRoute(withCookie(ownId),vars);
+  assert.equal(accepted.status,200);
+  assert.equal(called,1);
+  assert.ok(contextString.includes('Moja knjigovodstvena usluga'));
+  assert.ok(!contextString.includes('Strogo tuđi projekat'));
+ }finally{mock.restore();db.close()}
+});

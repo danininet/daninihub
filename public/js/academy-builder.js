@@ -59,7 +59,7 @@ if(root){
  function packageEvidence(){
   const niche=demoData.steps.niche||{},market=demoData.steps.market||{},offer=demoData.steps.offer||{},validation=demoData.steps.validation||{};
   return [
-   [packageCopy.sources,market.b?.trim()?[market.b.trim()]:[packageCopy.missingSources]],
+   [packageCopy.sources,market.a?.trim()?[market.a.trim()]:[packageCopy.missingSources]],
    [packageCopy.assumptions,[niche.c,offer.c].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()).length?[niche.c,offer.c].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()):[packageCopy.missingAssumptions]],
    [packageCopy.next,[market.c,validation.a,validation.b].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()).length?[market.c,validation.a,validation.b].filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()):[packageCopy.missingNext]]
   ];

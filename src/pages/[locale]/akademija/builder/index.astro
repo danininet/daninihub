@@ -13,7 +13,7 @@ const de=locale==="de";
  <section class="bb-card bb-demo" id="demo" hidden aria-labelledby="demo-heading">
   <p class="bb-demo-label">{de?"KOSTENLOSES TOOL · SOFORT STARTEN":"BESPLATAN ALAT · POČNI ODMAH"}</p>
   <h2 id="demo-heading">{de?"Ihr eigenes Startpaket in sechs Schritten erstellen":"Napravi svoj poslovni paket u šest koraka"}</h2>
-  <p>{de?"Sechs aufeinander aufbauende Schritte, um Ihre Idee zu konkretisieren. Ihre Angaben bleiben ausschließlich in diesem offenen Browser-Tab und werden weder gespeichert noch versendet. Laden Sie Ihr Ergebnis vor dem Schließen herunter. Keine KI-Analyse oder Marktvalidierung.":"Šest povezanih koraka za razradu poslovne ideje. Uneti podaci ostaju samo u ovoj otvorenoj kartici browsera — ne čuvaju se i ne šalju serveru. Pre zatvaranja preuzmi rezultat. Nema AI analize niti nezavisne provere tržišta."}</p>
+  <p>{de?"Sechs Schritte mit einer kurzen Erklärung und einem Beispiel zu jedem Feld. Prüfen Sie Ihren Entwurf auf fehlende Angaben und erstellen Sie auf Wunsch passende Fragen für einen externen KI-Assistenten. Dieses Formular führt selbst keine KI-Analyse durch und sendet keine Eingaben an den Server. Vor dem Schließen als TXT, JSON oder PDF sichern.":"Šest koraka sa kratkim objašnjenjem i primerom uz svako polje. Posle unosa možeš proveriti da li je nacrt kompletan i pripremiti prilagođena pitanja za spoljnog AI asistenta. Ovaj obrazac sam ne izvršava AI analizu; ništa se ne šalje serveru. Pre zatvaranja sačuvaj TXT, JSON ili PDF."}</p>
   <div class="bb-demo-progress"><span id="demo-count"></span><span id="demo-step-title"></span></div>
   <div class="bb-demo-meter" aria-hidden="true"><span id="demo-meter-fill"></span></div>
   <form id="demo-form">
@@ -64,6 +64,14 @@ const de=locale==="de";
 .bb-demo :global(#demo-fields textarea){display:block;width:100%;max-width:100%;min-height:85px;resize:vertical;background:#fff;color:#1c3a4f;border:1.5px solid #648694;border-radius:8px;padding:11px 13px;font:inherit}
 .bb-demo :global(#demo-fields textarea::placeholder){color:#475569;opacity:1}
 .bb-demo :global(#demo-fields textarea:focus-visible){outline:3px solid #b07c1e;outline-offset:3px}
+.bb-demo :global(#demo-fields .bb-beginner-intro){background:#e9f5f4;border-left:4px solid #0b7379;color:#173d50;padding:12px 14px;border-radius:5px;line-height:1.6}
+.bb-demo :global(#demo-fields .bb-field-tip){font-size:.91rem;color:#325267;margin:5px 0 8px;line-height:1.55}
+.bb-demo :global(#demo-fields .bb-field-example){font-size:.86rem;color:#456477;font-style:italic;margin:7px 0 13px;line-height:1.5}
+.bb-demo :global(#demo-fields .bb-helper-panel){border-top:1px solid #b5ccd5;background:#f4fafb;margin-top:24px;padding:16px;border-radius:10px;display:flex;flex-wrap:wrap;align-items:start;gap:10px}
+.bb-demo :global(#demo-fields .bb-helper-panel .bb-field-tip){flex-basis:100%;margin:0}
+.bb-demo :global(#demo-fields #demo-ai-prompt){flex-basis:100%;width:100%;max-width:none;min-height:160px;font-size:.91rem;line-height:1.6;white-space:pre-wrap}
+.bb-demo :global(#demo-fields #demo-ai-prompt[hidden]){display:none!important}
+.bb-demo :global(#demo-fields .bb-helper-panel button[hidden]){display:none!important}
 .bb-demo :global(#demo-fields .bb-demo-stage){color:#164a5d;font-weight:750;font-size:1.08rem;line-height:1.65;margin-top:22px}
 .bb-demo :global(#demo-result p),.bb-demo :global(#demo-summary p){color:#334155}
 .bb-demo #demo-title::placeholder{color:#475569;opacity:1}

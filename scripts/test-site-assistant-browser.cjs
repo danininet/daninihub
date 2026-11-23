@@ -44,11 +44,36 @@ async function scenario(browser,locale,section,width){
   console.log('PASS unified site assistant '+locale+'/'+section+'/'+width+'px local guidance, explicit AI opt-in, no form value leakage');
  }finally{await context.close()}
 }
+async function statusRecovery(browser,locale){
+ const context=await browser.newContext({viewport:{width:390,height:844}});
+ await context.addInitScript(()=>{window.turnstile={render:()=>7,getResponse:()=>'mock-site-helper-turnstile',reset:()=>{}}});
+ const page=await context.newPage();let online=false;
+ await page.route('**/api/assistant/status',route=>route.fulfill({status:200,contentType:'application/json',
+  body:JSON.stringify({enabled:online,siteKey:online?'0x000000000000TEST':null})}));
+ try{
+  const res=await page.goto(BASE+'/'+locale+'/akademija/builder/',{waitUntil:'domcontentloaded'});
+  assert.equal(res.status(),200);
+  await page.locator('#danini-assistant-toggle').click();
+  await page.locator('#danini-assistant-retry').waitFor({state:'visible'});
+  assert.equal(await page.locator('#danini-assistant-ask').isVisible(),false);
+  await page.locator('#danini-assistant-local').click();
+  assert.ok((await page.locator('#danini-assistant-reply').innerText()).length>25);
+  const off=await page.locator('#danini-assistant-status').innerText();
+  assert.ok(off.includes(locale==='de'?'deaktiviert':'isključen'),'Disabled AI status must not be confused with field help');
+  online=true;
+  await page.locator('#danini-assistant-retry').click();
+  await page.locator('#danini-assistant-ask').waitFor({state:'visible',timeout:12000});
+  assert.equal(await page.locator('#danini-assistant-retry').isVisible(),false);
+  assert.ok((await page.locator('#danini-assistant-status').innerText()).includes(locale==='de'?'bereit':'spreman'));
+  console.log('PASS site helper '+locale+': offline static guidance, clear AI status, retry recovery');
+ }finally{await context.close()}
+}
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  try{
   for(const locale of ['de','sr'])
    for(const section of ['academy','auto','business'])await scenario(browser,locale,section,390);
   for(const locale of ['de','sr'])await scenario(browser,locale,'academy',1440);
+  for(const locale of ['de','sr'])await statusRecovery(browser,locale);
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

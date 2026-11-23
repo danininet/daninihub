@@ -144,7 +144,8 @@ const assert = require("node:assert/strict");
         await page.screenshot({ path: "outputs/b2b/" + locale + "-auto-" + width + ".png", fullPage: true });
         // Simulate unavailable lead endpoint: the form must remain actionable,
         // and the fallback must never claim an email has been delivered.
-        await page.route("**/api/lead/status", route => route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"unavailable"})}));
+        const offlineLeadStatus = route => route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"unavailable"})});
+        await page.route("**/api/lead/status", offlineLeadStatus);
         await page.goto(base+"auto-check/",{waitUntil:"networkidle"});
         const unavailableAuto=page.locator("[data-auto-enquiry]");
         await page.waitForFunction(()=>document.querySelector("[data-auto-submit]")?.textContent?.includes("E-Mail") || document.querySelector("[data-auto-submit]")?.textContent?.includes("nacrt"));
@@ -168,6 +169,8 @@ const assert = require("node:assert/strict");
         await unavailableBusiness.locator("[data-business-submit]").click();
         assert.match(await unavailableBusiness.locator("[data-business-status]").innerText(),locale==="de"?/nicht bestätigt/:/nije potvrđeno/);
         assert.deepEqual(errors.filter(message => !message.includes("status of 503 (Service Unavailable)")), [], locale + " unexpected browser errors excluding intentional 503 fallback test");
+        await page.unroute("**/api/lead/status", offlineLeadStatus);
+        errors.length = 0; // no simulated 503 may leak into the next locale's normal-path assertions
         results.push({ locale, width, home, business, auto, errors });
       }
       await page.close();

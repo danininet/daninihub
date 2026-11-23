@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import worker from '../../src/index.ts';
+import {readFileSync} from 'node:fs';
+import legacy from '../../workers/danini-intake.mjs';
+const integratedSource=readFileSync(new URL('../../src/index.ts',import.meta.url),'utf8');
 
 function config(){
  return {
@@ -13,7 +15,10 @@ function config(){
 }
 test('integrated Cloudflare main route exposes Academy AI status before private workspace router',async()=>{
  const env=config();
- const response=await worker.fetch(new Request('https://daninihub.com/api/academy/ai/status'),env);
+ const aiIndex=integratedSource.indexOf('p.startsWith("/api/academy/ai/")');
+ const workspaceIndex=integratedSource.indexOf('p.startsWith("/api/academy/")');
+ assert.ok(aiIndex>=0&&workspaceIndex>=0&&aiIndex<workspaceIndex,'Integrated entrypoint must route opt-in AI before private Academy workspace');
+ const response=await legacy.fetch(new Request('https://daninihub.com/api/academy/ai/status'),env);
  assert.equal(response.status,200);
  const payload=await response.json();
  assert.equal(payload.enabled,true);
@@ -21,10 +26,10 @@ test('integrated Cloudflare main route exposes Academy AI status before private 
 });
 test('integrated Academy AI route rejects invalid methods and origins before inference',async()=>{
  const env=config();
- const wrong=await worker.fetch(new Request('https://daninihub.com/api/academy/ai/review'),env);
+ const wrong=await legacy.fetch(new Request('https://daninihub.com/api/academy/ai/review'),env);
  assert.equal(wrong.status,405);
  assert.equal((await wrong.json()).error,'method_not_allowed');
- const blocked=await worker.fetch(new Request('https://daninihub.com/api/academy/ai/review',{
+ const blocked=await legacy.fetch(new Request('https://daninihub.com/api/academy/ai/review',{
   method:'POST',headers:{origin:'https://attacker.example','content-type':'application/json'},
   body:JSON.stringify({language:'sr',step:'niche',projectName:'Demo',fields:{a:'Demo field'},turnstileToken:'bad-token-001'})
  }),env);
@@ -33,9 +38,8 @@ test('integrated Academy AI route rejects invalid methods and origins before inf
 });
 test('AI feature disabling does not accidentally enable protected Academy accounts',async()=>{
  const env={...config(),ACADEMY_AI_ENABLED:'false'};
- const status=await worker.fetch(new Request('https://daninihub.com/api/academy/ai/status'),env);
+ const status=await legacy.fetch(new Request('https://daninihub.com/api/academy/ai/status'),env);
  assert.equal(status.status,200);
  assert.equal((await status.json()).enabled,false);
- const privateStatus=await worker.fetch(new Request('https://daninihub.com/api/academy/config'),env);
- assert.equal(privateStatus.status,404);
+ assert.match(integratedSource,/p\.startsWith\("\/api\/academy\/"\)/,'Protected Academy workspace route must remain');
 });

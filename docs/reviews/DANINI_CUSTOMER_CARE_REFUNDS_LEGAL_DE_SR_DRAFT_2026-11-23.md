@@ -4,7 +4,7 @@ Current public `src/lib/legal.ts` covers largely B2B GTC and generic privacy, NO
 
 ## Product classification — review each contract
 - **Free local-only tools:** no payment, no contractually guaranteed AI accuracy, right to stop/exit; browser-local data lost at tab closure, own download/export. Errors reported via contact.
-- **B2C paid digital content not supplied on physical medium (PDF/CSV):** precontract digital characteristics, language, compatibility, update requirements if applicable, total gross price and taxes, payment, access, correction/remedy, cancellation and withdrawal information. Applicable §356(5) BGB requires precise separate prior express agreement and confirmation of awareness of loss of withdrawal on starting performance, plus compliant confirmation on durable medium; do not assume blanket no-refund.
+- **B2C paid digital content not supplied on physical medium (PDF/CSV):** precontract digital characteristics, language, compatibility, update requirements if applicable, total gross price and taxes, payment, access, correction/remedy, cancellation and withdrawal information. Applicable §356(6) BGB requires precise separate prior express agreement and confirmation of awareness of loss of withdrawal on starting performance, plus compliant confirmation on durable medium; do not assume blanket no-refund.
 - **B2C custom remote service (AutoDanini consumer):** separately identify withdrawal rights, whether performance begins during withdrawal period and payment consequences on lawful request, and conditions for loss upon complete service. Do not copy digital-content exception verbatim to services.
 - **B2B custom services:** approved SOW governs delivery and invoice, VAT, scope and revisions, DPA/AVV if processing for client, complaints, partial/nonperformance and termination; no blanket “no refunds” or automatic consumer regime.
 - **Cross-border:** determine B2C customer country and mandatory law, VAT/OSS issues and language; DE business address does not automatically override nonwaivable consumer rules.
@@ -42,7 +42,7 @@ Current public `src/lib/legal.ts` covers largely B2B GTC and generic privacy, NO
 
 ## Before a legal/payment go-live, verify
 1. Legal contracting identity and §5 DDG; Gewerbe/Handelsregister and VAT status where legally relevant. Correct invoice and cross-border VAT.
-2. B2C vs B2B rights; §312j BGB payment button, precontract Art. 246a EGBGB disclosures, §356(5) BGB conditions for digital withdrawal, §356a BGB online cancellation function applicability, §§327 ff. BGB digital-product remedies, §357 BGB reimbursement, VSBG §§36–37 statement if applicable.
+2. B2C vs B2B rights; §312j BGB payment button, precontract Art. 246a EGBGB disclosures, §356(6) BGB conditions for digital withdrawal, §356a BGB online cancellation function applicability, §§327 ff. BGB digital-product remedies, §357 BGB reimbursement, VSBG §§36–37 statement if applicable.
 3. Art. 13 DSGVO disclosures, legitimate grounds, AVV Art. 28, DPA subprocessors/cross-border transfers, rights, retention of D1/R2/Cloudflare/Brevo/Gmail, data minimization, no blanket claim EU-only.
 4. Cloudflare AI provenance/labeling and Art. 50 EU AI Act where applicable, no unproven success statistics.
 5. Accessibility/e-commerce applicability under BFSG (including microenterprise services exception where appropriate) and 2026 withdrawal-button changes; browser keyboard/screenreader/contrast/PDF tags.

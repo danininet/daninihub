@@ -49,6 +49,7 @@ jobs:
             sleep 2
           done
           node tests/b2b/autodanini-browser-qa.mjs
+          node scripts/test-academy-builder-browser.cjs
           node scripts/test-autodanini-dialog-browser.cjs
           node tests/b2b/knowledge-browser-qa.mjs
           node tests/b2b/danini-design-browser-qa.mjs

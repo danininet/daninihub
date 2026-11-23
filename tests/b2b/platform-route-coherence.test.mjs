@@ -20,5 +20,6 @@ test('business contact offers user-controlled email fallback if secure endpoint 
   assert.match(business,/E-Mail-Entwurf öffnen/);
   assert.match(business,/mailto:info@daninihub\.com\?subject=/);
   assert.match(business,/if \(fallback\)/);
-  assert.doesNotMatch(business,/<button type="submit" data-business-submit disabled>/);
+  assert.match(business,/<button type="submit" data-business-submit disabled>/);
+  assert.match(business,/submit\.disabled = false;\s*void initialize\(\)/);
 });

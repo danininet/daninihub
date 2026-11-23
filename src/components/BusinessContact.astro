@@ -69,7 +69,7 @@ const de = locale === "de";
       </label>
       <div class="bc-captcha" data-business-captcha aria-label={de ? "Sicherheitsprüfung" : "Bezbednosna provera"}></div>
       <div class="bc-trust" aria-label={de ? "Schutz und Transparenz" : "Zaštita i transparentnost"}><span>{de ? "Turnstile-Spamschutz" : "Turnstile zaštita od spama"}</span><span>{de ? "Keine automatische Zahlung" : "Bez automatske naplate"}</span><span>{de ? "Freigabe vor Dritt-Kontakt" : "Odobrenje pre kontakta sa trećima"}</span></div>
-      <button type="submit" data-business-submit>{de ? "Unverbindliche Anfrage absenden" : "Pošalji neobavezujući upit"}</button>
+      <button type="submit" data-business-submit disabled>{de ? "Unverbindliche Anfrage absenden" : "Pošalji neobavezujući upit"}</button>
       <p class="bc-action-note">{de ? "Nächster Schritt: Wir prüfen die Angaben und klären den Umfang per E-Mail. Es erfolgt keine automatische Bestellung und keine Zahlung." : "Sledeći korak: pregledamo podatke i mejlom preciziramo obim. Slanje nije narudžbina niti pokretanje naplate."}</p>
       <p class="bc-status" data-business-status role="status" aria-live="polite">
         {de ? "Sicherheitsprüfung wird vorbereitet …" : "Priprema bezbednosne provere …"}
@@ -243,6 +243,9 @@ const de = locale === "de";
         reset();
       }
     });
+    // Never allow a native GET request with visitor data when the script fails.
+    // The protected submit handler is now attached; enable a safe interactive action.
+    submit.disabled = false;
     void initialize();
   }
 </script>

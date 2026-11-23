@@ -1,0 +1,41 @@
+# DANINI — Product portfolio and release controls
+**Internal audit, 23.11.2026. NOT a public offer or legal approval.**
+
+## Evidence and definitions
+Source of truth: actual `main` 23 Nov, `src/components/BusinessLanding.astro`, `src/components/Home.astro`, `src/pages/[locale]/akademija/*`, `src/pages/[locale]/wissen/produkte/index.astro`, `workers/danini-digital-commerce.mjs`, `src/lib/legal.ts`; owner-approved Manifest and business plan, PayPal Sandbox D1 observations, original privately held October PDF. LIVE = proved public user-facing route; TESTED = covered by automated E2E; PAID = actual commercial payment, not sandbox.
+
+| ID | Real offer | Buyer and delivered output | Operational state / customer acceptance | Commercial decision |
+|---|---|---|---|---|
+| FREE-01 | DE/SR Academy 01–03 | Individual starting with AI; three real lessons, prompts, checklists and worksheets. User completes one niche, 3 dated demand signals or labeled gaps, one scope-limited offer and cost hypothesis. | Public, tested; verify download completeness, language, example clarity; no certification, income or market validation promise. | FREE ONLY |
+| FREE-02 | Online Business Builder six stages | Personal project dossier in browser, TXT/JSON and print/PDF; facts claimed by user separated from hypotheses, evidence gaps, actions. | Public, Chromium tested; local-only tab state, no login, no AI market research, no durable storage; ensure clear limitations and easy export. | FREE ONLY |
+| FREE-03 | AutoDanini rules-based dialog and 12-point checklist | Pre-travel orientation, seller questions and printable checklist; no VIN lookup, technical test or legal confirmation. | Public, testable; validate SR/DE, broken links, thresholds and examples against a dated sample. | FREE ONLY |
+| FREE-04 | AutoDanini listing text AI preanalysis | User supplies sufficiently long copied listing; text claims, gaps, questions and citations; rule fallback transparently marked. | AI depends on availability, is not independent vehicle verification. Verify data minimization, Turnstile and fallbacks. | FREE / qualification, not paid report |
+| AUTO-01 | AutoDanini decision dossier | Individual paid-ready **only after SOW**: submitted data list, claim-vs-evidence register, seller questions (DE/SR), cost assumptions/ranges with sources, risk triage and next-step checklist; secure PDF delivery. | Intake demonstrated, full individual deliverable/acceptance/complaints not yet end-to-end proven. Excludes physical inspection, independent ownership, VIN, insurance, tax/customs guarantees. | INDIVIDUAL QUOTE; no automatic checkout |
+| AUTO-02 | Seller-contact assistance | Written DE question list and reply translation; any third-party contact only with customer approval; audit of what was sent. | No demonstrated repeatable supplier outreach or response SLA; no partner claims. | INDIVIDUAL QUOTE ONLY |
+| AUTO-03 | Transport / inspection coordination | Written nonbinding availability clarification with actual contracted third-party identity and documented insured scope; no DANINI guarantee. | No verified authorized inspector or carrier network. | STOP paid listing until suppliers and insurance confirmed |
+| BIZ-01 | DANINI Business Check | One scoped request or admin workflow, anonymized input, gaps, stepwise improvement memo, handoff and one agreed revision. | Live intake and historical sample; end-to-end paying-customer delivery and data handling need acceptance evidence. | B2B CUSTOM QUOTE after signed scope |
+| BIZ-02 | DANINI Anfragebüro | One documented process: intake, classification, missing-info list, CRM handoff, German response drafts and human approval. | Workflows technically present; no assumption of unattended e-mail intake or automatic external messages. | B2B CUSTOM QUOTE; acceptance test required |
+| BIZ-03 | Office Betreuung | Agreed monthly maintenance of a defined workflow, incident record and report, exclusions, termination and export. | No demonstrated SLA/capacity; no automatic recurring billing. | HOLD retainer; only bespoke verified work |
+| BIZ-04 | DACH–Balkan supplier contact, CBAM, subcontractor evidence | Evidence-gathering and nonbinding document matrix in explicitly limited scope. | No legal/tax/customs representation or claimed introductions; supplier outreach requires prior approval. | INDIVIDUAL SOW ONLY; regulated advice STOP |
+| ACAD-01 | Guided Business Setup | Guided niche review, evidence log, one offer, customer research questions, basic inbound process and 30-day test map; person-led review and revision. | No completed pilot, exact capacity, customer outcomes, fee or support policy. | PILOT DESIGN, not paid product yet |
+| ACAD-02 | Starter PDF workbook + CSV | Curated DE/SR licensed workbook, nine prompts, examples, evidence and cost calculations; quality-controlled accessible PDF + CSV. | Internal commercial dossier, not finished/QA deliverable. | HOLD, proposed prices NOT PUBLIC |
+| ACAD-03 | Full six-module Academy | Modules 04–06, instructional tasks, progress tracking, support and proof of completion. | Only 01–03 published. OTP private project account feature-gated. | NO SALE; no course completion or certification claims |
+| PDF-49 | October Auto-Biznis Master guide | 10-page original PDF 3,241,961 bytes in private D1. | TECHNICALLY READY only. Contains dangerous unsupported commercial and regulatory claims and nonexistent operational promises. | **NO LIVE SALE** pending rewrite, audit, file checksum and owner/content/legal approval |
+| SW-149 | White-label software package | Product promises scanner, calculation, PDF exporter and license/delivery. | No verified licensed, supported, accessible customer software instance or onboarding. | **STOP — not deliverable** |
+| HIST-01 | Nine legacy 2026 PDF-priced services (Import Passport 9.90, OE plan 19, Combo 29.90, export VAT 49, transport 59, physical check 79+, sourcing 99, software 149 and PDF 49) | Historical appendix only, not today's approved service catalog. | PDF advertises PayPal.Me/guarantees absent from verified operations. | Remove from revised customer deliverable; do not reactivate as prices |
+
+## Minimum SOW / product card fields (required for EACH paid contract)
+- Contracting legal identity, B2C/B2B classification and country; identifier and date; customer problem and defined source inputs.
+- Deliverable format/language, page/record scope, source dates, verification type and explicit exclusions.
+- ETA expressed as proposed rather than guaranteed until capacity confirmed; revision allowance, acceptance criterion, secure delivery, support channel.
+- Total payable price including any legally applicable VAT, currency, fees, payment milestones and invoice process; no price hidden after purchase.
+- Rights to use deliverable, permitted redistribution, IP/third-party licenses and AI provenance.
+- Correct precontract information, applicable cancellation/withdrawal regime, remedies for defects, complaints and refund route.
+- Controller/processor roles and DPA, lawful basis, file access, deletion/retention and any third-country transfers.
+- Evidence: user journey and download sample, both language variants, responsive screen, actual security QA, independent human sign-off.
+
+## Quality gates (no unsupported PASS)
+G0 PRODUCT_ID: real owner + exact SKU; G1 CONTENT: dated sourced claims, editorial accuracy, originality and provenance; G2 DELIVERY: repeatable output generated, secured, tested, accessible and localized; G3 LEGAL: classification, operator ID, VAT/tax, B2C/withdrawal, B2B SOW, DSGVO; G4 PAYMENT: sandbox refund/capture/email/download/idempotency and accounting; G5 SUPPORT: support inbox, incident, remedy and refund processing; G6 LIVE: public route and own customer journey after deploy; G7 SALES: real captured payment and fulfillment only. **If any critical gate fails, keep paid SKU unavailable.**
+
+## Launch-order decision
+First protect legacy PDF from Live checkout (without breaking existing paid downloads); second revise content and customer acceptance; third contract/legal/privacy approval; fourth complete end-to-end sandbox including failed/success/refund tests; only then discuss live, non-regression and first controlled paid sale.

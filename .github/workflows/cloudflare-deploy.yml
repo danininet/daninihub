@@ -243,3 +243,5 @@ jobs:
 # Authorized P1 knowledge and lead-conversion release 2026-11-21: PR #261 merged as 6d38ca43ef99800668a04bd5cefaf50297879314. Five CI SUCCESS. Keep checkout OFF; no price, DNS, legal or partner commission activation.
 
 # Authorized Academy Module 02 release 2026-11-21: PR #263 squash merged; six CI checks SUCCESS. Publish only free content and downloads. No changes to billing, prices, DNS, legal text or partner payments.
+
+# Owner-authorized P0 launch 2026-11-23: publish merged PR #276 at 52cd7feb7d8d69314b7ff492fb5db2dc2d89777f, prechecked 6/6 CI; Academy local-only DE/SR printable starter pack. No pricing/legal/DNS/payment changes.

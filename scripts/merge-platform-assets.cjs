@@ -48,7 +48,7 @@ for (const name of pages) {
     '<a href="/sr/auto-check/">AutoDanini SR — aktuelna provera</a> · <a href="/de/business/">DANINI Business</a>' +
     '</nav>';
   if (!html.includes('danini-current-platform-bridge')) {
-    html = html.replace(/<body(\\s[^>]*)?>/i, match => match + legacyBridge);
+    html = html.replace(/<body(\s[^>]*)?>/i, match => match + legacyBridge);
     html = html.replace('</head>', '<style>.danini-current-platform-bridge{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:12px 20px;background:#102a3c;color:#fff;font:600 14px/1.5 system-ui,sans-serif}.danini-current-platform-bridge a{color:#fff;text-decoration:underline;text-underline-offset:3px}</style></head>');
   }
   // Remove only unfinished navigation links, retaining source pages/modules.

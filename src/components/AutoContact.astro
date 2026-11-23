@@ -57,6 +57,37 @@ const de = locale === "de";
     const status = form.querySelector<HTMLElement>("[data-auto-status]");
     const captcha = form.querySelector<HTMLElement>("[data-auto-captcha]");
     if (!submit || !status || !captcha) continue;
+    // The visitor explicitly chose to carry over the free dialogue. This only
+    // contains a topic and fixed yes/no/unknown choices; it is never submitted
+    // without completing the ordinary, protected contact form.
+    try {
+      const key = "danini-auto-enquiry-handoff-v1";
+      const raw = sessionStorage.getItem(key);
+      if (raw) {
+        sessionStorage.removeItem(key);
+        const draft = JSON.parse(raw) as {id?:string;values?:string[]};
+        const topics:Record<string,[string,string,string]> = {
+          deposit:["Anzahlung / Kapara","documents","Kapara / uslovi uplate"],
+          travel:["Anreise / Putovanje","documents","Putovanje pre kupovine"],
+          documents:["Fahrzeugdokumente / Dokumenta","documents","Dokumentacija vozila"],
+          seller:["Verkäuferkommunikation / Pitanja prodavcu","seller","Komunikacija sa prodavcem"],
+          import:["Einfuhrkosten / Uvozni troškovi","documents","Uvoz i troškovi"]
+        };
+        if (draft && typeof draft.id==="string" && Object.hasOwn(topics,draft.id) &&
+            Array.isArray(draft.values) && draft.values.length===3 &&
+            draft.values.every(value=>["yes","no","unknown"].includes(value))) {
+          const source = form.querySelector<HTMLTextAreaElement>('textarea[name="source"]');
+          const intent = form.querySelector<HTMLSelectElement>('select[name="intent"]');
+          const title = topics[draft.id][0];
+          const labels = de ? {yes:"Ja",no:"Nein",unknown:"Nicht bekannt"} : {yes:"Da",no:"Ne",unknown:"Ne znam"};
+          if (source && !source.value.trim()) source.value =
+            (de ? "Anfrage zur individuellen Vorprüfung (keine Fahrzeugdaten bestätigt): " : "Upit za individualnu predproveru (podaci nisu nezavisno potvrđeni): ")+
+            title+"; "+(de?"Antworten":"Odgovori")+": "+draft.values.map(v=>labels[v as keyof typeof labels]).join(" / ")+". "+
+            (de?"Bitte Unterlagen und Umfang der Prüfung mit mir klären.":"Molim da dogovorimo potrebne podatke i obim provere.");
+          if (intent) intent.value=topics[draft.id][1];
+        }
+      }
+    } catch { /* malformed/blocked storage must not affect contact form */ }
     let widget: string | null = null;
     let verified = false;
     let busy = false;

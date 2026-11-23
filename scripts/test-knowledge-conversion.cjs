@@ -35,10 +35,10 @@ for(const lang of ['de','sr']){
   assert.equal(count,12,'Must have exactly 12 checklist items in '+lang);
   assert.match(checklist,/data-auto-enquiry/,'Existing protected enquiry form missing');
   assert.match(checklist,/href="#contact"/,'Lead CTA must focus the real enquiry form');
-  assert.ok(products.includes('49 €'),'Established PDF price omitted');
-  assert.match(products,/149(?:\s*€|-€)/,'Disabled proposed software status omitted');
-  assert.match(products,/\/digital\.html/,'Existing digital product not linked');
-  assert.ok(products.includes('Checkout')||products.includes('PayPal'),'Checkout limitation omitted');
+  assert.ok(products.includes('/'+lang+'/akademija/builder/'),'Active free Builder missing from catalog');
+  assert.ok(!products.includes('Öffentlicher Verkauf deaktiviert')&&!products.includes('Javna prodaja isključena'),'Inactive paid purchase presented as active catalog item');
+  assert.ok(!products.includes('149 €'),'Unreleased software package advertised on active catalog');
+  assert.ok(products.includes('/'+lang+'/auto-check/')&&products.includes('/'+lang+'/business/'),'Active inquiry services missing');
   assert.ok(partner.includes('mailto:info@daninihub.com'),'Partner enquiry missing');
   assert.ok(partner.includes(lang==='de'?'Provisionsprogramm':'provizijskog programa'),'Must not imply active affiliate program');
   for(const slug of ['gebrauchtwagen-anzahlung','fahrzeugpapiere','auto-deutschland-serbien','kundenanfragen','email-formular-crm','ki-buero']){

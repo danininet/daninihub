@@ -3,12 +3,12 @@ if(root){
  const de=root.dataset.locale==='de';
  const $=id=>document.getElementById(id);
  const i18n=de?{
-  unavailable:'Der Business Builder wird vorbereitet. Kein Login, keine Speicherung und kein Kauf möglich.',ready:'Geschützter Pilot. Anmeldung per E-Mail-Code.',
+  unavailable:'Der kostenlose Business Builder ist jetzt nutzbar: sechs Schritte, persönliches Startpaket, Text-/JSON-Export und Drucken/PDF. Ohne Anmeldung; Ihre Angaben verlassen diesen Browser-Tab nicht.',ready:'Geschützter Pilot. Anmeldung per E-Mail-Code.',
   generic:'Die Aktion konnte nicht abgeschlossen werden. Bitte später erneut versuchen.',sent:'Bitte prüfen Sie Ihre E-Mails und geben Sie den einmaligen Code ein.',saved:'Arbeitsschritt gespeichert.',created:'Projekt erstellt.',deleted:'Projekt gelöscht.',
   noProjects:'Noch keine Projekte. Erstellen Sie Ihr erstes Projekt.',open:'Öffnen',confirmDelete:'Dieses Projekt samt Inhalten endgültig löschen?', noFields:'Bitte mindestens ein Feld ausfüllen.',
   labels:[['Nische','Zielgruppe','Kundenproblem','Ihre bisherigen Annahmen'],['Markt','Tatsächlich geprüfte Quelle + Datum','Alternative / Wettbewerb','Offene Belege / Unsicherheiten'],['Angebot','Konkretes Ergebnis','Leistungsumfang und Grenzen','Preishypothese (nicht veröffentlicht)'],['Online-Auftritt','Ziel der Website','Kernbotschaft und Seiten','Geplante Inhalte / Veröffentlichungsfreigabe'],['Abläufe','Wichtige Kundenanfragen','Ablauf / Verantwortliche','Datenschutz und Freigaben'],['Validierung','Kleiner Markttest','Messgröße und Termin','PASS / REVIEW / STOP Entscheidung']]
  }:{
-  unavailable:'AI Business Builder je u pripremi. Prijava, čuvanje projekata i kupovina nisu aktivni.',ready:'Zaštićeni pilot. Prijava jednokratnim e-mail kodom.',
+  unavailable:'Besplatni Business Builder je aktivan: šest koraka, lični poslovni paket, TXT/JSON izvoz i štampa/PDF. Bez registracije; tvoji unosi ostaju u ovoj kartici browsera.',ready:'Zaštićeni pilot. Prijava jednokratnim e-mail kodom.',
   generic:'Radnja nije završena. Pokušaj ponovo kasnije.',sent:'Proveri e-mail i unesi jednokratni kod.',saved:'Korak je sačuvan.',created:'Projekat je kreiran.',deleted:'Projekat je obrisan.',
   noProjects:'Još nema projekata. Kreiraj svoj prvi projekat.',open:'Otvori',confirmDelete:'Trajno obrisati projekat i sav njegov sadržaj?',noFields:'Popuni bar jedno polje.',
   labels:[['Niša','Ciljna grupa','Problem kupca','Moje pretpostavke'],['Tržište','Stvarno provereni izvor i datum','Alternativa / konkurencija','Nedostajući dokazi'],['Ponuda','Konkretan rezultat','Obim i ograničenja','Cenovna hipoteza (nije objavljena)'],['Online prisustvo','Cilj sajta','Glavna poruka i stranice','Sadržaj i odobrenje za objavu'],['Operacije','Važni upiti kupaca','Proces i odgovornosti','Privatnost i odobravanja'],['Validacija','Mali tržišni test','Merilo i rok','Odluka PASS / REVIEW / STOP']]

@@ -213,7 +213,7 @@ async function disabled(browser) {
   await page.route('**/api/academy/config',route=>route.fulfill({status:404,contentType:'application/json',body:JSON.stringify({error:'not_found'})}));
   const response=await page.goto(BASE+'/sr/akademija/builder/',{waitUntil:'domcontentloaded'});
   assert.equal(response?.status(),200);
-  await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('u pripremi'));
+  await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('Besplatni Business Builder je aktivan'));
   assert.equal(await page.locator('#signin').isVisible(),false);
   assert.equal(await page.locator('#dashboard').isVisible(),false);
   await context.close();

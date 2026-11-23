@@ -33,6 +33,8 @@ jobs:
           curl -fsS http://127.0.0.1:4321/api/health
           test "$(curl -s -o /tmp/b2b-disabled.json -w '%{http_code}' -X POST http://127.0.0.1:4321/api/intake)" = "503"
           test "$(curl -s -o /tmp/academy-disabled.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/config)" = "404"
+          test "$(curl -s -o /tmp/academy-ai-status.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/ai/status)" = "200"
+          grep -q '"enabled":false' /tmp/academy-ai-status.json
           node scripts/test-b2b-browser.cjs
           node scripts/test-autodanini-dialog-browser.cjs
           node tests/b2b/autodanini-browser-qa.mjs
@@ -71,6 +73,8 @@ jobs:
           for i in $(seq 1 50); do curl -fsS http://127.0.0.1:4321/api/health && break; sleep 1; done
           curl -fsS http://127.0.0.1:4321/api/health
           test "$(curl -s -o /tmp/academy-disabled.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/config)" = "404"
+          test "$(curl -s -o /tmp/academy-ai-status.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/ai/status)" = "200"
+          grep -q '"enabled":false' /tmp/academy-ai-status.json
           node scripts/test-academy-builder-browser.cjs
       - name: Upload diagnostic log on failure
         if: failure()

@@ -142,6 +142,18 @@ async function preview(browser,language,width){
  assert.equal(await page.locator('#dashboard').isVisible(),false);
  await page.locator('#demo-title').fill('Moja demonstraciona ideja');
  for(let i=0;i<6;i++){
+  assert.equal(await page.locator('.bb-beginner-intro').count(),1,'Step '+i+' beginner explanation missing');
+  assert.equal(await page.locator('#demo-fields .bb-field-tip').count()>=4,true,'Short field instructions missing');
+  assert.equal(await page.locator('#demo-fields .bb-field-example').count(),3,'Every field needs a beginner example');
+  for(const key of ['a','b','c'])assert.ok((await page.locator('#demo-field-'+key).getAttribute('placeholder')).length>15,'Example placeholder missing '+key);
+  await page.getByRole('button',{name:language==='de'?'Entwurf prüfen (ohne KI)':'Proveri nacrt (bez AI)'}).click();
+  const review=await page.locator('#demo-help-feedback').innerText();
+  assert.ok(review.includes(language==='de'?'Bitte ergänzen':'Dopuni'),'Missing required-fields hint');
+  await page.getByRole('button',{name:language==='de'?'KI-Fragen für diesen Schritt vorbereiten':'Pripremi AI pitanja za ovaj korak'}).click();
+  const prompt=await page.locator('#demo-ai-prompt').inputValue();
+  assert.ok(prompt.includes('Moja demonstraciona ideja'),'AI prompt lacks personal project name');
+  assert.ok(prompt.includes(language==='de'?'Erfinde keine':'Ne izmišljaj'),'AI prompt must state verification boundaries');
+  assert.equal(await page.locator('#demo-ai-prompt').isVisible(),true,'Prompt panel missing');
   assert.equal(await page.locator('#demo-count').innerText(),(language==='de'?'Schritt ':'Korak ')+(i+1)+(language==='de'?' von 6':' od 6'));
   await page.locator('#demo-field-a').fill('Napisani podatak '+i);
   await page.locator('#demo-field-b').fill('Pretpostavka '+i);

@@ -10,7 +10,7 @@
  const note=$('danini-assistant-note'),status=$('danini-assistant-status');
  const pathname=location.pathname;
  const context=pathname.includes('/akademija/')?'academy':pathname.includes('/auto-check/')?'auto':pathname.includes('/business/')?'business':'general';
- let field='',lastFocus=null,ready=false,busy=false,widget=null,initialized=false;
+ let field='',fieldName='',lastFocus=null,ready=false,busy=false,widget=null,initialized=false;
  const T=lang==='de'?{
   noField:'Klicken Sie zuerst auf ein Formularfeld. Ich erkläre dann, was dort hineingehört.',
   generic:'Wählen Sie ein Feld aus oder stellen Sie eine konkrete Frage zum nächsten Arbeitsschritt.',
@@ -21,6 +21,7 @@
    'Beschreiben Sie Eingang, fehlende Angaben, menschliche Freigabe und sichere Lieferung.',
    'Definieren Sie einen kleinen zulässigen Nachfrage-Test, Frist und Stop-Kriterium.'],
   auto:'Geben Sie Inseratslink oder kopierte Fahrzeugangaben, Standort und ein konkretes Anliegen ein. Ein Link bestätigt weder FIN noch Zustand. Keine Ausweiskopien, Karten- oder personenbezogenen Daten.',
+  details:{business:{name:'Bitte geben Sie Ihren Namen als Kontaktperson ein.',email:'Ihre erreichbare geschäftliche E-Mail, z. B. kontakt@beispiel.de.',company:'Firmenname, falls vorhanden; Sie können dieses Feld leer lassen.',country:'Welchen DACH-Markt betrifft Ihre Anfrage: DE, AT oder CH?',direction:'Wählen Sie die Richtung der Zusammenarbeit, falls bekannt.',service:'Wählen Sie die Leistung, die Ihrer Frage am nächsten kommt; die Details werden vor der Beauftragung geklärt.',message:'Beschreiben Sie einen konkreten Ablauf: Was passiert heute, wo entstehen Probleme und welches Ergebnis wünschen Sie?'},auto:{source:'Kopieren Sie Inseratstext oder Link und möglichst Modell, Erstzulassung, Kilometerstand und Preis. Nur ein Link ist kein überprüfter Beleg.',location:'Tragen Sie den Ort oder die Postleitzahl des Fahrzeugstandorts ein, falls bekannt.',intent:'Wählen Sie, ob es um Dokumente, Verkäuferfragen oder einen möglichen unabhängigen Vor-Ort-Check geht.',name:'Name der Kontaktperson.',email:'E-Mail für eine Antwort, ohne Passwörter oder Zahlungsdaten.'}},
   business:'Nennen Sie eine bestehende Anfrage oder Routine, die Schwierigkeit und das gewünschte Ergebnis. Eine Anfrage ist keine kostenpflichtige Bestellung.',
   aiOff:'KI-Fragen sind aktuell nicht verfügbar. Die kostenlosen Feldhilfen funktionieren weiterhin.',
   aiWait:'KI-Antwort wird vorbereitet …',aiError:'Keine bestätigte KI-Antwort. Versuchen Sie es später; die Feldhilfe bleibt verfügbar.',
@@ -38,6 +39,7 @@
    'Opisi prijem upita, dodatna pitanja, ljudsku proveru i bezbednu isporuku.',
    'Odredi mali dozvoljen test potražnje, rok i uslov kada treba odustati.'],
   auto:'Unesi link ili kopirane podatke iz oglasa, mesto vozila i konkretno pitanje. Sam link ne potvrđuje VIN ni stanje. Ne unosi lična dokumenta ili podatke kartice.',
+  details:{business:{name:'Upiši ime osobe koja šalje poslovni upit.',email:'Unesi poslovnu e-mail adresu na koju možemo odgovoriti, npr. kontakt@primer.de.',company:'Naziv firme ako postoji; ovo polje nije obavezno.',country:'Izaberi koje DACH tržište je relevantno: Nemačka, Austrija ili Švajcarska.',direction:'Izaberi smer poslovne saradnje, ako ga znaš.',service:'Izaberi najbližu uslugu. Detaljan obim i uslovi se utvrđuju pre dogovora.',message:'Opiši jedan konkretan postupak: šta sada radiš, gde nastaje problem i kakav rezultat želiš.'},auto:{source:'Nalepi tekst oglasa ili link i, ako znaš, marku, model, godište, kilometražu i cenu. Link sam po sebi nije potvrda oglasa.',location:'Upiši grad ili poštanski broj gde se auto nalazi, ako znaš.',intent:'Izaberi da li želiš pomoć oko dokumenata, pitanja prodavcu ili moguće nezavisne provere.',name:'Ime kontakt osobe.',email:'Adresa na koju želiš odgovor; bez lozinki ili podataka kartice.'}},
   business:'Navedi jedan postojeći postupak ili upit, šta sada ne radi i koji konkretan rezultat očekuješ. Upit nije plaćena narudžbina.',
   aiOff:'AI pitanja trenutno nisu dostupna. Besplatna pomoć uz polja i dalje radi.',
   aiWait:'Pripremam AI odgovor …',aiError:'Nije dobijen potvrđen AI odgovor. Probaj kasnije; pomoć uz polja ostaje dostupna.',
@@ -55,6 +57,7 @@
    if(number)stage=Number(number[0])-1;
    instruction=T.academy[stage];
   }else if(context==='auto'||context==='business')instruction=T[context];
+  instruction=T.details?.[context]?.[fieldName]||instruction;
   const heading=field?T.field+': '+field+'. ':'';
   reply.textContent=heading+instruction;
   note.textContent=lang==='de'?'Kostenloser Hinweis ohne KI-Aufruf.':'Besplatno objašnjenje bez AI poziva.';
@@ -63,7 +66,7 @@
   const el=event.target;
   if(!(el instanceof HTMLElement)||!el.matches('input,textarea,select'))return;
   if(root.contains(el)||['checkbox','hidden','submit','button','password'].includes(el.getAttribute('type')))return;
-  lastFocus=el;
+  lastFocus=el;fieldName=el.getAttribute('name')||'';
   const associated=el.id?document.querySelector('label[for="'+CSS.escape(el.id)+'"]'):el.closest('label');
   field=(associated?.textContent||el.getAttribute('aria-label')||el.name||'').trim().slice(0,65);
  });

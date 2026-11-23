@@ -8,6 +8,8 @@
  const reply=$('danini-assistant-reply'),question=$('danini-assistant-question');
  const local=$('danini-assistant-local'),ask=$('danini-assistant-ask'),verify=$('danini-assistant-captcha');
  const note=$('danini-assistant-note'),status=$('danini-assistant-status');
+ const project=$('danini-assistant-project'),reloadProjects=$('danini-assistant-project-reload'),projectNotice=$('danini-assistant-project-notice'),historyBox=$('danini-assistant-history');
+ let conversation=[]; // kept only in current browser tab; never mixed between selected projects
  const pathname=location.pathname;
  const context=pathname.includes('/akademija/')?'academy':pathname.includes('/auto-check/')?'auto':pathname.includes('/business/')?'business':'general';
  let field='',fieldName='',lastFocus=null,ready=false,busy=false,widget=null,initialized=false,initBusy=false;
@@ -80,7 +82,7 @@
  });
  function open(){
   panel.hidden=false;toggle.setAttribute('aria-expanded','true');question.focus();
-  if(!initialized){initialized=true;initialize();}
+  if(!initialized){initialized=true;initialize();loadProjects();}
  }
  function shut(){panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.focus();}
  toggle.addEventListener('click',()=>panel.hidden?open():shut());close.addEventListener('click',shut);
@@ -90,6 +92,40 @@
   ready=false;ask.hidden=true;status.textContent=message;
   retry.hidden=false;
  }
+ function appendTurn(role,content){
+  const message=document.createElement('div');
+  message.className='da-turn '+(role==='user'?'da-turn-user':'da-turn-assistant');
+  message.textContent=(role==='user'?(lang==='de'?'Sie: ':'Ti: '):'DANINI AI: ')+content;
+  historyBox.append(message);
+  while(historyBox.children.length>8)historyBox.firstElementChild.remove();
+  historyBox.scrollTop=historyBox.scrollHeight;
+ }
+ let projectLoadPromise=null;
+ function loadProjects(){
+  if(projectLoadPromise)return projectLoadPromise;
+  projectLoadPromise=loadProjectsImpl().finally(()=>{projectLoadPromise=null;});
+  return projectLoadPromise;
+ }
+ async function loadProjectsImpl(){
+  try{
+   const res=await fetch('/api/assistant/projects',{credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(8000)});
+   const body=await res.json();
+   if(!res.ok||!body.authenticated||!Array.isArray(body.projects)){
+    project.replaceChildren(new Option(lang==='de'?'Ohne Projektdaten fragen':'Pitaj bez podataka projekta',''));
+    projectNotice.textContent=lang==='de'?'Anmelden, um private Projekte auszuwählen. Fragen sind auch ohne Konto möglich.':'Prijavi se da izabereš privatni projekat. Pitanja rade i bez naloga.';
+    return;
+   }
+   const currentSelection=project.value;
+   project.replaceChildren(new Option(lang==='de'?'Ohne Projektdaten fragen':'Pitaj bez podataka projekta',''));
+   for(const p of body.projects){
+    if(typeof p.id==='string'&&typeof p.title==='string')project.add(new Option(p.title.slice(0,80),p.id));
+   }
+   if([...project.options].some(o=>o.value===currentSelection))project.value=currentSelection;
+   projectNotice.textContent=lang==='de'?'Auswahl sendet nur Ihre eigenen gespeicherten Projektschritte bei der nächsten KI-Anfrage.':'Izbor šalje samo tvoje sačuvane korake projekta pri sledećem AI pitanju.';
+  }catch{projectNotice.textContent=lang==='de'?'Projektliste momentan nicht erreichbar. Allgemeine Fragen sind möglich.':'Lista projekata nije dostupna; opšta pitanja i dalje rade.'}
+ }
+ reloadProjects.addEventListener('click',loadProjects);
+ project.addEventListener('change',()=>{conversation=[];historyBox.replaceChildren();reply.textContent='';note.textContent='';});
  const retry=$('danini-assistant-retry');
  retry.addEventListener('click',initialize);
  async function initialize(){
@@ -117,17 +153,22 @@
  ask.addEventListener('click',async()=>{
   if(!ready||busy)return;
   const prompt=question.value.trim();
-  if(prompt.length<8||prompt.length>420){status.textContent=lang==='de'?'Bitte 8–420 Zeichen eingeben.':'Unesi pitanje od 8 do 420 znakova.';return}
+  if(prompt.length<8||prompt.length>620){status.textContent=lang==='de'?'Bitte 8–620 Zeichen eingeben.':'Unesi pitanje od 8 do 620 znakova.';return}
   const token=window.turnstile?.getResponse(widget)||'';
   if(!token){status.textContent=T.token;return}
   busy=true;ask.disabled=true;status.textContent=T.aiWait;reply.textContent='';
   try{
    const response=await fetch('/api/assistant/ask',{method:'POST',credentials:'same-origin',cache:'no-store',
-    headers:{'content-type':'application/json'},body:JSON.stringify({language:lang,context,field,question:prompt,turnstileToken:token})});
+    headers:{'content-type':'application/json'},body:JSON.stringify({language:lang,context,field,question:prompt,history:conversation.slice(-4),...(project.value?{projectId:project.value}:{}),turnstileToken:token})});
    const result=await response.json().catch(()=>({}));
    if(!response.ok)throw Error(result.error||'server_error');
    if(result.aiUsed!==true||typeof result.answer!=='string'||typeof result.nextStep!=='string')throw Error('invalid_output');
    reply.textContent=result.answer+'\n\n'+T.next+': '+result.nextStep;
+   appendTurn('user',prompt);
+   appendTurn('assistant',reply.textContent);
+   conversation.push({role:'user',content:prompt.slice(0,350)},{role:'assistant',content:result.answer.slice(0,350)});
+   conversation=conversation.slice(-4);
+   question.value='';
    note.textContent=T.source;
    status.textContent='';
   }catch(e){status.textContent=e.message==='assistant_daily_limit'?T.aiLimit:T.aiError}

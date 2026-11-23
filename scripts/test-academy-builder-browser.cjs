@@ -60,7 +60,6 @@ async function scenario(browser, language, width) {
   const response=await page.goto(BASE+path,{waitUntil:'domcontentloaded',timeout:30000});
   assert.equal(response?.status(),200,`Builder page ${path}`);
   try { await page.locator('#signin').waitFor({state:'visible',timeout:8000}); }
-  assert.equal(await page.locator('#demo').isVisible(),true,'Free Builder remains visible with pilot login');
   catch (e) {
     console.error('Builder initialize diagnostics', JSON.stringify({
       lang:language, viewport:width,
@@ -72,6 +71,7 @@ async function scenario(browser, language, width) {
     }));
     throw e;
   }
+  assert.equal(await page.locator('#demo').isVisible(),true,'Free Builder remains visible with pilot login');
   await page.locator('#email').fill(language==='de'?'alice@beispiel.test':'ana@primer.test');
   await page.locator('#login-form button').click();
   await page.locator('#verify-form').waitFor({state:'visible'});

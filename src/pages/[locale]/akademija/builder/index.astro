@@ -19,6 +19,13 @@ const de=locale==="de";
   <form id="demo-form">
    <div class="bb-field"><label for="demo-title">{de?"Name Ihres Geschäftsvorhabens":"Naziv poslovnog projekta"}</label><input id="demo-title" maxlength="120" required placeholder={de?"z. B. Digitaler Büroservice":"npr. Digitalna administrativna podrška"} /></div>
    <div id="demo-fields"></div>
+   <div class="bb-ai-live-controls" id="demo-ai-controls" hidden>
+    <h3>{de?"Optionale KI-Rückfragen":"Opciona AI pitanja"}</h3>
+    <p>{de?"Nur wenn Sie ausdrücklich auf Analysieren klicken, werden der aktuelle Projekttitel und die drei Felder dieses Schritts an DANINI Workers AI übertragen. Keine Marktquellen werden extern überprüft. Verwenden Sie keine personenbezogenen oder vertraulichen Informationen.":"Samo ako izričito klikneš na Analiziraj, naziv projekta i tri polja trenutnog koraka šalju se DANINI Workers AI. Spoljni izvori se ne proveravaju nezavisno. Ne unosi lične ili poverljive podatke."}</p>
+    <div id="demo-ai-turnstile"></div>
+    <button type="button" class="bb-outline" id="demo-ai-review">{de?"Aktuellen Schritt mit KI prüfen":"Analiziraj ovaj korak uz AI"}</button>
+    <p id="demo-ai-feedback" role="status" aria-live="polite"></p>
+   </div>
    <div class="bb-demo-actions"><button class="bb-outline" type="button" id="demo-back"></button><button class="bb-btn" type="submit" id="demo-next"></button></div>
   </form>
   <div id="demo-result" hidden aria-live="polite">
@@ -72,6 +79,15 @@ const de=locale==="de";
 .bb-demo :global(#demo-fields #demo-ai-prompt){flex-basis:100%;width:100%;max-width:none;min-height:160px;font-size:.91rem;line-height:1.6;white-space:pre-wrap}
 .bb-demo :global(#demo-fields #demo-ai-prompt[hidden]){display:none!important}
 .bb-demo :global(#demo-fields .bb-helper-panel button[hidden]){display:none!important}
+.bb-demo .bb-ai-live-controls{border:2px solid #abcfd0;background:#f1f9f9;padding:18px;border-radius:12px;margin:18px 0}
+.bb-demo .bb-ai-live-controls h3{margin:0 0 6px}
+.bb-demo .bb-ai-live-controls p{color:#294958;line-height:1.6}
+.bb-demo #demo-ai-turnstile{margin:12px 0;min-height:65px}
+.bb-demo :global(.bb-ai-result){border-left:4px solid #0d727a;background:#eff8f7;padding:14px 17px;margin:16px 0;border-radius:6px}
+.bb-demo :global(.bb-ai-result h5){margin:12px 0 6px}
+.bb-demo :global(.bb-ai-result p){white-space:pre-wrap}
+@media print{.bb-ai-live-controls{display:none!important}}
+
 .bb-demo :global(#demo-fields .bb-demo-stage){color:#164a5d;font-weight:750;font-size:1.08rem;line-height:1.65;margin-top:22px}
 .bb-demo :global(#demo-result p),.bb-demo :global(#demo-summary p){color:#334155}
 .bb-demo #demo-title::placeholder{color:#475569;opacity:1}

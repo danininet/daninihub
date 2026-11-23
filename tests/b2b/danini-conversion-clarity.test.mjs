@@ -45,8 +45,8 @@ test('AI interaction disclosure is visible before user input and existing transp
  const advisor=readFileSync('src/pages/[locale]/ai-savetnik.astro','utf8');
  const footer=readFileSync('src/components/Footer.astro','utf8');
  assert.match(advisor,/advisor-ai-disclosure/);
- assert.match(advisor,/KI-gestützte Vorprüfung/);
- assert.match(advisor,/AI-podržana predprovera/);
+ assert.match(advisor,/Kostenloser Dialog nach festen Regeln — keine generative KI/);
+ assert.match(advisor,/Besplatan razgovor zasnovan na pravilima — bez generativne AI/);
  assert.ok(advisor.indexOf('advisor-ai-disclosure')<advisor.indexOf('advisor-grid'),'disclosure must precede user input');
  assert.match(footer,/ai-transparenz/);
 });
@@ -78,6 +78,7 @@ test('AutoDanini opens with DE/SR buyer problem; the listing analyzer remains op
  assert.match(advisor,/class="advisor-advanced"/);
  assert.match(guide,/auto-check\/\#contact/);
  assert.match(guide,/sessionStorage/);
+ assert.match(guide,/danini-auto-enquiry-handoff-v1/);
  assert.match(guide,/validateMockAiFollowup/);
  assert.match(guide,/getQuestion/);
  assert.match(guide,/focusQuestion/);

@@ -1,5 +1,8 @@
 export interface Env {
   ACADEMY_AUTH_ENABLED?: string;
+  ACADEMY_INVITE_ONLY?: string;
+  MAIL_TEST_RECIPIENTS?: string;
+  MAIL_TEST_RECIPIENT?: string;
   ACADEMY_AUTH_SECRET?: string;
   ACCESS_TEAM_DOMAIN?: string;
   ACCESS_AUD?: string;

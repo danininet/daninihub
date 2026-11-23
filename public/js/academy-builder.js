@@ -14,6 +14,29 @@ if(root){
   labels:[['Niša','Ciljna grupa','Problem kupca','Moje pretpostavke'],['Tržište','Stvarno provereni izvor i datum','Alternativa / konkurencija','Nedostajući dokazi'],['Ponuda','Konkretan rezultat','Obim i ograničenja','Cenovna hipoteza (nije objavljena)'],['Online prisustvo','Cilj sajta','Glavna poruka i stranice','Sadržaj i odobrenje za objavu'],['Operacije','Važni upiti kupaca','Proces i odgovornosti','Privatnost i odobravanja'],['Validacija','Mali tržišni test','Merilo i rok','Odluka PASS / REVIEW / STOP']]
  };
 
+ // One Cloudflare Turnstile loader is shared by the optional AI and OTP login.
+ // Previously both features could insert the same external script concurrently.
+ let turnstileScriptPromise=null;
+ async function ensureTurnstile(){
+  if(window.turnstile?.render)return window.turnstile;
+  if(!turnstileScriptPromise){
+   turnstileScriptPromise=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async=true;script.dataset.daniniTurnstile='1';
+    const timeout=setTimeout(()=>fail('turnstile_timeout'),12000);
+    const fail=reason=>{clearTimeout(timeout);script.remove();turnstileScriptPromise=null;reject(Error(reason));};
+    script.onload=()=>{
+     clearTimeout(timeout);
+     if(!window.turnstile?.render){fail('turnstile_not_ready');return}
+     resolve(window.turnstile);
+    };
+    script.onerror=()=>fail('turnstile_script_blocked');
+    document.head.append(script);
+   });
+  }
+  return turnstileScriptPromise;
+ }
  // Beginner guidance, authored examples and honest off-site AI prompt builder.
  // This is NOT model inference. No user content is transferred without their action.
  const beginner=de?[
@@ -267,19 +290,12 @@ if(root){
    if(!aiAvailable)return;
    aiSiteKey=status.siteKey;
    const target=$('demo-ai-controls');
-   if(!target||!window.turnstile){
-    if(!window.turnstile){
-     const script=document.createElement('script');
-     script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-     script.async=true;
-     await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=reject;document.head.append(script)});
-    }
-   }
-   if(!window.turnstile)throw Error('captcha_unavailable');
-   aiTurnstileId=window.turnstile.render('#demo-ai-turnstile',{
+   if(!target)throw Error('ai_panel_missing');
+   const widget=await ensureTurnstile();
+   show('demo-ai-controls',true);
+   aiTurnstileId=widget.render('#demo-ai-turnstile',{
     sitekey:aiSiteKey,action:'academy-ai',language:de?'de':'sr',theme:'auto'
    });
-   show('demo-ai-controls',true);
    // Preserve edits made while the availability request/Turnstile script loaded.
    captureDemo();renderDemo();
   }catch{
@@ -373,26 +389,34 @@ if(root){
   const body=await response.json().catch(()=>({}));if(!response.ok)throw Error(body.error||'request_failed');return body;
  }
  async function loadTurnstile(){
-  if(!window.turnstile){
-   const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;
-   await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=reject;document.head.append(script)});
-  }
-  if(!window.turnstile)throw Error('turnstile_unavailable');
-  if(turnstileId!==null){window.turnstile.reset(turnstileId);return;}
-  turnstileId=window.turnstile.render('#turnstile',{sitekey:siteKey,action:'academy-login',language:de?'de':'sr',theme:'auto'});
+  const widget=await ensureTurnstile();
+  if(turnstileId!==null){widget.reset(turnstileId);return}
+  turnstileId=widget.render('#turnstile',{sitekey:siteKey,action:'academy-login',language:de?'de':'sr',theme:'auto',
+   'error-callback':code=>{
+    pilotState(pilotCopy.challenge,false,true);
+    pilotStatus.dataset.diagnostic=String(code||'unknown').slice(0,64);
+   },
+   'timeout-callback':()=>pilotState(pilotCopy.expired,false,true)
+  });
  }
  const pilotStatus=$('pilot-login-status'),pilotRetry=$('pilot-login-retry');
  const pilotSubmit=$('login-form').querySelector('button[type="submit"]');
  const pilotCopy=de?{
   checking:'Die geschützte Testanmeldung wird geprüft. Der kostenlose Builder bleibt ohne Konto nutzbar.',
   unavailable:'Die Testanmeldung ist noch nicht freigeschaltet. Der Builder oben funktioniert ohne Anmeldung.',
-  captcha:'Die Sicherheitsprüfung konnte nicht geladen werden. Bitte erneut versuchen. Der kostenlose Builder bleibt nutzbar.',
+  captcha:'Cloudflare-Sicherheitsprüfung konnte nicht geladen werden. Prüfen Sie Browser-Schutz/Blocker und versuchen Sie es erneut; der kostenlose Builder bleibt verfügbar.',
+  challenge:'Cloudflare hat die Sicherheitsprüfung nicht abschließen können. Bitte erneut versuchen.',
+  expired:'Die Sicherheitsprüfung ist abgelaufen. Bitte erneut prüfen.',
+  tokenMissing:'Bitte die Cloudflare-Sicherheitsprüfung zuerst abschließen.',
   ready:'Anmeldung bereit. Nur ausdrücklich eingeladene E-Mail-Adressen können einen Einmalcode erhalten.',
   pending:'Bitte warten, bis die Sicherheitsprüfung geladen ist.'
  }:{
   checking:'Proveravam prijavu. Besplatni Builder iznad radi i bez naloga.',
   unavailable:'Test prijava još nije dostupna. Besplatni Builder iznad radi bez naloga.',
-  captcha:'Bezbednosna provera nije učitana. Pokušaj ponovo. Besplatni Builder radi bez naloga.',
+  captcha:'Cloudflare bezbednosna provera nije učitana. Proveri blokiranje skripti u browseru i pokušaj ponovo; besplatni Builder radi.',
+  challenge:'Cloudflare nije uspeo da završi bezbednosnu proveru. Pokušaj ponovo.',
+  expired:'Bezbednosna provera je istekla. Uradi je ponovo.',
+  tokenMissing:'Prvo završi Cloudflare bezbednosnu proveru.',
   ready:'Prijava je spremna. Samo pozvane e-mail adrese mogu primiti jednokratni kod.',
   pending:'Sačekaj da se učita bezbednosna provera.'
  };
@@ -423,7 +447,7 @@ if(root){
    }
    show('signin',true);
    try{await loadTurnstile()}
-   catch{pilotState(pilotCopy.captcha,false,true);notice(pilotCopy.captcha);return}
+   catch(e){pilotState(pilotCopy.captcha,false,true);pilotStatus.dataset.diagnostic=String(e?.message||'turnstile_setup_error').slice(0,64);notice(pilotCopy.captcha);return}
    pilotState(pilotCopy.ready,true,false);notice(i18n.ready);
   }catch{show('signin',true);pilotState(pilotCopy.unavailable,false,true);notice(i18n.unavailable)}
   finally{pilotLoading=false}
@@ -450,7 +474,7 @@ if(root){
   ['a','b','c'].forEach((key,idx)=>{const wrap=append('div',null,'bb-field'),label=append('label',labels[idx+1]);const input=append('textarea');
    input.name=key;input.id='field-'+key;label.htmlFor=input.id;input.maxLength=1500;input.rows=3;input.value=saved[key]||'';wrap.append(label,input);fields.append(wrap)});
  }
- $('login-form').addEventListener('submit',async event=>{event.preventDefault();if(!pilotReady){pilotStatus.textContent=pilotCopy.pending;return}const email=$('email').value.trim();const token=window.turnstile?.getResponse(turnstileId)||'';
+ $('login-form').addEventListener('submit',async event=>{event.preventDefault();if(!pilotReady){pilotStatus.textContent=pilotCopy.pending;return}const email=$('email').value.trim();const token=window.turnstile?.getResponse(turnstileId)||'';if(!token){pilotStatus.textContent=pilotCopy.tokenMissing;return}
   try{const d=await api('auth/start','POST',{email,language:de?'de':'sr',turnstileToken:token});challenge=d.challengeId;show('verify-form',true);notice(i18n.sent)}catch{notice(i18n.generic)}finally{window.turnstile?.reset(turnstileId)}
  });
  $('verify-form').addEventListener('submit',async event=>{event.preventDefault();try{

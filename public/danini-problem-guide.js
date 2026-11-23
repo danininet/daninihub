@@ -19,7 +19,7 @@
       seller:'Fragen an den Verkäufer auf Deutsch',
       service:'Unverbindliche individuelle Vorprüfung anfragen',
       listing:'Optional: Inserat oder Text prüfen', noMail:'Kein E-Mail-Konto für diesen Schritt nötig.',
-      noFacts:'Nicht bestätigt', unclear:'Die Antwort bleibt offen; keine Tatsache wird unterstellt.',
+      noFacts:'Nicht bestätigt', claimedYes:'Laut Ihrer Angabe: ja — nicht unabhängig bestätigt.', claimedNo:'Laut Ihrer Angabe: nein — Nachweis fehlt.', unclear:'Auch bejahte Angaben sind ohne unabhängige Belege nicht bestätigt.',
       photo:'Ein Foto eines Dokuments ist noch keine Prüfung des Originals oder der FIN am Fahrzeug.',
       intro:'Ihre Antworten sind Selbstauskünfte. Kein Ergebnis bestätigt Eigentum, Zustand, Laufleistung oder Echtheit der Dokumente.',
       step:'Nächster Schritt', questionChange:'Frühere Antwort ändern'
@@ -36,7 +36,7 @@
       seller:'Pitanja prodavcu na nemačkom',
       service:'Zatraži neobavezujuću individualnu predproveru',
       listing:'Opciono: analiza oglasa ili teksta', noMail:'Za ovaj korak nije potrebna e-mail adresa.',
-      noFacts:'Nije potvrđeno', unclear:'Odgovor je nepoznat; ne pretpostavljamo činjenice.',
+      noFacts:'Nije potvrđeno', claimedYes:'Prema tvojoj izjavi: da — nije nezavisno potvrđeno.', claimedNo:'Prema tvojoj izjavi: ne — dokaz nedostaje.', unclear:'I potvrdni odgovori ostaju nepotvrđeni bez nezavisnih dokaza.',
       photo:'Fotografija dokumenta ne potvrđuje autentičnost originala niti VIN na samom vozilu.',
       intro:'Odgovori su tvoje izjave. Rezultat ne potvrđuje vlasništvo, stanje, kilometražu ni autentičnost dokumenata.',
       step:'Sledeći korak', questionChange:'Ispravi raniji odgovor'
@@ -244,8 +244,10 @@
     }
     result.append(el('h3',l.results),el('p',l.source),el('p',l.intro),el('p',l.verified));
     const missing=el('ul');
+    // Every answer is a self-report, including YES. No answer independently verifies a vehicle.
     answers.forEach(item=>{
-      if(item.value!=='yes')missing.append(el('li',item.question+' — '+l.noFacts));
+      const evidenceStatus=item.value==='yes'?l.claimedYes:item.value==='no'?l.claimedNo:l.noFacts;
+      missing.append(el('li',item.question+' — '+evidenceStatus));
     });
     if(!missing.childElementCount)missing.append(el('li',l.unclear));
     result.append(el('strong',l.missing),missing);

@@ -314,7 +314,13 @@ jobs:
           import assert from 'node:assert/strict';
           const origin='https://daninihub.com';
           const cfg=await fetch(origin+'/api/academy/config',{signal:AbortSignal.timeout(16000),cache:'no-store'});
-          assert.equal(cfg.status,404,'Public sign-up unexpectedly enabled before signed owner-only pilot');
+          assert.ok([200,404].includes(cfg.status),'Unexpected Academy config status '+cfg.status);
+          if(cfg.status===200){
+            const body=await cfg.json();
+            assert.equal(body.enabled,true,'Unexpected enabled Academy config');
+            assert.equal(typeof body.siteKey,'string','Invited Academy must retain Turnstile site key');
+            assert.ok(body.siteKey.length>=7,'Invited Academy requires a nonempty site key');
+          }
           for(const lang of ['de','sr']){
             const res=await fetch(origin+'/'+lang+'/akademija/builder/',{signal:AbortSignal.timeout(16000),cache:'no-store'});
             assert.equal(res.status,200);
@@ -324,8 +330,10 @@ jobs:
           const denied=await fetch(origin+'/api/academy/auth/start',{method:'POST',headers:{origin,'content-type':'application/json'},
              body:JSON.stringify({email:'not-invited@example.invalid',language:'sr',turnstileToken:'INVALID-TEST-ONLY'}),
              signal:AbortSignal.timeout(16000)});
-          assert.equal(denied.status,404,'Public OTP registration must stay gated until invitations/secrets');
-          console.log('PASS Academy Free guest DE/SR, private dashboard templates; public OTP registration CLOSED');
+          assert.equal(denied.status,cfg.status===200?403:404,'Uninvited registration must be rejected before Turnstile or e-mail');
+          const payload=await denied.json();
+          assert.equal(payload.error,cfg.status===200?'test_recipient_only':'not_found');
+          console.log('PASS Academy Free guest DE/SR, protected invited-only login '+(cfg.status===200?'CONFIGURED':'DORMANT')+' and uninvited registration DENIED');
           NODE
 
 # Owner-authorized 2026-11-23: publish active DE/SR Builder/correct catalog PR #277 at merge 0d314c521471f253174d2f7236a3a1ebb2d69327. No payment, DNS, legal or new paid AI calls.

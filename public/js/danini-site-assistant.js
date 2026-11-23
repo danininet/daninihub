@@ -100,8 +100,13 @@
   while(historyBox.children.length>8)historyBox.firstElementChild.remove();
   historyBox.scrollTop=historyBox.scrollHeight;
  }
- async function loadProjects(){
-  const selected=project.value;
+ let projectLoadPromise=null;
+ function loadProjects(){
+  if(projectLoadPromise)return projectLoadPromise;
+  projectLoadPromise=loadProjectsImpl().finally(()=>{projectLoadPromise=null;});
+  return projectLoadPromise;
+ }
+ async function loadProjectsImpl(){
   try{
    const res=await fetch('/api/assistant/projects',{credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(8000)});
    const body=await res.json();
@@ -110,11 +115,12 @@
     projectNotice.textContent=lang==='de'?'Anmelden, um private Projekte auszuwählen. Fragen sind auch ohne Konto möglich.':'Prijavi se da izabereš privatni projekat. Pitanja rade i bez naloga.';
     return;
    }
+   const currentSelection=project.value;
    project.replaceChildren(new Option(lang==='de'?'Ohne Projektdaten fragen':'Pitaj bez podataka projekta',''));
    for(const p of body.projects){
     if(typeof p.id==='string'&&typeof p.title==='string')project.add(new Option(p.title.slice(0,80),p.id));
    }
-   if([...project.options].some(o=>o.value===selected))project.value=selected;
+   if([...project.options].some(o=>o.value===currentSelection))project.value=currentSelection;
    projectNotice.textContent=lang==='de'?'Auswahl sendet nur Ihre eigenen gespeicherten Projektschritte bei der nächsten KI-Anfrage.':'Izbor šalje samo tvoje sačuvane korake projekta pri sledećem AI pitanju.';
   }catch{projectNotice.textContent=lang==='de'?'Projektliste momentan nicht erreichbar. Allgemeine Fragen sind möglich.':'Lista projekata nije dostupna; opšta pitanja i dalje rade.'}
  }

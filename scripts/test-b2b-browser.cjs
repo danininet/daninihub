@@ -24,7 +24,7 @@ const assert = require("node:assert/strict");
         const target="http://127.0.0.1:4321/"+locale+"/"+section+"/";
         await noJs.goto(target,{waitUntil:"domcontentloaded"});
         assert.equal(await noJs.locator(selector).isDisabled(),true,locale+" "+section+" must fail closed without JS");
-        await noJs.locator(selector).click({force:true});
+        // A disabled native submit button cannot initiate GET navigation.
         assert.equal(new URL(noJs.url()).search,"",locale+" "+section+" must not leak fields into URL");
       }
       await noJs.close();

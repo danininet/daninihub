@@ -1,5 +1,6 @@
 import {handleVehicleAnalysis} from './danini-vehicle-analysis.mjs';
 import {digitalRoute} from './danini-digital-commerce.mjs';
+import {academyAiRoute} from './danini-academy-ai.mjs';
 /**
  * DANINI / Cloudflare Workers lead intake.
  * Fail closed until Brevo sender + recipient + Turnstile + manual enablement are set.
@@ -269,6 +270,7 @@ export default {
  async fetch(request,env){
   const pathname=new URL(request.url).pathname;
   if(pathname.startsWith('/api/danini/digital/'))return digitalRoute(request,env);
+  if(pathname.startsWith('/api/academy/ai/'))return academyAiRoute(request,env);
   if(pathname.startsWith('/api/'))return handleApi(request,env);
   return env.ASSETS.fetch(request);
  }

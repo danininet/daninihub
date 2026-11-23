@@ -35,6 +35,7 @@ jobs:
           test "$(curl -s -o /tmp/academy-disabled.json -w '%{http_code}' http://127.0.0.1:4321/api/academy/config)" = "404"
           node scripts/test-b2b-browser.cjs
           node scripts/test-autodanini-dialog-browser.cjs
+          node tests/b2b/autodanini-browser-qa.mjs
           node scripts/test-knowledge-browser.cjs
           node scripts/test-danini-education-browser.cjs
           node --import tsx scripts/test-owner-portal.mjs

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
+import {readFileSync} from 'node:fs';
 import {siteAssistantRoute} from '../../workers/danini-site-assistant.mjs';
 function env(patch={}){
  const db=new DatabaseSync(':memory:');
@@ -168,4 +169,15 @@ test('logged-in user may select only their own D1 project as AI context',async()
   assert.ok(contextString.includes('Moja knjigovodstvena usluga'));
   assert.ok(!contextString.includes('Strogo tuđi projekat'));
  }finally{mock.restore();db.close()}
+});
+
+test('DE/SR production CSP allows Turnstile browser network connections required for OTP',()=>{
+ const config=readFileSync(new URL('../../public/_headers',import.meta.url),'utf8');
+ for(const lang of ['de','sr']){
+  const section=config.split('/'+lang+'/*')[1]?.split(/\n\/(?:de|sr)\/\*/)[0];
+  assert.ok(section,'CSP section missing '+lang);
+  assert.match(section,/script-src[^;]*https:\/\/challenges\.cloudflare\.com/);
+  assert.match(section,/frame-src[^;]*https:\/\/challenges\.cloudflare\.com/);
+  assert.match(section,/connect-src[^;]*https:\/\/challenges\.cloudflare\.com/);
+ }
 });

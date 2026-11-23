@@ -57,6 +57,20 @@ const fs = require("node:fs");
       assert.equal(await page.locator("#problem-guide-result").innerText(),"");
       completed++;
     }
+    // Opt-in offer handoff preserves only the fixed answers; no automatic send.
+    await page.locator("#problem-guide-options button").first().click();
+    for(let n=0;n<3;n++)await page.locator("#problem-guide-question .advisor-answer-buttons button").nth(n%3).click();
+    await page.locator("#problem-guide-result a").first().click();
+    await page.waitForURL("**/"+locale+"/auto-check/#contact");
+    const offerText=await page.locator("form[data-auto-enquiry] textarea[name=source]").inputValue();
+    assert.match(offerText,locale==="de"?/Anfrage zur individuellen Vorprüfung/:/Upit za individualnu predproveru/);
+    assert.match(offerText,locale==="de"?/keine Fahrzeugdaten bestätigt/:/podaci nisu nezavisno potvrđeni/);
+    assert.match(offerText,locale==="de"?/Antworten/:/Odgovori/);
+    assert.equal(await page.locator("form[data-auto-enquiry] select[name=intent]").inputValue(),"documents");
+    assert.equal(await page.locator("form[data-auto-enquiry] input[name=email]").inputValue(),"");
+    assert.equal(await page.locator("form[data-auto-enquiry] button[data-auto-submit]").isDisabled(),true);
+    await page.goto(url,{waitUntil:"domcontentloaded"});
+    await page.locator("#problem-guide-question button").last().click(); // restart after saved session
     // The short free-form problem stays local, no email, no API submission.
     await page.locator("#problem-guide-description").fill(locale==="de"?"Verkäufer verlangt eine Anzahlung.":"Prodavac traži kaparu.");
     await page.locator("#problem-guide-start").click();

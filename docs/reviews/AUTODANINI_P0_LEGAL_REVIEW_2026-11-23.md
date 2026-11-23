@@ -7,6 +7,7 @@
 ## 1. Tatsächliche technische Trennung
 
 - Neuer kostenloser problemorientierter Dialog: rein lokale Regeln; maximal drei aufeinander bezogene Fragen, keine Modellaufrufe und keine Übertragung an DANINI; nur Themenkennung und die Auswahl Ja/Nein/Unbekannt im `sessionStorage`. Freitext wird nicht persistiert.
+- Optionaler Übergang zur **bestehenden** AutoDanini-Anfrage: erst nach dem ausdrücklichen Klick auf die unverbindliche Vorprüfung wird eine zweite, einmalig konsumierte `sessionStorage`-Notiz mit Thema und drei Auswahlantworten angelegt; diese füllt einen editierbaren Anfrageentwurf aus. Erst die gesonderte Formularübermittlung nach Validierung und Turnstile überträgt die Angaben an DANINI. Kein automatischer Versand, keine Zahlung, keine Newsletteranmeldung.
 - Optionale Analyse von Inseratsdaten: bestehender separater Flow über `/api/vehicle-analysis`, der nach eigenständiger Nutzeraktion und Turnstile von den Serverregeln und den jeweils verfügbaren AI-Konfigurationen abhängt. Der neue Dialog schaltet keine zusätzlichen AI-Aufrufe frei.
 - Optionale individuelle Anfrage: existierendes AutoDanini-Formular auf `/{locale}/auto-check/#contact` über `/api/lead` und Turnstile; Betreiberkommunikation via Brevo/Gmail nur bei tatsächlicher Akzeptanz. Keine Bestellung, Bezahlung oder Newsletteranmeldung durch den kostenlosen Dialog.
 - Keine Kfz-Sachverständigenprüfung, keine amtliche Abfrage, keine Gewähr für Verkäuferidentität, Eigentum, VIN, Laufleistung, Schäden, Importabgaben oder Kaufentscheidung.
@@ -52,4 +53,4 @@ Offizielle Quellen:
 
 ## 7. Freigabesperre
 
-Nicht öffentlich ausrollen, keine Rechtsseiten ersetzen und keine neue zahlungsauslösende oder zusätzliche KI-Inferenzfunktion aktivieren, bis fachliche Freigabe und eine belastbare 0-€-Grenze für zusätzliche Kosten vorliegen. Die vorhandene `AI_ENABLED=true`-Konfiguration bestätigt keine harte finanzielle Obergrenze. Die lokale Regelnavigation bleibt kostenfrei ohne Modellaufruf.
+Nicht öffentlich ausrollen, keine Rechtsseiten ersetzen und keine neue zahlungsauslösende oder zusätzliche KI-Inferenzfunktion aktivieren, bis fachliche Freigabe und eine belastbare 0-€-Grenze für zusätzliche Kosten vorliegen. Die vorhandene `AI_ENABLED=true`-Konfiguration bestätigt keine harte finanzielle Obergrenze. Eine schreibgeschützte Cloudflare-Kontrolle am 23.11.2026 fand das `AI`-Binding, `AI_ENABLED=true` und `DANINI_AI_LIVE_APPROVED=true`; der Abruf `/billing/spend-policies` scheiterte mit HTTP 403 (keine Einsicht in eine harte 0-€-Grenze). Die neue Zusatzfragen-Schnittstelle bleibt deshalb **nur Mock/CI**, ist nicht an einen öffentlichen Endpunkt gebunden und führt keine echten Inferenzaufrufe aus. Die lokale Regelnavigation bleibt kostenfrei ohne Modellaufruf.

@@ -1,0 +1,19 @@
+name: DANINI catalog isolated pilot QA
+on:
+  pull_request:
+    paths: ['core/catalog-*.js', 'catalog-pilot/**', 'catalog-pilot-server.js', 'importos-store.js', 'tests/test-catalog-pilot.cjs', 'scripts/build-catalog-pilot.cjs', '.github/workflows/catalog-pilot-qa.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run test:catalog
+      - run: npm test
+      - run: npm run build:catalog

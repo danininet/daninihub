@@ -21,6 +21,7 @@ const de=locale==="de";
       <div id="danini-assistant-captcha" class="da-captcha"></div>
       <button type="button" class="da-ai" id="danini-assistant-ask" hidden>{de?"KI-Antwort anfordern":"Zatraži AI odgovor"}</button>
       <p id="danini-assistant-status" role="status" aria-live="polite" class="da-status"></p>
+      <button type="button" class="da-retry" id="danini-assistant-retry" hidden>{de?"KI-Verbindung erneut prüfen":"Ponovo proveri AI vezu"}</button>
       <div id="danini-assistant-reply" aria-live="polite" class="da-reply"></div>
       <p id="danini-assistant-note" class="da-note"></p>
       <p class="da-support">{de?"Bei Bestellungen, Erstattung und sensiblen Fragen:":"Za narudžbine, povraćaj i osetljiva pitanja:"} <a href="mailto:info@daninihub.com">info@daninihub.com</a></p>
@@ -47,6 +48,8 @@ const de=locale==="de";
 .da-local{background:#e7f2f1;color:#084b47;border:1px solid #9ac5bd!important}
 .da-ai{background:#0b7166;color:white}
 .da-ai[hidden]{display:none}
+.da-retry{background:#fff;color:#0b5c61;border:1px solid #477d86;border-radius:8px;min-height:40px;padding:8px 12px;font-weight:750}
+.da-retry[hidden]{display:none!important}
 .da-ai:disabled{opacity:.6;cursor:wait}
 .da-captcha{min-height:0}
 .da-status{min-height:15px;color:#365368;font-size:.81rem;line-height:1.4;margin:0}

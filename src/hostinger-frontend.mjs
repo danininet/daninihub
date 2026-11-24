@@ -18,7 +18,7 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
   try { decoded = decodeURIComponent(url.pathname); } catch { return failure(400); }
   if (/[\\%\x00-\x1f]/.test(decoded) || decoded.startsWith('//') || decoded.split('/').some(p=>p==='.'||p==='..')) return failure(400);
   // Never send private paths, unknown file types, or authentication material to the static origin.
-  if (privatePath.test(decoded) || decoded.startsWith('/downloads/') && !decoded.startsWith('/downloads/akademija/')) return env.ASSETS.fetch(request);
+  if (privatePath.test(decoded) || decoded.startsWith('/downloads/') && !decoded.startsWith('/downloads/akademija/')) return failure(404);
   if (!['GET','HEAD'].includes(request.method)) return failure(405);
   if (!(decoded==='/' || /^\/(?:de|sr|auto)(?:\/|$)/.test(decoded) || /^\/_astro\//.test(decoded) || publicFile.test(decoded) || decoded==='/_danini/build.json')) return env.ASSETS.fetch(request);
   if (decoded==='/_headers'||decoded==='/_redirects') return failure(404);
@@ -30,9 +30,9 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
       const location = upstream.headers.get('location');
       if (!location) return failure();
       const next = new URL(location,target);
-      if (next.origin !== HOSTINGER || privatePath.test(decodeURIComponent(next.pathname))) return failure();
+      if (next.origin !== HOSTINGER || next.pathname.startsWith('//') || /[\\%]/.test(decodeURIComponent(next.pathname)) || privatePath.test(decodeURIComponent(next.pathname))) return failure();
       await upstream.body?.cancel();
-      return new Response(null,{status:upstream.status,headers:{location:next.pathname+next.search+next.hash,'cache-control':'no-store',...(mode==='preview'?{'x-robots-tag':'noindex, nofollow'}:{})}});
+      return new Response(null,{status:upstream.status,headers:{location:next.pathname,'cache-control':'no-store',...(mode==='preview'?{'x-robots-tag':'noindex, nofollow'}:{})}});
     }
     if (![200,404].includes(upstream.status)) {await upstream.body?.cancel();return failure();}
     const headers = new Headers();
@@ -40,7 +40,7 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
     headers.set('cache-control','no-store');
     headers.set('x-danini-frontend','hostinger');
     if (mode==='preview') headers.set('x-robots-tag','noindex, nofollow, noarchive');
-    if (mode==='production' && (/hostinger-preview/i.test(upstream.headers.get('x-danini-runtime')||'') || /noindex/i.test(upstream.headers.get('x-robots-tag')||'') && /html/i.test(headers.get('content-type')||''))) {await upstream.body?.cancel();return failure();}
+    if (mode==='production' && (/hostinger-preview/i.test(upstream.headers.get('x-danini-runtime')||''))) {await upstream.body?.cancel();return failure();}
     let body = upstream.body;
     if (request.method==='GET' && /text\/html/i.test(headers.get('content-type')||'')) {
       const html=await upstream.text();

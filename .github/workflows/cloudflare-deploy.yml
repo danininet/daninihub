@@ -1,6 +1,7 @@
 name: DANINI Cloudflare production deploy (guarded)
 on:
   workflow_dispatch:
+  # Approved guarded release for assistant requests and persistent AutoDanini receipts.
   # Owner approval 2026-11-23: guarded release PR #292 no-JS privacy fix, all five CI suites PASS.
   # P0 2026-11-23: approved PR #291 AutoDanini contact fallback and DE/SR browser E2E, guarded release.
   # 2026-11-23 owner-approved P0 release after PR #290: modern navigation and Business contact fallback.

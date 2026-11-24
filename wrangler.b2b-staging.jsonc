@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "danini-b2b-staging",
-  "main": "src/index.ts",
+  "main": "src/staging-make-ai.ts",
   "compatibility_date": "2026-11-07",
   "workers_dev": true,
   "assets": {
@@ -13,15 +13,23 @@
   "vars": {
     "B2B_ACTIVE": "false",
     "AI_ENABLED": "false",
+    "MAKE_AI_BRIDGE_ENABLED": "false",
+    "MAKE_AI_BRIDGE_APPROVED": "false",
     "SITE_ORIGIN": "https://danini-b2b-staging.dragangaganet.workers.dev",
     "RETENTION_DAYS": "30"
   },
+  "ai": { "binding": "MAKE_AI_BRIDGE_AI" },
   "d1_databases": [
     {
       "binding": "DANINI_DB",
       "database_name": "danini-b2b-staging",
       "database_id": "213809a5-0622-417e-a631-accd8940504e",
       "migrations_dir": "migrations"
+    },
+    {
+      "binding": "MAKE_AI_TEST_DB",
+      "database_name": "danini-b2b-staging",
+      "database_id": "213809a5-0622-417e-a631-accd8940504e"
     }
   ],
   "kv_namespaces": [

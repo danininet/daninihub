@@ -1,6 +1,6 @@
 /**
  * DANINI Make -> Workers AI bridge (staging only).
- * Not routed from src/index.ts. No production exposure until separate review.
+ * Disabled by default. Enable only on the existing staging Worker.
  * Never accepts client-provided system instructions or arbitrary model names.
  */
 import type { Env } from "../lib/env";
@@ -10,7 +10,7 @@ export interface BridgeEnv extends Env {
   MAKE_AI_BRIDGE_TOKEN?: string;
   MAKE_AI_TEST_DB?: D1Database;
 }
-const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
+const MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 const MAX_BODY = 4096;
 const MAX_MESSAGE = 1200;
 const headers = { "content-type": "application/json", "cache-control": "no-store" };
@@ -18,9 +18,9 @@ const reply = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers });
 
 export async function makeAiBridge(request: Request, env: BridgeEnv): Promise<Response> {
-  if (request.method !== "POST") return reply(405, { error: "method_not_allowed" });
-  // Fail closed: this module is not reachable from the Worker router by default.
+  // Fail closed: staging configuration must explicitly enable the bridge.
   if (env.MAKE_AI_BRIDGE_ENABLED !== "true") return reply(404, { error: "not_found" });
+  if (request.method !== "POST") return reply(405, { error: "method_not_allowed" });
   if (env.AI_ENABLED !== "true" || env.DANINI_AI_LIVE_APPROVED !== "true" || !env.AI?.run)
     return reply(503, { error: "ai_unavailable" });
   const expected = env.MAKE_AI_BRIDGE_TOKEN;

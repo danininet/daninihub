@@ -1,13 +1,13 @@
 name: Hostinger isolated preview QA
 on:
   push:
-    branches: [hostinger/platform-preview-20261124]
+    branches: [hostinger/platform-preview-20261124, hostinger/audit-fixes-20261124]
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   preview:
-    if: github.ref == 'refs/heads/hostinger/platform-preview-20261124'
+    if: github.ref == 'refs/heads/hostinger/platform-preview-20261124' || github.ref == 'refs/heads/hostinger/audit-fixes-20261124'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -20,3 +20,4 @@ jobs:
       - run: npm run build
       - run: node --check hostinger-preview.cjs
       - run: npm run test:hostinger-preview
+      - run: node --test tests/hostinger-audit.test.cjs

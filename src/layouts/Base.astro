@@ -58,6 +58,7 @@ const localizedSlug = (language: "de" | "sr") => {
     <meta property="og:locale" content={isDe ? "de_DE" : "sr_RS"} />
   </head>
   <body>
+    <aside data-hostinger-preview role="note" style="padding:12px 20px;background:#fff3cd;color:#3d3013;text-align:center;font-size:14px;line-height:1.5;">{isDe?"Testversion: keine Kundendaten oder Dokumente hier eingeben. Für echte Anfragen und KI öffnen Sie die Hauptplattform.":"Testna verzija: ne unosite podatke klijenata ni dokumente. Za stvarne upite i AI otvorite glavnu platformu."} <a style="color:#164b6a;text-decoration:underline;font-weight:bold" href={canonical.toString()}>{isDe?"Diese Seite auf daninihub.com öffnen":"Otvori ovu stranicu na daninihub.com"}</a></aside>
     <a class="skip" href="#main">
       {isDe ? "Zum Inhalt" : "Pređi na sadržaj"}
     </a>

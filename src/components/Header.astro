@@ -41,7 +41,7 @@ const navItems = [
   </div>
 </header>
 <style>
-.danini-header{min-height:91px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(13px,1.9vw,27px);align-items:center}
+.danini-header{max-width:1480px;min-height:91px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(13px,1.9vw,27px);align-items:center}
 .danini-header .brand{display:flex;gap:11px;align-items:center;min-width:0;color:#f4f8fc;font-weight:820;font-size:1.33rem;letter-spacing:.08em}
 .danini-header .brand .brand-lockup{display:flex;flex-direction:column;align-items:center;width:clamp(170px,17vw,222px);min-width:0}
 .danini-header .brand .brand-logo{display:block;width:100%;height:auto;aspect-ratio:3/1;object-fit:contain;background:transparent;border:0;border-radius:0;padding:0;box-shadow:none;flex:none;filter:invert(1) hue-rotate(180deg);mix-blend-mode:screen}
@@ -54,12 +54,13 @@ const navItems = [
 .danini-header .lang a{display:grid;place-items:center;min-width:33px;min-height:38px;border-radius:7px;color:#dbe7ee;font-size:.76rem;font-weight:800}
 .danini-header .lang [aria-current]{background:#105954;color:#fff;text-decoration:none}
 :global(header:has(.danini-header)){background:#0b1928;border-bottom:1px solid #294154}
-@media(max-width:1210px){
+@media(max-width:1439px){
  .danini-header{grid-template-columns:1fr auto;row-gap:7px;padding-block:14px}
- .danini-header .business-nav{grid-column:1/-1;grid-row:2;width:100%;padding-top:10px;border-top:1px solid #294154;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+ .danini-header .business-nav{grid-column:1/-1;grid-row:2;width:100%;padding-top:10px;border-top:1px solid #294154;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
  .danini-header .business-nav a{white-space:normal;justify-content:center;text-align:center;padding:8px 4px}
  .danini-header .lang{grid-column:2;grid-row:1}
 }
+@media(min-width:701px) and (max-width:980px){.danini-header .business-nav{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:700px){
  .danini-header .brand{font-size:1.12rem}
  .danini-header .brand .brand-lockup{width:clamp(135px,36vw,180px)}

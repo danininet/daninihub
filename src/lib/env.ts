@@ -1,4 +1,5 @@
 export interface Env {
+  HOSTINGER_FRONTEND_MODE?: string;
   ACADEMY_AUTH_ENABLED?: string;
   ACADEMY_INVITE_ONLY?: string;
   MAIL_TEST_RECIPIENTS?: string;

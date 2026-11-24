@@ -3,6 +3,8 @@
 const express = require('express');
 const fs = require('node:fs');
 const path = require('node:path');
+const {createStagingHealth} = require('./hostinger-staging-health.cjs');
+const stagingHealth = createStagingHealth({enabled:process.env.DANINI_STAGING_HEALTH === 'true'});
 const app = express();
 const dist = path.join(__dirname, 'dist');
 if (!fs.existsSync(path.join(dist,'de','index.html')) || !fs.existsSync(path.join(dist,'sr','index.html'))) throw new Error('Run npm run build:platform before starting preview');
@@ -14,6 +16,11 @@ app.use((req,res,next)=>{
   next();
 });
 app.get('/health',(_req,res)=>res.json({ok:true,mode:'visual-preview',backend:false}));
+app.get('/health/staging',async(req,res)=>{
+  if (req.originalUrl !== '/health/staging') return res.sendStatus(400);
+  const result = await stagingHealth();
+  res.status(result.ok?200:503).json(result);
+});
 app.get('/robots.txt',(_req,res)=>res.type('text/plain').send('User-agent: *\nDisallow: /\n'));
 app.get('/',(_req,res)=>res.redirect(302,'/de/'));
 app.use(express.static(dist,{index:'index.html',extensions:['html'],dotfiles:'deny'}));

@@ -2,12 +2,12 @@
   "name": "daninihub",
   "version": "1.0.0",
   "description": "DANINI Automotive Import Intelligence — DE/CH to Serbia decision, verification and execution platform.",
-  "main": "server.js",
+  "main": "hostinger-preview.cjs",
   "scripts": {
-    "start": "node server.js",
+    "start": "node hostinger-preview.cjs",
     "dev": "node server.js",
     "test": "npm run test:regression",
-    "build": "npm run check:syntax && npm run test:importos && npm run build:front && npm run build:auto-release",
+    "build": "npm run build:platform",
     "build:front": "node scripts/build-hostinger.js",
     "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check knowledge-expert-articles.js && node --check site-experience.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js && node --check purchase-case-runtime.js && node --check core/purchase-case.js && node --check public/owner-case-client.js && node --check public/customer-case-client.js && node --check public/danini-order.js && node --check public/danini-quickcheck.js && node --check public/danini-sales.js && node --check danini-ecosystem.js && node --check danini-business-store.js && node --check digital-commerce.js && node --check public/danini-digital-checkout.js && node --check scripts/test-digital-delivery.js && node --check scripts/probe-production-autodanini.cjs && node --check scripts/diagnose-hostinger-config.cjs",
     "test:importos": "node scripts/test-importos-clean.js",
@@ -29,7 +29,8 @@
     "check:b2b": "astro check",
     "test:b2b": "node --import tsx --test tests/b2b/*.test.mjs && node --test tests/academy/*.test.mjs",
     "dev:b2b": "astro dev --host 0.0.0.0",
-    "build:platform": "npm run build:auto-release && npm run build:b2b && node scripts/merge-platform-assets.cjs"
+    "build:platform": "npm run build:auto-release && npm run build:b2b && node scripts/merge-platform-assets.cjs",
+    "test:hostinger-preview": "node --test tests/hostinger-preview.test.cjs"
   },
   "keywords": [
     "vehicle-import",

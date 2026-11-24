@@ -1,0 +1,22 @@
+name: Hostinger isolated preview QA
+on:
+  push:
+    branches: [hostinger/platform-preview-20261124]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    if: github.ref == 'refs/heads/hostinger/platform-preview-20261124'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --include=dev --no-audit --no-fund
+      - run: npm run build
+      - run: node --check hostinger-preview.cjs
+      - run: npm run test:hostinger-preview

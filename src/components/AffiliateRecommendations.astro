@@ -1,0 +1,11 @@
+---
+import { approvedPartners } from "../lib/affiliate-register";
+const {locale, guide}=Astro.props as {locale:"de"|"sr";guide:string};
+const de=locale==="de";
+const items=approvedPartners(guide);
+---
+{items.length>0&&<aside data-affiliate-recommendations class="guide-part">
+<h2>{de?"Ergänzende externe Werkzeuge":"Dodatni spoljni alati"}</h2>
+<p>{de?"Werbung / Affiliate-Links: DANINI kann bei einem qualifizierten Kauf eine Provision erhalten. Die Auswahl ersetzt keine unabhängige Prüfung.":"Oglas / affiliate linkovi: DANINI može dobiti proviziju za kvalifikovanu kupovinu. Izbor alata ne zamenjuje nezavisnu proveru."}</p>
+{items.map(p=><article><h3>{p.name}</h3><p>{de?p.de:p.sr}</p><a href={p.trackingUrl!} rel="sponsored noopener noreferrer">{de?"Anbieter ansehen":"Pogledaj pružaoca usluge"}</a></article>)}
+</aside>}

@@ -28,6 +28,8 @@ const scopes={
  business:{sr:'Pomaži pri optimizaciji procesa malih preduzeća. Slanje trećim licima zahteva posebno odobrenje.',de:'Hilf bei der Digitalisierung von KMU-Prozessen. Kein Versand an Dritte ohne Genehmigung.'},
  general:{sr:'Odgovaraj na pitanja o DANINI sajtu i samostalnom online poslovanju.',de:'Beantworte Fragen über DANINI und den Aufbau eines eigenständigen Online-Geschäfts.'}
 };
+// Allow a full verification token and four UTF-8 history entries in one request.
+const MAX_REQUEST_BYTES = 16 * 1024;
 const PROJECT_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 function historySafe(h){
  if(h===undefined)return [];
@@ -91,8 +93,8 @@ export async function siteAssistantRoute(request,env={}){
  if(!isOn(env))return json({error:'assistant_disabled'},503);
  if(!['https://daninihub.com','https://www.daninihub.com'].includes(request.headers.get('origin')))return json({error:'invalid_origin'},403);
  if(!/^application\/json(?:;|$)/i.test(request.headers.get('content-type')||''))return json({error:'invalid_type'},415);
- if(Number(request.headers.get('content-length')||0)>3600)return json({error:'too_large'},413);
- let data;try{const text=await request.text();if(new TextEncoder().encode(text).length>3600)return json({error:'too_large'},413);data=JSON.parse(text)}catch{return json({error:'invalid_json'},400)}
+ if(Number(request.headers.get('content-length')||0)>MAX_REQUEST_BYTES)return json({error:'too_large'},413);
+ let data;try{const text=await request.text();if(new TextEncoder().encode(text).length>MAX_REQUEST_BYTES)return json({error:'too_large'},413);data=JSON.parse(text)}catch{return json({error:'invalid_json'},400)}
  if(!data||typeof data!=='object'||Array.isArray(data)||!['de','sr'].includes(data.language)||!categories.has(data.context)||
    typeof data.question!=='string'||data.question.length>620||clean(data.question,620).length<8||
    typeof data.field!=='string'||data.field.length>65||
@@ -111,7 +113,7 @@ export async function siteAssistantRoute(request,env={}){
  if(budget!=='ok')return json({error:'assistant_quota_unavailable'},503);
  const lang=data.language;let ai;
  try{ai=await env.AI.run(MODEL,{messages:[
-  {role:'system',content:common[lang]+' '+scopes[data.context][lang]},
+  {role:'system',content:common[lang]+' '+scopes[data.context][lang]+' '+(lang==='sr'?'Navedi samo stranice iz ovih uputstava. Ne izmišljaj druge stranice.':'Empfehle ausschließlich die hier genannten Seiten.')},
   ...history.map(h=>({role:h.role,content:h.content})),
   {role:'user',content:JSON.stringify({language:lang,context:data.context,formFieldLabel:clean(data.field,65),userQuestion:clean(data.question,620),selectedProject:linked?.project??null})}
  ],max_tokens:420,temperature:0})}catch{return json({error:'assistant_provider_unavailable'},503)}

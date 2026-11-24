@@ -68,7 +68,7 @@ if(root){
   {intro:'Kome konkretno želiš da pomogneš i koji jedan problem rešavaš? Počni od čoveka i problema, a ne od AI tehnologije.',fields:[
    ['Primer: male firme u Nemačkoj koje dobijaju upite na srpskom i nemačkom.','Napiši jednu grupu kupaca, tržište i po mogućnosti mesto.'],
    ['Primer: upiti se izgube između e-maila i telefona, pa odgovor kasni.','Napiši konkretan problem koji kupac prepoznaje.'],
-   ['Primer: pretpostavljam da bi firme platile pomoć. Još nemam dokaz.','Navedite šta samo pretpostavljaš i kako to možeš proveriti.']]},
+   ['Primer: pretpostavljam da bi firme platile pomoć. Još nemam dokaz.','Navedi šta samo pretpostavljaš i kako to možeš proveriti.']]},
   {intro:'Zapiši stvarne izvore i datume. AI odgovor sam po sebi nije dokaz potražnje.',fields:[
    ['Primer: link do stvarno pročitanog javnog upita, datum provere i opis problema.','Ako nisi istraživao, napiši „još nisam proverio“, ne izmišljaj izvore.'],
    ['Primer: firma sada odgovara ručno ili koristi postojeći CRM.','Ko rešava isti problem i kako kupci danas rade?'],

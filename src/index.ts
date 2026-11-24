@@ -1,3 +1,4 @@
+import { hostingerFrontend } from "./hostinger-frontend.mjs";
 import { ownerPortal } from "./portal/page";
 import { academyRoute } from "./academy/routes.mjs";
 import { siteAssistantRoute } from "../workers/danini-site-assistant.mjs";
@@ -66,7 +67,7 @@ export default {
       if (p.startsWith("/portal/")) return json({ error: "not_found" }, 404);
       // Preserve the existing payment, webhook, download and lead handlers verbatim.
       if (p.startsWith("/api/")) return await legacy.fetch(request, env);
-      return env.ASSETS.fetch(request);
+      return hostingerFrontend(request, env);
     } catch (error) {
       return json(
         {

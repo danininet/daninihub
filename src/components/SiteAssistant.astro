@@ -18,6 +18,12 @@ const de=locale==="de";
       <label class="da-label" for="danini-assistant-question">{de?"Was möchten Sie für Ihr Unternehmen klären?":"Šta želiš da razradiš za svoj biznis?"}</label>
       <textarea id="danini-assistant-question" rows="3" maxlength="620" placeholder={de?"Z. B. Wie validiere ich meine Geschäftsidee ohne Budget?":"Npr. kako da proverim potražnju i napravim prvu ponudu?"}></textarea>
       <div class="da-project-box">
+        <strong>{de?"Unterlagen zur Prüfung":"Dokumentacija za proveru"}</strong>
+        <p class="da-privacy">{de?"Dieser allgemeine KI-Assistent nimmt keine Dateien entgegen. Nutzen Sie für Fahrzeug-Screenshots oder geschützte Geschäftsanfragen die dafür vorgesehenen Formulare auf der Hauptplattform.":"Ovaj opšti AI asistent ne prima datoteke. Za screenshot oglasa ili zaštićene poslovne upite koristite namenske formulare na glavnoj platformi."}</p>
+        <a href={`https://daninihub.com/${locale}/ai-savetnik/`}>{de?"Fahrzeug-Screenshot prüfen":"Provera screenshota oglasa"}</a>
+        <a href={`https://daninihub.com/${locale}/business/#anfrage`}>{de?"Geschäftsanfrage vorbereiten":"Pripremi poslovni upit"}</a>
+      </div>
+      <div class="da-project-box">
         <label class="da-label" for="danini-assistant-project">{de?"Mein eigenes Projekt (freiwillig)":"Moj projekat (opciono)"}</label>
         <select id="danini-assistant-project" aria-describedby="danini-assistant-project-notice">
           <option value="">{de?"Ohne Projektdaten fragen":"Pitaj bez podataka projekta"}</option>

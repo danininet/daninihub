@@ -8,6 +8,7 @@ import type { Env } from "../lib/env";
 export interface BridgeEnv extends Env {
   MAKE_AI_BRIDGE_ENABLED?: string;
   MAKE_AI_BRIDGE_TOKEN?: string;
+  MAKE_AI_TEST_DB?: D1Database;
 }
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_BODY = 4096;
@@ -52,13 +53,14 @@ export async function makeAiBridge(request: Request, env: BridgeEnv): Promise<Re
     return reply(400, { error: "invalid_test_input" });
   // The caller is required to use synthetic text; never pass real customer information.
   if (input.synthetic !== true) return reply(400, { error: "synthetic_only" });
-  // Rate limiting is deliberately not delegated to Make. KV must be available.
-  if (!env.PARTNERS) return reply(503, { error: "quota_store_unavailable" });
-  const key = "make-ai-bridge-daily:" + new Date().toISOString().slice(0, 10);
+  // Dedicated staging DB only; atomic conditional UPSERT reserves one attempt.
+  if (!env.MAKE_AI_TEST_DB) return reply(503, { error: "quota_store_unavailable" });
+  const day = new Date().toISOString().slice(0, 10);
   try {
-    const count = Number(await env.PARTNERS.get(key) || 0);
-    if (!Number.isFinite(count) || count >= 5) return reply(429, { error: "daily_limit" });
-    await env.PARTNERS.put(key, String(count + 1), { expirationTtl: 90000 });
+    const reserved = await env.MAKE_AI_TEST_DB.prepare(
+      "INSERT INTO make_ai_daily(day, attempts) VALUES (?, 1) ON CONFLICT(day) DO UPDATE SET attempts = attempts + 1 WHERE attempts < 5 RETURNING attempts"
+    ).bind(day).first<{ attempts: number }>();
+    if (!reserved) return reply(429, { error: "daily_limit" });
   } catch { return reply(503, { error: "quota_unavailable" }); }
   try {
     const result = await env.AI.run(MODEL, {

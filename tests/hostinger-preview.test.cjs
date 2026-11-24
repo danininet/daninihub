@@ -13,6 +13,7 @@ test('Hostinger serves current bilingual platform and blocks backend',async(t)=>
  let ready=false;
  for(let i=0;i<100;i++){try{ready=(await fetch(base+'/health')).ok;if(ready)break;}catch{} await new Promise(r=>setTimeout(r,100));}
  assert.ok(ready,'preview startup');
+ assert.equal((await fetch(base+'/health')).headers.get('x-danini-runtime'),'hostinger-preview');
  const disabled=await fetch(base+'/health/staging');assert.equal(disabled.status,503);assert.equal((await disabled.json()).staging,'disabled');
  assert.equal((await fetch(base+'/health/staging?url=https://daninihub.com')).status,400);
  assert.equal((await fetch(base+'/health/staging',{method:'POST'})).status,405);
@@ -22,6 +23,15 @@ test('Hostinger serves current bilingual platform and blocks backend',async(t)=>
  for(const route of ['/api/health','/api/lead/status','/portal','/owner/'])assert.equal((await fetch(base+route)).status,503,route);
  assert.equal((await fetch(base+'/api/intake',{method:'POST',body:'{}'})).status,405);
  assert.equal((await fetch(base+'/auto/admin.html')).status,404);
+ for(const route of ['/api%2fhealth','/%61pi/health','/operator/sandbox-checkout/'])assert.equal((await fetch(base+route)).status,503,route);
+ for(const route of ['/_headers','/_redirects','/.env','/auto/%61dmin.html'])assert.equal((await fetch(base+route)).status,404,route);
+ for(const route of ['/api%252fhealth','/%00'])assert.equal((await fetch(base+route)).status,400,route);
+ for(const line of fs.readFileSync('public/_redirects','utf8').trim().split('\n')){
+  const [from,to]=line.split(/\s+/);
+  const response=await fetch(base+from,{redirect:'manual'});
+  assert.equal(response.status,301,from);assert.equal(response.headers.get('location'),to,from);
+  assert.equal((await fetch(base+to)).status,200,to);
+ }
  assert.match(await (await fetch(base+'/robots.txt')).text(),/Disallow: \//);
  assert.equal((await fetch(base+'/',{redirect:'manual'})).headers.get('location'),'/de/');
 });

@@ -6,6 +6,9 @@ function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){cons
  let html=fs.readFileSync(f,'utf8');
  html=html.replace(/<meta\b[^>]*name=["']robots["'][^>]*>/gi,'');
  html=html.replace(/<\/head>/i,'<meta name="robots" content="noindex,nofollow,noarchive"></head>');
+ // Static Hostinger responses do not execute Express or Cloudflare _headers.
+ // Put the preview restrictions before scripts, including native no-JS forms.
+ html=html.replace(/<head(?:\s[^>]*)?>/i,m=>m+'<meta data-hostinger-preview-csp http-equiv="Content-Security-Policy" content="form-action \'none\'; connect-src \'self\'; frame-src \'none\'; object-src \'none\'; base-uri \'self\'">');
  if(!html.includes('data-hostinger-preview'))html=html.replace(/<body(?:\s[^>]*)?>/i,m=>m+'<aside data-hostinger-preview style="padding:12px;background:#fff3cd;color:#3d3013;text-align:center">TEST / VORSCHAU — keine Kundendaten / bez podataka klijenata. <a href="https://daninihub.com/">daninihub.com</a></aside>');
  fs.writeFileSync(f,html);
 }}}

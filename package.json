@@ -7,7 +7,8 @@
     "start": "node hostinger-preview.cjs",
     "dev": "node server.js",
     "test": "npm run test:regression",
-    "build": "npm run build:platform && node scripts/prepare-hostinger-static-preview.cjs",
+    "build": "node scripts/build-hostinger-platform.cjs preview",
+    "build:hostinger-production": "node scripts/build-hostinger-platform.cjs production",
     "build:front": "node scripts/build-hostinger.js",
     "check:syntax": "node --check server.js && node --check server-public-runtime.js && node --check knowledge-expert-articles.js && node --check site-experience.js && node --check server-importos-runtime.js && node --check importos-store.js && node --check core/importos-engine.js && node --check core/importos-model-dna.js && node --check core/importos-payments.js && node --check purchase-case-runtime.js && node --check core/purchase-case.js && node --check public/owner-case-client.js && node --check public/customer-case-client.js && node --check public/danini-order.js && node --check public/danini-quickcheck.js && node --check public/danini-sales.js && node --check danini-ecosystem.js && node --check danini-business-store.js && node --check digital-commerce.js && node --check public/danini-digital-checkout.js && node --check scripts/test-digital-delivery.js && node --check scripts/probe-production-autodanini.cjs && node --check scripts/diagnose-hostinger-config.cjs",
     "test:importos": "node scripts/test-importos-clean.js",
@@ -30,7 +31,7 @@
     "test:b2b": "node --import tsx --test tests/b2b/*.test.mjs && node --test tests/academy/*.test.mjs",
     "dev:b2b": "astro dev --host 0.0.0.0",
     "build:platform": "npm run build:auto-release && npm run build:b2b && node scripts/merge-platform-assets.cjs",
-    "test:hostinger-preview": "node --test tests/hostinger-preview.test.cjs tests/hostinger-staging-health.test.cjs"
+    "test:hostinger-preview": "node --test tests/hostinger-preview.test.cjs tests/hostinger-staging-health.test.cjs tests/hostinger-layout.test.cjs"
   },
   "keywords": [
     "vehicle-import",
@@ -43,6 +44,7 @@
   "author": "DaniniHub",
   "license": "ISC",
   "type": "commonjs",
+  "engines": { "node": "22.x" },
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
     "@google/generative-ai": "^0.24.1",

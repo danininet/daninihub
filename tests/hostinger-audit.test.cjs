@@ -8,6 +8,8 @@ test('static preview remains noindex and only Make is approved in relevant guide
   const h=fs.readFileSync('dist/'+file,'utf8');
   assert.match(h,/name="robots" content="noindex,nofollow,noarchive"/,file);
   assert.match(h,/data-hostinger-preview/,file);
+  assert.match(h,/data-hostinger-preview-csp/,file);
+  assert.match(h,/form-action 'none'/,file);
   if(/wissen\/(email-formular-crm|ki-buero)\//.test(file)){
    assert.match(h,/data-affiliate-recommendations/,file);
    assert.ok(h.includes('href="'+link+'"'),file);

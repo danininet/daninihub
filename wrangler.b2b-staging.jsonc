@@ -33,7 +33,7 @@
   "r2_buckets": [
     {
       "binding": "DOCUMENTS",
-      "bucket_name": "danini-b2b-private"
+      "bucket_name": "danini-b2b-staging-private"
     }
   ],
   "workflows": [

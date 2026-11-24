@@ -23,3 +23,5 @@ jobs:
       - run: node --check hostinger-preview.cjs
       - run: npm run test:hostinger-preview
       - run: node --test tests/hostinger-audit.test.cjs
+      - run: npm run build:hostinger-production
+      - run: node --test tests/hostinger-production-build.test.cjs

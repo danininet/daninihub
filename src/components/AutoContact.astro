@@ -92,6 +92,7 @@ const de = locale === "de";
     let verified = false;
     let busy = false;
     let emailFallback = false;
+    const verificationPrompt = de?"Bitte die Sicherheitsprüfung abschließen.":"Završite bezbednosnu proveru.";
     const disabled = () => {
       verified = false;
       emailFallback = true;
@@ -119,11 +120,11 @@ const de = locale === "de";
               sitekey:config.turnstileSiteKey,
               action:"business-contact",
               language:de?"de":"sr",
-              callback:()=>{verified=true;if(!busy)submit.disabled=false;status.textContent="";},
+              callback:()=>{verified=true;if(!busy)submit.disabled=false;if(status.textContent===verificationPrompt)status.textContent="";},
               "expired-callback":reset,
               "error-callback":disabled
             });
-            status.textContent = de?"Bitte die Sicherheitsprüfung abschließen.":"Završite bezbednosnu proveru.";
+            status.textContent = verificationPrompt;
           }catch{disabled();}
         };
         script.onerror=disabled;

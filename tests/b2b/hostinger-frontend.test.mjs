@@ -58,3 +58,16 @@ test('staging accepts direct Hostinger asset delivery only for the expected MIME
  assert.equal((await hostingerFrontend(req,e,async()=>new Response('<html>',{headers:{'content-type':'text/html'}}))).status,503);
  assert.equal((await hostingerFrontend(req,e,async()=>new Response('asset',{headers:{'content-type':'image/jpeg','x-danini-runtime':'hostinger-preview'}}))).status,503);
 });
+
+test('staging falls back on rate limiting and keeps build proof tied to Hostinger', async () => {
+ const e=env('staging');
+ const rateLimit=async()=>new Response('Too many requests',{status:429});
+ const page=await hostingerFrontend(new Request(staging+'/de/'),e,rateLimit);
+ assert.equal(await page.text(),'local');
+ assert.equal(page.headers.get('x-danini-frontend'),'cloudflare-fallback');
+ assert.equal(page.headers.get('x-danini-upstream-status'),'429');
+ assert.match(page.headers.get('x-robots-tag'),/noindex/);
+ const marker=await hostingerFrontend(new Request(staging+'/_danini/build.json'),e,rateLimit);
+ assert.equal(marker.status,503);
+ assert.equal(marker.headers.get('x-danini-frontend'),null);
+});

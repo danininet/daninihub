@@ -64,10 +64,27 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
   }
   if (!(decoded==='/' || /^\/(?:de|sr|auto)(?:\/|$)/.test(decoded) || /^\/_astro\//.test(decoded) || publicFile.test(decoded) || decoded==='/_danini/build.json' || decoded==='/inspection' || decoded==='/import')) return env.ASSETS.fetch(request);
   if (decoded==='/_headers'||decoded==='/_redirects') return failure(404);
+  async function fallback() {
+    // The Worker already carries the public assets. Preserve service during origin throttling.
+    // The live build marker must always prove which revision Hostinger actually serves.
+    if (decoded === '/_danini/build.json') return failure();
+    const local = await env.ASSETS.fetch(request);
+    const response = new Response(local.body, local);
+    response.headers.set('x-danini-frontend', 'cloudflare-fallback');
+    response.headers.set('cache-control', 'no-store');
+    if (staging) response.headers.set('x-robots-tag', ORIGIN_NOINDEX);
+    return response;
+  }
   const target = new URL(HOSTINGER);
   target.pathname = url.pathname;
   try {
     const upstream = await fetcher(target.href,{method:request.method,redirect:'manual',credentials:'omit',cache:'no-store',headers:{accept:request.headers.get('accept')||'*/*'},signal:AbortSignal.timeout(8000)});
+    if (functional && (upstream.status === 429 || upstream.status >= 500)) {
+      await upstream.body?.cancel();
+      const local = await fallback();
+      if (staging) local.headers.set('x-danini-upstream-status', String(upstream.status));
+      return local;
+    }
     const functionalOrigin = upstream.headers.get('x-danini-runtime') === 'hostinger-frontend';
     if (functional && !functionalOrigin) {
       const extension = decoded.match(/\.([a-z0-9]+)$/i)?.[1].toLowerCase();
@@ -107,5 +124,10 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
       body=html;
     }
     return new Response(body,{status:upstream.status,headers});
-  } catch (error) { return failure(503, staging ? (error?.name === 'TimeoutError' ? 'timeout' : 'network') : undefined); }
+  } catch (error) {
+    if (functional && decoded !== '/_danini/build.json') {
+      try { return await fallback(); } catch { /* Neither origin is reachable. */ }
+    }
+    return failure(503, staging ? (error?.name === 'TimeoutError' ? 'timeout' : 'network') : undefined);
+  }
 }

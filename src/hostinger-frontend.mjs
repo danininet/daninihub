@@ -24,7 +24,15 @@ const staticAssetTypes = {
 };
 const publicFile = /\.(?:js|mjs|css|svg|png|jpe?g|webp|avif|ico|woff2?|ttf|gif|txt|xml|csv|md|pdf|html)$/i;
 const safeHeaders = ['content-type','content-language','content-security-policy','x-content-type-options','referrer-policy','x-frame-options','permissions-policy','x-robots-tag','last-modified','etag'];
-const failure = (status=503) => new Response('Frontend unavailable', {status, headers:{'content-type':'text/plain; charset=utf-8','cache-control':'no-store','x-robots-tag':'noindex'}});
+const failure = (status=503, upstreamStatus) => new Response('Frontend unavailable', {
+  status,
+  headers: {
+    'content-type':'text/plain; charset=utf-8',
+    'cache-control':'no-store',
+    'x-robots-tag':'noindex',
+    ...(upstreamStatus ? {'x-danini-upstream-status':String(upstreamStatus)} : {}),
+  },
+});
 
 export async function hostingerFrontend(request, env, fetcher = globalThis.fetch) {
   const mode = env.HOSTINGER_FRONTEND_MODE;
@@ -59,7 +67,7 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
   const target = new URL(HOSTINGER);
   target.pathname = url.pathname;
   try {
-    const upstream = await fetcher(target.href,{method:request.method,redirect:'manual',credentials:'omit',headers:{accept:request.headers.get('accept')||'*/*'},signal:AbortSignal.timeout(8000)});
+    const upstream = await fetcher(target.href,{method:request.method,redirect:'manual',credentials:'omit',cache:'no-store',headers:{accept:request.headers.get('accept')||'*/*'},signal:AbortSignal.timeout(8000)});
     const functionalOrigin = upstream.headers.get('x-danini-runtime') === 'hostinger-frontend';
     if (functional && !functionalOrigin) {
       const extension = decoded.match(/\.([a-z0-9]+)$/i)?.[1].toLowerCase();
@@ -72,7 +80,7 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
       }
       if (hasOtherRuntime || upstream.status !== 200 || !assetType?.test(contentType ?? '')) {
         await upstream.body?.cancel();
-        return failure();
+        return failure(503, staging ? upstream.status : undefined);
       }
     }
     if ([301,302,303,307,308].includes(upstream.status)) {
@@ -99,5 +107,5 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
       body=html;
     }
     return new Response(body,{status:upstream.status,headers});
-  } catch { return failure(); }
+  } catch (error) { return failure(503, staging ? (error?.name === 'TimeoutError' ? 'timeout' : 'network') : undefined); }
 }

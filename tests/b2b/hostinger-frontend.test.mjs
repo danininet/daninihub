@@ -8,7 +8,7 @@ const env=(mode,site=staging)=>({HOSTINGER_FRONTEND_MODE:mode,SITE_ORIGIN:site,A
 test('default preserves existing Cloudflare assets',async()=>assert.equal(await (await hostingerFrontend(new Request(prod+'/de/'),env(undefined))).text(),'local'));
 test('preview uses fixed public origin without credentials or query and prevents indexing',async()=>{
  const r=await hostingerFrontend(new Request(staging+'/de/?token=private',{headers:{cookie:'private',authorization:'Bearer private',origin:'https://other.test'}}),env('preview'),async(url,opts)=>{
- assert.equal(url,origin+'/de/');assert.equal(opts.credentials,'omit');assert.deepEqual(Object.keys(opts.headers),['accept']);assert.equal(opts.redirect,'manual');
+ assert.equal(url,origin+'/de/');assert.equal(opts.credentials,'omit');assert.deepEqual(Object.keys(opts.headers),['accept']);assert.equal(opts.redirect,'manual');assert.equal(opts.cache,'no-store');
  return new Response('<html>preview</html>',{headers:{'content-type':'text/html','set-cookie':'bad=1','x-robots-tag':'index'}});
  });
  assert.equal(r.status,200);assert.equal(r.headers.get('x-danini-frontend'),'hostinger');assert.match(r.headers.get('x-robots-tag'),/noindex/);assert.equal(r.headers.get('set-cookie'),null);

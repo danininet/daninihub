@@ -6,7 +6,13 @@
 const JSON_HEADERS={'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','x-robots-tag':'noindex,nofollow'};
 const PRODUCTS=Object.freeze({guide:{cents:4900,label:'DANINI Auto-Biznis Master Vodič (PDF)'}});
 const PDF_MAX=10*1024*1024;
-const origin='https://daninihub.com';
+const productionOrigin='https://daninihub.com';
+function checkoutOrigin(env){
+ const candidate=env.PAYPAL_ENV==='sandbox'?(env.SITE_ORIGIN??productionOrigin):productionOrigin;
+ if(!URL.canParse(candidate))return null;
+ const url=new URL(candidate);
+ return url.protocol==='https:'&&url.origin===candidate?url.origin:null;
+}
 const emailRe=/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
 const refRe=/^DGD-[0-9A-F]{32}$/;
 const paypalIdRe=/^[A-Z0-9-]{8,80}$/;
@@ -18,7 +24,7 @@ function textPage(text,status=200){return new Response('<!doctype html><html lan
 export function configured(env){
  const enabled=env.DANINI_DIGITAL_CHECKOUT_ENABLED==='true';
  const mode=env.PAYPAL_ENV;
- return !!(enabled&&['sandbox','live'].includes(mode)&&
+ return !!(enabled&&['sandbox','live'].includes(mode)&&checkoutOrigin(env)&&
   (mode==='live'?env.DANINI_DIGITAL_LIVE_APPROVED==='true':
    env.DANINI_PAYPAL_SANDBOX_ACCESS?.length>=32&&emailRe.test(env.DANINI_PAYPAL_SANDBOX_EMAIL||''))&&
   env.DANINI_DB&&env.PAYPAL_CLIENT_ID&&env.PAYPAL_CLIENT_SECRET&&env.PAYPAL_WEBHOOK_ID&&
@@ -106,7 +112,7 @@ async function emailReceipt(env,record){
  const claim=await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET email_state='SENDING' WHERE reference=? AND status='PAID' AND email_state='PENDING'").bind(record.reference).run();
  if(claim.meta?.changes!==1)return;
  try{
-  const link=origin+'/api/danini/digital/download/'+encodeURIComponent(record.reference)+'?token='+encodeURIComponent(await downloadToken(env,record));
+  const link=checkoutOrigin(env)+'/api/danini/digital/download/'+encodeURIComponent(record.reference)+'?token='+encodeURIComponent(await downloadToken(env,record));
   const de=record.language==='de';
   const sandbox=env.PAYPAL_ENV==='sandbox';
   const message={sender:{name:'DANINI',email:env.DANINI_BREVO_SENDER},to:[{email:record.email}],
@@ -176,6 +182,7 @@ async function checkout(request,env,sandbox=false){
  if(!sandbox&&!await verifyHuman(d.turnstileToken,env,request))return err('HUMAN_VERIFICATION_FAILED',403);
  const ref='DGD-'+crypto.randomUUID().replace(/-/g,'').toUpperCase();
  const language=d.language==='de'?'de':'sr';
+ const origin=checkoutOrigin(env);
  await env.DANINI_DB.prepare("INSERT INTO danini_digital_orders(reference,sku,email,language,amount_cents,status,email_state) VALUES (?,?,?,?,?,'PENDING','PENDING')").bind(ref,'guide',email,language,4900).run();
  try{
   const p=await paypal(env,'/v2/checkout/orders',{method:'POST',requestId:'DANINI-'+ref,body:{intent:'CAPTURE',purchase_units:[{reference_id:ref,custom_id:ref,description:PRODUCTS.guide.label,amount:{currency_code:'EUR',value:'49.00'}}],payment_source:{paypal:{experience_context:{brand_name:'DANINI',user_action:'PAY_NOW',shipping_preference:'NO_SHIPPING',return_url:origin+'/api/danini/digital/paypal/return?ref='+ref,cancel_url:origin+'/digital.html?cancelled=1'}}}}});
@@ -221,7 +228,7 @@ async function browserReturn(env,url){
  if(!refRe.test(ref)||!paypalIdRe.test(id))return textPage('Neispravna potvrda / Ungültige Bestätigung',400);
  try{
   const record=await finalize(env,ref,id);
-  const link=origin+'/api/danini/digital/download/'+ref+'?token='+encodeURIComponent(await downloadToken(env,record));
+  const link=checkoutOrigin(env)+'/api/danini/digital/download/'+ref+'?token='+encodeURIComponent(await downloadToken(env,record));
   const de=record.language==='de';
   return new Response('<!doctype html><html lang="'+(de?'de':'sr')+'"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>DANINI</title><body style="font:18px/1.6 system-ui;max-width:680px;margin:8vh auto;padding:28px"><h1>'+(de?'Zahlung bestätigt':'Uplata potvrđena')+'</h1><p>'+(de?'Ihr PDF ist verfügbar. Link 72 Stunden gültig.':'PDF je spreman. Link važi 72 sata.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF')+'</a></p><p><a href="/digital.html">DANINI</a></p></body></html>',{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','referrer-policy':'no-referrer','x-robots-tag':'noindex,nofollow'}});
  }catch{return textPage('Plaćanje nije potvrđeno. Kontakt: info@daninihub.com / Zahlung nicht bestätigt.',409);}

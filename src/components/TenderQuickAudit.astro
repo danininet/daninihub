@@ -1,0 +1,161 @@
+---
+import type { Locale } from "../lib/content";
+const { locale } = Astro.props as { locale: Locale };
+const de = locale === "de";
+const questions = de ? [
+  "Ist das Unternehmen registriert und für die vorgesehene Tätigkeit aufgestellt?",
+  "Liegen einschlägige Referenzen vor?",
+  "Sind das erforderliche Personal und die technischen Kapazitäten vorhanden?",
+  "Sind relevante Versicherungen, Nachweise und Zertifikate vorhanden?",
+  "Kann das Unternehmen Angebotsunterlagen auf Deutsch vorbereiten?"
+] : [
+  "Da li firma ima važeću registraciju i odgovarajuću delatnost?",
+  "Da li poseduje relevantne poslovne reference?",
+  "Da li raspolaže potrebnim radnicima i tehničkim kapacitetima?",
+  "Da li ima potrebna osiguranja, sertifikate i dokumentaciju?",
+  "Da li može pripremiti ponudu i dokumentaciju na nemačkom jeziku?"
+];
+const options = [
+  {value:"yes", label:de?"Ja":"Da"},
+  {value:"partial", label:de?"Teilweise":"Delimično"},
+  {value:"no", label:de?"Nein":"Ne"},
+  {value:"unknown", label:de?"Unbekannt":"Nije poznato"}
+];
+---
+<section class="tqa-section" id="tender-quick-audit" aria-labelledby="tqa-heading">
+  <div class="wrap">
+    <p class="tqa-eyebrow">DANINI BUSINESS · {de?"KOSTENLOSE ORIENTIERUNG":"BESPLATNA ORIJENTACIJA"}</p>
+    <h2 id="tqa-heading">{de?"DACH Tender Quick Audit":"DACH Tender Quick Audit"}</h2>
+    <p>{de?"Fünf Fragen zur allgemeinen Vorbereitung auf öffentliche Ausschreibungen. Die Auswertung erfolgt regelbasiert im Browser, ohne generative KI, Registrierung oder Übermittlung der Antworten.":"Pet pitanja za opštu pripremu firme za javne tendere. Procena se računa u pregledaču po fiksnim pravilima, bez generativne AI, registracije ili slanja odgovora."}</p>
+    <div data-tender-audit data-locale={locale}>
+      {questions.map((question,i)=>
+        <fieldset data-tqa-question>
+          <legend>{i+1}. {question}</legend>
+          <div class="tqa-options">{options.map(option=>
+            <label><input type="radio" name={"tqa-"+locale+"-"+i} value={option.value}/>{option.label}</label>
+          )}</div>
+        </fieldset>
+      )}
+      <div class="tqa-actions">
+        <button type="button" data-tqa-evaluate disabled>{de?"Selbsteinschätzung anzeigen":"Prikaži samoprocenu"}</button>
+        <button type="button" data-tqa-reset disabled>{de?"Zurücksetzen":"Poništi odgovore"}</button>
+      </div>
+      <p data-tqa-notice role="status" aria-live="polite"></p>
+      <div data-tqa-result hidden>
+        <h3 data-tqa-score></h3>
+        <p data-tqa-status></p>
+        <ul data-tqa-gaps></ul>
+        <p>{de?"Selbsteinschätzung, kein Nachweis der Eignung. Teilnahmezugang, Fristen und zwingende Anforderungen der konkreten Ausschreibung müssen gesondert geprüft werden. Keine Aussage über Zuschlagschancen.":"Samoprocena, ne dokaz podobnosti. Pristup konkretnom tenderu, rok i obavezni uslovi proveravaju se zasebno. Rezultat ne predstavlja verovatnoću dobijanja tendera."}</p>
+        <button type="button" data-tqa-transfer disabled>{de?"Ergebnis in meine Geschäftsanfrage übernehmen":"Prenesi rezultat u moj poslovni upit"}</button>
+        <small>{de?"Nur der Entwurf wird ergänzt. Eine Übermittlung erfolgt erst, wenn Sie die bestehende Anfrage selbst absenden.":"Dopunjava se samo nacrt. Slanje sledi isključivo kada sami pošaljete postojeći upit."}</small>
+      </div>
+      <noscript>{de?"Für die lokale Auswertung ist JavaScript erforderlich.":"Za lokalnu procenu potreban je JavaScript."}</noscript>
+    </div>
+  </div>
+</section>
+<script>
+  import { assess } from "../lib/tender-quick-audit.mjs";
+  for (const root of document.querySelectorAll<HTMLElement>("[data-tender-audit]")) {
+    const de = root.dataset.locale === "de";
+    const groups = Array.from(root.querySelectorAll<HTMLFieldSetElement>("[data-tqa-question]"));
+    const evaluate = root.querySelector<HTMLButtonElement>("[data-tqa-evaluate]");
+    const reset = root.querySelector<HTMLButtonElement>("[data-tqa-reset]");
+    const transfer = root.querySelector<HTMLButtonElement>("[data-tqa-transfer]");
+    const panel = root.querySelector<HTMLElement>("[data-tqa-result]");
+    const score = root.querySelector<HTMLElement>("[data-tqa-score]");
+    const status = root.querySelector<HTMLElement>("[data-tqa-status]");
+    const gaps = root.querySelector<HTMLElement>("[data-tqa-gaps]");
+    const notice = root.querySelector<HTMLElement>("[data-tqa-notice]");
+    if (!evaluate || !reset || !transfer || !panel || !score || !status || !gaps || !notice || groups.length !== 5) continue;
+    let summary = "";
+    const responses = () => groups.map(g => g.querySelector<HTMLInputElement>("input:checked")?.value || "");
+    const invalidate = () => {
+      summary = "";
+      panel.hidden = true;
+      transfer.disabled = true;
+      notice.textContent = "";
+      evaluate.disabled = responses().some(a => a === "");
+    };
+    root.addEventListener("change", invalidate);
+    reset.addEventListener("click", () => {
+      for (const radio of root.querySelectorAll<HTMLInputElement>("input[type=radio]")) radio.checked = false;
+      invalidate();
+    });
+    evaluate.addEventListener("click", () => {
+      const answers = responses();
+      if (answers.some(a => a === "")) return;
+      const result = assess(answers);
+      const labels: Record<string,string> = de ? {
+        review:"REVIEW – Angaben fehlen; weitere Prüfung nötig.",
+        "initial-ready":"Gute Ausgangslage laut eigenen Angaben.",
+        partial:"Teilweise vorbereitet.",
+        prepare:"Weitere Vorbereitung erforderlich."
+      } : {
+        review:"REVIEW – nedostaju podaci; potrebna je dodatna provera.",
+        "initial-ready":"Dobra početna priprema prema sopstvenim odgovorima.",
+        partial:"Delimična priprema.",
+        prepare:"Potrebna je dodatna priprema."
+      };
+      const fmt = new Intl.NumberFormat(de ? "de-DE" : "sr-RS");
+      score.textContent = fmt.format(result.score) + " / 100";
+      status.textContent = labels[result.status];
+      gaps.replaceChildren();
+      const missing: string[] = [];
+      const answerNames: Record<string,string> = de ? {yes:"Ja",partial:"Teilweise",no:"Nein",unknown:"Unbekannt"} : {yes:"Da",partial:"Delimično",no:"Ne",unknown:"Nije poznato"};
+      for (const i of result.gaps) {
+        const item = document.createElement("li");
+        item.textContent = (groups[i].querySelector("legend")?.textContent || "") + " — " + answerNames[answers[i]];
+        missing.push(item.textContent);
+        gaps.append(item);
+      }
+      summary = ["DACH Tender Quick Audit – " + score.textContent, status.textContent,
+        de?"Selbstauskunft, Eignung ungeprüft.":"Samoprocena, podobnost nije potvrđena.", ...missing].join("\n");
+      panel.hidden = false;
+      transfer.disabled = false;
+      notice.textContent = de ? "Auswertung erstellt." : "Samoprocena je izračunata.";
+    });
+    transfer.addEventListener("click", () => {
+      if (!summary) return;
+      const contact = document.querySelector<HTMLFormElement>("form[data-business-enquiry]");
+      const message = contact?.querySelector<HTMLTextAreaElement>("textarea[name=message]");
+      const service = contact?.querySelector<HTMLSelectElement>("select[name=service]");
+      if (!message || !service) {
+        notice.textContent = de ? "Geschäftsanfrage nicht verfügbar." : "Poslovni upit trenutno nije dostupan.";
+        return;
+      }
+      const old = message.value;
+      const next = old.includes(summary) ? old : [old.trim(),summary].filter(Boolean).join("\n\n");
+      if (message.maxLength >= 0 && next.length > message.maxLength) {
+        notice.textContent = de ? "Der vorhandene Text ist zu lang. Bitte kürzen Sie den Entwurf zuerst." : "Postojeći tekst je predugačak. Najpre skratite nacrt.";
+        return;
+      }
+      message.value = next;
+      if (!service.value) service.value = "crossborder";
+      message.dispatchEvent(new Event("input",{bubbles:true}));
+      notice.textContent = de ? "Entwurf ergänzt, nicht gesendet." : "Nacrt je dopunjen, nije poslat.";
+      message.focus();
+    });
+    reset.disabled = false;
+    invalidate();
+  }
+</script>
+<style>
+  .tqa-section{padding:clamp(44px,6vw,86px) 0;background:#eaf1f6;color:#142b43}
+  .tqa-eyebrow{font-size:.75rem;font-weight:800;letter-spacing:.08em;color:#085c54}
+  .tqa-section h2,.tqa-section h3{color:#142b43}
+  [data-tender-audit]{max-width:850px;min-width:0;padding:clamp(16px,3vw,32px);background:#fff;border:1px solid #cad7e2;border-radius:16px}
+  fieldset{min-width:0;border:0;border-bottom:1px solid #dce5eb;padding:18px 0;margin:0}
+  legend{font-weight:750;max-width:100%;padding-top:18px}
+  .tqa-options,.tqa-actions{display:flex;flex-wrap:wrap;gap:12px 20px}
+  .tqa-options label{display:flex;align-items:center;gap:7px;min-height:44px;cursor:pointer}
+  .tqa-options input{width:18px;height:18px;accent-color:#086357}
+  .tqa-actions{margin:22px 0 10px}
+  button{border:1px solid #07584f;border-radius:9px;padding:12px 16px;min-height:44px;background:#07584f;color:white;font:inherit;font-weight:750;cursor:pointer}
+  button[data-tqa-reset]{background:white;color:#07584f}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  button:focus-visible,input:focus-visible{outline:3px solid #146ba2;outline-offset:3px}
+  [data-tqa-result]{padding:18px;background:#f5f8fc;border-radius:12px}
+  [data-tqa-result][hidden]{display:none}
+  [data-tqa-result] small{display:block;margin-top:10px}
+  [data-tqa-notice]{min-height:1.5em}
+</style>

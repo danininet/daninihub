@@ -30,6 +30,8 @@ jobs:
       - run: node --check hostinger-preview.cjs
       - run: npm run test:hostinger-preview
       - run: node --test tests/hostinger-audit.test.cjs
-      - run: npm run build:hostinger-release
+      - run: npm run build
+        env:
+          DANINI_HOSTINGER_RELEASE: 'true'
       - run: node --test tests/hostinger-production-build.test.cjs tests/hostinger-release.test.cjs
       - run: node --test tests/b2b/hostinger-frontend.test.mjs

@@ -7,7 +7,7 @@
     "start": "node hostinger-preview.cjs",
     "dev": "node server.js",
     "test": "npm run test:regression",
-    "build": "node scripts/build-hostinger-platform.cjs preview",
+    "build": "node scripts/build-hostinger-platform.cjs",
     "build:hostinger-release": "npm run build:hostinger-production && node scripts/package-hostinger-release.cjs",
     "build:hostinger-production": "node scripts/build-hostinger-platform.cjs production",
     "build:front": "node scripts/build-hostinger.js",

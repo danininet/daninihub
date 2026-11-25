@@ -120,12 +120,17 @@ const de = locale === "de";
     const initialize = async () => {
       try {
         const tenantResponse = await fetch("/api/tenant-config", {cache:"no-store"});
-        const tenant = (tenantResponse.ok ? await tenantResponse.json() : null) as {enabled?:boolean} | null;
+        const tenant = (tenantResponse.ok ? await tenantResponse.json() : null) as {enabled?:boolean;siteKey?:string} | null;
         b2b = tenant?.enabled === true;
-        const response = await fetch("/api/lead/status", {cache:"no-store"});
-        if (!response.ok) throw Error("lead_unavailable");
-        const data = await response.json() as {enabled?:boolean;turnstileSiteKey?:string};
-        if (data.enabled !== true || !data.turnstileSiteKey) throw Error("lead_disabled");
+        let siteKey = tenant?.siteKey;
+        if (!b2b) {
+          const response = await fetch("/api/lead/status", {cache:"no-store"});
+          if (!response.ok) throw Error("lead_unavailable");
+          const legacy = await response.json() as {enabled?:boolean;turnstileSiteKey?:string};
+          if (legacy.enabled !== true) throw Error("lead_disabled");
+          siteKey = legacy.turnstileSiteKey;
+        }
+        if (!siteKey) throw Error("turnstile_key_missing");
         const script = document.createElement("script");
         script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
         script.async = true;
@@ -134,7 +139,7 @@ const de = locale === "de";
             const turnstile = getTurnstile();
             if (!turnstile) throw Error("turnstile_missing");
             widget = turnstile.render(challenge, {
-              sitekey: data.turnstileSiteKey,
+              sitekey: siteKey,
               action: b2b ? "b2b-intake" : "business-contact",
               language: de ? "de" : "sr",
               callback: () => {

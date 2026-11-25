@@ -11,6 +11,7 @@ test("DANINI Business uses the existing intake workflow with protected legacy fa
   assert.match(landing,/href="#anfrage"/);
   assert.match(component,/data-business-enquiry/);
   assert.match(component,/\/api\/lead\/status/);
+  assert.match(component,/let siteKey = tenant\?\.siteKey;\s*if \(!b2b\) \{\s*const response = await fetch\("\/api\/lead\/status"/);
   assert.match(component,/\/api\/intake/);
   assert.match(component,/idempotency-key/);
   assert.match(component,/turnstileToken:token/);

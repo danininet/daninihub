@@ -31,7 +31,12 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
   // Never send private paths, unknown file types, or authentication material to the static origin.
   if (privatePath.test(decoded) || decoded.startsWith('/downloads/') && !decoded.startsWith('/downloads/akademija/')) return failure(404);
   if (!['GET','HEAD'].includes(request.method)) return failure(405);
-  if (mode === 'production' && decoded === '/robots.txt') return env.ASSETS.fetch(request);
+  if (decoded === '/robots.txt') {
+    if (mode === 'production') return env.ASSETS.fetch(request);
+    return new Response(request.method === 'HEAD' ? null : 'User-agent: *\nDisallow: /\n', {
+      headers: {'content-type': 'text/plain; charset=utf-8', 'x-robots-tag': ORIGIN_NOINDEX, 'cache-control': 'no-store'},
+    });
+  }
   if (!(decoded==='/' || /^\/(?:de|sr|auto)(?:\/|$)/.test(decoded) || /^\/_astro\//.test(decoded) || publicFile.test(decoded) || decoded==='/_danini/build.json' || decoded==='/inspection' || decoded==='/import')) return env.ASSETS.fetch(request);
   if (decoded==='/_headers'||decoded==='/_redirects') return failure(404);
   const target = new URL(HOSTINGER);

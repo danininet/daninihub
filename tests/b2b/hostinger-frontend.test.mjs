@@ -41,3 +41,10 @@ test('production refuses preview HTML and keeps legitimate noindex pages',async(
  const robots=await hostingerFrontend(new Request(prod+'/robots.txt'),e,async()=>assert.fail('origin robots would block production'));
  assert.equal(await robots.text(),'local');
 });
+
+test('staging robots disallows indexing even when the host serves its own robots file', async () => {
+ const robots=await hostingerFrontend(new Request(staging+'/robots.txt'),env('staging'),async()=>assert.fail('robots should be served by the Worker'));
+ assert.equal(robots.status,200);
+ assert.equal(await robots.text(),'User-agent: *\nDisallow: /\n');
+ assert.match(robots.headers.get('x-robots-tag'),/noindex/);
+});

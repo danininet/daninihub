@@ -55,6 +55,13 @@ test('staging accepts direct Hostinger asset delivery only for the expected MIME
  const jpeg=await hostingerFrontend(req,e,async()=>new Response('asset',{headers:{'content-type':'image/jpeg'}}));
  assert.equal(jpeg.status,200);
  assert.equal(jpeg.headers.get('x-danini-frontend'),'hostinger');
+ for (const contentType of ['image/webp','image/avif']) {
+   const acceptsModernImages=new Request(req,{headers:{accept:'image/avif,image/webp,image/*,*/*;q=0.8'}});
+   const converted=await hostingerFrontend(acceptsModernImages,e,async()=>new Response('optimized image',{headers:{'content-type':contentType}}));
+   assert.equal(converted.status,200);
+   assert.equal(converted.headers.get('content-type'),contentType);
+ }
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('<svg/>',{headers:{'content-type':'image/svg+xml'}}))).status,503);
  assert.equal((await hostingerFrontend(req,e,async()=>new Response('<html>',{headers:{'content-type':'text/html'}}))).status,503);
  assert.equal((await hostingerFrontend(req,e,async()=>new Response('asset',{headers:{'content-type':'image/jpeg','x-danini-runtime':'hostinger-preview'}}))).status,503);
 });

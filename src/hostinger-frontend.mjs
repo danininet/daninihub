@@ -6,14 +6,16 @@ const PRODUCTION_WWW = 'https://www.daninihub.com';
 const ORIGIN_NOINDEX = 'noindex, nofollow, noarchive';
 const privatePath = /(?:^|\/)(?:api|portal|owner|operator|admin|nalog|private|\.\w+)(?:\/|\.|$)/i;
 // Hostinger can serve fingerprinted resources directly without the Node runtime header.
+// The image CDN can negotiate a modern raster format while keeping the original URL.
+const jpegAssetType = /^image\/(?:jpeg|webp|avif)$/;
 const staticAssetTypes = {
   js: /^(?:text|application)\/(?:javascript|x-javascript)$/,
   mjs: /^(?:text|application)\/javascript$/,
   css: /^text\/css$/,
   svg: /^image\/svg\+xml$/,
-  png: /^image\/png$/,
-  jpg: /^image\/jpeg$/,
-  jpeg: /^image\/jpeg$/,
+  png: /^image\/(?:png|webp|avif)$/,
+  jpg: jpegAssetType,
+  jpeg: jpegAssetType,
   webp: /^image\/webp$/,
   avif: /^image\/avif$/,
   ico: /^image\/(?:x-icon|vnd\.microsoft\.icon)$/,

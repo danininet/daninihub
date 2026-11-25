@@ -48,3 +48,13 @@ test('staging robots disallows indexing even when the host serves its own robots
  assert.equal(await robots.text(),'User-agent: *\nDisallow: /\n');
  assert.match(robots.headers.get('x-robots-tag'),/noindex/);
 });
+
+test('staging accepts direct Hostinger asset delivery only for the expected MIME type', async () => {
+ const req=new Request(staging+'/images/brand.jpg');
+ const e=env('staging');
+ const jpeg=await hostingerFrontend(req,e,async()=>new Response('asset',{headers:{'content-type':'image/jpeg'}}));
+ assert.equal(jpeg.status,200);
+ assert.equal(jpeg.headers.get('x-danini-frontend'),'hostinger');
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('<html>',{headers:{'content-type':'text/html'}}))).status,503);
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('asset',{headers:{'content-type':'image/jpeg','x-danini-runtime':'hostinger-preview'}}))).status,503);
+});

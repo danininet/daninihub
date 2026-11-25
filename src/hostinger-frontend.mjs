@@ -5,6 +5,23 @@ const PRODUCTION = 'https://daninihub.com';
 const PRODUCTION_WWW = 'https://www.daninihub.com';
 const ORIGIN_NOINDEX = 'noindex, nofollow, noarchive';
 const privatePath = /(?:^|\/)(?:api|portal|owner|operator|admin|nalog|private|\.\w+)(?:\/|\.|$)/i;
+// Hostinger can serve fingerprinted resources directly without the Node runtime header.
+const staticAssetTypes = {
+  js: /^(?:text|application)\/(?:javascript|x-javascript)$/,
+  mjs: /^(?:text|application)\/javascript$/,
+  css: /^text\/css$/,
+  svg: /^image\/svg\+xml$/,
+  png: /^image\/png$/,
+  jpg: /^image\/jpeg$/,
+  jpeg: /^image\/jpeg$/,
+  webp: /^image\/webp$/,
+  avif: /^image\/avif$/,
+  ico: /^image\/(?:x-icon|vnd\.microsoft\.icon)$/,
+  gif: /^image\/gif$/,
+  woff: /^(?:font\/woff|application\/font-woff)$/,
+  woff2: /^font\/woff2$/,
+  ttf: /^(?:font\/ttf|application\/x-font-ttf)$/,
+};
 const publicFile = /\.(?:js|mjs|css|svg|png|jpe?g|webp|avif|ico|woff2?|ttf|gif|txt|xml|csv|md|pdf|html)$/i;
 const safeHeaders = ['content-type','content-language','content-security-policy','x-content-type-options','referrer-policy','x-frame-options','permissions-policy','x-robots-tag','last-modified','etag'];
 const failure = (status=503) => new Response('Frontend unavailable', {status, headers:{'content-type':'text/plain; charset=utf-8','cache-control':'no-store','x-robots-tag':'noindex'}});
@@ -45,8 +62,18 @@ export async function hostingerFrontend(request, env, fetcher = globalThis.fetch
     const upstream = await fetcher(target.href,{method:request.method,redirect:'manual',credentials:'omit',headers:{accept:request.headers.get('accept')||'*/*'},signal:AbortSignal.timeout(8000)});
     const functionalOrigin = upstream.headers.get('x-danini-runtime') === 'hostinger-frontend';
     if (functional && !functionalOrigin) {
-      await upstream.body?.cancel();
-      return failure();
+      const extension = decoded.match(/\.([a-z0-9]+)$/i)?.[1].toLowerCase();
+      const assetType = extension && Object.hasOwn(staticAssetTypes, extension) ? staticAssetTypes[extension] : null;
+      const contentType = upstream.headers.get('content-type')?.split(';',1)[0].trim().toLowerCase();
+      const hasOtherRuntime = upstream.headers.has('x-danini-runtime');
+      if (!hasOtherRuntime && assetType && upstream.status === 404) {
+        await upstream.body?.cancel();
+        return failure(404);
+      }
+      if (hasOtherRuntime || upstream.status !== 200 || !assetType?.test(contentType ?? '')) {
+        await upstream.body?.cancel();
+        return failure();
+      }
     }
     if ([301,302,303,307,308].includes(upstream.status)) {
       const location = upstream.headers.get('location');

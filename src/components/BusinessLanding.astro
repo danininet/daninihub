@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import DaniniIcon from "./DaniniIcon.astro";
 import BusinessContact from "./BusinessContact.astro";
+import TenderQuickAudit from "./TenderQuickAudit.astro";
 import type { Locale } from "../lib/content";
 const { locale } = Astro.props as { locale: Locale };
 const de = locale === "de";
@@ -89,6 +90,7 @@ const offerings = de ? [
     </div>
   </section>
   <section class="b-section b-extra" aria-labelledby="business-guides-heading"><div class="wrap"><h2 id="business-guides-heading">{de?"Wissen für Ihre Büroprozesse":"Vodiči za poslovne procese"}</h2><p>{de?"Ausführliche Praxisartikel zur strukturierten Anfragebearbeitung, Angebotsvorbereitung und Datenschutz.":"Praktični vodiči za rad sa upitima i administracijom."}</p><ul><li><a href={de?"/de/wissen/anfragemanagement-kleine-unternehmen/":"/sr/wissen/upravljanje-upitima-malih-firmi/"}>{de?"Kundenanfragen strukturiert bearbeiten":"Organizacija poslovnih upita"}</a></li><li><a href={de?"/de/wissen/ki-angebotsvorbereitung/":"/sr/wissen/ai-priprema-poslovne-ponude/"}>{de?"KI-gestützte Angebotsvorbereitung":"E-mail, formular i CRM"}</a></li><li><a href={de?"/de/wissen/dsgvo-kundenanfragen-ki/":"/sr/wissen/gdpr-ai-obrada-upita-klijenata/"}>{de?"DSGVO bei Kundenanfragen und KI":"AI u kancelariji i ljudska kontrola"}</a></li></ul><a class="b-extra-link" href={`/${locale}/wissen/`}>{de?"Alle DANINI Ratgeber":"Svi DANINI vodiči"}</a></div></section>
+  <TenderQuickAudit locale={locale} />
   <BusinessContact locale={locale} />
 </Base>
 <style>

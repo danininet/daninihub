@@ -22,8 +22,22 @@ test('blocks unexpected hosts, private paths, unsafe methods and external redire
 });
 test('production refuses preview HTML and keeps legitimate noindex pages',async()=>{
  const req=new Request(prod+'/de/');const e=env('production',prod);
- const html=(body,headers={})=>new Response(body,{headers:{'content-type':'text/html',...headers}});
+ const html=(body,headers={})=>new Response(body,{headers:{'content-type':'text/html','x-danini-runtime':'hostinger-frontend',...headers}});
  assert.equal((await hostingerFrontend(req,e,async()=>html('<aside data-hostinger-preview>test</aside>'))).status,503);
  assert.equal((await hostingerFrontend(req,e,async()=>html('test',{'x-danini-runtime':'hostinger-preview'}))).status,503);
- assert.equal((await hostingerFrontend(req,e,async()=>html('public',{'x-robots-tag':'noindex'}))).status,200);
+ const page=await hostingerFrontend(req,e,async()=>html('public',{'x-robots-tag':'noindex'}));
+ assert.equal(page.status,200);
+ assert.equal(page.headers.get('x-robots-tag'),'noindex');
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('placeholder'))).status,503);
+ const originStructure=async()=>html('public',{'x-robots-tag':'noindex, nofollow, noarchive'});
+ assert.equal((await hostingerFrontend(req,e,originStructure)).headers.get('x-robots-tag'),null);
+ const staged=await hostingerFrontend(new Request(staging+'/de/'),env('staging'),originStructure);
+ assert.equal(staged.status,200);
+ assert.match(staged.headers.get('x-robots-tag'),/noindex/);
+ assert.equal((await hostingerFrontend(new Request(staging+'/de/'),env('staging'),async()=>new Response('preview'))).status,503);
+ const redirect=await hostingerFrontend(new Request('https://www.daninihub.com/de/?lang=de'),e);
+ assert.equal(redirect.status,308);
+ assert.equal(redirect.headers.get('location'),prod+'/de/?lang=de');
+ const robots=await hostingerFrontend(new Request(prod+'/robots.txt'),e,async()=>assert.fail('origin robots would block production'));
+ assert.equal(await robots.text(),'local');
 });

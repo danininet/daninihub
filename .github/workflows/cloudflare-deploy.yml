@@ -99,7 +99,9 @@ jobs:
           assert.equal(config.ai.binding,'AI','Workers AI binding missing; abort');
           config.assets.run_worker_first=prod.assets.run_worker_first;
           assert.equal(config.name,prod.name,'Worker name mismatch; abort');
-          assert.deepEqual(config.assets.run_worker_first,['/api/*','/portal','/portal/*']);
+          for (const route of ['/api/*','/portal','/portal/*','/','/de*','/sr*','/auto*','/_astro/*','/_danini/*']) {
+            assert.ok(config.assets.run_worker_first.includes(route),'Required Worker-first route missing: '+route);
+          }
           assert.equal(prod.vars.ACCESS_TEAM_DOMAIN,'https://danininet.cloudflareaccess.com','Access issuer mismatch; abort');
           assert.equal(prod.vars.ACCESS_AUD,'202a450ca6a61daca3012f0472cb24f4461a69df9693904ee288e76211f244d6','Production owner Access audience mismatch; abort');
           assert.equal(prod.vars.DIRECTOR_EMAIL,'dragangaganet@gmail.com','Owner allowlist mismatch; abort');

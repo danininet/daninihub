@@ -7,10 +7,17 @@ const path = require('node:path');
 function resolveAssets(root = __dirname) {
   for (const [layout, directory] of [
     ['dist', path.join(root, 'dist')],
+    ['release-root', root],
     ['sibling-public-html', path.join(root, '..', 'public_html')],
   ]) {
     if (['de/index.html', 'sr/index.html'].every(file => fs.existsSync(path.join(directory, file)))) {
-      return {directory, layout};
+      let mode = 'preview';
+      try {
+        const marker = JSON.parse(fs.readFileSync(path.join(directory, '_danini/build.json'), 'utf8'));
+        if (marker.schema === 1 && marker.mode === 'production') mode = 'production';
+      } catch { /* Older visual preview builds have no marker. */ }
+      if (layout === 'release-root' && mode !== 'production') continue;
+      return {directory, layout, mode};
     }
   }
   return null;

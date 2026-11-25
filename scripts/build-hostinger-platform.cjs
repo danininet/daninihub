@@ -2,8 +2,9 @@
 const {spawnSync, execFileSync} = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
-const preview = process.argv[2] === 'preview';
-if (!preview && process.argv[2] !== 'production') throw new Error('Specify preview or production');
+const mode = process.argv[2] ?? (process.env.DANINI_HOSTINGER_RELEASE === 'true' ? 'release' : 'preview');
+const preview = mode === 'preview';
+if (!['preview', 'production', 'release'].includes(mode)) throw new Error('Invalid Hostinger build mode');
 const env = {...process.env, DANINI_HOSTINGER_PREVIEW: preview ? 'true' : 'false'};
 const build=spawnSync(process.platform==='win32'?'npm.cmd':'npm',['run','build:platform'],{env,stdio:'inherit'});
 if(build.status!==0)process.exit(build.status||1);
@@ -26,3 +27,4 @@ function audit(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true}))
 }}
 audit('dist');
 console.log('Hostinger '+(preview?'preview':'production')+' artifact validated: '+revision);
+if (mode === 'release') require('./package-hostinger-release.cjs');

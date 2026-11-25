@@ -7,10 +7,11 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/portal/*"],
+    "run_worker_first": ["/api/*", "/portal", "/portal/*", "/operator", "/operator/*", "/", "/de*", "/sr*", "/auto*", "/_astro/*", "/_danini/*", "/assets/*", "/images/*", "/js/*", "/downloads/akademija/*", "/robots.txt", "/sitemap*", "/*.html", "/*.js", "/*.svg", "/*.webp", "/*.jpg", "/llms.txt", "/inspection", "/import"],
     "not_found_handling": "404-page"
   },
   "vars": {
+    "HOSTINGER_FRONTEND_MODE": "staging",
     "B2B_ACTIVE": "false",
     "AI_ENABLED": "false",
     "SITE_ORIGIN": "https://danini-b2b-staging.dragangaganet.workers.dev",

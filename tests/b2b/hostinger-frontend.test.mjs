@@ -8,7 +8,7 @@ const env=(mode,site=staging)=>({HOSTINGER_FRONTEND_MODE:mode,SITE_ORIGIN:site,A
 test('default preserves existing Cloudflare assets',async()=>assert.equal(await (await hostingerFrontend(new Request(prod+'/de/'),env(undefined))).text(),'local'));
 test('preview uses fixed public origin without credentials or query and prevents indexing',async()=>{
  const r=await hostingerFrontend(new Request(staging+'/de/?token=private',{headers:{cookie:'private',authorization:'Bearer private',origin:'https://other.test'}}),env('preview'),async(url,opts)=>{
- assert.equal(url,origin+'/de/');assert.equal(opts.credentials,'omit');assert.deepEqual(Object.keys(opts.headers),['accept']);assert.equal(opts.redirect,'manual');
+ assert.equal(url,origin+'/de/');assert.equal(opts.credentials,'omit');assert.deepEqual(Object.keys(opts.headers),['accept']);assert.equal(opts.redirect,'manual');assert.equal(opts.cache,'no-store');
  return new Response('<html>preview</html>',{headers:{'content-type':'text/html','set-cookie':'bad=1','x-robots-tag':'index'}});
  });
  assert.equal(r.status,200);assert.equal(r.headers.get('x-danini-frontend'),'hostinger');assert.match(r.headers.get('x-robots-tag'),/noindex/);assert.equal(r.headers.get('set-cookie'),null);
@@ -22,8 +22,59 @@ test('blocks unexpected hosts, private paths, unsafe methods and external redire
 });
 test('production refuses preview HTML and keeps legitimate noindex pages',async()=>{
  const req=new Request(prod+'/de/');const e=env('production',prod);
- const html=(body,headers={})=>new Response(body,{headers:{'content-type':'text/html',...headers}});
+ const html=(body,headers={})=>new Response(body,{headers:{'content-type':'text/html','x-danini-runtime':'hostinger-frontend',...headers}});
  assert.equal((await hostingerFrontend(req,e,async()=>html('<aside data-hostinger-preview>test</aside>'))).status,503);
  assert.equal((await hostingerFrontend(req,e,async()=>html('test',{'x-danini-runtime':'hostinger-preview'}))).status,503);
- assert.equal((await hostingerFrontend(req,e,async()=>html('public',{'x-robots-tag':'noindex'}))).status,200);
+ const page=await hostingerFrontend(req,e,async()=>html('public',{'x-robots-tag':'noindex'}));
+ assert.equal(page.status,200);
+ assert.equal(page.headers.get('x-robots-tag'),'noindex');
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('placeholder'))).status,503);
+ const originStructure=async()=>html('public',{'x-robots-tag':'noindex, nofollow, noarchive'});
+ assert.equal((await hostingerFrontend(req,e,originStructure)).headers.get('x-robots-tag'),null);
+ const staged=await hostingerFrontend(new Request(staging+'/de/'),env('staging'),originStructure);
+ assert.equal(staged.status,200);
+ assert.match(staged.headers.get('x-robots-tag'),/noindex/);
+ assert.equal((await hostingerFrontend(new Request(staging+'/de/'),env('staging'),async()=>new Response('preview'))).status,503);
+ const redirect=await hostingerFrontend(new Request('https://www.daninihub.com/de/?lang=de'),e);
+ assert.equal(redirect.status,308);
+ assert.equal(redirect.headers.get('location'),prod+'/de/?lang=de');
+ const robots=await hostingerFrontend(new Request(prod+'/robots.txt'),e,async()=>assert.fail('origin robots would block production'));
+ assert.equal(await robots.text(),'local');
+});
+
+test('staging robots disallows indexing even when the host serves its own robots file', async () => {
+ const robots=await hostingerFrontend(new Request(staging+'/robots.txt'),env('staging'),async()=>assert.fail('robots should be served by the Worker'));
+ assert.equal(robots.status,200);
+ assert.equal(await robots.text(),'User-agent: *\nDisallow: /\n');
+ assert.match(robots.headers.get('x-robots-tag'),/noindex/);
+});
+
+test('staging accepts direct Hostinger asset delivery only for the expected MIME type', async () => {
+ const req=new Request(staging+'/images/brand.jpg');
+ const e=env('staging');
+ const jpeg=await hostingerFrontend(req,e,async()=>new Response('asset',{headers:{'content-type':'image/jpeg'}}));
+ assert.equal(jpeg.status,200);
+ assert.equal(jpeg.headers.get('x-danini-frontend'),'hostinger');
+ for (const contentType of ['image/webp','image/avif']) {
+   const acceptsModernImages=new Request(req,{headers:{accept:'image/avif,image/webp,image/*,*/*;q=0.8'}});
+   const converted=await hostingerFrontend(acceptsModernImages,e,async()=>new Response('optimized image',{headers:{'content-type':contentType}}));
+   assert.equal(converted.status,200);
+   assert.equal(converted.headers.get('content-type'),contentType);
+ }
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('<svg/>',{headers:{'content-type':'image/svg+xml'}}))).status,503);
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('<html>',{headers:{'content-type':'text/html'}}))).status,503);
+ assert.equal((await hostingerFrontend(req,e,async()=>new Response('asset',{headers:{'content-type':'image/jpeg','x-danini-runtime':'hostinger-preview'}}))).status,503);
+});
+
+test('staging falls back on rate limiting and keeps build proof tied to Hostinger', async () => {
+ const e=env('staging');
+ const rateLimit=async()=>new Response('Too many requests',{status:429});
+ const page=await hostingerFrontend(new Request(staging+'/de/'),e,rateLimit);
+ assert.equal(await page.text(),'local');
+ assert.equal(page.headers.get('x-danini-frontend'),'cloudflare-fallback');
+ assert.equal(page.headers.get('x-danini-upstream-status'),'429');
+ assert.match(page.headers.get('x-robots-tag'),/noindex/);
+ const marker=await hostingerFrontend(new Request(staging+'/_danini/build.json'),e,rateLimit);
+ assert.equal(marker.status,503);
+ assert.equal(marker.headers.get('x-danini-frontend'),null);
 });

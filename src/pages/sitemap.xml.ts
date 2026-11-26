@@ -5,6 +5,7 @@ import { verticals } from "../lib/content";
 export function GET() {
   const urls = [
     "https://daninihub.com/",
+    "https://daninihub.com/sr/wissen/javne-nabavke-nemacka-balkan-vodic/",
     "https://daninihub.com/de/ueber-danini/",
     "https://daninihub.com/de/danini-methode/",
     "https://daninihub.com/sr/o-danini/",

@@ -54,7 +54,7 @@ function createNativeGmail({env=process.env,storeFactory=createImportOSStore,loa
   }catch(e){
    const status=Number.isInteger(e.status)&&e.status>=400&&e.status<600?e.status:503;
    const allowed=new Set(['unauthorized','replayed_request','director_not_configured','gmail_intake_not_configured','invalid_fields','json_required','empty_body','invalid_json','too_large','gmail_provider_unavailable','gmail_invalid_response','gmail_response_too_large','gmail_readonly_scope_required','gmail_account_mismatch','gmail_label_mismatch']);
-   return res.status(status).json({error:allowed.has(e.message)?e.message:'gmail_runtime_unavailable'});
+   return res.status(status).json({error:(allowed.has(e.message)||/^gmail_(oauth|profile|label|list|metadata|message)_(network|http_[1-5][0-9]{2})$/.test(e.message))?e.message:'gmail_runtime_unavailable'});
   }
  };
 }

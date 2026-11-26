@@ -14,8 +14,24 @@ function configured(env: Env) {
     LABELS.includes(env.GMAIL_INTAKE_LABEL_NAME || "");
 }
 async function providerJson(url: string, init: RequestInit) {
-  const res = await fetch(url, { ...init, redirect: "error", signal: AbortSignal.timeout(10000) });
-  if (!res.ok) throw new HttpError(502, "gmail_provider_unavailable");
+  const u = new URL(url);
+  const stage = u.hostname === "oauth2.googleapis.com" ? "oauth" :
+    u.pathname.endsWith("/profile") ? "profile" :
+    u.pathname.includes("/labels/") ? "label" :
+    u.pathname.endsWith("/messages") ? "list" :
+    u.searchParams.get("format") === "metadata" ? "metadata" : "message";
+  let res: Response;
+  try {
+    res = await fetch(url, { ...init, redirect: "error", signal: AbortSignal.timeout(10000) });
+  } catch {
+    throw new HttpError(502, "gmail_" + stage + "_network");
+  }
+  if (!res.ok) {
+    // Report only fixed stage and numeric status; never relay Google error bodies or tokens.
+    const status = res.status;
+    await res.body?.cancel().catch(()=>{});
+    throw new HttpError(502, "gmail_" + stage + "_http_" + status);
+  }
   const reader = res.body?.getReader();
   if (!reader) throw new HttpError(502, "gmail_invalid_response");
   const decoder = new TextDecoder("utf-8", {fatal:true});

@@ -34,7 +34,7 @@ const de = locale === "de";
       </div>
       <div class="bc-fieldset">
         <label for={"bc-country-"+locale}>{de ? "DACH-Bezug (Ausgangs- oder Zielmarkt)" : "DACH tržište (polazno ili ciljno)"}</label>
-        <select id={"bc-country-"+locale} name="country"><option value="DE">Deutschland / Nemačka</option><option value="AT">Österreich / Austrija</option><option value="CH">Schweiz / Švajcarska</option></select>
+        <select id={"bc-country-"+locale} name="country"><option value="DE">{de?"Deutschland":"Nemačka"}</option><option value="AT">{de?"Österreich":"Austrija"}</option><option value="CH">{de?"Schweiz":"Švajcarska"}</option></select>
       </div>
       <div class="bc-fieldset">
         <label for={"bc-direction-"+locale}>{de ? "Geschäftsrichtung (optional)" : "Smer poslovne saradnje (opciono)"}</label>
@@ -49,9 +49,9 @@ const de = locale === "de";
         <label for={"bc-service-"+locale}>{de ? "Gewünschte Leistung" : "Usluga koja vas interesuje"} *</label>
         <select id={"bc-service-"+locale} name="service" required>
           <option value="">{de ? "Bitte auswählen" : "Izaberite uslugu"}</option>
-          <option value="check">DANINI Business Check</option>
-          <option value="intake">DANINI Anfragebüro</option>
-          <option value="support">DANINI Office Betreuung</option>
+          <option value="check">{de?"DANINI Business Check":"DANINI — poslovna dijagnostika"}</option>
+          <option value="intake">{de?"DANINI Anfragebüro":"DANINI — obrada poslovnih upita"}</option>
+          <option value="support">{de?"DANINI Office Betreuung":"DANINI — administrativna podrška"}</option>
           <option value="crossborder">{de ? "DACH–Balkan Geschäftsanbahnung & Lieferantenanfrage" : "DACH–Balkan poslovno povezivanje i upiti dobavljačima"}</option>
         </select>
         <small class="bc-clarity">{de ? "Wählen Sie die passende Aufgabe. Bei B2B-Anbahnung unterstützen wir die Vorbereitung von Anforderungen und Rückfragen; wir versprechen keine Geschäftspartner oder Abschlüsse." : "Odaberite zadatak. Za DACH–Balkan povezivanje pripremamo zahtev i pitanja; ne obećavamo partnera ili zaključen posao."}</small>
@@ -222,7 +222,7 @@ const de = locale === "de";
             if (current.preliminary) {
               for (const question of current.preliminary.questions || []) {const item=document.createElement("p");item.textContent=question;panel.appendChild(item);}
               const note=document.createElement("p");note.textContent=de?"Vorläufig, nicht unabhängig recherchiert. Ein detaillierter Bericht erfordert eine gesonderte Vereinbarung.":"Preliminarno, bez nezavisnog istraživanja. Detaljan izveštaj zahteva zaseban dogovor.";panel.appendChild(note);
-              const link=document.createElement("a");link.textContent=de?"DANINI Business Research Report anfragen":"Zatraži DANINI Business Research Report";
+              const link=document.createElement("a");link.textContent=de?"Detaillierten DANINI-Geschäftsbericht anfragen":"Zatraži detaljan DANINI poslovni izveštaj";
               link.href="mailto:info@daninihub.com?subject="+encodeURIComponent("DANINI Business Research Report | "+reference);panel.appendChild(link);
               return true;
             }

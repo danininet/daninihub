@@ -12,6 +12,8 @@ if(preview){
   const prepare=spawnSync(process.execPath,['scripts/prepare-hostinger-static-preview.cjs'],{env,stdio:'inherit'});
   if(prepare.status!==0)process.exit(prepare.status||1);
 }
+// Compile the shared TypeScript Gmail module for the native Node runtime.
+require('esbuild').buildSync({entryPoints:['src/api/gmail-intake.ts'],outfile:'hostinger-gmail-core.cjs',platform:'node',target:'node22',format:'cjs',bundle:true});
 let revision='unknown';
 try{revision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();}catch{}
 fs.mkdirSync('dist/_danini',{recursive:true});

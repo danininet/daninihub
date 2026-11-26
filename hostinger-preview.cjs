@@ -17,6 +17,12 @@ const robots = 'noindex, nofollow, noarchive';
 const frontendCsp = "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
 app.disable('x-powered-by');
+// Mount only exact Gmail endpoints. All other preview backend guards stay intact.
+if (functionalFrontend) {
+  const gmail = require('./hostinger-native-gmail.cjs').createNativeGmail();
+  app.get('/portal/gmail-intake', gmail);
+  app.post('/portal/gmail-intake/poll', express.json({limit:1000,strict:true}), gmail);
+}
 // Keep the listener alive on a bad release so health reports the actual failure.
 // Log only release metadata, never environment values, secrets, or requests.
 console.log(JSON.stringify({event:'hostinger_start',mode,node:process.versions.node,assets:assets?.layout || 'missing'}));

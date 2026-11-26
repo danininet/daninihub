@@ -25,7 +25,7 @@ const options = [
 <section class="tqa-section" id="tender-quick-audit" aria-labelledby="tqa-heading">
   <div class="wrap">
     <p class="tqa-eyebrow">DANINI BUSINESS · {de?"KOSTENLOSE ORIENTIERUNG":"BESPLATNA ORIJENTACIJA"}</p>
-    <h2 id="tqa-heading">{de?"DACH Tender Quick Audit":"DACH Tender Quick Audit"}</h2>
+    <h2 id="tqa-heading">{de?"DACH Tender Quick Audit – Selbsteinschätzung":"DACH Tender Quick Audit – samoprocena"}</h2>
     <p>{de?"Fünf Fragen zur allgemeinen Vorbereitung auf öffentliche Ausschreibungen. Die Auswertung erfolgt regelbasiert im Browser, ohne generative KI, Registrierung oder Übermittlung der Antworten.":"Pet pitanja za opštu pripremu firme za javne tendere. Procena se računa u pregledaču po fiksnim pravilima, bez generativne AI, registracije ili slanja odgovora."}</p>
     <div data-tender-audit data-locale={locale}>
       {questions.map((question,i)=>
@@ -75,4 +75,5 @@ const options = [
   [data-tqa-result][hidden]{display:none}
   [data-tqa-result] small{display:block;margin-top:10px}
   [data-tqa-notice]{min-height:1.5em}
+.tqa-section{--danini-muted:#334155;color-scheme:light}.tqa-section :is(p,small,legend,label,ul){color:#26394b}.tqa-section [data-tqa-notice]{color:#14574f;font-weight:650}.tqa-section [data-tqa-status]{color:#172b3d;font-weight:750}.tqa-section [data-tqa-gaps] :global(li){color:#26394b}.tqa-section input[type=radio]{color-scheme:light;background:#fff}.tqa-section button:disabled{opacity:1;background:#e2e8f0;color:#475569;border-color:#94a3b8}
 </style>

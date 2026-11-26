@@ -30,12 +30,12 @@
       if (answers.some(a => a === "")) return;
       const result = assess(answers);
       const labels = de ? {
-        review:"REVIEW – Angaben fehlen; weitere Prüfung nötig.",
+        review:"Prüfung erforderlich – Angaben fehlen.",
         "initial-ready":"Gute Ausgangslage laut eigenen Angaben.",
         partial:"Teilweise vorbereitet.",
         prepare:"Weitere Vorbereitung erforderlich."
       } : {
-        review:"REVIEW – nedostaju podaci; potrebna je dodatna provera.",
+        review:"Potrebna je dodatna provera – nedostaju podaci.",
         "initial-ready":"Dobra početna priprema prema sopstvenim odgovorima.",
         partial:"Delimična priprema.",
         prepare:"Potrebna je dodatna priprema."

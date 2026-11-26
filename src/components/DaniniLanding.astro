@@ -45,7 +45,7 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
         </a>
         <a class="d-visual-service" href={academy}>
           <span class="d-visual-icon"><DaniniIcon name="academy" size={23} /></span>
-          <span><strong>DANINI AKADEMIJA</strong><small>{de ? "Nische → KI-Übung → überprüfbares Angebot" : "Niša → AI zadatak → proverljiva ponuda"}</small></span>
+          <span><strong>{de?"DANINI AKADEMIE":"DANINI AKADEMIJA"}</strong><small>{de ? "Nische → KI-Übung → überprüfbares Angebot" : "Niša → AI zadatak → proverljiva ponuda"}</small></span>
           <span class="d-visual-arrow" aria-hidden="true">↗</span>
         </a>
         <div class="d-visual-foot"><span class="d-online-dot"></span>{de ? "Fahrzeugprüfung, Geschäftsanfragen und KI-Lernen – eine gemeinsame Methode" : "Provera vozila, poslovni upiti i učenje AI — jedan DANINI metod"}</div>
@@ -66,16 +66,16 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
           <span class="d-tag">01 / AUTODANINI</span>
           <h3>{de ? "Fahrzeugangebote vor Reise und Anzahlung prüfen." : "Proveri oglas pre putovanja i kapare."}</h3>
           <p>{de ? "Prüffragen, fehlende Nachweise und bekannte Kosten übersichtlich erfassen. Bei Bedarf eine unabhängige Prüfung anfragen." : "Pregled oglasnih podataka, nedostajućih dokaza i poznatih troškova. Po potrebi zahtev za nezavisni pregled."}</p>
-          <a href={auto} aria-label={de ? "AutoDanini Fahrzeugangebot prüfen" : "AutoDanini provera oglasa"}>{de ? "Fahrzeugangebot jetzt prüfen" : "Proveri oglas vozila"} →</a>
+          <a href={auto+"#ai-savetnik"} aria-label={de ? "AutoDanini Fahrzeugangebot prüfen" : "AutoDanini provera oglasa"}>{de ? "Fahrzeugangebot jetzt prüfen" : "Proveri oglas vozila"} →</a>
         </article>
         <article class="d-card d-card-business">
           <div class="d-card-media d-business-media" aria-hidden="true">
-            <div class="d-media-grid"></div><span>DANINI BUSINESS</span><strong>AI / OFFICE</strong><small>ANFRAGEN · KOMMUNIKATION · PROZESSE</small>
+            <div class="d-media-grid"></div><span>DANINI BUSINESS</span><strong>{de?"KI / BÜRO":"AI / ADMINISTRACIJA"}</strong><small>{de?"ANFRAGEN · KOMMUNIKATION · PROZESSE":"UPITI · KOMUNIKACIJA · PROCESI"}</small>
           </div>
           <span class="d-tag">02 / DANINI BUSINESS</span>
           <h3>{de ? "Kundenanfragen, deutsche Angebote, digitale Bürounterstützung." : "Nemački poslovni upiti, ponude i digitalna podrška."}</h3>
           <p>{de ? "Für kleine Unternehmen vom Balkan: Anfragen und Anforderungen deutscher Geschäftspartner ordnen, fehlende Angaben erkennen und deutschsprachige Antwort- und Angebotsentwürfe mit menschlicher Freigabe vorbereiten." : "Za firme sa Balkana: priprema upita, odgovora i dokumentacije za saradnju sa nemačkim kupcima ili dobavljačima, uz jasne korake i ljudsko odobrenje."}</p>
-          <a href={business} aria-label={de ? "DANINI Business Anfrage starten" : "Pokreni DANINI Business upit"}>{de ? "Jetzt Business-Anfrage starten" : "Pokreni Business upit"} →</a>
+          <a href={business+"#anfrage"} aria-label={de ? "DANINI Business Anfrage starten" : "Pokreni DANINI Business upit"}>{de ? "Jetzt Business-Anfrage starten" : "Pokreni Business upit"} →</a>
         </article>
       </div>
     </div>
@@ -97,7 +97,7 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
       <h2 id="free-entry-title">{de?"Erst ausprobieren. Dann selbst entscheiden.":"Prvo isprobaj. Zatim sam odluči."}</h2>
       <p>{de?"Nutzen Sie unsere frei zugänglichen Orientierungshilfen und Lernmaterialien ohne Kaufpflicht oder automatische Abbuchung. Individuelle Leistungen vereinbaren wir erst nach Klärung von Umfang und Verfügbarkeit.":"Koristi javno dostupne alate za orijentaciju i učenje bez obaveze kupovine ili automatske naplate. Individualne usluge dogovaramo tek nakon provere obima i dostupnosti."}</p>
       <div class="pilot-entry-grid">
-        <article><h3>AutoDanini</h3><p>{de?"Orientierung vor Reise und Anzahlung.":"Orijentacija pre puta i kapare."}</p><a href={auto}>{de?"Fahrzeug-Check öffnen":"Pokreni osnovnu proveru"} →</a></article>
+        <article><h3>AutoDanini</h3><p>{de?"Orientierung vor Reise und Anzahlung.":"Orijentacija pre puta i kapare."}</p><a href={auto+"#ai-savetnik"}>{de?"Fahrzeug-Check öffnen":"Pokreni osnovnu proveru"} →</a></article>
         <article><h3>DANINI Business</h3><p>{de?"Praxiswissen und Vorbereitung von Geschäftsanfragen.":"Vodiči i priprema poslovnih upita."}</p><a href={business}>{de?"Business kennenlernen":"Pogledaj poslovne mogućnosti"} →</a></article>
         <article><h3>{de?"DANINI Akademie":"DANINI Akademija"}</h3><p>{de?"Drei kostenlose Praxislektionen und Business Builder.":"Tri besplatne praktične lekcije i Business Builder."}</p><a href={academy}>{de?"Kostenlos lernen":"Uči besplatno"} →</a></article>
         <article><h3>{de?"Wissen & Downloads":"Vodiči i dokumenti"}</h3><p>{de?"Öffentliche Ratgeber und Checklisten.":"Javni vodiči i kontrolne liste."}</p><a href={"/"+locale+"/wissen/"}>{de?"Ratgeber öffnen":"Otvori vodiče"} →</a></article>

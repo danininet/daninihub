@@ -1,5 +1,6 @@
 'use strict';
 // Native Hostinger adapter; reuse the reviewed Gmail core without Cloudflare bindings.
+const {createHash,createHmac,timingSafeEqual}=require('node:crypto');
 const {createImportOSStore}=require('./importos-store.js');
 function adapter(pool){
  return {prepare(sql){return {bind(...args){
@@ -26,13 +27,19 @@ function createNativeGmail({env=process.env,storeFactory=createImportOSStore,loa
   return pending;
  }
  return async function handler(req,res){
-  res.set({'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','Referrer-Policy':'no-referrer'});
+  res.set({'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer'});
   const isPoll=req.method==='POST'&&req.originalUrl==='/portal/gmail-intake/poll';
   const isQueue=req.method==='GET'&&req.originalUrl==='/portal/gmail-intake';
   if(!isPoll&&!isQueue)return res.sendStatus(404);
   // Only the existing signed director protocol; never trust a forwarded identity header.
   if(!env.DIRECTOR_HMAC_SECRET||env.DIRECTOR_HMAC_SECRET.length<32)return res.status(503).json({error:'director_not_configured'});
   if(!req.get('x-danini-signature')||!req.get('x-danini-timestamp')||!req.get('x-danini-nonce'))return res.status(401).json({error:'unauthorized'});
+  const time=req.get('x-danini-timestamp'),nonce=req.get('x-danini-nonce'),sig=req.get('x-danini-signature');
+  const body=isPoll?JSON.stringify(req.body):'';
+  if(typeof body!=='string'||!/^\d{10}$/.test(time)||Math.abs(Date.now()/1000-Number(time))>300||!/^[a-zA-Z0-9_-]{20,80}$/.test(nonce)||!/^[a-f0-9]{64}$/.test(sig))return res.status(401).json({error:'unauthorized'});
+  const signed=[req.method,req.originalUrl,time,nonce,createHash('sha256').update(body).digest('hex')].join('\n');
+  const expected=createHmac('sha256',env.DIRECTOR_HMAC_SECRET).update(signed).digest();
+  if(!timingSafeEqual(expected,Buffer.from(sig,'hex')))return res.status(401).json({error:'unauthorized'});
   try{
    const headers=new Headers();
    for(const k of ['x-danini-signature','x-danini-timestamp','x-danini-nonce','content-type'])if(req.get(k))headers.set(k,req.get(k));

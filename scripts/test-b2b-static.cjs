@@ -107,3 +107,13 @@ assert.ok(fs.readFileSync(path.join(root, "sitemap.xml"), "utf8").includes("http
 console.log(
   `PASS ${count} B2B pages, language/SEO/local links, ${redirects.length} redirects, published DE/SR legal pages and procurement wiki/demo.`,
 );
+
+for(const locale of locales){
+ const home=fs.readFileSync(path.join(root,locale,"index.html"),"utf8");
+ const business=fs.readFileSync(path.join(root,locale,"business/index.html"),"utf8");
+ assert.ok(home.includes("data-prelaunch-entry"),locale+" free entry missing");
+ for(const route of ["auto-check/","business/","akademija/","wissen/","wissen/partner/"])assert.ok(home.includes('href="/'+locale+'/'+route+'"'),locale+" entry link "+route);
+ assert.ok(business.includes("data-tender-demo-entry"),locale+" demo entry missing");
+ assert.ok(business.includes('href="/sr/wissen/javne-nabavke-nemacka-balkan-vodic/demo.pdf"'),locale+" public PDF missing");
+ assert.ok(business.includes('href="#anfrage"'),locale+" existing inquiry missing");
+}

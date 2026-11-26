@@ -91,6 +91,21 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
       <div class="d-education-preview"><span>01 / {de?"LERNEN":"UČENJE"}</span><strong>{de?"Nische":"Niša"}</strong><span>02 / {de?"PRÜFEN":"PROVERA"}</span><strong>{de?"Nachfrage":"Potreba"}</strong><span>03 / {de?"ENTWICKELN":"IZGRADNJA"}</span><strong>{de?"Erstes Angebot":"Prva ponuda"}</strong></div>
     </div>
   </section>
+  <section class="d-section d-light" data-prelaunch-entry aria-labelledby="free-entry-title">
+    <div class="wrap">
+      <p class="d-eyebrow">{de?"DANINI KENNENLERNEN · KOSTENLOS":"UPOZNAJ DANINI · BESPLATNO"}</p>
+      <h2 id="free-entry-title">{de?"Erst ausprobieren. Dann selbst entscheiden.":"Prvo isprobaj. Zatim sam odluči."}</h2>
+      <p>{de?"Nutzen Sie unsere frei zugänglichen Orientierungshilfen und Lernmaterialien ohne Kaufpflicht oder automatische Abbuchung. Individuelle Leistungen vereinbaren wir erst nach Klärung von Umfang und Verfügbarkeit.":"Koristi javno dostupne alate za orijentaciju i učenje bez obaveze kupovine ili automatske naplate. Individualne usluge dogovaramo tek nakon provere obima i dostupnosti."}</p>
+      <div class="pilot-entry-grid">
+        <article><h3>AutoDanini</h3><p>{de?"Orientierung vor Reise und Anzahlung.":"Orijentacija pre puta i kapare."}</p><a href={auto}>{de?"Fahrzeug-Check öffnen":"Pokreni osnovnu proveru"} →</a></article>
+        <article><h3>DANINI Business</h3><p>{de?"Praxiswissen und Vorbereitung von Geschäftsanfragen.":"Vodiči i priprema poslovnih upita."}</p><a href={business}>{de?"Business kennenlernen":"Pogledaj poslovne mogućnosti"} →</a></article>
+        <article><h3>{de?"DANINI Akademie":"DANINI Akademija"}</h3><p>{de?"Drei kostenlose Praxislektionen und Business Builder.":"Tri besplatne praktične lekcije i Business Builder."}</p><a href={academy}>{de?"Kostenlos lernen":"Uči besplatno"} →</a></article>
+        <article><h3>{de?"Wissen & Downloads":"Vodiči i dokumenti"}</h3><p>{de?"Öffentliche Ratgeber und Checklisten.":"Javni vodiči i kontrolne liste."}</p><a href={"/"+locale+"/wissen/"}>{de?"Ratgeber öffnen":"Otvori vodiče"} →</a></article>
+      </div>
+      <p>{de?"Sie können die kostenlosen Inhalte weiter nutzen, unabhängig davon, ob Sie später eine Leistung buchen oder eine Zusammenarbeit anfragen.":"Besplatne sadržaje možeš nastaviti da koristiš bez obzira na to da li ćeš kasnije naručiti uslugu ili predložiti saradnju."}</p>
+      <a href={"/"+locale+"/wissen/partner/"}>{de?"Unverbindlich über Zusammenarbeit informieren":"Informiši se o mogućnostima saradnje"} →</a>
+    </div>
+  </section>
   <section class="d-section d-trust">
     <div class="wrap d-trust-grid">
       <div>
@@ -195,4 +210,5 @@ const method = de ? "/de/danini-methode/" : "/sr/danini-metoda/";
 @media(max-width:900px){.d-hero-grid,.d-trust-grid{grid-template-columns:1fr}.d-panel{max-width:720px}.d-contact-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.d-cards{grid-template-columns:1fr}.d-hero{padding-top:54px}.d-btn{width:100%}.d-contact-grid .d-btn{width:100%}.d-section{padding:58px 0}.d-visual{padding:21px}.d-visual-title{margin:24px 0 18px}.d-card-media{height:170px}.d-hero-benefits span{font-size:.7rem}}
 @media(prefers-reduced-motion:reduce){.d-visual-service,.d-card{transition:none}}
+.pilot-entry-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:26px 0}.pilot-entry-grid article{min-width:0;background:#f8fbfc;color:#142e41;border:1px solid #c6d7df;border-radius:12px;padding:18px;overflow-wrap:anywhere}.pilot-entry-grid p{color:#38576a}.pilot-entry-grid h3{font-size:1.12rem;margin:0 0 8px}.pilot-entry-grid a{color:#075e65;text-decoration:underline;font-weight:750}.pilot-entry-grid a:focus-visible{outline:3px solid #0d7377;outline-offset:3px}@media(max-width:900px){.pilot-entry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.pilot-entry-grid{grid-template-columns:minmax(0,1fr)}}
 </style>

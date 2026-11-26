@@ -32,7 +32,7 @@ async function providerJson(url: string, init: RequestInit) {
     return JSON.parse(text);
   } finally { await reader.cancel().catch(()=>{}); }
 }
-async function session(env: Env) {
+export async function verifyGmailSession(env: Env) {
   const token = await providerJson("https://oauth2.googleapis.com/token", {
     method:"POST", headers:{"content-type":"application/x-www-form-urlencoded"},
     body:new URLSearchParams({client_id:env.GMAIL_CLIENT_ID!,client_secret:env.GMAIL_CLIENT_SECRET!,
@@ -100,7 +100,7 @@ async function makeDraft(body: string|null, payload: any) {
 }
 export async function pollGmailIntake(env: Env) {
   if (!configured(env)) throw new HttpError(503,"gmail_intake_not_configured");
-  const get = await session(env);
+  const get = await verifyGmailSession(env);
   const now=Math.floor(Date.now()/1000);
   let pageToken="", imported=0, duplicates=0, skipped=0, inspected=0, morePending=false;
   // Bound each manual poll; traverse existing labels without marking or modifying mail.

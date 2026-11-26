@@ -11,12 +11,12 @@ const offerings = de ? [
   {title:"DANINI Anfragebüro",desc:"Einen klar abgegrenzten Ablauf für Anfrage, Qualifizierung, CRM-Erfassung und Antwortentwurf entwerfen und nach Freigabe umsetzen.",output:"Ergebnis: ein überprüfbarer Workflow mit menschlicher Freigabe."},
   {title:"DANINI Office Betreuung",desc:"Bestehende digitale Abläufe im vereinbarten Umfang betreuen, überwachen und bei Bedarf verbessern. Laufende Betreuung nach individueller Vereinbarung.",output:"Ergebnis: kontrollierte Wartung und dokumentierte Verbesserungen."}
 ] : [
-  {title:"DANINI Business Check",desc:"Pregled jednog postojećeg postupka za obradu upita ili administracije, identifikacija nedostataka i pisani predlog poboljšanja.",output:"Rezultat: strukturisana analiza i konkretni sledeći koraci."},
-  {title:"DANINI Anfragebüro",desc:"Priprema i, nakon odobrenja, uvođenje jednog procesa: upit, kvalifikacija, CRM evidencija i nacrt odgovora.",output:"Rezultat: proverljiv tok sa ljudskim odobravanjem."},
-  {title:"DANINI Office Betreuung",desc:"Praćenje, održavanje i unapređenje postojećih digitalnih procesa u dogovorenom obimu. Kontinuirana podrška prema individualnom dogovoru.",output:"Rezultat: kontrolisano održavanje i dokumentovana poboljšanja."}
+  {title:"DANINI — poslovna dijagnostika",desc:"Pregled jednog postojećeg postupka za obradu upita ili administracije, identifikacija nedostataka i pisani predlog poboljšanja.",output:"Rezultat: strukturisana analiza i konkretni sledeći koraci."},
+  {title:"DANINI — obrada poslovnih upita",desc:"Priprema i, nakon odobrenja, uvođenje jednog procesa: upit, kvalifikacija, CRM evidencija i nacrt odgovora.",output:"Rezultat: proverljiv tok sa ljudskim odobravanjem."},
+  {title:"DANINI — administrativna podrška",desc:"Praćenje, održavanje i unapređenje postojećih digitalnih procesa u dogovorenom obimu. Kontinuirana podrška prema individualnom dogovoru.",output:"Rezultat: kontrolisano održavanje i dokumentovana poboljšanja."}
 ];
 ---
-<Base locale={locale} slug="business"
+<Base locale={locale} slug="business" ogImage="/images/DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg"
   title={de ? "DANINI Business — Geschäftsanfragen zwischen Balkan und Deutschland" : "DANINI Business — poslovni most između Balkana i Nemačke"}
   description={de ? "Unterstützung für Unternehmen vom Balkan: deutschsprachige Anfragen, Angebotsentwürfe, Lieferantenkommunikation und kontrollierte digitale Büroabläufe." : "Za firme sa Balkana: poslovni upiti, priprema ponuda i dokumentacije za nemačko tržište i kontrolisani digitalni tokovi."}>
   <section class="b-hero">
@@ -91,12 +91,15 @@ const offerings = de ? [
   </section>
   <TenderQuickAudit locale={locale} />
   <section class="b-section b-extra" data-tender-demo-entry aria-labelledby="tender-demo-title">
-    <div class="wrap">
+    <div class="wrap tender-demo-layout">
+      <div>
       <h2 id="tender-demo-title">{de?"Öffentliche Aufträge in Deutschland: Vorbereitung verstehen":"Javne nabavke u Nemačkoj: razumite pripremu ponude"}</h2>
       <p>{de?"Unser frei zugänglicher Leitfaden und der achtseitige Demo-Bericht zeigen anhand eines fiktiven Beispiels, wie Anforderungen, Nachweise und Risiken strukturiert werden. Der Leitfaden und Bericht sind auf Serbisch.":"Besplatan vodič i osmostranični Demo PDF na simuliranom primeru prikazuju kako se strukturiraju zahtevi, dokazi i rizici tendera."}</p>
-      <ul><li><a href="/sr/wissen/javne-nabavke-nemacka-balkan-vodic/">{de?"Leitfaden (Serbisch) lesen":"Pročitaj vodič"} →</a></li><li><a href="/sr/wissen/javne-nabavke-nemacka-balkan-vodic/demo.pdf">{de?"Demo PDF (Serbisch) herunterladen":"Preuzmi Demo PDF bez registracije"} →</a></li></ul>
+      <ul><li><a hreflang="sr" href="/sr/wissen/javne-nabavke-nemacka-balkan-vodic/">{de?"Leitfaden (Serbisch) lesen":"Pročitaj vodič"} →</a></li><li><a hreflang="sr" href="/sr/wissen/javne-nabavke-nemacka-balkan-vodic/demo.pdf">{de?"Demo PDF (Serbisch) herunterladen":"Preuzmi Demo PDF bez registracije"} →</a></li></ul>
       <p>{de?"Die Pilotangebote für individuelle Analysen und Benachrichtigungen werden vorbereitet. Sie können Ihr Interesse unverbindlich schildern; es entsteht weder ein Auftrag noch eine Abonnementpflicht. Verfügbarkeit und Umfang werden separat bestätigt.":"Pilot ponude za individualne analize i obaveštenja su u pripremi. Možete poslati neobavezujući upit o interesovanju; to nije narudžbina niti pretplata. Dostupnost i obim potvrđujemo posebno."}</p>
       <a class="b-extra-link" href="#anfrage">{de?"Interesse an einer Tender-Analyse mitteilen":"Pošalji neobavezujući upit za tender analizu"} →</a>
+      </div>
+      <figure class="tender-demo-visual"><img src="/images/DANINI_Kartica_06_B2B_Sourcing_I_Preuzimanje.jpg" alt={de?"Illustration zur grenzüberschreitenden Geschäftsvorbereitung":"Ilustracija pripreme prekograničnog poslovanja"} width="960" height="560" loading="lazy" decoding="async"/><figcaption>{de?"Symbolbild, keine Kundenreferenz.":"Ilustracija, nije referenca klijenta."}</figcaption></figure>
     </div>
   </section>
   <section class="b-section b-extra" aria-labelledby="business-guides-heading"><div class="wrap"><h2 id="business-guides-heading">{de?"Wissen für Ihre Büroprozesse":"Vodiči za poslovne procese"}</h2><p>{de?"Ausführliche Praxisartikel zur strukturierten Anfragebearbeitung, Angebotsvorbereitung und Datenschutz.":"Praktični vodiči za rad sa upitima i administracijom."}</p><ul><li><a href={de?"/de/wissen/anfragemanagement-kleine-unternehmen/":"/sr/wissen/upravljanje-upitima-malih-firmi/"}>{de?"Kundenanfragen strukturiert bearbeiten":"Organizacija poslovnih upita"}</a></li><li><a href={de?"/de/wissen/ki-angebotsvorbereitung/":"/sr/wissen/ai-priprema-poslovne-ponude/"}>{de?"KI-gestützte Angebotsvorbereitung":"E-mail, formular i CRM"}</a></li><li><a href={de?"/de/wissen/dsgvo-kundenanfragen-ki/":"/sr/wissen/gdpr-ai-obrada-upita-klijenata/"}>{de?"DSGVO bei Kundenanfragen und KI":"AI u kancelariji i ljudska kontrola"}</a></li></ul><a class="b-extra-link" href={`/${locale}/wissen/`}>{de?"Alle DANINI Ratgeber":"Svi DANINI vodiči"}</a></div></section>
@@ -154,4 +157,5 @@ const offerings = de ? [
 .b-demo-document b{font-size:.9rem;color:#243b52;line-height:1.55;font-weight:600;overflow-wrap:anywhere}
 .b-demo-document small{color:#51687c;line-height:1.5}
 @media(max-width:900px){.b-demo-grid{grid-template-columns:1fr}}
+.tender-demo-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,0.8fr);gap:clamp(20px,4vw,48px);align-items:center}.tender-demo-layout>div{min-width:0}.tender-demo-layout :is(p,li){color:#334155}.tender-demo-layout a{color:#075e58;text-decoration:underline;text-underline-offset:3px}.tender-demo-visual{margin:0;min-width:0}.tender-demo-visual img{width:100%;height:auto;display:block;border-radius:12px}.tender-demo-visual figcaption{font-size:.82rem;color:#475569;margin-top:8px}@media(max-width:850px){.tender-demo-layout{grid-template-columns:minmax(0,1fr)}}
 </style>

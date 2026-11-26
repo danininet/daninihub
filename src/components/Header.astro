@@ -27,7 +27,7 @@ const navItems = [
 <header>
   <div class="wrap nav danini-header">
     <a class="brand" href={home} aria-label={isDe ? "DANINI — Startseite" : "DANINI — Početna"}>
-      <span class="brand-lockup"><img class="brand-logo" src={daniniBrandLogo} width="360" height="120" alt="DANINI" decoding="async" /><small>AI EDUKACIJA · BUSINESS · AUTO</small></span>
+      <span class="brand-lockup"><img class="brand-logo" src={daniniBrandLogo} width="360" height="120" alt="DANINI" decoding="async" /><small>{isDe?"KI-BILDUNG · BUSINESS · AUTO":"AI EDUKACIJA · POSLOVANJE · AUTO"}</small></span>
     </a>
     <nav class="business-nav" aria-label={isDe ? "Hauptnavigation" : "Glavna navigacija"}>
       {navItems.map(item => <a href={item.href} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}

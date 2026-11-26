@@ -8,7 +8,7 @@ interface Props {
 const { locale } = Astro.props;
 const isDe = locale === "de";
 const legalLinks = [
-  { href: `/${locale}/impressum/`, label: "Impressum" },
+  { href: `/${locale}/impressum/`, label: isDe ? "Impressum" : "Podaci o izdavaču" },
   { href: `/${locale}/datenschutz/`, label: isDe ? "Datenschutz" : "Privatnost" },
   { href: `/${locale}/agb/`, label: isDe ? "AGB" : "Uslovi" },
   { href: `/${locale}/ai-transparenz/`, label: isDe ? "KI-Transparenz" : "AI transparentnost" },

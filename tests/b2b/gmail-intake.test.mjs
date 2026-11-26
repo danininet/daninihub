@@ -47,3 +47,16 @@ test("sensitive, automated and unlabelled mail fail closed",async()=>{
  const e=setup();globalThis.fetch=mock({labels:["INBOX"]});assert.equal((await pollGmailIntake(e)).imported,0);
  }finally{globalThis.fetch=old;}
 });
+
+
+test("provider failures expose only stage and status, never upstream body",async()=>{
+ const e=setup(),old=globalThis.fetch;
+ try {
+  for(const [stage,match] of [["oauth",u=>u.hostname==="oauth2.googleapis.com"],["profile",u=>u.pathname.endsWith("/profile")],["label",u=>u.pathname.includes("/labels/")],["list",u=>u.pathname.endsWith("/messages")],["metadata",u=>u.searchParams.get("format")==="metadata"],["message",u=>u.searchParams.get("format")==="full"]]){
+   globalThis.fetch=async(url,init)=>match(new URL(url))?new Response("private upstream content",{status:400}):mock()(url,init);
+   await assert.rejects(pollGmailIntake(e),err=>err.status===502&&err.message==="gmail_"+stage+"_http_400");
+  }
+  globalThis.fetch=async()=>{throw Error("private network details")};
+  await assert.rejects(pollGmailIntake(e),err=>err.message==="gmail_oauth_network");
+ }finally{globalThis.fetch=old;}
+});

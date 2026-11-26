@@ -50,6 +50,10 @@ export async function cleanup(env: Env) {
       env.DANINI_DB.prepare("DELETE FROM cases WHERE id=?").bind(row.id),
     ]);
   }
+  // Optional intake queue: retain only classifications/drafts for the original mail age.
+  // Existing deployments without the additive migration remain unaffected when disabled.
+  if (env.GMAIL_INTAKE_ENABLED === "true")
+    await env.DANINI_DB.prepare("DELETE FROM gmail_intake_queue WHERE expires_at<=?").bind(now).run();
   // Customer Builder tables are optional and never touched if public Academy
   // authentication is disabled. Activation requires an applied D1 migration.
   if (env.ACADEMY_AUTH_ENABLED === "true") {

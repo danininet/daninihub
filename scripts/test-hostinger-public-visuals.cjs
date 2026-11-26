@@ -52,7 +52,8 @@ async function auditPublicVisuals(browser, base) {
           const response=await page.goto(base+route,{waitUntil:'domcontentloaded',timeout:20000});
           const details=await page.evaluate(async({own})=>{
             const owned=new Set(own), sources=new Set();
-            const imgs=[...document.images];
+            // The upload preview intentionally has no source until the visitor selects an image.
+            const imgs=[...document.images].filter(img=>!(img.id==='listing-capture-preview'&&img.hidden&&!img.getAttribute('src')&&!img.getAttribute('srcset')));
             for(const img of imgs)img.loading='eager';
             const decode=img=>Promise.race([img.decode().then(()=>true).catch(()=>false),new Promise(resolve=>setTimeout(()=>resolve(false),5000))]);
             const images=await Promise.all(imgs.map(async img=>{
@@ -101,7 +102,7 @@ async function auditPublicVisuals(browser, base) {
   const alias='/wiki/javne-nabavke-nemacka-balkan-vodic/';
   const redirect=await fetch(base+alias,{redirect:'manual',signal:AbortSignal.timeout(10000)});
   const aliasOk=redirect.status===301&&new URL(redirect.headers.get('location')||'/',base).pathname===wiki;
-  const failures=results.filter(r=>r.error||r.status!==200||r.broken?.length||r.brokenRequests?.length||(core.includes(r.route)&&r.overflow)||(r.route===wiki&&r.diagrams<4));
+  const failures=results.filter(r=>r.error||r.status!==200||r.broken?.length||r.brokenRequests?.length||r.overflow||(r.route===wiki&&r.diagrams<4));
   const report={routes:routes.size,checks:results.length,failed:failures.length,pdfOk,aliasOk,results};
   fs.writeFileSync('artifacts/hostinger-desktop/public-visual-report.json',JSON.stringify(report,null,2));
   console.log('PUBLIC_VISUAL_SUMMARY '+JSON.stringify({routes:report.routes,checks:report.checks,failed:report.failed,pdfOk,aliasOk,overflow:results.filter(r=>r.overflow).map(r=>[r.route,r.width]),external:results.filter(r=>r.skippedExternal?.length).length}));

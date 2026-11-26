@@ -866,3 +866,10 @@ body:has(.auto-hero) .auto-inspection .button {
 /* Dynamic Business results are outside Astro scoped selectors. */
 .bc-form .bc-preliminary p { color: #102238; }
 .bc-form .bc-preliminary a { color: #075e58; font-weight: 700; text-decoration: underline; }
+
+/* Public detail/legal pages: long German compounds must wrap, not widen the mobile viewport. */
+@media(max-width:680px){
+  .detail,.legal{min-width:0;max-width:100%;overflow-wrap:anywhere;}
+  .detail h1,.detail h2,.detail h3,.legal h1,.legal h2,.legal h3{overflow-wrap:anywhere;hyphens:auto;}
+  .detail .actions,.detail .button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;}
+}

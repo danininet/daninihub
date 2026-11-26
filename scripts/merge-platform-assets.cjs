@@ -31,6 +31,18 @@ for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
     errorOnExist: false,
   });
 }
+// Restore the exact first-party legacy images referenced by compiled CSS.
+const assetDir=path.join(dest,"assets");
+fs.mkdirSync(assetDir,{recursive:true});
+for(const name of ["danini-auto-uvoz.webp","danini-pregled-auta.webp"]){
+  const image=fs.readFileSync(path.join(dest,name));
+  if(image.subarray(0,4).toString()!=="RIFF"||image.subarray(8,12).toString()!=="WEBP")throw Error("Invalid original WebP "+name);
+  fs.writeFileSync(path.join(assetDir,name),image);
+}
+const portrait=Buffer.from(fs.readFileSync(path.resolve("autodanini/staging-v12/owned-assets/dragan-business-portrait.jpg.base64"),"utf8").trim(),"base64");
+if(portrait[0]!==0xff||portrait[1]!==0xd8||portrait.length<10000)throw Error("Invalid owned portrait");
+fs.writeFileSync(path.join(assetDir,"dragan-business-portrait.jpg"),portrait);
+
 const auto = path.join(dest, "auto");
 fs.mkdirSync(auto, { recursive: true });
 const pages = fs

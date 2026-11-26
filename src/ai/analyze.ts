@@ -1,5 +1,8 @@
 import type { Env } from "../lib/env";
+import { classifyIntake, type Classification } from "./intake-classification";
+import { reserveBusinessInference } from "./business-quota";
 export interface Draft {
+  classification?: Classification;
   facts?: string[];
   unknowns?: string[];
   auri?: { status: "PASS" | "NEEDS_REVIEW" | "STOP"; reason: string };
@@ -40,7 +43,9 @@ export function validateDraft(value: any): value is Draft {
 }
 export async function analyze(env: Env, input: any): Promise<Draft> {
   const de = input.language === "de";
+  const classification = classifyIntake(input.message, input.language);
   const base: Draft = {
+    classification,
     schemaVersion: 1,
     generatedBy: "rules",
     model: "none",
@@ -99,6 +104,15 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
         ],
   };
   base.missingData = lists[input.vertical] || [];
+  if (input.vertical === "business" && classification.intent === "business_automation") {
+    base.missingData = de
+      ? ["Welchen Anfrageprozess möchten Sie verbessern und welche Werkzeuge nutzen Sie bisher?", "Wie viele Anfragen erhalten Sie typischerweise?", "Wer prüft und genehmigt die Antworten?"]
+      : ["Koji poslovni proces želite unaprediti i koje alate sada koristite?", "Koliko upita obično primate?", "Ko proverava i odobrava odgovore?"];
+  } else if (input.vertical === "business" && classification.intent === "tender_preparation") {
+    base.missingData = de
+      ? ["Welche Ausschreibung oder Branche interessiert Sie?", "Welche Nachweise und Referenzen liegen vor?", "Welche Fristen und Kapazitäten müssen geprüft werden?"]
+      : ["Koji tender ili branša vas interesuje?", "Koje dokaze i reference imate?", "Koje rokove i kapacitete treba proveriti?"];
+  }
   base.questions = base.missingData.slice(0, 3);
   base.facts = [
     de ? "Kundenangaben (nicht unabhängig geprüft)." : "Navodi kupca (nisu nezavisno provereni).",
@@ -110,17 +124,20 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
     status: "NEEDS_REVIEW",
     reason: de ? "Menschliche Prüfung notwendig. Keine externe Recherche." : "Potrebna ljudska provera. Nije izvršeno nezavisno istraživanje.",
   };
+  // Risky text stays in the already protected case for human review; no model call.
+  if (classification.risk !== "none_detected") {
+    base.summary = de ? "Dieser Vorgang benötigt eine manuelle Prüfung vor weiterer Bearbeitung." : "Ovaj predmet zahteva ručnu proveru pre dalje obrade.";
+    base.missingData = base.questions = [de ? "Bitte klären Sie den Umfang mit dem verantwortlichen Ansprechpartner, ohne vertrauliche Daten zu übermitteln." : "Razjasnite obim sa odgovornim licem bez slanja poverljivih podataka."];
+    base.auri = {status:"NEEDS_REVIEW", reason:de ? "Risikohinweis; keine automatische KI-Verarbeitung." : "Upozorenje na rizik; bez automatske AI obrade."};
+    return base;
+  }
   // Disabled means rules-based document triage, never a falsely labelled AI analysis.
   if (env.AI_ENABLED !== "true") return base;
   // Reuse the approved Workers AI binding; no second provider or credentials.
   if (env.DANINI_AI_LIVE_APPROVED === "true" && env.AI?.run) {
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      // Best-effort shared daily cap; fail closed on unavailable quota storage.
-      const key = "business-ai-daily:" + new Date().toISOString().slice(0, 10);
-      const count = Number(await env.PARTNERS.get(key) || 0);
-      if (count >= 20) return base;
-      await env.PARTNERS.put(key, String(count + 1), { expirationTtl: 90000 });
+      if (!(await reserveBusinessInference(env))) return base;
       const raw = await Promise.race([
         env.AI.run("@cf/meta/llama-3.1-8b-instruct-fast", {
           temperature: 0, max_tokens: 700,
@@ -161,6 +178,7 @@ export async function analyze(env: Env, input: any): Promise<Draft> {
     endpoint.hostname !== "gateway.ai.cloudflare.com"
   )
     throw Error("AI_GATEWAY_REQUIRED");
+  if (!(await reserveBusinessInference(env))) return base;
   const result = await fetch(endpoint, {
     method: "POST",
     headers: {

@@ -19,7 +19,6 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci --include=dev --no-audit --no-fund
-      - run: node --test tests/b2b/tender-quick-audit.test.mjs
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: node scripts/test-hostinger-desktop-visual.cjs
@@ -30,6 +29,7 @@ jobs:
           path: artifacts/hostinger-desktop/
       - run: node --check hostinger-preview.cjs
       - run: npm run test:hostinger-preview
+      - run: node --test tests/b2b/tender-quick-audit.test.mjs
       - run: node --test tests/hostinger-audit.test.cjs
       - run: npm run build
         env:

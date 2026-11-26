@@ -48,5 +48,7 @@ const base = 'http://127.0.0.1:'+port;
       await page.close();
     }
     assert.equal(failures.length,0,'Desktop QA failed: '+failures.join(', '));
+    await require('./test-hostinger-public-visuals.cjs').auditPublicVisuals(browser,base);
+    await require('./test-tender-quick-audit-browser.cjs').auditTenderQuickAudit(browser,base);
   } finally {await browser?.close();server.kill();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

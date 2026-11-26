@@ -189,4 +189,13 @@ document.querySelector<HTMLButtonElement>("[data-education-print]")?.addEventLis
 @media print{.ed-builder-preview{display:none!important}}
 /* Dark Academy product band uses an explicit light kicker, unlike light lesson sections. */
 .ed-digital .ed-kicker{color:#f5d27c}
+/* Preserve readable mobile content without clipping or hiding overflow. */
+@media(max-width:680px){
+.ed-hero-grid,.ed-builder-preview-grid,.ed-intro-grid,.ed-map-grid,.ed-modules,.ed-case-grid,.ed-lesson-steps,.ed-fields{grid-template-columns:minmax(0,1fr)}
+.ed-builder-preview-flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ed-hero-grid>*,.ed-builder-preview-grid>*,.ed-module>*,.ed-digital>*,.ed-case-grid article,.ed-fields label,.ed-display,.ed-display>div,.ed-builder-preview-flow li{min-width:0;max-width:100%}
+.ed-display>div{grid-template-columns:42px minmax(0,1fr);gap:10px;padding:12px}
+.ed-hero h1,.ed-section h2,.ed-map h2,.ed-module h3,.ed-btn,.ed-builder-preview h2,.ed-builder-preview-flow li,.ed-digital h3,.ed-display strong,.ed-display small,.ed-kit-links a{overflow-wrap:anywhere;white-space:normal}
+.ed-module{flex-wrap:wrap;gap:10px}.ed-digital{padding:22px}.ed-digital .ed-btn{max-width:100%}.ed-fields textarea{min-width:0;max-width:100%}
+}
 </style>

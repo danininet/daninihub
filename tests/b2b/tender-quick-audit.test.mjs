@@ -23,7 +23,9 @@ test("minimum, maximum, partial and malformed inputs",()=>{
 });
 test("audit is mounted within Business and transfer is draft-only",()=>{
   const landing=readFileSync("src/components/BusinessLanding.astro","utf8");
-  const ui=readFileSync("src/components/TenderQuickAudit.astro","utf8");
+  const component=readFileSync("src/components/TenderQuickAudit.astro","utf8");
+  assert.match(component,/tender-quick-audit-client\.mjs/);
+  const ui=readFileSync("src/lib/tender-quick-audit-client.mjs","utf8");
   assert.match(landing,/<TenderQuickAudit locale=\{locale\}/);
   assert.match(landing,/<BusinessContact locale=\{locale\}/);
   assert.match(ui,/form\[data-business-enquiry\]/);

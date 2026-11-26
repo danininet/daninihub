@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import DaniniIcon from "./DaniniIcon.astro";
 import BusinessContact from "./BusinessContact.astro";
+import TenderQuickAudit from "./TenderQuickAudit.astro";
 import type { Locale } from "../lib/content";
 const { locale } = Astro.props as { locale: Locale };
 const de = locale === "de";
@@ -88,6 +89,7 @@ const offerings = de ? [
       <div class="b-extra-actions"><a class="b-extra-link" href="#anfrage">{de ? "Anforderungen und Unterlagen zur Vorprüfung beschreiben" : "Opišite zahteve i dostupnu dokumentaciju"} →</a><small class="b-extra-limits">{de ? "Wir bereiten eine erste Anforderungs- und Lieferantenabstimmung vor; keine Garantie für Vermittlung, Vertragspartner oder Geschäftserfolg. Kontaktaufnahme zu Dritten nur nach Freigabe." : "Pomažemo da pripremite specifikaciju i poslovni upit; ne garantujemo pronalazak partnera, ugovor ili posao. Kontaktiranje trećih lica isključivo uz odobrenje."}</small></div>
     </div>
   </section>
+  <TenderQuickAudit locale={locale} />
   <section class="b-section b-extra" data-tender-demo-entry aria-labelledby="tender-demo-title">
     <div class="wrap">
       <h2 id="tender-demo-title">{de?"Öffentliche Aufträge in Deutschland: Vorbereitung verstehen":"Javne nabavke u Nemačkoj: razumite pripremu ponude"}</h2>

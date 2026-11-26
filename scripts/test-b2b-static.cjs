@@ -84,6 +84,8 @@ const expectedRedirects = [
   "/sr/pregled-auta /auto/inspection/ 301",
   "/sr/dovoz-auta /auto/delivery/ 301",
   "/de/wissen/deutschland-selbstimport /auto/selbstimport/ 301",
+  "/de/wissen/uvoz-zoll-eur1-i-dovoz /auto/selbstimport/ 301",
+  "/de/autoimport /de/wissen/auto-deutschland-serbien/ 301",
   "/sr/vodic/uvoz-zoll-eur1-i-dovoz /auto/uvoz-vodic/ 301",
   "/wiki/javne-nabavke-nemacka-balkan-vodic /sr/wissen/javne-nabavke-nemacka-balkan-vodic/ 301",
   "/wiki/javne-nabavke-nemacka-balkan-vodic/ /sr/wissen/javne-nabavke-nemacka-balkan-vodic/ 301"

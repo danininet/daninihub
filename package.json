@@ -32,7 +32,7 @@
     "test:b2b": "node --import tsx --test tests/b2b/*.test.mjs && node --test tests/academy/*.test.mjs",
     "dev:b2b": "astro dev --host 0.0.0.0",
     "build:platform": "npm run build:auto-release && npm run build:b2b && node scripts/merge-platform-assets.cjs",
-    "test:hostinger-preview": "node --test tests/hostinger-preview.test.cjs tests/hostinger-staging-health.test.cjs tests/hostinger-layout.test.cjs"
+    "test:hostinger-preview": "node --test tests/hostinger-preview.test.cjs tests/hostinger-staging-health.test.cjs tests/hostinger-layout.test.cjs tests/hostinger-native-gmail.test.cjs"
   },
   "keywords": [
     "vehicle-import",
@@ -45,7 +45,9 @@
   "author": "DaniniHub",
   "license": "ISC",
   "type": "commonjs",
-  "engines": { "node": "22.x" },
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
     "@google/generative-ai": "^0.24.1",

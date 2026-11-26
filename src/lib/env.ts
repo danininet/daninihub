@@ -1,4 +1,11 @@
 export interface Env {
+  GMAIL_INTAKE_ENABLED?: string;
+  GMAIL_INTAKE_ACCOUNT?: string;
+  GMAIL_INTAKE_LABEL_ID?: string;
+  GMAIL_INTAKE_LABEL_NAME?: string;
+  GMAIL_CLIENT_ID?: string;
+  GMAIL_CLIENT_SECRET?: string;
+  GMAIL_REFRESH_TOKEN?: string;
   HOSTINGER_FRONTEND_MODE?: string;
   ACADEMY_AUTH_ENABLED?: string;
   ACADEMY_INVITE_ONLY?: string;

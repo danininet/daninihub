@@ -15,6 +15,7 @@ import {
   reviseDraft,
 } from "./api/intake";
 import { cleanup } from "./security/retention";
+import { gmailQueue, gmailPoll } from "./api/gmail-intake";
 export { IntakeWorkflow } from "./workflows/intake";
 export default {
   async fetch(request: Request, env: Env) {
@@ -47,6 +48,8 @@ export default {
           : json({ error: "method_not_allowed" }, 405);
       if ((p === "/portal" || p === "/portal/") && request.method === "GET")
         return await ownerPortal(request, env);
+      if (p === "/portal/gmail-intake") return request.method === "GET" ? await gmailQueue(request,env) : json({error:"method_not_allowed"},405);
+      if (p === "/portal/gmail-intake/poll") return request.method === "POST" ? await gmailPoll(request,env) : json({error:"method_not_allowed"},405);
       if (p === "/portal/cases" && request.method === "GET")
         return await directorCases(request, env);
       const revisionMatch = p.match(/^\/portal\/revise\/([a-f0-9-]{36})$/);

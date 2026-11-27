@@ -13,9 +13,7 @@ function configured(env: Env) {
     !!env.GMAIL_INTAKE_ACCOUNT && /^Label_\d+$/.test(env.GMAIL_INTAKE_LABEL_ID || "") &&
     LABELS.includes(env.GMAIL_INTAKE_LABEL_NAME || "");
 }
-async function providerJson(url: string, init: RequestInit) {
-  const res = await fetch(url, { ...init, redirect: "error", signal: AbortSignal.timeout(10000) });
-  if (!res.ok) throw new HttpError(502, "gmail_provider_unavailable");
+async function readProviderJson(res: Response) {
   const reader = res.body?.getReader();
   if (!reader) throw new HttpError(502, "gmail_invalid_response");
   const decoder = new TextDecoder("utf-8", {fatal:true});
@@ -32,24 +30,41 @@ async function providerJson(url: string, init: RequestInit) {
     return JSON.parse(text);
   } finally { await reader.cancel().catch(()=>{}); }
 }
-export async function verifyGmailSession(env: Env) {
+type GmailFailure = { step: "token" | "profile" | "label"; status: number; code?: string };
+const oauthErrorCodes = new Set(["invalid_client", "invalid_grant", "invalid_request", "invalid_scope", "unauthorized_client", "deleted_client"]);
+
+export async function verifyGmailSession(env: Env, onFailure?: (failure: GmailFailure) => void) {
+  async function providerJson(url: string, init: RequestInit, step?: GmailFailure["step"]) {
+    const res = await fetch(url, { ...init, redirect: "error", signal: AbortSignal.timeout(10000) });
+    if (!res.ok) {
+      if (onFailure && step) {
+        const error = step === "token" ? await readProviderJson(res).catch(() => null) : null;
+        const code = oauthErrorCodes.has(error?.error) ? error.error : undefined;
+        onFailure({ step, status: res.status, code });
+      }
+      throw new HttpError(502, "gmail_provider_unavailable");
+    }
+    return readProviderJson(res);
+  }
+
   const token = await providerJson("https://oauth2.googleapis.com/token", {
     method:"POST", headers:{"content-type":"application/x-www-form-urlencoded"},
     body:new URLSearchParams({client_id:env.GMAIL_CLIENT_ID!,client_secret:env.GMAIL_CLIENT_SECRET!,
       refresh_token:env.GMAIL_REFRESH_TOKEN!,grant_type:"refresh_token"}),
-  });
+  }, "token");
   // Reject a token with extra granted permissions or no evidence of the intended scope.
   const scopes = String(token.scope || "").split(/\s+/).filter(Boolean);
   if (typeof token.access_token !== "string" || scopes.length !== 1 ||
       scopes[0] !== "https://www.googleapis.com/auth/gmail.readonly")
     throw new HttpError(503,"gmail_readonly_scope_required");
-  const get = (path: string) => providerJson("https://gmail.googleapis.com/gmail/v1/users/me/" + path,
-    {method:"GET",headers:{authorization:"Bearer "+token.access_token}});
-  const profile = await get("profile?fields=emailAddress");
+  const get = (path: string, step?: "profile" | "label") => providerJson(
+    "https://gmail.googleapis.com/gmail/v1/users/me/" + path,
+    {method:"GET",headers:{authorization:"Bearer "+token.access_token}}, step);
+  const profile = await get("profile?fields=emailAddress", "profile");
   if (typeof profile.emailAddress !== "string" ||
       profile.emailAddress.toLowerCase() !== env.GMAIL_INTAKE_ACCOUNT!.toLowerCase())
     throw new HttpError(503,"gmail_account_mismatch");
-  const label = await get("labels/"+encodeURIComponent(env.GMAIL_INTAKE_LABEL_ID!));
+  const label = await get("labels/"+encodeURIComponent(env.GMAIL_INTAKE_LABEL_ID!), "label");
   if (label.type !== "user" || label.name !== env.GMAIL_INTAKE_LABEL_NAME ||
       label.id !== env.GMAIL_INTAKE_LABEL_ID)
     throw new HttpError(503,"gmail_label_mismatch");

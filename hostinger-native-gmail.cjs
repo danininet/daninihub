@@ -81,7 +81,7 @@ async function checkNativeGmailStaging(env = process.env) {
      !env.GMAIL_INTAKE_ACCOUNT || !/^Label_\d+$/.test(env.GMAIL_INTAKE_LABEL_ID || '')) return result;
  try {
   const {verifyGmailSession} = require('./hostinger-gmail-core.cjs');
-  await verifyGmailSession(env);
+  await verifyGmailSession(env, failure => { result.provider = failure; });
   result.gmail='verified';
  } catch (error) {
   const errors = ['gmail_provider_unavailable','gmail_readonly_scope_required','gmail_account_mismatch','gmail_label_mismatch'];

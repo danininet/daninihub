@@ -58,4 +58,35 @@ function createNativeGmail({env=process.env,storeFactory=createImportOSStore,loa
   }
  };
 }
-module.exports={adapter,createNativeGmail};
+async function checkNativeGmailStaging(env = process.env) {
+ const result = {event:'gmail_staging_check', database:'not_configured', gmail:'not_configured'};
+ if (env.GMAIL_INTAKE_LABEL_NAME !== 'DANINI/Test') {
+  result.gmail='test_label_required';
+  return result;
+ }
+ const {connectionOptions} = createImportOSStore({env});
+ if (connectionOptions) {
+  let connection;
+  try {
+   connection = await require('mysql2/promise').createConnection({...connectionOptions,connectTimeout:5000});
+   await connection.query({sql:'SELECT 1',timeout:5000});
+   result.database='reachable';
+  } catch {
+   result.database='unavailable';
+  } finally {
+   if (connection) connection.destroy();
+  }
+ }
+ if (!env.GMAIL_CLIENT_ID || !env.GMAIL_CLIENT_SECRET || !env.GMAIL_REFRESH_TOKEN ||
+     !env.GMAIL_INTAKE_ACCOUNT || !/^Label_\d+$/.test(env.GMAIL_INTAKE_LABEL_ID || '')) return result;
+ try {
+  const {verifyGmailSession} = require('./hostinger-gmail-core.cjs');
+  await verifyGmailSession(env);
+  result.gmail='verified';
+ } catch (error) {
+  const errors = ['gmail_provider_unavailable','gmail_readonly_scope_required','gmail_account_mismatch','gmail_label_mismatch'];
+  result.gmail=errors.includes(error.message) ? error.message : 'unavailable';
+ }
+ return result;
+}
+module.exports={adapter,createNativeGmail,checkNativeGmailStaging};

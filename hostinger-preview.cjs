@@ -61,4 +61,11 @@ if (assets) app.use(express.static(dist,{index:'index.html',extensions:['html'],
 app.use((_req,res)=>res.sendStatus(404));
 const port=Number(process.env.PORT||4242);
 if(!Number.isInteger(port)||port<1||port>65535)throw new Error('Invalid PORT');
-app.listen(port,'0.0.0.0');
+app.listen(port,'0.0.0.0',()=>{
+  if (functionalFrontend && process.env.DANINI_GMAIL_STAGING_CHECK === 'true') {
+    const {checkNativeGmailStaging} = require('./hostinger-native-gmail.cjs');
+    void checkNativeGmailStaging().then(result=>console.log(JSON.stringify(result)),()=>{
+      console.log(JSON.stringify({event:'gmail_staging_check', gmail:'unavailable'}));
+    });
+  }
+});

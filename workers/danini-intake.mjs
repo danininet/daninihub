@@ -49,7 +49,7 @@ function validatePayload(body){
  }
  return {kind,name,email,topic,message,company,details,language};
 }
-async function verifyCaptcha(request,env,token){
+async function verifyCaptcha(request,env,token,expected){
  if(typeof token!=='string'||token.length<10||token.length>2048)return false;
  const form=new FormData();
  form.set('secret',env.DANINI_TURNSTILE_SECRET);
@@ -60,7 +60,9 @@ async function verifyCaptcha(request,env,token){
   const result=await fetch(TURNSTILE_URL,{method:'POST',body:form,signal:AbortSignal.timeout(8000)});
   if(!result.ok)return false;
   const data=await result.json();
-  return data.success===true && ['daninihub.com','www.daninihub.com'].includes(String(data.hostname||''));
+  if (data.success!==true) return false;
+  if (expected) return data.hostname===expected.hostname && data.action==='business-contact';
+  return ['daninihub.com','www.daninihub.com'].includes(String(data.hostname||''));
  }catch{return false;}
 }
 async function brevoSend(env,message){
@@ -213,11 +215,12 @@ export async function handleAiIntake(request,env={}){
  return response({accepted:true,reference,receiptAccepted},202);
 }
 
-export async function handleApi(request,env={}){
+export async function handleApi(request,env={},businessTest){
  const url=new URL(request.url);
  if(url.pathname==='/api/lead/status' && request.method==='GET'){
-  return response({enabled:isReady(env),channel:isReady(env)?'brevo':'setup_required',
-   turnstileSiteKey:env.DANINI_TURNSTILE_SECRET && env.DANINI_TURNSTILE_SITEKEY ? env.DANINI_TURNSTILE_SITEKEY : null});
+  const enabled=isReady(env);
+  return response({enabled,channel:enabled?'brevo':'setup_required',
+   turnstileSiteKey:(!businessTest || enabled) && env.DANINI_TURNSTILE_SECRET && env.DANINI_TURNSTILE_SITEKEY ? env.DANINI_TURNSTILE_SITEKEY : null});
  }
  if(url.pathname==='/api/vehicle-analysis')return handleVehicleAnalysis(request,env);
  if(url.pathname==='/api/ai-intake')return handleAiIntake(request,env);
@@ -225,8 +228,8 @@ export async function handleApi(request,env={}){
  if(request.method!=='POST')return response({error:'method_not_allowed'},405);
  if(!isReady(env))return response({error:'not_configured'},503);
  const origin=request.headers.get('origin');
- if(!origin || !['https://daninihub.com','https://www.daninihub.com'].includes(origin))
-  return response({error:'invalid_origin'},403);
+ const allowedOrigins=businessTest?[businessTest.origin]:['https://daninihub.com','https://www.daninihub.com'];
+ if(!origin || !allowedOrigins.includes(origin))return response({error:'invalid_origin'},403);
  const type=request.headers.get('content-type')||'';
  if(!/^application\/json(?:\s*;|$)/i.test(type))return response({error:'invalid_type'},415);
  const size=Number(request.headers.get('content-length')||'0');
@@ -236,7 +239,9 @@ export async function handleApi(request,env={}){
  catch{return response({error:'invalid_json'},400);}
  const data=validatePayload(body);
  if(!data)return response({error:'invalid_fields'},400);
- if(!await verifyCaptcha(request,env,body.turnstileToken))return response({error:'human_verification_failed'},400);
+ if(businessTest && (data.kind!=='business' || data.email!==businessTest.recipient))
+  return response({error:'test_recipient_only'},400);
+ if(!await verifyCaptcha(request,env,body.turnstileToken,businessTest))return response({error:'human_verification_failed'},400);
  const ref='DN-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+crypto.randomUUID().slice(0,8).toUpperCase();
  const alert={
   sender:sender(env),to:[{email:env.DANINI_NOTIFY_TO}],

@@ -29,6 +29,10 @@ console.log(JSON.stringify({event:'hostinger_start',mode,node:process.versions.n
 app.use((req,res,next)=>{
   res.set({'X-DANINI-Runtime':runtime,'X-Robots-Tag':robots,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Permissions-Policy':'camera=(), microphone=(), geolocation=()','Referrer-Policy':functionalFrontend ? 'strict-origin-when-cross-origin' : 'no-referrer'});
   if (!functionalFrontend) res.set('Content-Security-Policy',"form-action 'none'; connect-src 'self'; frame-ancestors 'none'");
+  next();
+});
+if (functionalFrontend) require('./hostinger-business.cjs').mountHostingerBusiness(app, express);
+app.use((req,res,next)=>{
   if (!['GET','HEAD'].includes(req.method)) return res.status(405).json({error:'frontend_read_only'});
   let decoded;
   try { decoded = decodeURIComponent(req.path); } catch { return res.sendStatus(400); }

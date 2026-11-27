@@ -100,3 +100,65 @@ test("operator email acceptance does not falsely guarantee customer receipt",asy
     assert.equal(mails,2);
   }finally{globalThis.fetch=original;}
 });
+
+test("Hostinger serves Business through the existing form contract and restricts both test mails", async () => {
+  const express = (await import("express")).default;
+  const { mountHostingerBusiness } = await import("../../hostinger-business.cjs");
+  const host = "gleaming-orangered-crow-58.hostingersite.com";
+  const app = express();
+  mountHostingerBusiness(app, express, {
+    ...env, HOSTINGER_BUSINESS_TEST_ENABLED: "true", MAIL_TEST_RECIPIENT: "qa@example.invalid"
+  });
+  const server = await new Promise(resolve => {
+    const listener = app.listen(0, "127.0.0.1", () => resolve(listener));
+  });
+  const http = await import("node:http");
+  const call = (path, { method = "GET", headers = {}, body } = {}) => new Promise((resolve, reject) => {
+    const request = http.request({ hostname: "127.0.0.1", port: server.address().port, path, method, headers }, response => {
+      const chunks = [];
+      response.on("data", chunk => chunks.push(chunk));
+      response.on("end", () => resolve(new Response(Buffer.concat(chunks), { status: response.statusCode })));
+      response.on("error", reject);
+    });
+    request.on("error", reject);
+    request.end(body);
+  });
+  const original = globalThis.fetch;
+  const mails = [];
+  let captchaAction = "unrelated";
+  let captchaCalls = 0;
+  globalThis.fetch = async (url, options) => {
+    if (String(url).includes("/siteverify")) {
+      captchaCalls++;
+      return Response.json({ success: true, hostname: host, action: captchaAction });
+    }
+    assert.match(String(url), /^https:\/\/api\.brevo\.com\//);
+    mails.push(JSON.parse(options.body));
+    return Response.json({ messageId: "<internal@test.invalid>" }, { status: 201 });
+  };
+  const post = data => call("/api/lead", {
+    method: "POST",
+    headers: { host, origin: "https://" + host, "content-type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  try {
+    assert.equal((await call("/api/lead/status")).status, 404);
+    const config = await call("/api/tenant-config", { headers: { host } });
+    assert.equal((await config.json()).enabled, false);
+    const status = await call("/api/lead/status", { headers: { host } });
+    assert.equal((await status.json()).enabled, true);
+    assert.equal((await post({ ...payload(), email: "wrong@example.invalid" })).status, 400);
+    assert.equal(captchaCalls, 0);
+    assert.equal((await post(payload())).status, 400);
+    assert.equal(mails.length, 0);
+    captchaAction = "business-contact";
+    const accepted = await post(payload("sr"));
+    assert.equal(accepted.status, 202);
+    assert.equal((await accepted.json()).receiptAccepted, true);
+    assert.deepEqual(mails.map(mail => mail.to[0].email), ["qa@example.invalid", "qa@example.invalid"]);
+    assert.equal(mails[1].templateId, 49);
+  } finally {
+    globalThis.fetch = original;
+    await new Promise(resolve => server.close(resolve));
+  }
+});

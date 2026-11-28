@@ -174,7 +174,20 @@ async function finalize(env,ref,paypalOrderId){
    await paypal(env,'/v2/checkout/orders/'+encodeURIComponent(paypalOrderId)+'/capture',{method:'POST',body:{},requestId:'DANINI-'+paypalOrderId});
    p=await paypal(env,'/v2/checkout/orders/'+encodeURIComponent(paypalOrderId));
   }
-  if(!verifiedCapture(p,record,env.DANINI_PAYPAL_RECEIVER_EMAIL))throw Error('PAYMENT_NOT_VERIFIED');
+  if(!verifiedCapture(p,record,env.DANINI_PAYPAL_RECEIVER_EMAIL)){
+   if(env.PAYPAL_ENV==='sandbox'&&env.HOSTINGER_DIGITAL_SANDBOX_ENABLED==='true'){
+    const u=p?.purchase_units?.[0],c=u?.payments?.captures?.[0];
+    console.warn('[DANINI sandbox capture checks]',JSON.stringify({
+     orderIdMatches:p?.id===record.paypal_order_id,orderCompleted:p?.status==='COMPLETED',
+     singleUnit:p?.purchase_units?.length===1,singleCapture:u?.payments?.captures?.length===1,
+     referenceMatches:u?.custom_id===record.reference,captureCompleted:c?.status==='COMPLETED',
+     currencyMatches:c?.amount?.currency_code==='EUR',amountMatches:c?.amount?.value===(Number(record.amount_cents)/100).toFixed(2),
+     receiverMatches:String(u?.payee?.email_address||c?.payee?.email_address||'').toLowerCase()===String(env.DANINI_PAYPAL_RECEIVER_EMAIL||'').toLowerCase(),
+     productAmountMatches:Number(record.amount_cents)===PRODUCTS[record.sku]?.cents,captureIdPresent:!!c?.id
+    }));
+   }
+   throw Error('PAYMENT_NOT_VERIFIED');
+  }
   const capture=p.purchase_units[0].payments.captures[0].id;
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET status='PAID',capture_id=?,paid_at=?,processing_at=NULL WHERE reference=? AND status='PROCESSING'").bind(capture,new Date().toISOString(),ref).run();
   record=await getOrder(env,ref);
@@ -277,7 +290,14 @@ async function browserReturn(env,url){
   const de=record.language==='de';
   const packageOrder=!!record.package_sha256;
   return new Response('<!doctype html><html lang="'+(de?'de':'sr')+'"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>DANINI</title><body style="font:18px/1.6 system-ui;max-width:680px;margin:8vh auto;padding:28px"><h1>'+(de?'Zahlung bestätigt':'Uplata potvrđena')+'</h1><p>'+(packageOrder?(de?'Ihr ZIP-Paket (3 PDF-Dateien + Excel, auf Serbisch) ist verfügbar. Link 72 Stunden gültig.':'ZIP paket (3 PDF-a + Excel) je spreman. Link važi 72 sata.'):(de?'Ihr PDF ist verfügbar. Link 72 Stunden gültig.':'PDF je spreman. Link važi 72 sata.'))+'</p><p><a href="'+link+'">'+(packageOrder?(de?'ZIP-Paket herunterladen':'Preuzmi ZIP paket'):(de?'PDF herunterladen':'Preuzmi PDF'))+'</a></p><p><a href="/digital.html">DANINI</a></p></body></html>',{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','referrer-policy':'no-referrer','x-robots-tag':'noindex,nofollow'}});
- }catch{return textPage('Plaćanje nije potvrđeno. Kontakt: info@daninihub.com / Zahlung nicht bestätigt.',409);}
+ }catch(e){
+  if(env.PAYPAL_ENV==='sandbox'&&env.HOSTINGER_DIGITAL_SANDBOX_ENABLED==='true'){
+   const code=String(e?.message||'');
+   const safe=/^(?:ORDER_MISMATCH|ORDER_BUSY|PAYMENT_NOT_VERIFIED|ORDER_NOT_PERSISTED|NOT_PAID|PAYPAL_TOKEN_FAILED|PAYPAL_TOKEN_EMPTY|PAYPAL_HTTP_[1-5][0-9]{2})$/.test(code)?code:'INTERNAL_ERROR';
+   console.warn('[DANINI sandbox return] '+safe);
+  }
+  return textPage('Plaćanje nije potvrđeno. Kontakt: info@daninihub.com / Zahlung nicht bestätigt.',409);
+ }
 }
 async function webhook(request,env){
  if(request.method!=='POST')return err('METHOD_NOT_ALLOWED',405);

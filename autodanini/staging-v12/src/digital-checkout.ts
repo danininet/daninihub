@@ -20,9 +20,9 @@ if(box&&summary&&notice){
   try{
    const statusRes=await fetch('/api/danini/digital/status',{cache:'no-store'});
    if(!statusRes.ok)throw Error('status');
-   const state=await statusRes.json() as {enabled?:boolean;mode?:string};
-   if(!state.enabled){
-    status(phrase('PDF je dostupan za informisanje, ali automatska kupovina još nije aktivirana. Bez naplate.','Der PDF-Ratgeber ist angekündigt; der automatische Kauf ist noch nicht freigeschaltet. Keine Zahlung.'));
+   const state=await statusRes.json() as {enabled?:boolean;mode?:string;delivery?:string;packageVersion?:string};
+   if(!state.enabled||state.delivery!=='private-d1-zip'||state.packageVersion!=='2.3'){
+    status(phrase('Premium paket je predstavljen, ali automatska kupovina još nije aktivirana. Bez naplate.','Das Premium-Paket ist angekündigt; der automatische Kauf ist noch nicht freigeschaltet. Keine Zahlung.'));
     return;
    }
    const leadRes=await fetch('/api/lead/status',{cache:'no-store'});
@@ -36,7 +36,7 @@ if(box&&summary&&notice){
    widget=api()!.render(slot,{sitekey:lead.turnstileSiteKey,language:de()?'de':'sr',theme:'auto'});
    box.hidden=false;
    if(button)button.disabled=false;
-   status(phrase('Bezbedna kupovina PDF vodiča spremna — 49 €.', 'Sicherer PDF-Kauf bereit — 49 €.'));
+   status(phrase('Bezbedna kupovina Premium paketa spremna — 49 €.', 'Sicherer Kauf des Premium-Pakets bereit — 49 €.'));
    document.addEventListener('danini:language-changed',()=>{
     const ts=api();if(!ts?.remove||widget===undefined)return;
     try{ts.remove(widget);widget=ts.render(slot,{sitekey:lead.turnstileSiteKey!,language:de()?'de':'sr',theme:'auto'});}catch{if(button)button.disabled=true;}
@@ -57,7 +57,7 @@ if(box&&summary&&notice){
   message(phrase('Kreiramo bezbedan PayPal checkout…','Sicherer PayPal-Checkout wird erstellt…'));
   try{
    const r=await fetch('/api/danini/digital/checkout',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',cache:'no-store',body:JSON.stringify({
-    sku:'guide',email,language:de()?'de':'sr',
+    sku:'guide',expectedDelivery:'private-d1-zip',email,language:de()?'de':'sr',
     termsAccepted:fields.get('termsAccepted')==='on',
     instantDeliveryConsent:fields.get('instantDeliveryConsent')==='on',turnstileToken:captcha
    })});

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
+import {request as httpRequest} from 'node:http';
 import {handleRequest} from '../../src/request-handler.ts';
 import d1 from '../../hostinger-b2b-d1.cjs';
 import services from '../../hostinger-b2b-services.cjs';
@@ -109,7 +110,15 @@ test('Express dispatch preserves staging and protected routes; invalid credentia
  t.after(()=>new Promise(resolve=>server.close(resolve)));
  if(!server.listening)await new Promise(resolve=>server.once('listening',resolve));
  const base='http://127.0.0.1:'+server.address().port;
- const get=(path,init={},host='daninihub.com')=>fetch(base+path,{...init,headers:{Host:host,...init.headers}});
+ // Fetch implementations may rewrite Host; use the HTTP transport directly.
+ const get=(path,init={},host='daninihub.com')=>new Promise((resolve,reject)=>{
+  const req=httpRequest(base+path,{method:init.method||'GET',headers:{Host:host,...init.headers,...(init.body?{'Content-Length':Buffer.byteLength(init.body)}:{})}},res=>{
+   const chunks=[];res.on('data',chunk=>chunks.push(chunk));res.on('error',reject);
+   res.on('end',()=>resolve(new Response(Buffer.concat(chunks),{status:res.statusCode,headers:res.headers})));
+  });
+  req.on('error',reject);req.setTimeout(5000,()=>req.destroy(new Error('test timeout')));
+  req.end(init.body);
+ });
  assert.equal((await get('/api/tenant-config',{},'gleaming-orangered-crow-58.hostingersite.com')).status,404);
  assert.equal(invoked,0);
  const cfg=await get('/api/tenant-config');

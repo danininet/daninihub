@@ -71,7 +71,7 @@ function checked(raw){
  return {answer,nextStep,requiresHuman:p.requiresHuman===true,unverified:true};
 }
 export async function siteAssistantRoute(request,env={}){
- const path=new URL(request.url).pathname;
+ const path=new URL(request.url).pathname.replace(/^\/api\/academy\/assistant\//,'/api/assistant/');
  if(path==='/api/assistant/status'){
   if(request.method!=='GET')return json({error:'method_not_allowed'},405);
   return json({enabled:isOn(env),siteKey:isOn(env)?env.DANINI_TURNSTILE_SITEKEY:null,limit:'Shared Academy AI daily quota; local guides remain available without AI.'});
@@ -108,7 +108,7 @@ export async function siteAssistantRoute(request,env={}){
   if(linked.error)return json({error:linked.error},linked.status);
  }
  if(!await verifyHuman(request,env,data.turnstileToken,'danini-assistant'))return json({error:'human_verification_failed'},403);
- const ip=request.headers.get('cf-connecting-ip');const budget=await quota(env,ip);
+ const ip=request.headers.get('cf-connecting-ip')||env.HOSTINGER_SHARED_RATE_KEY;const budget=await quota(env,ip);
  if(budget==='limited')return json({error:'assistant_daily_limit'},429);
  if(budget!=='ok')return json({error:'assistant_quota_unavailable'},503);
  const lang=data.language;let ai;

@@ -105,7 +105,7 @@ export async function academyAiRoute(request,env={}){
  catch{return json({error:'invalid_json'},400)}
  const data=validate(payload);if(!data)return json({error:'invalid_fields'},400);
  if(!await verifyHuman(request,env,data.token))return json({error:'human_verification_failed'},403);
- const budget=await quota(env,request.headers.get('cf-connecting-ip'));
+ const budget=await quota(env,request.headers.get('cf-connecting-ip')||env.HOSTINGER_SHARED_RATE_KEY);
  if(budget==='limited')return json({error:'academy_ai_daily_limit'},429);
  if(budget!=='ok')return json({error:'academy_ai_quota_unavailable'},503);
  let value;

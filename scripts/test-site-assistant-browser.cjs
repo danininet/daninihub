@@ -7,7 +7,7 @@ async function scenario(browser,locale,section,width){
  await context.addInitScript(()=>{window.turnstile={render:()=>7,getResponse:()=>'mock-site-helper-turnstile',reset:()=>{}}});
  const page=await context.newPage();
  const calls=[],errs=[];page.on('pageerror',e=>errs.push(e.message));
- await page.route('**/api/assistant/**',async route=>{
+ await page.route('**/api/academy/assistant/**',async route=>{
   const req=route.request(),url=new URL(req.url());
   if(url.pathname.endsWith('/status'))return route.fulfill({status:200,contentType:'application/json',
     body:JSON.stringify({enabled:true,siteKey:'0x000000000000TEST'})});
@@ -62,7 +62,7 @@ async function statusRecovery(browser,locale){
  const context=await browser.newContext({viewport:{width:390,height:844}});
  await context.addInitScript(()=>{window.turnstile={render:()=>7,getResponse:()=>'mock-site-helper-turnstile',reset:()=>{}}});
  const page=await context.newPage();let online=false;
- await page.route('**/api/assistant/status',route=>route.fulfill({status:200,contentType:'application/json',
+ await page.route('**/api/academy/assistant/status',route=>route.fulfill({status:200,contentType:'application/json',
   body:JSON.stringify({enabled:online,siteKey:online?'0x000000000000TEST':null})}));
  try{
   const res=await page.goto(BASE+'/'+locale+'/akademija/builder/',{waitUntil:'domcontentloaded'});

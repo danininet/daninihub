@@ -21,7 +21,7 @@ export async function handleRequest(request: Request, env: Env) {
   try {
     // Customer Builder: distinct, strictly disabled unless all Academy auth settings are present.
     // Academy AI has its own opt-in route; do not let the protected OTP workspace intercept it.
-    if (p.startsWith("/api/assistant/")) return await siteAssistantRoute(request, env);
+    if (p.startsWith("/api/assistant/") || p.startsWith("/api/academy/assistant/")) return await siteAssistantRoute(request, env);
     if (p.startsWith("/api/academy/ai/")) return await legacy.fetch(request, env);
     if (p.startsWith("/api/academy/")) return await academyRoute(request, env);
     if (p === "/api/health" && request.method === "GET")

@@ -40,6 +40,7 @@ app.use((req,res,next)=>{
   if (!functionalFrontend) res.set('Content-Security-Policy',"form-action 'none'; connect-src 'self'; frame-ancestors 'none'");
   next();
 });
+if (functionalFrontend) require('./hostinger-b2b-runtime.cjs').mountHostingerB2B(app, express);
 if (functionalFrontend) require('./hostinger-business.cjs').mountHostingerBusiness(app, express);
 if (functionalFrontend) require('./hostinger-academy.cjs').mountHostingerAcademy(app, express);
 if (functionalFrontend) require('./hostinger-native-digital.cjs').mountHostingerDigital(app, express, dist);

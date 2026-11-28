@@ -40,3 +40,11 @@ test('Sandbox merchant pin checks exact ID even if provider omits email; product
  assert.equal(verifiedCapture({...order,purchase_units:[{...unit,payee:{email_address:'merchant@example.test'}}]},record,'merchant@example.test'),true);
  assert.equal(verifiedCapture({...order,status:'APPROVED'},record,'merchant@example.test','ZGVSVL54LVWUY'),false);
 });
+
+import {digitalProductsPath} from '../../workers/danini-digital-commerce.mjs';
+test('purchase return catalog uses localized current routes and safe default',()=>{
+ assert.equal(digitalProductsPath('de'),'/de/wissen/produkte/');
+ assert.equal(digitalProductsPath('sr'),'/sr/wissen/produkte/');
+ assert.equal(digitalProductsPath(undefined),'/sr/wissen/produkte/');
+ assert.equal(digitalProductsPath('https://example.invalid'),'/sr/wissen/produkte/');
+});

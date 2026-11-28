@@ -108,7 +108,7 @@
  }
  async function loadProjectsImpl(){
   try{
-   const res=await fetch('/api/assistant/projects',{credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(8000)});
+   const res=await fetch('/api/academy/assistant/projects',{credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(8000)});
    const body=await res.json();
    if(!res.ok||!body.authenticated||!Array.isArray(body.projects)){
     project.replaceChildren(new Option(lang==='de'?'Ohne Projektdaten fragen':'Pitaj bez podataka projekta',''));
@@ -133,7 +133,7 @@
   initBusy=true;retry.hidden=true;
   status.textContent=lang==='de'?'KI-Verbindung wird geprüft …':'Proveravam AI vezu …';
   try{
-   const res=await fetch('/api/assistant/status',{cache:'no-store',signal:AbortSignal.timeout(10000)});
+   const res=await fetch('/api/academy/assistant/status',{cache:'no-store',signal:AbortSignal.timeout(10000)});
    if(!res.ok){unavailable(T.aiStatusError);return;}
    const data=await res.json();
    if(data.enabled!==true){unavailable(T.aiOff);return;}
@@ -158,7 +158,7 @@
   if(!token){status.textContent=T.token;return}
   busy=true;ask.disabled=true;status.textContent=T.aiWait;reply.textContent='';
   try{
-   const response=await fetch('/api/assistant/ask',{method:'POST',credentials:'same-origin',cache:'no-store',
+   const response=await fetch('/api/academy/assistant/ask',{method:'POST',credentials:'same-origin',cache:'no-store',
     headers:{'content-type':'application/json'},body:JSON.stringify({language:lang,context,field,question:prompt,history:conversation.slice(-4),...(project.value?{projectId:project.value}:{}),turnstileToken:token})});
    const result=await response.json().catch(()=>({}));
    if(!response.ok)throw Error(result.error||'server_error');

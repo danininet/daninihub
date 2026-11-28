@@ -29,7 +29,7 @@
     "diagnose:hostinger": "node scripts/diagnose-hostinger-config.cjs",
     "build:b2b": "astro build",
     "check:b2b": "astro check",
-    "test:b2b": "node --import tsx --test tests/b2b/*.test.mjs && node --test tests/academy/*.test.mjs",
+    "test:b2b": "node --import tsx --test tests/b2b/*.test.mjs && node --test tests/academy/*.test.mjs tests/hostinger-native-gmail.test.cjs",
     "dev:b2b": "astro dev --host 0.0.0.0",
     "build:platform": "npm run build:auto-release && npm run build:b2b && node scripts/merge-platform-assets.cjs",
     "test:hostinger-preview": "node --test tests/hostinger-preview.test.cjs tests/hostinger-staging-health.test.cjs tests/hostinger-layout.test.cjs tests/hostinger-native-gmail.test.cjs"

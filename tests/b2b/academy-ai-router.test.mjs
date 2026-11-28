@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import legacy from '../../workers/danini-intake.mjs';
-const integratedSource=readFileSync(new URL('../../src/index.ts',import.meta.url),'utf8');
+const integratedSource=readFileSync(new URL('../../src/request-handler.ts',import.meta.url),'utf8');
 
 function config(){
  return {

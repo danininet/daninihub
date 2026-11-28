@@ -38,4 +38,9 @@ function readRedirects(directory) {
   return routes;
 }
 
-module.exports = {resolveAssets, readRedirects};
+// Public indexing is separately gated from a functional preview artifact.
+// Do not use forwarded host headers or request-controlled domains.
+function publicDomainEnabled(env, functional, hostname) {
+  return functional === true && env.HOSTINGER_PUBLIC_DOMAIN_ENABLED === 'true' && hostname === 'daninihub.com';
+}
+module.exports = {resolveAssets, readRedirects, publicDomainEnabled};

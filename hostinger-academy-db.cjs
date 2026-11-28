@@ -117,9 +117,26 @@ function createAcademyDatabase(pool) {
   };
 }
 
-async function initializeAcademy(pool) {
-  for (const statement of schema) await pool.execute(statement);
-  return createAcademyDatabase(pool);
+// Production gets its own physical tables, preserving the existing staging workspace.
+function academyTableScope(pool, production = false) {
+  if (!production) return pool;
+  const map = sql => sql.replace(/\bacademy_(users|projects|project_steps|login_challenges|sessions|rate_buckets)\b/g, 'danini_public_academy_$1');
+  const scoped = connection => ({
+    execute(sql, args) { return connection.execute(map(sql), args); },
+    beginTransaction: () => connection.beginTransaction(),
+    commit: () => connection.commit(),
+    rollback: () => connection.rollback(),
+    release: () => connection.release()
+  });
+  return {
+    execute(sql, args) { return pool.execute(map(sql), args); },
+    async getConnection() { return scoped(await pool.getConnection()); }
+  };
+}
+async function initializeAcademy(pool, production = false) {
+  const scoped = academyTableScope(pool, production);
+  for (const statement of schema) await scoped.execute(statement);
+  return createAcademyDatabase(scoped);
 }
 
-module.exports = { initializeAcademy, createAcademyDatabase };
+module.exports = { initializeAcademy, createAcademyDatabase, academyTableScope };

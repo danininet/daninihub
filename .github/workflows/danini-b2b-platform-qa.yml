@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, codex/danini-b2b-platform-20261113]
   pull_request:
-    paths: ['src/**', 'tests/b2b/**', 'tests/academy/**', 'workers/danini-academy-ai.mjs', 'workers/danini-site-assistant.mjs', 'public/js/danini-site-assistant.js', 'public/js/academy-builder.js', 'scripts/test-site-assistant-browser.cjs', 'scripts/test-academy-builder-browser.cjs', 'wrangler.b2b-production.jsonc', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json']
+    paths: ['src/**', 'tests/b2b/**', 'tests/academy/**', 'workers/danini-academy-ai.mjs', 'workers/danini-site-assistant.mjs', 'public/js/danini-site-assistant.js', 'public/js/academy-builder.js', 'scripts/test-site-assistant-browser.cjs', 'scripts/test-academy-builder-browser.cjs', 'wrangler.b2b-production.jsonc', 'scripts/*b2b*', 'scripts/merge-platform-assets.cjs', 'astro.config.mjs', 'wrangler.b2b.jsonc', 'package*.json', 'hostinger-*.cjs', 'scripts/*hostinger*.cjs', 'tests/hostinger-*.test.cjs', '.github/workflows/danini-b2b-platform-qa.yml']
 permissions:
   contents: read
 jobs:
@@ -53,6 +53,22 @@ jobs:
             outputs/b2b/
             dist/
           retention-days: 7
+
+  hostinger-native-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:hostinger-release
+      - run: node scripts/test-hostinger-native-release.cjs
+      - run: node --test tests/hostinger-layout.test.cjs tests/hostinger-staging-health.test.cjs tests/hostinger-native-gmail.test.cjs
 
   builder-browser:
     runs-on: ubuntu-latest

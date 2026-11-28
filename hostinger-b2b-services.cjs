@@ -57,7 +57,8 @@ function createB2BWorkflow({readToken,writeToken,fetcher=globalThis.fetch}={}){
    },
    async sendEvent(event){
     if(event?.type!=='director-decision'||typeof event.payload?.decisionId!=='string'||!ID.test(event.payload.decisionId))throw Error('b2b_workflow_event_not_allowed');
-    await envelope(await call(fetcher,WORKFLOW+'/'+id+'/events/director-decision',writeToken,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({decisionId:event.payload.decisionId})}));
+    const result=await envelope(await call(fetcher,WORKFLOW+'/'+id+'/events/director-decision',writeToken,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({decisionId:event.payload.decisionId})}));
+    if(result.instanceId!==id)throw Error('b2b_workflow_event_unconfirmed');
    }
   };
  }

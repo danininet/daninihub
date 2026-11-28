@@ -203,7 +203,7 @@ async function authorizedSandbox(request,env){
 }
 async function checkout(request,env,sandbox=false){
  if(!await ready(env)||sandbox!==(env.PAYPAL_ENV==='sandbox'))return err('CHECKOUT_NOT_READY',503);
- if(!sandbox&&!await approvedGuideForLive(env))return err('CONTENT_NOT_APPROVED',503);
+ if(!sandbox&&(!premiumRequested(env)||!await approvedGuideForLive(env)))return err('CONTENT_NOT_APPROVED',503);
  if(sandbox){
   if(!await authorizedSandbox(request,env))return err('NOT_FOUND',404);
  }else if(!['https://daninihub.com','https://www.daninihub.com'].includes(request.headers.get('Origin'))){
@@ -216,6 +216,7 @@ async function checkout(request,env,sandbox=false){
  const email=typeof address==='string'?address.trim().toLowerCase():'';
  if(!d||typeof d!=='object'||Array.isArray(d))return err('INVALID_ORDER');
  if(d.sku!=='guide'||!emailRe.test(email)||email.length>191||d.termsAccepted!==true||d.instantDeliveryConsent!==true)return err('INVALID_ORDER');
+ if((!sandbox||d.expectedDelivery==='private-d1-zip')&&(!premiumRequested(env)||d.expectedDelivery!=='private-d1-zip'))return err('PRODUCT_VERSION_MISMATCH',409);
  if(!sandbox&&!await verifyHuman(d.turnstileToken,env,request))return err('HUMAN_VERIFICATION_FAILED',403);
  const packageSha=premiumRequested(env)?PREMIUM_SHA:null;
  if(packageSha&&!await retrievePremium(env,packageSha))return err('PACKAGE_NOT_READY',503);
@@ -303,8 +304,8 @@ async function webhook(request,env){
 export async function digitalRoute(request,env){
  const url=new URL(request.url),path=url.pathname;
  if(path==='/api/danini/digital/status'){
-  const on=env.PAYPAL_ENV==='live'&&await ready(env)&&await approvedGuideForLive(env);
-  return json({ok:true,enabled:on,mode:configured(env)?env.PAYPAL_ENV:'disabled',guidePriceEur:49,softwareEnabled:false,delivery:premiumSelected(env)?'private-d1-zip':'private-d1-pdf'});
+  const on=env.PAYPAL_ENV==='live'&&premiumRequested(env)&&await ready(env)&&await approvedGuideForLive(env);
+  return json({ok:true,enabled:on,mode:configured(env)?env.PAYPAL_ENV:'disabled',guidePriceEur:49,softwareEnabled:false,packageVersion:premiumRequested(env)?'2.3':null,sandboxReady:env.PAYPAL_ENV==='sandbox'&&await ready(env),delivery:premiumSelected(env)?'private-d1-zip':'private-d1-pdf'});
  }
  if(path==='/api/danini/digital/checkout'&&request.method==='POST')return checkout(request,env);
  if(path==='/api/danini/digital/paypal/sandbox/checkout'&&request.method==='POST')return checkout(request,env,true);

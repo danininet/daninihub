@@ -3,6 +3,7 @@ import { classifyIntake } from "../ai/intake-classification";
 import { analyze } from "../ai/analyze";
 import { HttpError, json, readJson } from "../security/http";
 import { authorizeDirector } from "../security/director";
+export { authorizeOwner } from "../security/access";
 
 const LABELS = ["DANINI/Test", "DANINI/Status/Novo"];
 const RETENTION = 30 * 86400;

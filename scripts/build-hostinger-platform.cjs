@@ -14,6 +14,8 @@ if(preview){
 }
 // Compile the shared TypeScript Gmail module for the native Node runtime.
 require('esbuild').buildSync({entryPoints:['src/api/gmail-intake.ts'],outfile:'hostinger-gmail-core.cjs',platform:'node',target:'node22',format:'cjs',bundle:true});
+// Compile the existing shared request handler for native B2B routes.
+require('esbuild').buildSync({entryPoints:['src/request-handler.ts'],outfile:'hostinger-b2b-core.cjs',platform:'node',target:'node22',format:'cjs',bundle:true});
 let revision='unknown';
 try{revision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();}catch{}
 fs.mkdirSync('dist/_danini',{recursive:true});

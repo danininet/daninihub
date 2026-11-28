@@ -64,7 +64,7 @@ function runtimeEnv(env){
  if(env.HOSTINGER_DIGITAL_SANDBOX_ENABLED!=='true'||env.PAYPAL_ENV!=='sandbox'||
  env.DANINI_DIGITAL_CHECKOUT_ENABLED!=='true'||env.DANINI_PREMIUM_ZIP_SHA256!==SHA||
  !email||email!==env.MAIL_TEST_RECIPIENT?.trim().toLowerCase()||!env.DANINI_PACKAGE_D1_READ_TOKEN)return null;
- return {...env,SITE_ORIGIN:ORIGIN,PAYPAL_ENV:'sandbox',DANINI_DIGITAL_LIVE_APPROVED:'false',DANINI_DIGITAL_CONTENT_APPROVED:'false',DANINI_PAYPAL_SANDBOX_EMAIL:email};
+ return {...env,HOSTINGER_SANDBOX_MERCHANT_ID:'ZGVSVL54LVWUY',SITE_ORIGIN:ORIGIN,PAYPAL_ENV:'sandbox',DANINI_DIGITAL_LIVE_APPROVED:'false',DANINI_DIGITAL_CONTENT_APPROVED:'false',DANINI_PAYPAL_SANDBOX_EMAIL:email};
 }
 const PREFIX='/api/danini/digital/';
 const routes=new Map([['status','GET'],['paypal/sandbox/checkout','POST'],['paypal/return','GET'],['paypal/webhook','POST']]);

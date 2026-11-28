@@ -106,7 +106,7 @@ async function paypal(env,path,{method='GET',body,requestId}={}){
  if(!r.ok)throw Error('PAYPAL_HTTP_'+r.status);
  return data;
 }
-export function verifiedCapture(paypalOrder,dbOrder,receiver){
+export function verifiedCapture(paypalOrder,dbOrder,receiver,merchantId){
  if(!paypalOrder||paypalOrder.id!==dbOrder.paypal_order_id||paypalOrder.status!=='COMPLETED')return false;
  if(!Array.isArray(paypalOrder.purchase_units)||paypalOrder.purchase_units.length!==1)return false;
  const u=paypalOrder.purchase_units[0],captures=u.payments?.captures;
@@ -114,7 +114,7 @@ export function verifiedCapture(paypalOrder,dbOrder,receiver){
  const c=captures[0];
  return u.custom_id===dbOrder.reference&&c.status==='COMPLETED'&&
   c.amount?.currency_code==='EUR'&&c.amount?.value===(Number(dbOrder.amount_cents)/100).toFixed(2)&&
-  String(u.payee?.email_address||c.payee?.email_address||'').toLowerCase()===String(receiver||'').toLowerCase()&&
+  (merchantId ? u.payee?.merchant_id===merchantId : String(u.payee?.email_address||c.payee?.email_address||'').toLowerCase()===String(receiver||'').toLowerCase())&&
   Number(dbOrder.amount_cents)===PRODUCTS[dbOrder.sku]?.cents&&!!c.id;
 }
 async function signingKey(env){
@@ -174,7 +174,8 @@ async function finalize(env,ref,paypalOrderId){
    await paypal(env,'/v2/checkout/orders/'+encodeURIComponent(paypalOrderId)+'/capture',{method:'POST',body:{},requestId:'DANINI-'+paypalOrderId});
    p=await paypal(env,'/v2/checkout/orders/'+encodeURIComponent(paypalOrderId));
   }
-  if(!verifiedCapture(p,record,env.DANINI_PAYPAL_RECEIVER_EMAIL)){
+  const sandboxMerchant=env.PAYPAL_ENV==='sandbox'&&env.HOSTINGER_DIGITAL_SANDBOX_ENABLED==='true' ? env.HOSTINGER_SANDBOX_MERCHANT_ID : undefined;
+  if(!verifiedCapture(p,record,env.DANINI_PAYPAL_RECEIVER_EMAIL,sandboxMerchant)){
    if(env.PAYPAL_ENV==='sandbox'&&env.HOSTINGER_DIGITAL_SANDBOX_ENABLED==='true'){
     const u=p?.purchase_units?.[0],c=u?.payments?.captures?.[0];
     console.warn('[DANINI sandbox capture checks]',JSON.stringify({
@@ -182,6 +183,7 @@ async function finalize(env,ref,paypalOrderId){
      singleUnit:p?.purchase_units?.length===1,singleCapture:u?.payments?.captures?.length===1,
      referenceMatches:u?.custom_id===record.reference,captureCompleted:c?.status==='COMPLETED',
      currencyMatches:c?.amount?.currency_code==='EUR',amountMatches:c?.amount?.value===(Number(record.amount_cents)/100).toFixed(2),
+     merchantIdMatches:sandboxMerchant?u?.payee?.merchant_id===sandboxMerchant:null,
      receiverMatches:String(u?.payee?.email_address||c?.payee?.email_address||'').toLowerCase()===String(env.DANINI_PAYPAL_RECEIVER_EMAIL||'').toLowerCase(),
      productAmountMatches:Number(record.amount_cents)===PRODUCTS[record.sku]?.cents,captureIdPresent:!!c?.id
     }));

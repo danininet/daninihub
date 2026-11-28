@@ -27,3 +27,16 @@ test('private D1 API only permits pinned read queries; SQL writes isolated in My
  assert.equal((await db.prepare(sql).bind('ref').run()).meta.changes,1);
  assert.ok(calls.every(c=>c.sql.includes(TABLE)));assert.match(calls[1].sql,/DATE_SUB\(UTC_TIMESTAMP\(\), INTERVAL 2 MINUTE\)/);
 });
+
+import {verifiedCapture} from '../../workers/danini-digital-commerce.mjs';
+test('Sandbox merchant pin checks exact ID even if provider omits email; production email verification unchanged',()=>{
+ const record={reference:'DGD-'+'A'.repeat(32),paypal_order_id:'TESTORDER123',sku:'guide',amount_cents:4900};
+ const unit={custom_id:record.reference,payee:{merchant_id:'ZGVSVL54LVWUY'},payments:{captures:[{id:'CAPTURE123',status:'COMPLETED',amount:{currency_code:'EUR',value:'49.00'}}]}};
+ const order={id:record.paypal_order_id,status:'COMPLETED',purchase_units:[unit]};
+ assert.equal(verifiedCapture(order,record,'merchant@example.test','ZGVSVL54LVWUY'),true);
+ assert.equal(verifiedCapture(order,record,'merchant@example.test','WRONGMERCHANT'),false);
+ assert.equal(verifiedCapture(order,record,'merchant@example.test'),false);
+ assert.equal(verifiedCapture({...order,purchase_units:[{...unit,payee:{email_address:'merchant@example.test'}}]},record,'merchant@example.test','ZGVSVL54LVWUY'),false);
+ assert.equal(verifiedCapture({...order,purchase_units:[{...unit,payee:{email_address:'merchant@example.test'}}]},record,'merchant@example.test'),true);
+ assert.equal(verifiedCapture({...order,status:'APPROVED'},record,'merchant@example.test','ZGVSVL54LVWUY'),false);
+});

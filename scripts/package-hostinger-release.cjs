@@ -9,7 +9,10 @@ fs.rmSync(output, {recursive: true, force: true});
 fs.cpSync('dist', output, {
   recursive: true,
   filter(source) {
-    return !excluded.has(path.relative('dist', source));
+    const relative=path.relative('dist',source).split(path.sep).join('/');
+    if(relative==='operator'||relative==='operator/sandbox-checkout'||relative==='operator/sandbox-checkout/index.html')return true;
+    if(relative.startsWith('operator/'))return false;
+    return !excluded.has(relative);
   },
 });
 buildSync({

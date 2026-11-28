@@ -158,3 +158,28 @@ test('P0: unreviewed 2026 guide may not be offered via live checkout despite liv
  const digest=createHash('sha256').update(db.bytes).digest('hex');
  assert.equal(await approvedGuideForLive({...env,DANINI_DIGITAL_CONTENT_APPROVED:'true',DANINI_DIGITAL_APPROVED_PDF_SHA256:digest}),true);
 });
+
+test('premium order downloads its pinned ZIP, not the current PDF; invalid token and corrupt data fail closed',async()=>{
+ const bytes=new Uint8Array(120000).fill(65);bytes.set([80,75,3,4],0);
+ const sha=createHash('sha256').update(bytes).digest('hex');
+ const order={...fakePaid,package_sha256:sha};
+ const meta={sha256:sha,byte_length:bytes.length,chunk_count:Math.ceil(bytes.length/32768),ready:1};
+ const legacy=mockDb({withFile:true,paidOrder:order});
+ let corrupt=false;
+ const db={prepare(sql){
+  if(!sql.includes('danini_digital_package'))return legacy.prepare(sql);
+  let args;
+  return {bind(...a){args=a;return this;},async first(){return args[0]===sha?meta:null;},async all(){
+   return {results:Array.from({length:meta.chunk_count-args[1]},(_,i)=>{const index=args[1]+i;const part=bytes.slice(index*32768,(index+1)*32768);if(corrupt&&index===0)part[10]=66;return {chunk_index:index,data_b64:Buffer.from(part).toString('base64')};})};
+  }};
+ }};
+ const env={...baseEnv,DANINI_DB:db};
+ const token=await downloadToken(env,order);
+ const url='https://daninihub.com/api/danini/digital/download/'+ref+'?token=';
+ let res=await digitalRoute(new Request(url+token),env);
+ assert.equal(res.status,200);assert.equal(res.headers.get('content-type'),'application/zip');
+ assert.deepEqual(new Uint8Array(await res.arrayBuffer()),bytes);
+ assert.equal((await digitalRoute(new Request(url+'bad'),env)).status,404);
+ corrupt=true;assert.equal((await digitalRoute(new Request(url+token),env)).status,503);
+ assert.equal(await ready({...env,DANINI_PREMIUM_ZIP_SHA256:'0'.repeat(64)}),false);
+});

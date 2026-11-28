@@ -6,6 +6,33 @@
 const JSON_HEADERS={'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','x-robots-tag':'noindex,nofollow'};
 const PRODUCTS=Object.freeze({guide:{cents:4900,label:'DANINI Auto-Biznis Master Vodič (PDF)'}});
 const PDF_MAX=10*1024*1024;
+const SHA_RE=/^[a-f0-9]{64}$/;
+const PREMIUM_NAME='AutoDanini_Premium_Paket_2.3.zip';
+const PREMIUM_SHA='fa6f75f0d61a48060e7f6b69583874e79d55be5b9499563b2c2a252a20190424';
+function premiumSelected(env){return typeof env.DANINI_PREMIUM_ZIP_SHA256==='string'&&env.DANINI_PREMIUM_ZIP_SHA256!=='';}
+function premiumRequested(env){return premiumSelected(env)&&env.DANINI_PREMIUM_ZIP_SHA256===PREMIUM_SHA;}
+function validPremiumMeta(meta,sha){return !!(meta&&SHA_RE.test(sha)&&meta.sha256===sha&&meta.ready===1&&Number.isInteger(meta.byte_length)&&meta.byte_length>100000&&meta.byte_length<=PDF_MAX&&Number.isInteger(meta.chunk_count)&&meta.chunk_count===Math.ceil(meta.byte_length/32768)&&meta.chunk_count<=400);}
+async function premiumMeta(env,sha){return env.DANINI_DB.prepare('SELECT sha256,byte_length,chunk_count,ready FROM danini_digital_packages WHERE sha256=? AND ready=1').bind(sha).first();}
+async function retrievePremium(env,sha){
+ try{
+  const meta=await premiumMeta(env,sha);
+  if(!validPremiumMeta(meta,sha))return null;
+  const buffer=new Uint8Array(meta.byte_length);let offset=0,loaded=0;
+  while(loaded<meta.chunk_count){
+   const result=await env.DANINI_DB.prepare('SELECT chunk_index,data_b64 FROM danini_digital_package_chunks WHERE sha256=? AND chunk_index>=? ORDER BY chunk_index LIMIT 8').bind(sha,loaded).all();
+   const rows=result.results||[];if(!rows.length||rows.length>8)return null;
+   for(const row of rows){
+    if(row.chunk_index!==loaded||loaded>=meta.chunk_count)return null;
+    const bytes=Uint8Array.from(atob(row.data_b64),c=>c.charCodeAt(0));
+    if(bytes.length!==Math.min(32768,buffer.length-offset))return null;
+    buffer.set(bytes,offset);offset+=bytes.length;loaded++;
+   }
+  }
+  if(offset!==buffer.length||buffer[0]!==80||buffer[1]!==75||buffer[2]!==3||buffer[3]!==4)return null;
+  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',buffer))).map(x=>x.toString(16).padStart(2,'0')).join('');
+  return digest===sha?buffer:null;
+ }catch{return null;}
+}
 const productionOrigin='https://daninihub.com';
 function checkoutOrigin(env){
  const candidate=env.PAYPAL_ENV==='sandbox'?(env.SITE_ORIGIN??productionOrigin):productionOrigin;
@@ -39,7 +66,12 @@ async function readyFile(env,sku){
   return !!(f&&Number(f.byte_length)>100000&&Number(f.byte_length)<=PDF_MAX&&Number(f.chunk_count)>0&&Number(f.chunk_count)<=400);
  }catch{return false;}
 }
-export async function ready(env){return configured(env)&&await readyFile(env,'guide');}
+export async function ready(env){
+ if(!configured(env))return false;
+ if(!premiumSelected(env))return readyFile(env,'guide');
+ if(!premiumRequested(env))return false;
+ try{return validPremiumMeta(await premiumMeta(env,PREMIUM_SHA),PREMIUM_SHA);}catch{return false;}
+}
 /**
  * Separate CONTENT quality approval from payment configuration. Required for
  * new LIVE orders only. Existing paid downloads and sandbox remain compatible.
@@ -47,6 +79,10 @@ export async function ready(env){return configured(env)&&await readyFile(env,'gu
  */
 export async function approvedGuideForLive(env){
  if(env.DANINI_DIGITAL_CONTENT_APPROVED!=='true')return false;
+ if(premiumSelected(env)){
+  if(!premiumRequested(env)||env.DANINI_DIGITAL_APPROVED_ZIP_SHA256!==PREMIUM_SHA)return false;
+  try{return validPremiumMeta(await premiumMeta(env,PREMIUM_SHA),PREMIUM_SHA);}catch{return false;}
+ }
  const expected=env.DANINI_DIGITAL_APPROVED_PDF_SHA256;
  if(typeof expected!=='string'||! /^[a-f0-9]{64}$/.test(expected))return false;
  // Known October 2026 legacy edition contains unverified monetary/legal claims.
@@ -115,9 +151,10 @@ async function emailReceipt(env,record){
   const link=checkoutOrigin(env)+'/api/danini/digital/download/'+encodeURIComponent(record.reference)+'?token='+encodeURIComponent(await downloadToken(env,record));
   const de=record.language==='de';
   const sandbox=env.PAYPAL_ENV==='sandbox';
+  const packageOrder=!!record.package_sha256;
   const message={sender:{name:'DANINI',email:env.DANINI_BREVO_SENDER},to:[{email:record.email}],
-   subject:(sandbox?'[SANDBOX] ':'')+(de?'DANINI – Ihr PDF nach bestätigter Zahlung':'DANINI – PDF nakon potvrđene uplate'),
-   htmlContent:'<p>'+(de?'Ihre Zahlung wurde beim Zahlungsdienst verifiziert.':'Vaša uplata je potvrđena kod pružaoca plaćanja.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF vodič')+'</a></p><p>'+(de?'Link 72 Stunden gültig.':'Link važi 72 sata.')+'</p><p>DANINI · info@daninihub.com</p>'};
+   subject:(sandbox?'[SANDBOX] ':'')+(packageOrder?(de?'AutoDanini Premium – Ihr ZIP-Paket':'AutoDanini Premium – vaš ZIP paket'):(de?'DANINI – Ihr PDF nach bestätigter Zahlung':'DANINI – PDF nakon potvrđene uplate')),
+   htmlContent:'<p>'+(de?'Ihre Zahlung wurde beim Zahlungsdienst verifiziert.':'Vaša uplata je potvrđena kod pružaoca plaćanja.')+'</p><p><a href="'+link+'">'+(packageOrder?(de?'ZIP-Paket herunterladen (3 PDF-Dateien + Excel, auf Serbisch)':'Preuzmi kompletan ZIP paket (3 PDF-a + Excel)'):(de?'PDF herunterladen':'Preuzmi PDF vodič'))+'</a></p><p>'+(de?'Link 72 Stunden gültig.':'Link važi 72 sata.')+'</p><p>DANINI · info@daninihub.com</p>'};
   const r=await fetch('https://api.brevo.com/v3/smtp/email',{method:'POST',headers:{'api-key':env.BREVO_API_KEY,'content-type':'application/json'},body:JSON.stringify(message),signal:AbortSignal.timeout(12000)});
   if(!r.ok)throw Error('MAIL_REJECTED');
   await env.DANINI_DB.prepare("UPDATE danini_digital_orders SET email_state='SENT',email_sent_at=datetime('now') WHERE reference=?").bind(record.reference).run();
@@ -180,12 +217,17 @@ async function checkout(request,env,sandbox=false){
  if(!d||typeof d!=='object'||Array.isArray(d))return err('INVALID_ORDER');
  if(d.sku!=='guide'||!emailRe.test(email)||email.length>191||d.termsAccepted!==true||d.instantDeliveryConsent!==true)return err('INVALID_ORDER');
  if(!sandbox&&!await verifyHuman(d.turnstileToken,env,request))return err('HUMAN_VERIFICATION_FAILED',403);
+ const packageSha=premiumRequested(env)?PREMIUM_SHA:null;
+ if(packageSha&&!await retrievePremium(env,packageSha))return err('PACKAGE_NOT_READY',503);
  const ref='DGD-'+crypto.randomUUID().replace(/-/g,'').toUpperCase();
  const language=d.language==='de'?'de':'sr';
  const origin=checkoutOrigin(env);
- await env.DANINI_DB.prepare("INSERT INTO danini_digital_orders(reference,sku,email,language,amount_cents,status,email_state) VALUES (?,?,?,?,?,'PENDING','PENDING')").bind(ref,'guide',email,language,4900).run();
  try{
-  const p=await paypal(env,'/v2/checkout/orders',{method:'POST',requestId:'DANINI-'+ref,body:{intent:'CAPTURE',purchase_units:[{reference_id:ref,custom_id:ref,description:PRODUCTS.guide.label,amount:{currency_code:'EUR',value:'49.00'}}],payment_source:{paypal:{experience_context:{brand_name:'DANINI',user_action:'PAY_NOW',shipping_preference:'NO_SHIPPING',return_url:origin+'/api/danini/digital/paypal/return?ref='+ref,cancel_url:origin+'/digital.html?cancelled=1'}}}}});
+  if(packageSha)await env.DANINI_DB.prepare("INSERT INTO danini_digital_orders(reference,sku,email,language,amount_cents,status,email_state,package_sha256) VALUES (?,?,?,?,?,'PENDING','PENDING',?)").bind(ref,'guide',email,language,4900,packageSha).run();
+  else await env.DANINI_DB.prepare("INSERT INTO danini_digital_orders(reference,sku,email,language,amount_cents,status,email_state) VALUES (?,?,?,?,?,'PENDING','PENDING')").bind(ref,'guide',email,language,4900).run();
+ }catch{return err('ORDER_STORAGE_FAILED',503);}
+ try{
+  const p=await paypal(env,'/v2/checkout/orders',{method:'POST',requestId:'DANINI-'+ref,body:{intent:'CAPTURE',purchase_units:[{reference_id:ref,custom_id:ref,description:packageSha?'AutoDanini Premium 2.3 (ZIP, SR)':PRODUCTS.guide.label,amount:{currency_code:'EUR',value:'49.00'}}],payment_source:{paypal:{experience_context:{brand_name:'DANINI',user_action:'PAY_NOW',shipping_preference:'NO_SHIPPING',return_url:origin+'/api/danini/digital/paypal/return?ref='+ref,cancel_url:origin+'/digital.html?cancelled=1'}}}}});
   const link=p.links?.find(x=>x.rel==='approve'||x.rel==='payer-action')?.href;
   const approvalOrigin=sandbox?'https://www.sandbox.paypal.com':'https://www.paypal.com';
   if(!link||new URL(link).origin!==approvalOrigin||!paypalIdRe.test(p.id))throw Error('INVALID_CHECKOUT_LINK');
@@ -219,18 +261,21 @@ async function sendDownload(request,env,url){
  if(!refRe.test(ref))return err('NOT_FOUND',404);
  const record=await getOrder(env,ref);
  if(!await tokenValid(env,record,url.searchParams.get('token')))return err('NOT_FOUND',404);
- const pdf=await retrievePdf(env,record);if(!pdf)return err('FILE_NOT_READY',503);
- return new Response(pdf,{headers:{'content-type':'application/pdf','content-disposition':'attachment; filename="DANINI_Auto_Biznis_Master_Vodic_2026_FINAL.pdf"','cache-control':'private, no-store, max-age=0','x-robots-tag':'noindex,nofollow','x-content-type-options':'nosniff','referrer-policy':'no-referrer','content-security-policy':"default-src 'none'; frame-ancestors 'none'"}});
+ const isPackage=record.package_sha256!==null&&record.package_sha256!==undefined;
+ const file=isPackage?await retrievePremium(env,record.package_sha256):await retrievePdf(env,record);
+ if(!file)return err('FILE_NOT_READY',503);
+ return new Response(file,{headers:{'content-type':isPackage?'application/zip':'application/pdf','content-disposition':isPackage?'attachment; filename="'+PREMIUM_NAME+'"':'attachment; filename="DANINI_Auto_Biznis_Master_Vodic_2026_FINAL.pdf"','cache-control':'private, no-store, max-age=0','x-robots-tag':'noindex,nofollow','x-content-type-options':'nosniff','referrer-policy':'no-referrer','content-security-policy':"default-src 'none'; frame-ancestors 'none'"}});
 }
 async function browserReturn(env,url){
- if(!await ready(env))return textPage('Plaćanje nije omogućeno / Zahlung nicht verfügbar',503);
+ if(!configured(env))return textPage('Plaćanje nije omogućeno / Zahlung nicht verfügbar',503);
  const ref=url.searchParams.get('ref')||'',id=url.searchParams.get('token')||'';
  if(!refRe.test(ref)||!paypalIdRe.test(id))return textPage('Neispravna potvrda / Ungültige Bestätigung',400);
  try{
   const record=await finalize(env,ref,id);
   const link=checkoutOrigin(env)+'/api/danini/digital/download/'+ref+'?token='+encodeURIComponent(await downloadToken(env,record));
   const de=record.language==='de';
-  return new Response('<!doctype html><html lang="'+(de?'de':'sr')+'"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>DANINI</title><body style="font:18px/1.6 system-ui;max-width:680px;margin:8vh auto;padding:28px"><h1>'+(de?'Zahlung bestätigt':'Uplata potvrđena')+'</h1><p>'+(de?'Ihr PDF ist verfügbar. Link 72 Stunden gültig.':'PDF je spreman. Link važi 72 sata.')+'</p><p><a href="'+link+'">'+(de?'PDF herunterladen':'Preuzmi PDF')+'</a></p><p><a href="/digital.html">DANINI</a></p></body></html>',{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','referrer-policy':'no-referrer','x-robots-tag':'noindex,nofollow'}});
+  const packageOrder=!!record.package_sha256;
+  return new Response('<!doctype html><html lang="'+(de?'de':'sr')+'"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>DANINI</title><body style="font:18px/1.6 system-ui;max-width:680px;margin:8vh auto;padding:28px"><h1>'+(de?'Zahlung bestätigt':'Uplata potvrđena')+'</h1><p>'+(packageOrder?(de?'Ihr ZIP-Paket (3 PDF-Dateien + Excel, auf Serbisch) ist verfügbar. Link 72 Stunden gültig.':'ZIP paket (3 PDF-a + Excel) je spreman. Link važi 72 sata.'):(de?'Ihr PDF ist verfügbar. Link 72 Stunden gültig.':'PDF je spreman. Link važi 72 sata.'))+'</p><p><a href="'+link+'">'+(packageOrder?(de?'ZIP-Paket herunterladen':'Preuzmi ZIP paket'):(de?'PDF herunterladen':'Preuzmi PDF'))+'</a></p><p><a href="/digital.html">DANINI</a></p></body></html>',{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','referrer-policy':'no-referrer','x-robots-tag':'noindex,nofollow'}});
  }catch{return textPage('Plaćanje nije potvrđeno. Kontakt: info@daninihub.com / Zahlung nicht bestätigt.',409);}
 }
 async function webhook(request,env){
@@ -259,7 +304,7 @@ export async function digitalRoute(request,env){
  const url=new URL(request.url),path=url.pathname;
  if(path==='/api/danini/digital/status'){
   const on=env.PAYPAL_ENV==='live'&&await ready(env)&&await approvedGuideForLive(env);
-  return json({ok:true,enabled:on,mode:configured(env)?env.PAYPAL_ENV:'disabled',guidePriceEur:49,softwareEnabled:false,delivery:'private-d1-pdf'});
+  return json({ok:true,enabled:on,mode:configured(env)?env.PAYPAL_ENV:'disabled',guidePriceEur:49,softwareEnabled:false,delivery:premiumSelected(env)?'private-d1-zip':'private-d1-pdf'});
  }
  if(path==='/api/danini/digital/checkout'&&request.method==='POST')return checkout(request,env);
  if(path==='/api/danini/digital/paypal/sandbox/checkout'&&request.method==='POST')return checkout(request,env,true);

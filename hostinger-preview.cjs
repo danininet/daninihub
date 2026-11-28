@@ -3,7 +3,7 @@
 const express = require('express');
 const fs = require('node:fs');
 const path = require('node:path');
-const {resolveAssets, readRedirects} = require('./hostinger-assets.cjs');
+const {resolveAssets, readRedirects, publicDomainEnabled} = require('./hostinger-assets.cjs');
 const {createStagingHealth} = require('./hostinger-staging-health.cjs');
 const stagingHealth = createStagingHealth({enabled:process.env.DANINI_STAGING_HEALTH === 'true'});
 const app = express();
@@ -14,6 +14,7 @@ const functionalFrontend = assets?.mode === 'production';
 const runtime = functionalFrontend ? 'hostinger-frontend' : 'hostinger-preview';
 const mode = functionalFrontend ? 'functional-frontend' : 'visual-preview';
 const robots = 'noindex, nofollow, noarchive';
+const publicHost = req => publicDomainEnabled(process.env, functionalFrontend, req.hostname);
 const frontendCsp = "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
 app.disable('x-powered-by');
@@ -28,6 +29,14 @@ if (functionalFrontend) {
 console.log(JSON.stringify({event:'hostinger_start',mode,node:process.versions.node,assets:assets?.layout || 'missing'}));
 app.use((req,res,next)=>{
   res.set({'X-DANINI-Runtime':runtime,'X-Robots-Tag':robots,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Permissions-Policy':'camera=(), microphone=(), geolocation=()','Referrer-Policy':functionalFrontend ? 'strict-origin-when-cross-origin' : 'no-referrer'});
+  if (publicHost(req) && ['GET','HEAD'].includes(req.method) && /^(?:\/$|\/(?:de|sr|auto)(?:\/|$)|\/sitemap\.xml$|\/robots\.txt$)/.test(req.path) && !/(?:^|\/)(?:api|portal|owner|operator|admin|nalog|private)(?:\/|\.|$)/i.test(req.path)) {
+    // Remove only the staging-wide tag after a successful public response; private routes keep their own protection.
+    const writeHead = res.writeHead;
+    res.writeHead = function(status, ...args) {
+      if (status >= 200 && status < 400 && res.getHeader('X-Robots-Tag') === robots) res.removeHeader('X-Robots-Tag');
+      return writeHead.call(this, status, ...args);
+    };
+  }
   if (!functionalFrontend) res.set('Content-Security-Policy',"form-action 'none'; connect-src 'self'; frame-ancestors 'none'");
   next();
 });
@@ -50,7 +59,10 @@ app.get('/health/staging',async(req,res)=>{
   const result = await stagingHealth();
   res.status(result.ok?200:503).json(result);
 });
-app.get('/robots.txt',(_req,res)=>res.type('text/plain').send('User-agent: *\nDisallow: /\n'));
+app.get('/robots.txt',(req,res)=>{
+  if (publicHost(req)) return res.type('text/plain').send('User-agent: *\nDisallow: /api/\nDisallow: /portal/\nDisallow: /operator/\nDisallow: /owner/\nSitemap: https://daninihub.com/sitemap.xml\n');
+  return res.type('text/plain').send('User-agent: *\nDisallow: /\n');
+});
 if (!functionalFrontend) app.get('/',(_req,res)=>res.redirect(302,'/de/'));
 app.use((req,res,next)=>{
   if (!assets) return res.status(503).json({error:'preview_assets_missing'});

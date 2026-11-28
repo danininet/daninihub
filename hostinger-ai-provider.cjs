@@ -44,6 +44,6 @@ function createAIQuota(pool,scope,limits={text:8,vision:6}){
  };
 }
 async function initializeAIQuota(pool){
- await pool.execute('CREATE TABLE IF NOT EXISTS danini_ai_daily_quota (bucket VARCHAR(64) PRIMARY KEY, used INT UNSIGNED NOT NULL, expires_at BIGINT NOT NULL, INDEX ai_quota_expiry(expires_at)) ENGINE=InnoDB');
+ await pool.execute('CREATE TABLE IF NOT EXISTS danini_ai_daily_quota (bucket VARCHAR(96) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY, used INT UNSIGNED NOT NULL, expires_at BIGINT NOT NULL, INDEX ai_quota_expiry(expires_at)) ENGINE=InnoDB');
 }
 module.exports={createWorkersAI,createAIQuota,initializeAIQuota,TEXT,VISION,BASE};

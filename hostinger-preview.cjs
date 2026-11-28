@@ -33,6 +33,7 @@ app.use((req,res,next)=>{
 });
 if (functionalFrontend) require('./hostinger-business.cjs').mountHostingerBusiness(app, express);
 if (functionalFrontend) require('./hostinger-academy.cjs').mountHostingerAcademy(app, express);
+if (functionalFrontend) require('./hostinger-native-digital.cjs').mountHostingerDigital(app, express, dist);
 app.use((req,res,next)=>{
   if (!['GET','HEAD'].includes(req.method)) return res.status(405).json({error:'frontend_read_only'});
   let decoded;
